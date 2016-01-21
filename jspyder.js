@@ -120,10 +120,9 @@
                     _break = false;
 
                 if (obj && typeof obj === "object") {
-                    var isNumber = (obj instanceof Array),
-                        newVal;
+                    var newVal;
                     for (var i in obj) {
-                        newVal = fn.apply(ctl, [isNumber ? i : +(i), obj[i], obj, data]);
+                        newVal = fn.apply(ctl, [i, obj[i], obj, data]);
                         if (newVal) {
                             obj[i] = newVal;
                         }
@@ -206,9 +205,9 @@
                 arr = [];
 
             div.innerHTML = s;
-            js.alg.each(div.children, function (i, v, c, a) {
-                a.push(v);
-            }, arr);
+            for (var i = 0; i < div.children.length; i++) {
+                arr.push(div.children[i]);
+            }
 
             return arr;
         }
@@ -229,8 +228,9 @@
             var s = element, el = Object.create(js_dom.fn);
 
             if (typeof s === "string") {
-                element = document.querySelectorAll(s);
-                if (!s) {
+                try {
+                    element = document.querySelectorAll(s);
+                } catch (e) {
                     element = _parseHtml(s);
                 }
             }
@@ -256,6 +256,7 @@
         // Template for selected objects: js.dom.fn
         js_dom.fn = {
             _element: [],
+            get length() { return this._element.length; },
 
             /******************************************************************
              * Iterates through all of the elements in the jsDom object.
@@ -321,7 +322,7 @@
                             el["style"][attr] = val;
                         }, el);
 
-                        if (typeof fn === "function") { js_dom(el, fn, css); }
+                        if (typeof fn === "function") { js_dom(el, fn, [css]); }
                     }, css);
                 }
                 return this;
@@ -349,7 +350,7 @@
                     this.each(function (i, el, _2, css) {
                         var cStyle = getComputedStyle(el),
                             eStyle = el["style"];
-                        css = (!i ? css.first : css.others);
+                        css = (!(+i) ? css.first : css.others);
 
                         // iterate each css field
                         _each(css, function (attr, _, css, data) {                                
@@ -357,10 +358,10 @@
                         }, { style: eStyle, cStyle: cStyle });
 
                         // callback
-                        if (typeof fn === "function") { js_dom(el, fn, css); }
+                        if (typeof fn === "function") { js_dom(el, fn, [css]); }
                     }, { first: css, others: o });
                 }
-                return css;
+                return this;
             },
 
             /******************************************************************
@@ -389,10 +390,95 @@
                             attrs[a] = a.getAttribute(a);
                         });
                         // callback
-                        if (typeof fn === "function") { js_dom(el, fn, attrs); }
+                        if (typeof fn === "function") { js_dom(el, fn, [attrs]); }
                     }, { first: attrs, others: o });
                 }
-                return attrs;
+                return this;
+            },
+            
+            /******************************************************************
+             * Gathers whether the specified DOM attributes have been assigned,
+             * and then calls [fn] with the context of the jsDom object, and
+             * the parameter being the [attrs] object passed in.
+             * 
+             * \param attrs {Object}
+             *      A JavaScript Object where keys correspond to attributes.
+             *      Values will be loaded into the object reference.
+             * 
+             * \param fn {Function}
+             *      A callback, which takes [attrs] as a parameter and uses
+             *      [this] as the context.
+             *****************************************************************/
+            setAttrs: function (attrs, fn) {
+                if (attrs && typeof attrs === "object") {
+                    var o = Object.create(attrs);
+                    var _each = js.alg.each;
+
+                    // iterate each element
+                    this.each(function (i, el, _2, attrs) {
+                        attrs = (!(+i) ? attrs.first : attrs.others);
+                        // iterate each attribute
+                        _each(attrs, function (a, v, attrs, el) {
+                            if (v === null || typeof v === "undefined") {
+                                el.removeAttribute(a);
+                            }
+                            else {
+                                el.setAttribute(a, v);
+                            }
+                        }, el);
+                        // callback
+                        if (typeof fn === "function") { js_dom(el, fn, [attrs]); }
+                    }, { first: attrs, others: o });
+                }
+                return this;
+            },
+            
+            /******************************************************************
+             * Gets the parent(s) of the elements in the node
+             * 
+             * \param fn {Function}
+             *****************************************************************/
+            parents: function (fn) {
+                this.each(function (i, element, elements) {
+                    js_dom(element.parentNode, fn);
+                });
+                return this;
+            },
+            
+            /******************************************************************
+             * Gets the children of the elements in the node
+             * 
+             * \param fn {Function}
+             *****************************************************************/
+            children: function (fn) {
+                this.each(function (i, element, elements) {
+                    js_dom(element.children, fn);
+                });
+                return this;
+            },
+            
+            // Applies function fn to the [n]th item from the list
+            item: function (n, fn) {
+                js_dom(this._element[n], fn);
+                return this;
+            },
+            
+            // Attaches the DOM nodes to the first item in the jsDom object
+            attach: function (parent) {
+                js_dom(parent, function (children) {
+                    children.each(function (_1, child, _2, parent) {
+                        parent.appendChild(child);
+                    }, this /* parent */);
+                }, [this /* child */]);
+                return this;
+            },
+            append: function (child) {
+                this.each(function (_1, parent, _2, children) {
+                    js_dom(children, function (parent) {
+                        this.attach(parent);
+                    }, this);
+                }, child);
+                return this;
             }
         };
 
