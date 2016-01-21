@@ -83,6 +83,7 @@
 
         // js.alg
         js_alg = {
+
             /******************************************************************
              * Iterates through a provided object and executes fn() on each
              * step.  Uses a controller to manage the loop.
@@ -113,10 +114,10 @@
              *****************************************************************/
             each: function each(obj, fn, data) {
                 var ctl = {
-                        "stop": function () {
-                            _break = false;
-                        }
-                    },
+                    "stop": function () {
+                        _break = false;
+                    }
+                },
                     _break = false;
 
                 if (obj && typeof obj === "object") {
@@ -150,7 +151,7 @@
              * 
              * \return
              *      The value returned by fn
-             *****************************************************************/            
+             *****************************************************************/
             use: function (_this, fn, args) {
                 if (!_this) { _this = null }
                 return (typeof fn === "function"
@@ -162,6 +163,127 @@
              * Coerces any value to a boolean
              *****************************************************************/
             bool: function bool(b) { return b ? true : false },
+            /******************************************************************
+             * Coerces any value to a Javascript Number object
+             *****************************************************************/
+            "number": function (n) {
+                var _n = +n;
+                return ((_n == n || _n === _n) ? _n : 0);
+            },
+            /******************************************************************
+             * Coerces any value to a INT8 value
+             *****************************************************************/
+            byte: function (u) {
+                if (typeof Int8Array === "undefined") {
+                    u = +u;
+                    u = (u === u ? u : 0)&0xFF;
+                    for (u; u < -0x80; u += 0x100);
+                    for (u; u > 0x7F; u -= 0x100);
+                    return u;
+                }
+                var buffer = new ArrayBuffer(1);
+                var byteArray = new Int8Array(buffer);
+                byteArray[0] = u;
+                return byteArray[0];
+            },
+            /******************************************************************
+             * Coerces any value to a UNSIGNED INT8 value
+             *****************************************************************/
+            ubyte: function (u) {
+                if (typeof Uint8Array === "undefined") {
+                    u = +u;
+                    return (u === u ? u : 0) & 0xFF;
+                }
+                var buffer = new ArrayBuffer(1);
+                var byteArray = new Uint8Array(buffer);
+                byteArray[0] = u;
+                return byteArray[0];
+            },
+            /******************************************************************
+             * Coerces any value to a INT16 value
+             *****************************************************************/
+            short: function (u) {
+                if (typeof Int16Array === "undefined") {
+                    u = +u;
+                    u = (u === u ? u : 0)&0xFFFF;
+                    for (u; u < -0x8000; u += 0x10000);
+                    for (u; u > 0x7FFF; u -= 0x10000);
+                    return u;
+                }
+                var buffer = new ArrayBuffer(2);
+                var byteArray = new Int16Array(buffer);
+                byteArray[0] = u;
+                return byteArray[0];
+            },
+            /******************************************************************
+             * Coerces any value to a UNSIGNED INT16 value
+             *****************************************************************/
+            ushort: function (u) {
+                if (typeof Uint16Array === "undefined") {
+                    u = +u;
+                    return (u === u ? u : 0) & 0xFFFF;
+                }
+                var buffer = new ArrayBuffer(2);
+                var byteArray = new Uint16Array(buffer);
+                byteArray[0] = u;
+                return byteArray[0];
+            },
+            /******************************************************************
+             * Coerces any value to a INT32 value
+             *****************************************************************/
+            int: function (u) {
+                if (typeof Int32Array === "undefined") {
+                    u = +u;
+                    u = (u === u ? u : 0) & 0xFFFFFFFF;
+                    for (u; u < -0x80000000; u += 0x100000000);
+                    for (u; u > 0x7FFFFFFF; u -= 0x100000000);
+                    return u;
+                }
+                var buffer = new ArrayBuffer(4);
+                var byteArray = new Int32Array(buffer);
+                byteArray[0] = u;
+                return byteArray[0];
+            },
+            /******************************************************************
+             * Coerces any value to a UNSIGNED INT32 value
+             *****************************************************************/
+            uint: function (u) {
+                if (typeof Int32Array === "undefined") {
+                    u = +u;
+                    u = (u === u ? u : 0) % 0x100000000;
+                    return (u < 0 ? u * -1 : u);
+                }
+                var buffer = new ArrayBuffer(4);
+                var byteArray = new Uint32Array(buffer);
+                byteArray[0] = u;
+                return byteArray[0];
+            },
+            /******************************************************************
+             * Coerces any value to a FLOAT value
+             *****************************************************************/
+            float: function (u) {
+                if (typeof Float32Array === "undefined") {
+                    u = +((+u).toPrecision(8));
+                    return (u == u ? u : 0);
+                }
+                var buffer = new ArrayBuffer(4);
+                var byteArray = new Float32Array(buffer);
+                byteArray[0] = u;
+                return +(byteArray[0].toPrecision(8));
+            },
+            /******************************************************************
+             * Coerces any value to a DOUBLE value
+             *****************************************************************/
+            double: function (u) {
+                if (typeof Float64Array === "undefined") {
+                    u = +((+u).toPrecision(16));
+                    return (u == u ? u : 0);
+                }
+                var buffer = new ArrayBuffer(8);
+                var byteArray = new Float64Array(buffer);
+                byteArray[0] = u;
+                return byteArray[0];
+            },
         };
 
         if (js) {
@@ -194,6 +316,46 @@
             return js.alg.bool(typeof HTMLElement === "object"
                 ? o instanceof HTMLElement
                 : o && typeof o === "object" && o.nodeType === 1 && typeof o.nodeName === "string");
+        }
+        
+        /**********************************************************************
+         * Gets the DOM object's classes as an array
+         *********************************************************************/
+        function _getDomClasses(element) {
+            return (_isElement(element)
+                ? element.className.replace(/(^\s+)|(\s(?=\s))|(\s+$)/g, "").split(" ")
+                : []);
+        }
+        
+        /**********************************************************************
+         * Sets the DOM object's class based on the enable flag
+         *********************************************************************/
+        function _setDomClass(element, cls, enable) {
+            var clss = _getDomClasses(element),
+                index = clss.indexOf(cls),
+                change = false;
+                
+            if (enable && index === -1) {
+                clss.push(cls);
+                change = true;
+            }
+            else if (!enable && index !== -1) {
+                clss.splice(index, 1);
+                change = true;
+            }
+            
+            if (change) {
+                element.className = clss.join(" ");
+            }
+            
+            return change;
+        }
+        
+        /**********************************************************************
+         * Sets the DOM object's class based on the enable flag
+         *********************************************************************/
+        function _getDomClass(element, cls) {
+            return (_getDomClasses(element).indexOf(cls) !== -1);
         }
 
         /**********************************************************************
@@ -256,6 +418,11 @@
         // Template for selected objects: js.dom.fn
         js_dom.fn = {
             _element: [],
+            _export: null,
+            exp: function () {
+                return this._export;
+            },
+            
             get length() { return this._element.length; },
 
             /******************************************************************
@@ -293,7 +460,7 @@
              *      Any parameters to pass to the function, in "apply" format
              *****************************************************************/
             use: function(fn, args) {
-                js.alg.use(this, fn, args);
+                this._export = js.alg.use(this, fn, args);
                 return this;
             },
 
@@ -361,6 +528,7 @@
                         if (typeof fn === "function") { js_dom(el, fn, [css]); }
                     }, { first: css, others: o });
                 }
+                this._export = css;
                 return this;
             },
 
@@ -393,6 +561,7 @@
                         if (typeof fn === "function") { js_dom(el, fn, [attrs]); }
                     }, { first: attrs, others: o });
                 }
+                this._export = attrs;
                 return this;
             },
             
@@ -434,13 +603,17 @@
             },
             
             /******************************************************************
-             * Gets the parent(s) of the elements in the node
+             * Gets the parent(s) of the elements in the node, and runs the
+             * function [fn].  Exports the first DOM node.
              * 
              * \param fn {Function}
              *****************************************************************/
             parents: function (fn) {
+                var self = this;
                 this.each(function (i, element, elements) {
-                    js_dom(element.parentNode, fn);
+                    var d = js_dom(element.parentNode, fn, [element]);
+                    
+                    if (!js.alg.number(i)) { self._export = d; }
                 });
                 return this;
             },
@@ -451,44 +624,85 @@
              * \param fn {Function}
              *****************************************************************/
             children: function (fn) {
+                var self = this;
                 this.each(function (i, element, elements) {
-                    js_dom(element.children, fn);
+                    var d = js_dom(element.children, fn, [element]);
+                    if(!js.alg.number(i)) { self._export = d; }
                 });
                 return this;
             },
             
-            // Applies function fn to the [n]th item from the list
+            /******************************************************************
+             * Applies function [fn] to the [n]th item in the jsDom using the
+             * same format as if it were selected with js.dom().
+             *
+             * \param n {Number}
+             *      Index of the item to grab  
+             * \param fn {Function}
+             *****************************************************************/
             item: function (n, fn) {
-                this._element[n] ? js_dom(this._element[n], fn) : null;
+                if (this._element[n]) {
+                    this._export = js_dom(this._element[n], fn);
+                }
                 return this;
             },
             
+            /******************************************************************
+             * Applies function [fn] to the [n]th element in the jsDom using
+             * the same format as if it were selected with js.dom().
+             *
+             * \param n {Number} 
+             *      Index of the element to grab
+             * \param fn {Function}
+             *****************************************************************/
             element: function (n, fn) {
+                var self = this;
                 this.item(n, function () {
-                    if (this._element[0]) {
-                        fn.apply(this._element[0]);
+                    var el = this._element[0];
+                    if (el) {
+                        fn.apply(el, [this]);
                     }
+                    self._export = el;
                 });
                 return this;
             },
             
-            // Attaches the DOM nodes to the first item in the jsDom object
-            attach: function (parent) {
+            /******************************************************************
+             * Attaches the elements from the jsDom to the first element
+             * identified in the parent object.
+             *
+             * \param parent {any}
+             *      The element/string/etc. to which this jsDom shuld be 
+             *      attached
+             * 
+             * \param fn {Function}
+             *      A callback which takes the parent as the context, and
+             *      this jsDom object as the first parameter.
+             *****************************************************************/
+            attach: function (parent, fn) {
                 var children = this;
-                js_dom(parent).element(0, function () {
-                    var doc = new DocumentFragment();
+                js_dom(parent).element(0, function (p) {
+                    var doc = document.createDocumentFragment();
                     children.each(function (_1, child, _2, doc) {
                         doc.appendChild(child);
                     }, doc);
                     this.appendChild(doc);
+                    p.use(fn, children);
                 });
                 return this;
             },
             
-            // Attaches new DOM nodes to this element
+            /******************************************************************
+             * Attaches the element identified by [child] to the first element
+             * identified in the jsDom object..
+             *
+             * \param parent {any}
+             *      The element/string/etc. which should be attached to this
+             *      jsDom object.
+             *****************************************************************/
             append: function (child) {
                 this.element(0, function () {
-                    var doc = new DocumentFragment();
+                    var doc = document.createDocumentFragment();
                     js_dom(child).each(function (_1, c, _2, doc) {
                         doc.appendChild(c);
                     }, doc);
@@ -497,12 +711,97 @@
                 return this;
             },
             
+            /******************************************************************
+             * Removes all of the elements defined in this jsDom object from
+             * their parent nodes.
+             *
+             * \param parent {any}
+             *      The element/string/etc. which should be attached to this
+             *      jsDom object.
+             *****************************************************************/
             remove: function () {
                 this.each(function (_1, child, _2) {
                     child.parentNode ? child.parentNode.removeChild(child) : null;
                 });
                 return this;
-            }
+            },
+            
+            /******************************************************************
+             * Adds the defined classes to all of the elements in this jsDom 
+             * object.
+             *
+             * \param classes {Object}
+             *      An object which defines classes as the key, and identifies
+             *      whether they should be defined as the value.  For example,
+             *      the following line would turn one class on, another off,
+             *      and a third class would toggle:
+             * 
+             *      js.dom("#test").setClasses({ 
+             *          "turn-on": true, //< truthy
+             *          "turn-off": false, //< falsy
+             *          "toggle-class": "toggle" //< string literal
+             *      });
+             *****************************************************************/
+            setClasses: function (classes) {
+                // for every element jsDom...
+                this.each(function (_1, element, _2, classes) {
+                    // iterate the classes...
+                    js.alg.each(classes, function (className, classState, _1, element) {
+                        if (classState === "toggle") {
+                            classState = !_getDomClass(element, className);
+                        }
+                        _setDomClass(element, className, classState);
+                    }, element)
+                }, classes);
+                return this;
+            },
+            
+            /******************************************************************
+             * Retrieves the defined classes from all of the elements in this 
+             * jsDom object, and then runs the designated callback function.
+             *
+             * \param classes {Object}
+             *      An object which defines classes as the key, and identifies
+             *      whether they should be defined as the value.  For example,
+             *      the following line would turn one class on, another off,
+             *      and a third class would toggle:
+             * 
+             *      js.dom("#test").setClasses({ 
+             *          "turn-on": true, //< truthy
+             *          "turn-off": false, //< falsy
+             *          "toggle-class": "toggle" //< string literal
+             *      });
+             *****************************************************************/
+            getClasses: function (classes, fn) {
+                // for every element jsDom...
+                this.each(function (i, element, _2, classes) {
+                    // iterate the classes...
+                    classes = (js.alg.number(i) ? classes.first : classes.second);
+                    js.alg.each(classes, function (className, _1, _2, o) {
+                        o.classes[className] = _getDomClass(o.element, className);
+                    }, { el: element, classes: classes });
+                    
+                    // run the callback
+                    js_dom(element, fn, [classes]);
+                }, { first: classes, second: Object.create(classes) });
+                this._export = classes;
+                return this;
+            },
+            
+            /******************************************************************
+             * Inserts an event handler on all of the jsDom elements, for each
+             * event in a space-separated list.
+             *
+             * \param events {String}
+             *      An space-separated list of event types to trigger the
+             *      callback on.
+             * 
+             *      js.dom("#test").setClasses({ 
+             *          "turn-on": true, //< truthy
+             *          "turn-off": false, //< falsy
+             *          "toggle-class": "toggle" //< string literal
+             *      });
+             *****************************************************************/
         };
 
         if (js) {
