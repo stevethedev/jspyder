@@ -459,25 +459,48 @@
             
             // Applies function fn to the [n]th item from the list
             item: function (n, fn) {
-                js_dom(this._element[n], fn);
+                this._element[n] ? js_dom(this._element[n], fn) : null;
+                return this;
+            },
+            
+            element: function (n, fn) {
+                this.item(n, function () {
+                    if (this._element[0]) {
+                        fn.apply(this._element[0]);
+                    }
+                });
                 return this;
             },
             
             // Attaches the DOM nodes to the first item in the jsDom object
             attach: function (parent) {
-                js_dom(parent, function (children) {
-                    children.each(function (_1, child, _2, parent) {
-                        parent.appendChild(child);
-                    }, this /* parent */);
-                }, [this /* child */]);
+                var children = this;
+                js_dom(parent).element(0, function () {
+                    var doc = new DocumentFragment();
+                    children.each(function (_1, child, _2, doc) {
+                        doc.appendChild(child);
+                    }, doc);
+                    this.appendChild(doc);
+                });
                 return this;
             },
+            
+            // Attaches new DOM nodes to this element
             append: function (child) {
-                this.each(function (_1, parent, _2, children) {
-                    js_dom(children, function (parent) {
-                        this.attach(parent);
-                    }, this);
-                }, child);
+                this.element(0, function () {
+                    var doc = new DocumentFragment();
+                    js_dom(child).each(function (_1, c, _2, doc) {
+                        doc.appendChild(c);
+                    }, doc);
+                    this.appendChild(doc);
+                })
+                return this;
+            },
+            
+            remove: function () {
+                this.each(function (_1, child, _2) {
+                    child.parentNode ? child.parentNode.removeChild(child) : null;
+                });
                 return this;
             }
         };
