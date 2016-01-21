@@ -7,5 +7,66 @@
     </head>
     <body>
         <div id="test">This is a test div.</div>
+        <label>Input Number</label>
+        <input id="input" />
+        <label>BYTE</label>
+        <input id="out-byte" />
+        <label>UBYTE</label>
+        <input id="out-ubyte" />
+        <label>SHORT</label>
+        <input id="out-short" />
+        <label>USHORT</label>
+        <input id="out-ushort" />
+        <label>INT</label>
+        <input id="out-int" />
+        <label>UINT</label>
+        <input id="out-uint" />
+        <label>FLOAT</label>
+        <input id="out-float" />
+        <label>DOUBLE</label>
+        <input id="out-double" />
+        
+        <script type="text/javascript">
+            js.dom("#input", function() {
+                this.element(0, function() {
+                    this.addEventListener("input", function() {
+                        var value = this.value;
+                        
+                        js.dom("#out-byte").setAttrs({ "value": js.alg.byte(value) });
+                        js.dom("#out-ubyte").setAttrs({ "value": js.alg.ubyte(value) });
+                        js.dom("#out-short").setAttrs({ "value": js.alg.short(value) });
+                        js.dom("#out-ushort").setAttrs({ "value": js.alg.ushort(value) });
+                        js.dom("#out-int").setAttrs({ "value": js.alg.int(value) });
+                        js.dom("#out-uint").setAttrs({ "value": js.alg.uint(value) });
+                        js.dom("#out-float").setAttrs({ "value": js.alg.float(value) });
+                        js.dom("#out-double").setAttrs({ "value": js.alg.double(value) });
+                    });
+                });
+            });
+            
+            js.dom("#test", function() {
+                this.element(0, function() {
+                    this.addEventListener("mousedown", function() { console.log("mousedown"); }, true, true); 
+                });
+            });
+            js.dom("<button>Click Me to Click Text</button>").attach(document.body).element(0, function() {
+                this.addEventListener("mousedown", function() {
+                    js.dom("#test").element(0, function() {
+                        var e;
+                        try {
+                            e = new Event("mousedown", {"bubbles": true, "cancelable": false});
+                        }
+                        catch(_) {
+                            e = document.createEvent("Event");
+                            e.initEvent("mousedown", true, true);
+                        } 
+                        
+                        js.dom("#test").element(0, function() {
+                            this.dispatchEvent(e);
+                        });
+                    });
+                });
+            })
+        </script>
     </body>
 </html>
