@@ -25,6 +25,14 @@
         <input id="out-float" />
         <label>DOUBLE</label>
         <input id="out-double" />
+        <br />
+        <br />
+        
+        <script id="test-template" type="text/jspyder-template">
+            <div class="my-template-div">
+                @bold($name)
+            </div>
+        </script>
         
         <script type="text/javascript">
             js.dom("#input", function() {
@@ -68,93 +76,59 @@
                 });
             });
             
-function attachUByte(o, name, value, constant, strict) {
-  var buffer = new ArrayBuffer(1);
-  var arr = new Uint8Array(buffer);
-  arr[0] = value;
-  var interface = {
-    get: function() { return arr[0]; },
-    set: function(v) {
-      if(!constant) {
-          var num = (typeof v === "number" && v === v);
-        if(strict && !num) {
-          throw new Error("Attempted to set a non-numerical value of type \"" + typeof v + "\" (" + v + ") to a strict unsigned byte");
-        }
-        arr[0] = v;
-        return arr[0];
-      }
-      else {
-        throw new Error("Attempted to set a value to a constant unsigned byte");
-      }
-    },
-    enumerable: true
-  };
-  Object.defineProperty(o, name, interface);
-}
-
-function attachString(o, name, value, constant, strict) {
-  var data = String(value);
-  var interface = {
-    get: function() { return data; },
-    set: function(v) {
-      if(!constant) {
-        if(strict && (typeof v !== "string")) {
-          throw new Error("Attempted to set a non-numerical value of type \"" + typeof v + "\" (" + v + ") to a strict string");
-        }
-        data = String(v);
-        return data;
-      }
-      else {
-        throw new Error("Attempted to set a value to a constant string");
-      }
-    },
-    enumerable: true
-  };
-  Object.defineProperty(o, name, interface);
-}
-
-function attachChar(o, name, value, constant, strict) {
-  var buffer = new ArrayBuffer(2);
-  var data = new Uint16Array(buffer);
-  var interface = {
-    get: function() { return String.fromCharCode(data[0]); },
-    set: function(v) {
-      if(!constant) {
-        var str = ((typeof v === "string") && (v.length === 1)),
-            num = ((typeof v === "number") && (v === v));
-        if(strict && !str && !num) {
-          throw new Error("Attempted to set a non-numerical value of type \"" + typeof v + "\" (" + v + ") to a strict char");
-        }
-        data[0] = (typeof v === "string" ? v.charCodeAt(0) : +v);
-      }
-      else {
-        throw new Error("Attempted to set a value to a constant char");
-      }
-    },
-    enumerable: true
-  };
-  var _c = constant;
-  constant = false;
-  interface.set(value);
-  constant = _c;
-  Object.defineProperty(o, name, interface);
-}
-
-var o = {};
-attachUByte(o, "ubyte", 0);
-attachUByte(o, "cubyte", 0, true);
-attachUByte(o, "subyte", 0, false, true);
-attachUByte(o, "scubyte", 0, true, true);
-
-attachString(o, "string", "string");
-attachString(o, "cstring", "string", true);
-attachString(o, "sstring", "string", false, true);
-attachString(o, "csstring", "string", true, true);
-
-attachChar(o, "char", 63);
-attachChar(o, "cchar", 63, true);
-attachChar(o, "schar", 63, false, true);
-attachChar(o, "cschar", 63, true, true);
+            var template = document.querySelector("#test-template").innerHTML;
+            
+            var values = {
+                name: "Steven Jimenez"
+            };
+            var functions = {
+                bold: function(name) {
+                    return "<b>" + name + "</b>"; 
+                }
+            };
+            
+            function parseValue($var) {
+                if($var.charAt(0) !== "$") {
+                    return $var;
+                }
+                $var = $var.substring(1);
+                if(values.hasOwnProperty($var)) {
+                    return values[$var];
+                }
+                throw new Error("JSpyder Template could not find value for " + $var + " in value library; returning a blank string, instead.");
+                return ""; 
+            }
+            
+            function parseFn(_fn, args) {
+                if(functions.hasOwnProperty(_fn)) {
+                    var ret = functions[_fn].apply(values, args);
+                    return typeof ret === "undefined" ? "" : ret;
+                }
+                throw new Error("JSpyder Template could not find function " + $var + " in library; returning a blank string, instead.");
+                return "";
+            }
+            
+            function parseTemplate(tmp) {
+                var fnStack, fnName, fnArgs, fnResult;
+                while(fnStack = tmp.match(/@(.+)\((?:(.*),?)*\)/)) { 
+                    fnName = fnStack[1];
+                    fnArgs = fnStack.slice(2);
+                    for(var i = 0; i < fnArgs.length; i++) {
+                        fnArgs[i] = parseValue(fnArgs[i]);
+                    }
+                    fnResult = parseFn(fnName, fnArgs);
+                    tmp = tmp.replace(/@(.+)\((?:(.*),?)*\)/, fnResult);
+                }
+                
+                return tmp;
+            }
+            
+            function insertTemplate(location, tmp) {
+                js.dom(location).item(0, function() {
+                    tmp = parseTemplate(tmp);
+                    this.append(tmp);
+                });
+            }
         </script>
     </body>
 </html>
