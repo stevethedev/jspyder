@@ -78,9 +78,7 @@
             js.extend(name, fn.apply(this, args));
             return this;
         }
-
         js.createRegistry = _createRegistry;
-        
         return js;
     }
 
