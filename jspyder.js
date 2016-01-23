@@ -95,10 +95,10 @@
              * 
              * \param fn {Function}
              *      Function with the following parameters:
-             *       - The key of the current item
-             *       - The value of the current item
-             *       - A reference to [obj]
-             *       - A reference to [data]
+             *       1: The value of the current item
+             *       2: The key of the current item
+             *       3: A reference to [obj]
+             *       4: A reference to [data]
              * 
              *      The context of this variable points to a controller object
              *      with the members:
@@ -123,7 +123,7 @@
                 if (obj && typeof obj === "object") {
                     var newVal;
                     for (var i in obj) {
-                        newVal = fn.apply(ctl, [i, obj[i], obj, data]);
+                        newVal = fn.apply(ctl, [obj[i], i, obj, data]);
                         if (newVal) {
                             obj[i] = newVal;
                         }
@@ -406,7 +406,7 @@
             el._element = element;
 
             if (!element.__jspyder) {
-                el.each(function (k, v) {
+                el.each(function (v) {
                     v.__jspyder = _createRegistry();
                 });
             }
@@ -430,10 +430,10 @@
              * 
              * \param fn {Function}
              *      Function with the following parameters:
-             *       - The key of the current item
-             *       - The value of the current item
-             *       - A reference to [obj]
-             *       - A reference to [data]
+             *       1: The value of the current item
+             *       2: The key of the current item
+             *       3: A reference to [obj]
+             *       4: A reference to [data]
              * 
              *      The context of this variable points to a controller object
              *      with the members:
@@ -483,9 +483,9 @@
                     var _each = js.alg.each;
 
                     // iterate each dom item
-                    this.each(function (_1, el, _2, css) {
+                    this.each(function (el, _1, _2, css) {
                         // iterate each css field
-                        _each(css, function (attr, val, _1, el) {
+                        _each(css, function (val, attr, _1, el) {
                             el["style"][attr] = val;
                         }, el);
 
@@ -514,13 +514,13 @@
                     var _each = js.alg.each;
 
                     // iterate each element
-                    this.each(function (i, el, _2, css) {
+                    this.each(function (el, i, _2, css) {
                         var cStyle = getComputedStyle(el),
                             eStyle = el["style"];
                         css = (!(+i) ? css.first : css.others);
 
                         // iterate each css field
-                        _each(css, function (attr, _, css, data) {                                
+                        _each(css, function (_, attr, css, data) {                                
                             css[attr] = data.style[attr] || data.cStyle[attr];
                         }, { style: eStyle, cStyle: cStyle });
 
@@ -551,10 +551,10 @@
                     var _each = js.alg.each;
 
                     // iterate each element
-                    this.each(function (i, el, _2, attrs) {
+                    this.each(function (el, i, _2, attrs) {
                         attrs = (!i ? attrs.first : attrs.others);
                         // iterate each attribute
-                        _each(attrs, function (a, _, attrs) {
+                        _each(attrs, function (_, a, attrs) {
                             attrs[a] = a.getAttribute(a);
                         });
                         // callback
@@ -584,10 +584,10 @@
                     var _each = js.alg.each;
 
                     // iterate each element
-                    this.each(function (i, el, _2, attrs) {
+                    this.each(function (el, i, _2, attrs) {
                         attrs = (!(+i) ? attrs.first : attrs.others);
                         // iterate each attribute
-                        _each(attrs, function (a, v, attrs, el) {
+                        _each(attrs, function (v, a, attrs, el) {
                             if (v === null || typeof v === "undefined") {
                                 el.removeAttribute(a);
                             }
@@ -610,7 +610,7 @@
              *****************************************************************/
             parents: function (fn) {
                 var self = this;
-                this.each(function (i, element, elements) {
+                this.each(function (element, i, elements) {
                     var d = js_dom(element.parentNode, fn, [element]);
                     
                     if (!js.alg.number(i)) { self._export = d; }
@@ -625,7 +625,7 @@
              *****************************************************************/
             children: function (fn) {
                 var self = this;
-                this.each(function (i, element, elements) {
+                this.each(function (element, i, elements) {
                     var d = js_dom(element.children, fn, [element]);
                     if(!js.alg.number(i)) { self._export = d; }
                 });
@@ -683,7 +683,7 @@
                 var children = this;
                 js_dom(parent).element(0, function (p) {
                     var doc = document.createDocumentFragment();
-                    children.each(function (_1, child, _2, doc) {
+                    children.each(function (child, _1, _2, doc) {
                         doc.appendChild(child);
                     }, doc);
                     this.appendChild(doc);
@@ -703,7 +703,7 @@
             append: function (child) {
                 this.element(0, function () {
                     var doc = document.createDocumentFragment();
-                    js_dom(child).each(function (_1, c, _2, doc) {
+                    js_dom(child).each(function (c, _1, _2, doc) {
                         doc.appendChild(c);
                     }, doc);
                     this.appendChild(doc);
@@ -720,7 +720,7 @@
              *      jsDom object.
              *****************************************************************/
             remove: function () {
-                this.each(function (_1, child, _2) {
+                this.each(function (child) {
                     child.parentNode ? child.parentNode.removeChild(child) : null;
                 });
                 return this;
@@ -744,9 +744,9 @@
              *****************************************************************/
             setClasses: function (classes) {
                 // for every element jsDom...
-                this.each(function (_1, element, _2, classes) {
+                this.each(function (element, _1, _2, classes) {
                     // iterate the classes...
-                    js.alg.each(classes, function (className, classState, _1, element) {
+                    js.alg.each(classes, function (classState, className, _1, element) {
                         if (classState === "toggle") {
                             classState = !_getDomClass(element, className);
                         }
@@ -774,10 +774,10 @@
              *****************************************************************/
             getClasses: function (classes, fn) {
                 // for every element jsDom...
-                this.each(function (i, element, _2, classes) {
+                this.each(function (element, i, _2, classes) {
                     // iterate the classes...
                     classes = (js.alg.number(i) ? classes.first : classes.second);
-                    js.alg.each(classes, function (className, _1, _2, o) {
+                    js.alg.each(classes, function (_1, className, _2, o) {
                         o.classes[className] = _getDomClass(o.element, className);
                     }, { el: element, classes: classes });
                     
