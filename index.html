@@ -4,6 +4,8 @@
         <meta charset="utf-8" /> 
         <link type="text/css" rel="stylesheet" href="jspyder.css" />
         <script type="text/javascript" src="jspyder.js" ></script>
+        <script type="text/javascript" src="js-ajax.js" ></script>
+        <script type="text/javascript" src="js-dtype.js" ></script>
     </head>
     <body>
         <div id="test">This is a test div.</div>
@@ -76,94 +78,20 @@
                 });
             });
 
-function attachUByte(o, name, value, constant, strict) {
-  var buffer = new ArrayBuffer(1);
-  var arr = new Uint8Array(buffer);
-  arr[0] = value;
-  var interface = {
-    get: function() { return arr[0]; },
-    set: function(v) {
-      if(!constant) {
-          var num = (typeof v === "number" && v === v);
-        if(strict && !num) {
-         throw new Error("Attempted to set a non-numerical value of type \"" + typeof v + "\" (" + v + ") to a strict unsigned byte");
-        }
-        arr[0] = v;
-        return arr[0];
-      }
-      else {
-        throw new Error("Attempted to set a value to a constant unsigned byte");
-      }
-    },
-    enumerable: true
-  };
-  Object.defineProperty(o, name, interface);
-}
-
-function attachString(o, name, value, constant, strict) {
-  var data = String(value);
-  var interface = {
-    get: function() { return data; },
-    set: function(v) {
-      if(!constant) {
-        if(strict && (typeof v !== "string")) {
-          throw new Error("Attempted to set a non-numerical value of type \"" + typeof v + "\" (" + v + ") to a strict string");
-        }
-        data = String(v);
-        return data;
-      }
-      else {
-        throw new Error("Attempted to set a value to a constant string");
-      }
-    },
-    enumerable: true
-  };
-  Object.defineProperty(o, name, interface);
-}
-
-function attachChar(o, name, value, constant, strict) {
-  var buffer = new ArrayBuffer(2);
-  var data = new Uint16Array(buffer);
-  var interface = {
-    get: function() { return String.fromCharCode(data[0]); },
-    set: function(v) {
-      if(!constant) {
-        var str = ((typeof v === "string") && (v.length === 1)),
-            num = ((typeof v === "number") && (v === v));
-        if(strict && !str && !num) {
-          throw new Error("Attempted to set a non-numerical value of type \"" + typeof v + "\" (" + v + ") to a strict char");
-        }
-        data[0] = (typeof v === "string" ? v.charCodeAt(0) : +v);
-      }
-      else {
-        throw new Error("Attempted to set a value to a constant char");
-      }
-    },
-    enumerable: true
-  };
-  var _c = constant;
-  constant = false;
-  interface.set(value);
-  constant = _c;
-  Object.defineProperty(o, name, interface);
-}
-
 var o = {};
-
-attachUByte(o, "ubyte", 0);
-attachUByte(o, "cubyte", 0, true);
-attachUByte(o, "subyte", 0, false, true);
-attachUByte(o, "scubyte", 0, true, true);
-
-attachString(o, "string", "string");
-attachString(o, "cstring", "string", true);
-attachString(o, "sstring", "string", false, true);
-attachString(o, "csstring", "string", true, true);
-
-attachChar(o, "char", 63);
-attachChar(o, "cchar", 63, true);
-attachChar(o, "schar", 63, false, true);
-attachChar(o, "cschar", 63, true, true);
+js.dtype(o)
+    .ubyte("ubyte", 0)
+    .ubyte("subyte", 0, true)
+    .ubyte("cubyte", 0, false, true)
+    .ubyte("scubyte", 0, true, true)
+    .uchar("uchar", 63)
+    .uchar("suchar", 63, true)
+    .uchar("cuchar", 63, false, true)
+    .uchar("scuchar", 63, true, true)
+    .string("string", "string")
+    .string("sstring", "string", true)
+    .string("cstring", "string", false, true)
+    .string("scstring", "string", true, true)
 
             var template = document.querySelector("#test-template").innerHTML;
             
