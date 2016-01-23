@@ -1,55 +1,56 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8" />
     <link type="text/css" rel="stylesheet" href="jspyder.css" />
     <script type="text/javascript" src="jspyder.js"></script>
-    <script type="text/javascript" src="js-ajax.js" ></script>
-    <script type="text/javascript" src="js-dtype.js" ></script>
-    <script type="text/javascript" src="js-template.js" ></script>
+    <script type="text/javascript" src="js-ajax.js"></script>
+    <script type="text/javascript" src="js-dtype.js"></script>
+    <script type="text/javascript" src="js-template.js"></script>
 </head>
 
 <body>
     <div id="test">This is a test div.</div>
     <div class="spread-3-1">
-    <div>
-        <label class="spread-3-1">Input Number</label class="spread-3-1">
-        <input class="spread-3-2" id="input" />
+        <div>
+            <label class="spread-3-1">Input Number</label class="spread-3-1">
+            <input class="spread-3-2" id="input" />
+        </div>
+        <div>
+            <label class="spread-3-1">BYTE</label class="spread-3-1">
+            <input class="spread-3-2" id="out-byte" />
+        </div>
+        <div>
+            <label class="spread-3-1">UBYTE</label class="spread-3-1">
+            <input class="spread-3-2" id="out-ubyte" />
+        </div>
+        <div>
+            <label class="spread-3-1">SHORT</label class="spread-3-1">
+            <input class="spread-3-2" id="out-short" />
+        </div>
+        <div>
+            <label class="spread-3-1">USHORT</label class="spread-3-1">
+            <input class="spread-3-2" id="out-ushort" />
+        </div>
+        <div>
+            <label class="spread-3-1">INT</label class="spread-3-1">
+            <input class="spread-3-2" id="out-int" />
+        </div>
+        <div>
+            <label class="spread-3-1">UINT</label class="spread-3-1">
+            <input class="spread-3-2" id="out-uint" />
+        </div>
+        <div>
+            <label class="spread-3-1">FLOAT</label class="spread-3-1">
+            <input class="spread-3-2" id="out-float" />
+        </div>
+        <div>
+            <label class="spread-3-1">DOUBLE</label class="spread-3-1">
+            <input class="spread-3-2" id="out-double" />
+        </div>
     </div>
-    <div>
-        <label class="spread-3-1">BYTE</label class="spread-3-1">
-        <input class="spread-3-2" id="out-byte" />
-    </div>
-    <div>
-        <label class="spread-3-1">UBYTE</label class="spread-3-1">
-        <input class="spread-3-2" id="out-ubyte" />
-    </div>
-    <div>
-        <label class="spread-3-1">SHORT</label class="spread-3-1">
-        <input class="spread-3-2" id="out-short" />
-    </div>
-    <div>
-        <label class="spread-3-1">USHORT</label class="spread-3-1">
-        <input class="spread-3-2" id="out-ushort" />
-    </div>
-    <div>
-        <label class="spread-3-1">INT</label class="spread-3-1">
-        <input class="spread-3-2" id="out-int" />
-    </div>
-    <div>
-        <label class="spread-3-1">UINT</label class="spread-3-1">
-        <input class="spread-3-2" id="out-uint" />
-    </div>
-    <div>
-        <label class="spread-3-1">FLOAT</label class="spread-3-1">
-        <input class="spread-3-2" id="out-float" />
-    </div>
-    <div>
-        <label class="spread-3-1">DOUBLE</label class="spread-3-1">
-        <input class="spread-3-2" id="out-double" />
-    </div>
-    </div>
-    
+
     <br />
     <br />
 
@@ -60,7 +61,7 @@
     </script>
 
     <script type="text/javascript">
-            js.dom("#input", function() {
+        js.dom("#input", function() {
                 this.element(0, function() {
                     this.addEventListener("input", function() {
                         var value = this.value;
@@ -169,6 +170,7 @@ js.dtype(o)
                     this.append(tmp);
                 });
             }
-        </script>
-    </body>
+    </script>
+</body>
+
 </html>
