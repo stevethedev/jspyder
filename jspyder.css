@@ -30,49 +30,42 @@ html {
 }
 
 /** SIZING CLASSES ***********************************************************/
-/** sizes for 1, 4, 6, 8, 12 columns **/
-.spread-12-12, .spread-11-11, .spread-10-10
-{ width: 100%; }
+/* .spread-[max columns]-[span columns] */
+.spread-12-1
+{ width: calc( 100% / 12 ); }
 
-.spread-12-11
-{ width: calc(1100% / 12); }
+.spread-12-2, .spread-6-1
+{ width: calc( 100% / 6); }
 
-.spread-12-10, .spread-6-5
-{ width: calc(500% / 6); }
-
-.spread-12-9, .spread-8-6
+.spread-12-3, .spread-4-1
 { width: 75%; }
 
-.spread-12-8 { width: calc(800% / 12); }
-.spread-12-6 { width: 50%; }
-.spread-12-5 { width: calc(500% / 12); }
-.spread-12-4 { width: calc(400% / 12); }
-.spread-12-3 { width: 25%; }
-.spread-12-2 { width: calc(200% / 12); }
-.spread-12-1 { width: calc(100% / 12); }
+.spread-12-4, .spread-6-2, .spread-3-1
+{ width: calc( 100% / 3 ); }
 
-.spread-10-2 { width: 20%; }
-.spread-10-4 { width: 40%; }
-.spread-10-5 { width: 50%; }
-.spread-10-6 { width: 60%; }
-.spread-10-8 { width: 80%; }
-.spread-2-2 { width: 100%; }
-.spread-3-3 { width: 100%; }
-.spread-4-2 { width: 50%; }
-.spread-4-4 { width: 100%; }
-.spread-5-5 { width: 100%; }
-.spread-6-2 { width: calc(200% / 6); }
-.spread-6-3 { width: 50%; }
-.spread-6-4 { width: calc(400% / 6); }
-.spread-6-6 { width: 100%; }
-.spread-7-7 { width: 100%; }
-.spread-8-2 { width: 25%; }
-.spread-8-4 { width: 50%; }
-.spread-8-8 { width: 100%; }
-.spread-9-3 { width: calc(300% / 9); }
-.spread-9-6 { width: calc(600% / 9); }
-.spread-9-9 { width: 100%; }
+.spread-12-5
+{ width: calc( 500% / 12 ); }
 
+.spread-12-6, .spread-6-3, .spread-2-1
+{ width: calc( 100% / 3 ); }
+
+.spread-12-7
+{ width: calc( 700% / 12 ); }
+
+.spread-12-8, .spread-6-4, .spread-3-2
+{ width: calc( 200% / 3 ); }
+
+.spread-12-9, .spread-4-3 
+{ width: 75%; }
+
+.spread-12-10, .spread-6-5
+{ width: calc( 500% / 6 ); }
+
+.spread-12-11
+{ width: calc( 1100% / 12 ); }
+
+.spread-12-12, .spread-6-6, .spread-4-4, .spread-3-3, .spread-2-1, .spread-1-1
+{ width: 100%; }
 
 /** FORM ELEMENTS ************************************************************/
 
@@ -82,4 +75,9 @@ input {
     border-radius: .2em;
     box-shadow: 0px 0px .05em rgba(0, 0, 0, 0.2) inset;
     margin: .1em;
+    display: block;
+}
+
+label {
+    display: block;
 }

@@ -389,34 +389,38 @@
          *      jsDom Object, based on js.dom.fn as the prototype
          *********************************************************************/
         function js_dom(element, fn, args) {
+            element = element || [];
             var s = element, el;
+            
+            if (!(element instanceof js.dom)) {
 
-            if (typeof s === "string") {
-                try {
-                    element = document.querySelectorAll(s);
-                } catch (e) {
-                    element = _parseHtml(s);
+                if (typeof s === "string") {
+                    try {
+                        element = document.querySelectorAll(s);
+                    } catch (e) {
+                        element = _parseHtml(s);
+                    }
                 }
-            }
 
 
-            if (_isElement(element)) {
-                element = [element];
-            }
-
-            element = Array.prototype.slice.call(element, 0);
-            el = Object.create(js_dom.fn, {
-                _element: { value: element }
-            });
-            //el._element = element;
-
-            //if (!element.__jspyder) {
-            el.each(function (k, v) {
-                if (!v.__jspyder) {
-                    v.__jspyder = _createRegistry();
+                if (_isElement(element)) {
+                    element = [element];
                 }
-            });
-            //}
+
+                element = Array.prototype.slice.call(element, 0);
+                el = Object.create(js_dom.fn, {
+                    _element: { value: element }
+                });
+
+                el.each(function (k, v) {
+                    if (!v.__jspyder) {
+                        v.__jspyder = _createRegistry();
+                    }
+                });
+            }
+            else {
+                el = element; 
+            }
 
             el.use(fn, args);
             return el;
@@ -430,7 +434,7 @@
                 return this._export;
             },
 
-            get length() { return this._element.length; },
+            get count() { return this._element.length; },
 
             /******************************************************************
              * Iterates through all of the elements in the jsDom object.
@@ -631,10 +635,13 @@
              * \param fn {Function}
              *****************************************************************/
             children: function (fn) {
-                var self = this;
+                //var self = this;
                 this.each(function (i, element, elements) {
-                    var d = js_dom(element.children, fn, [element]);
-                    if (!js.alg.number(i)) { self._export = d; }
+                    for (var j = 0; j < element.children.length; j++) {
+                        js_dom(element.children[j], fn, [element.children[j]]);
+                    }
+                    //var jsDom = js_dom(element.children, fn, [element]);
+                    //if (!js.alg.number(i)) { self._export = jsDom; }
                 });
                 return this;
             },
@@ -647,11 +654,9 @@
              *      Index of the item to grab  
              * \param fn {Function}
              *****************************************************************/
-            item: function (n, fn) {
-                if (this._element[n]) {
-                    this._export = js_dom(this._element[n], fn);
-                }
-                return this;
+            at: function (n, fn) {
+                n = js.alg.uint(n);
+                return js_dom(this._element[n] || null, fn);
             },
             
             /******************************************************************
@@ -664,9 +669,9 @@
              *****************************************************************/
             element: function (n, fn) {
                 var self = this;
-                this.item(n, function () {
+                this.at(n, function () {
                     var el = this._element[0];
-                    if (el) {
+                    if (el && typeof fn === "function") {
                         fn.apply(el, [this]);
                     }
                     self._export = el;
@@ -803,12 +808,20 @@
              *      An space-separated list of event types to trigger the
              *      callback on.
              * 
-             *      js.dom("#test").setClasses({ 
-             *          "turn-on": true, //< truthy
-             *          "turn-off": false, //< falsy
-             *          "toggle-class": "toggle" //< string literal
-             *      });
+             * \param handler {Function}
+             *      A callback function to use for the event callback.
              *****************************************************************/
+            on: function (events, handler) {
+                events = (events || "").split(" ");
+                
+                js.alg.each(events, function (event) {
+                    js.alg.each(this._elements, function (element) {
+                        element.addEventListener(event, handler);
+                    });
+                });
+                
+                return this;
+            }
         };
 
         if (js) {
