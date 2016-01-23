@@ -68,8 +68,19 @@
         // JSpyder Algorithms
         _bootstrapAlg(js);
         _bootstrapDom(js);
+        
+        // Extensible
+        js.extend = function js_extend(name, obj) {
+            Object.defineProperty(this, name, { value: obj });
+            return this;
+        };
+        js.extend.fn = function js_extend_fn(name, fn, args) {
+            js.extend(name, fn.apply(this, args));
+            return this;
+        }
 
         js.createRegistry = _createRegistry;
+        
         return js;
     }
 
