@@ -1,41 +1,62 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8" /> 
-        <link type="text/css" rel="stylesheet" href="jspyder.css" />
-        <script type="text/javascript" src="jspyder.js" ></script>
-    </head>
-    <body>
-        <div id="test">This is a test div.</div>
+
+<head>
+    <meta charset="utf-8" />
+    <link type="text/css" rel="stylesheet" href="jspyder.css" />
+    <script type="text/javascript" src="jspyder.js"></script>
+</head>
+
+<body>
+    <div id="test">This is a test div.</div>
+    <div>
         <label>Input Number</label>
         <input id="input" />
+    </div>
+    <div>
         <label>BYTE</label>
         <input id="out-byte" />
+    </div>
+    <div>
         <label>UBYTE</label>
         <input id="out-ubyte" />
+    </div>
+    <div>
         <label>SHORT</label>
         <input id="out-short" />
+    </div>
+    <div>
         <label>USHORT</label>
         <input id="out-ushort" />
+    </div>
+    <div>
         <label>INT</label>
         <input id="out-int" />
+    </div>
+    <div>
         <label>UINT</label>
         <input id="out-uint" />
+    </div>
+    <div>
         <label>FLOAT</label>
         <input id="out-float" />
+    </div>
+    <div>
         <label>DOUBLE</label>
         <input id="out-double" />
-        <br />
-        <br />
-        
-        <script id="test-template" type="text/jspyder-template">
-            <div class="my-template-div">
-                @bold($name)
-            </div>
-        </script>
-        
-        <script type="text/javascript">
-            js.dom("#input", function() {
+    </div>
+    
+    <br />
+    <br />
+
+    <script id="test-template" type="text/jspyder-template">
+        <div class="my-template-div">
+            @bold($name)
+        </div>
+    </script>
+
+    <script type="text/javascript">
+        js.dom("#input", function() {
                 this.element(0, function() {
                     this.addEventListener("input", function() {
                         var value = this.value;
@@ -218,6 +239,7 @@ attachChar(o, "cschar", 63, true, true);
                     this.append(tmp);
                 });
             }
-        </script>
-    </body>
+    </script>
+</body>
+
 </html>

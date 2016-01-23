@@ -68,6 +68,8 @@
         // JSpyder Algorithms
         _bootstrapAlg(js);
         _bootstrapDom(js);
+
+        js.createRegistry = _createRegistry;
         return js;
     }
 
@@ -176,7 +178,7 @@
             byte: function (u) {
                 if (typeof Int8Array === "undefined") {
                     u = +u;
-                    u = (u === u ? u : 0)&0xFF;
+                    u = (u === u ? u : 0) & 0xFF;
                     for (u; u < -0x80; u += 0x100);
                     for (u; u > 0x7F; u -= 0x100);
                     return u;
@@ -205,7 +207,7 @@
             short: function (u) {
                 if (typeof Int16Array === "undefined") {
                     u = +u;
-                    u = (u === u ? u : 0)&0xFFFF;
+                    u = (u === u ? u : 0) & 0xFFFF;
                     for (u; u < -0x8000; u += 0x10000);
                     for (u; u > 0x7FFF; u -= 0x10000);
                     return u;
@@ -306,7 +308,7 @@
         function _isNode(o) {
             return js.alg.bool(typeof Node === "object"
                 ? o instanceof Node
-                : o && typeof o === "object" && typeof o.nodeType === "number" && typeof o.nodeName === "string"); 
+                : o && typeof o === "object" && typeof o.nodeType === "number" && typeof o.nodeName === "string");
         }
 
         /**********************************************************************
@@ -334,7 +336,7 @@
             var clss = _getDomClasses(element),
                 index = clss.indexOf(cls),
                 change = false;
-                
+
             if (enable && index === -1) {
                 clss.push(cls);
                 change = true;
@@ -343,11 +345,11 @@
                 clss.splice(index, 1);
                 change = true;
             }
-            
+
             if (change) {
                 element.className = clss.join(" ");
             }
-            
+
             return change;
         }
         
@@ -387,7 +389,7 @@
          *      jsDom Object, based on js.dom.fn as the prototype
          *********************************************************************/
         function js_dom(element, fn, args) {
-            var s = element, el = Object.create(js_dom.fn);
+            var s = element, el;
 
             if (typeof s === "string") {
                 try {
@@ -403,16 +405,21 @@
             }
 
             element = Array.prototype.slice.call(element, 0);
-            el._element = element;
+            el = Object.create(js_dom.fn, {
+                _element: { value: element }
+            });
+            //el._element = element;
 
-            if (!element.__jspyder) {
-                el.each(function (k, v) {
+            //if (!element.__jspyder) {
+            el.each(function (k, v) {
+                if (!v.__jspyder) {
                     v.__jspyder = _createRegistry();
-                });
-            }
+                }
+            });
+            //}
 
             el.use(fn, args);
-            return el; 
+            return el;
         }
 
         // Template for selected objects: js.dom.fn
@@ -422,7 +429,7 @@
             exp: function () {
                 return this._export;
             },
-            
+
             get length() { return this._element.length; },
 
             /******************************************************************
@@ -445,7 +452,7 @@
              * \param data {any} 
              *      A data source to pass as the fourth value in [fn]
              *****************************************************************/
-            each: function(fn, data) {
+            each: function (fn, data) {
                 js.alg.each(this._element, fn, data);
                 return this;
             },
@@ -459,7 +466,7 @@
              * \param args {Array}
              *      Any parameters to pass to the function, in "apply" format
              *****************************************************************/
-            use: function(fn, args) {
+            use: function (fn, args) {
                 this._export = js.alg.use(this, fn, args);
                 return this;
             },
@@ -520,7 +527,7 @@
                         css = (!(+i) ? css.first : css.others);
 
                         // iterate each css field
-                        _each(css, function (attr, _, css, data) {                                
+                        _each(css, function (attr, _, css, data) {
                             css[attr] = data.style[attr] || data.cStyle[attr];
                         }, { style: eStyle, cStyle: cStyle });
 
@@ -612,7 +619,7 @@
                 var self = this;
                 this.each(function (i, element, elements) {
                     var d = js_dom(element.parentNode, fn, [element]);
-                    
+
                     if (!js.alg.number(i)) { self._export = d; }
                 });
                 return this;
@@ -627,7 +634,7 @@
                 var self = this;
                 this.each(function (i, element, elements) {
                     var d = js_dom(element.children, fn, [element]);
-                    if(!js.alg.number(i)) { self._export = d; }
+                    if (!js.alg.number(i)) { self._export = d; }
                 });
                 return this;
             },
@@ -813,14 +820,14 @@
     /**************************************************************************
      * Creates a hidden registry, and returns an interface to interact with it
      * 
-     * - fetch(key, Function({ value }) { }) 
+     * - fetch(key, Function({ key: key, value: value })) 
      * - stash(key, value)  
      *************************************************************************/
     function _createRegistry() {
         var _registry = {};
         return {
             fetch: function (key, fn) {
-                var val = { value: _registry[key] };
+                var val = { key: key, value: _registry[key] };
                 fn(val);
                 return val.value;
             },
