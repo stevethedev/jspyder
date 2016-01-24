@@ -82,20 +82,7 @@
         js.dom("<button>Click Me to Click Text</button>")
             .attach(document.body)
             .on("mousedown", function(evt) {
-                js.dom("#test").element(0, function() {
-                    var e;
-                    try {
-                        e = new Event("mousedown", {"bubbles": true, "cancelable": false});
-                    }
-                    catch(_) {
-                        e = document.createEvent("Event");
-                        e.initEvent("mousedown", true, true);
-                    } 
-                    
-                    js.dom("#test").element(0, function() {
-                        this.dispatchEvent(e);
-                    });
-                });
+                js.dom("#test").trigger("mousedown");
             });
 
 var o = {};

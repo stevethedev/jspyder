@@ -907,6 +907,24 @@
                 }, this);
                 
                 return this;
+            },
+            
+            trigger: function (event) {
+                event = (event || "").toString().split(/\s+/);
+                
+                var e
+                for (var i = 0; i < event.length; i++) {
+                    try {
+                        e = new Event("mousedown", { "bubbles": true, "cancelable": false });
+                    }
+                    catch (_) {
+                        e = document.createEvent("Event");
+                        e.initEvent("mousedown", true, true);
+                    }
+                    this.each(function (el) {
+                        el.dispatchEvent(e);
+                    });
+                }
             }
         };
 
