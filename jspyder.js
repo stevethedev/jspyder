@@ -46,6 +46,21 @@
         var js = global["jspyder"] = function () {
 
         }
+        
+        
+        // Extensible
+        js.extend = function js_extend(name, obj) {
+            Object.defineProperty(this, name, { value: obj });
+            return this;
+        };
+        js.extend.fn = function js_extend_fn(name, fn, args) {
+            js.extend(name, fn.apply(this, args));
+            return this;
+        }
+        js.createRegistry = _createRegistry;
+        
+        _bootstrapEnv(js);
+        
 
         // js.lib
         // Stores library functions
@@ -69,19 +84,79 @@
         _bootstrapAlg(js);
         _bootstrapDom(js);
         
-        // Extensible
-        js.extend = function js_extend(name, obj) {
-            Object.defineProperty(this, name, { value: obj });
-            return this;
-        };
-        js.extend.fn = function js_extend_fn(name, fn, args) {
-            js.extend(name, fn.apply(this, args));
-            return this;
-        }
-        js.createRegistry = _createRegistry;
         return js;
     }
 
+    /**************************************************************************
+     * Builds and attaches the js.alg object
+     *************************************************************************/
+    function _bootstrapEnv(js) {
+        var _browser,
+            VERSION_OBJ = {
+                MAJOR_VERSION: 0,
+                MINOR_VERSION: 0,
+                PATCH_VERSION: 0
+            },
+            VERSION_STR = VERSION_OBJ.MAJOR_VERSION + "." + VERSION_OBJ.MINOR_VERSION + "." + VERSION_OBJ.PATCH_VERSION,
+            BROWSER_NAME = "",
+            BROWSER_VERSION = 0; 
+        
+        (function _detectBrowser() {
+            if (/*@cc_on!@*/false || !!document.documentMode) {
+                BROWSER_NAME = "Internet Explorer";
+                if (!window.attachEvent) { BROWSER_VERSION = 11; }
+                else if (/*@cc_on (document.documentMode == 10)!=@*/false) { BROWSER_VERSION = 10; }
+                else if (!window.requestAnimationFrame) { BROWSER_VERSION = 9; }
+                else if (!window.addEventListener) { BROWSER_VERSION = 8; }
+                else { BROWSER_VERSION = 7; }
+            }
+            else if (typeof InstallTrigger !== 'undefined') {
+                BROWSER_NAME = "Firefox";
+
+                if (Int8Array && Int8Array.prototype.sort) { BROWSER_VERSION = 7; }
+                else if (Node.innerText) { BROWSER_VERSION = 45; }
+                else if (Document.charset) { BROWSER_VERSION = 44; }
+                else if (Array.prototype.includes) { BROWSER_VERSION = 43; }
+                else if (Reflect) { BROWSER_VERSION = 42; }
+                else { BROWSER_VERSION = 41; }
+            }
+            else if (!!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0) {
+                BROWSER_NAME = "Opera";
+                BROWSER_VERSION = 1;
+            }
+            else if (!!window.chrome) {
+                BROWSER_NAME = "Chrome";
+                BROWSER_VERSION = 45;
+                //45 - 51;
+            }
+            else if (Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0) {
+                BROWSER_NAME = "Safari";
+                BROWSER_VERSION = 1;
+            }
+            else if (false) {
+                BROWSER_NAME = "Edge";
+                BROWSER_VERSION = 11;
+            }
+        })();
+        
+        var __browser = {
+            name: BROWSER_NAME,
+            version: BROWSER_VERSION
+        };
+        Object.freeze(__browser);
+        
+        var js_env = {
+            version: VERSION_STR,
+            versionNo: (
+                (VERSION_OBJ.MAJOR_VERSION << 16) +
+                (VERSION_OBJ.MINOR_VERSION << 8) +
+                (VERSION_OBJ.PATCH_VERSION)),
+            browser: __browser
+        };
+        Object.freeze(js_env);
+        
+        js.extend("env", js_env);
+    }
     /**************************************************************************
      * Builds and attaches the js.alg object
      *************************************************************************/
@@ -644,13 +719,10 @@
              * \param fn {Function}
              *****************************************************************/
             children: function (fn) {
-                //var self = this;
                 this.each(function (i, element, elements) {
-                    for (var j = 0; j < element.children.length; j++) {
-                        js_dom(element.children[j], fn, [element.children[j]]);
-                    }
-                    //var jsDom = js_dom(element.children, fn, [element]);
-                    //if (!js.alg.number(i)) { self._export = jsDom; }
+                    this.alg.each(element.children, function (child) {
+                        js_dom(child, fn);
+                    });
                 });
                 return this;
             },
@@ -821,13 +893,19 @@
              *      A callback function to use for the event callback.
              *****************************************************************/
             on: function (events, handler) {
-                events = (events || "").split(" ");
+                events = (events || "").split(/\s+/);
                 
-                js.alg.each(events, function (event) {
-                    js.alg.each(this._elements, function (element) {
+                js.alg.each(events, function (event, _1, _2, self) {
+                    js.alg.each(self._element, function (element) {
                         element.addEventListener(event, handler);
+                        if (!element.__jspyder.fetch("js-events-" + event)) {
+                            element.__jspyder.stash("js-events-" + event, [handler]);
+                        }
+                        else {
+                            element.__jspyder.fetch("js-events-" + event).push(handler);
+                        }
                     });
-                });
+                }, this);
                 
                 return this;
             }

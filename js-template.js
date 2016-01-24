@@ -55,21 +55,22 @@
             data = {};
         }
 
+        function _setData(key, d) {
+            if (key === __master_key) {
+                this.data = d;
+            }
+        }
+        
         var jsTmp = Object.create(js_template.fn, {
             _name: { value: name },
-            _data: { value: data }
+            _data: { value: data },
+            _setData: { value: _setData }
         });
         return jsTmp;
     }
 
 
     js_template.fn = {
-        _setData: function(key, d) {
-                if(key === __master_key) {
-                    data = d;
-                }
-        },
-        
         /**********************************************************************
          * Loads the passed template into memory under the identified [name], 
          * and allows the user to manipulate the template with the rest of the 
