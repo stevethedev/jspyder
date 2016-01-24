@@ -68,6 +68,17 @@
         // JSpyder Algorithms
         _bootstrapAlg(js);
         _bootstrapDom(js);
+        
+        // Extensible
+        js.extend = function js_extend(name, obj) {
+            Object.defineProperty(this, name, { value: obj });
+            return this;
+        };
+        js.extend.fn = function js_extend_fn(name, fn, args) {
+            js.extend(name, fn.apply(this, args));
+            return this;
+        }
+        js.createRegistry = _createRegistry;
         return js;
     }
 
@@ -176,7 +187,7 @@
             byte: function (u) {
                 if (typeof Int8Array === "undefined") {
                     u = +u;
-                    u = (u === u ? u : 0)&0xFF;
+                    u = (u === u ? u : 0) & 0xFF;
                     for (u; u < -0x80; u += 0x100);
                     for (u; u > 0x7F; u -= 0x100);
                     return u;
@@ -205,7 +216,7 @@
             short: function (u) {
                 if (typeof Int16Array === "undefined") {
                     u = +u;
-                    u = (u === u ? u : 0)&0xFFFF;
+                    u = (u === u ? u : 0) & 0xFFFF;
                     for (u; u < -0x8000; u += 0x10000);
                     for (u; u > 0x7FFF; u -= 0x10000);
                     return u;
@@ -306,7 +317,7 @@
         function _isNode(o) {
             return js.alg.bool(typeof Node === "object"
                 ? o instanceof Node
-                : o && typeof o === "object" && typeof o.nodeType === "number" && typeof o.nodeName === "string"); 
+                : o && typeof o === "object" && typeof o.nodeType === "number" && typeof o.nodeName === "string");
         }
 
         /**********************************************************************
@@ -334,7 +345,7 @@
             var clss = _getDomClasses(element),
                 index = clss.indexOf(cls),
                 change = false;
-                
+
             if (enable && index === -1) {
                 clss.push(cls);
                 change = true;
@@ -343,11 +354,11 @@
                 clss.splice(index, 1);
                 change = true;
             }
-            
+
             if (change) {
                 element.className = clss.join(" ");
             }
-            
+
             return change;
         }
         
@@ -387,32 +398,41 @@
          *      jsDom Object, based on js.dom.fn as the prototype
          *********************************************************************/
         function js_dom(element, fn, args) {
-            var s = element, el = Object.create(js_dom.fn);
+            element = element || [];
+            var s = element, el;
+            
+            if (!(element instanceof js.dom)) {
 
-            if (typeof s === "string") {
-                try {
-                    element = document.querySelectorAll(s);
-                } catch (e) {
-                    element = _parseHtml(s);
+                if (typeof s === "string") {
+                    try {
+                        element = document.querySelectorAll(s);
+                    } catch (e) {
+                        element = _parseHtml(s);
+                    }
                 }
-            }
 
 
-            if (_isElement(element)) {
-                element = [element];
-            }
+                if (_isElement(element)) {
+                    element = [element];
+                }
 
-            element = Array.prototype.slice.call(element, 0);
-            el._element = element;
-
-            if (!element.__jspyder) {
-                el.each(function (v) {
-                    v.__jspyder = _createRegistry();
+                element = Array.prototype.slice.call(element, 0);
+                el = Object.create(js_dom.fn, {
+                    _element: { value: element }
                 });
+
+                el.each(function (v) {
+                    if (!v.__jspyder) {
+                        v.__jspyder = _createRegistry();
+                    }
+                });
+            }
+            else {
+                el = element; 
             }
 
             el.use(fn, args);
-            return el; 
+            return el;
         }
 
         // Template for selected objects: js.dom.fn
@@ -422,8 +442,8 @@
             exp: function () {
                 return this._export;
             },
-            
-            get length() { return this._element.length; },
+
+            get count() { return this._element.length; },
 
             /******************************************************************
              * Iterates through all of the elements in the jsDom object.
@@ -445,7 +465,7 @@
              * \param data {any} 
              *      A data source to pass as the fourth value in [fn]
              *****************************************************************/
-            each: function(fn, data) {
+            each: function (fn, data) {
                 js.alg.each(this._element, fn, data);
                 return this;
             },
@@ -459,7 +479,7 @@
              * \param args {Array}
              *      Any parameters to pass to the function, in "apply" format
              *****************************************************************/
-            use: function(fn, args) {
+            use: function (fn, args) {
                 this._export = js.alg.use(this, fn, args);
                 return this;
             },
@@ -612,7 +632,7 @@
                 var self = this;
                 this.each(function (element, i, elements) {
                     var d = js_dom(element.parentNode, fn, [element]);
-                    
+
                     if (!js.alg.number(i)) { self._export = d; }
                 });
                 return this;
@@ -624,10 +644,10 @@
              * \param fn {Function}
              *****************************************************************/
             children: function (fn) {
-                var self = this;
-                this.each(function (element, i, elements) {
-                    var d = js_dom(element.children, fn, [element]);
-                    if(!js.alg.number(i)) { self._export = d; }
+                this.each(function (i, element, elements) {
+                    for (var j = 0; j < element.children.length; j++) {
+                        js_dom(element.children[j], fn, [element.children[j]]);
+                    }
                 });
                 return this;
             },
@@ -640,11 +660,9 @@
              *      Index of the item to grab  
              * \param fn {Function}
              *****************************************************************/
-            item: function (n, fn) {
-                if (this._element[n]) {
-                    this._export = js_dom(this._element[n], fn);
-                }
-                return this;
+            at: function (n, fn) {
+                n = js.alg.uint(n);
+                return js_dom(this._element[n] || null, fn);
             },
             
             /******************************************************************
@@ -657,9 +675,9 @@
              *****************************************************************/
             element: function (n, fn) {
                 var self = this;
-                this.item(n, function () {
+                this.at(n, function () {
                     var el = this._element[0];
-                    if (el) {
+                    if (el && typeof fn === "function") {
                         fn.apply(el, [this]);
                     }
                     self._export = el;
@@ -796,12 +814,20 @@
              *      An space-separated list of event types to trigger the
              *      callback on.
              * 
-             *      js.dom("#test").setClasses({ 
-             *          "turn-on": true, //< truthy
-             *          "turn-off": false, //< falsy
-             *          "toggle-class": "toggle" //< string literal
-             *      });
+             * \param handler {Function}
+             *      A callback function to use for the event callback.
              *****************************************************************/
+            on: function (events, handler) {
+                events = (events || "").split(" ");
+                
+                js.alg.each(events, function (event) {
+                    js.alg.each(this._elements, function (element) {
+                        element.addEventListener(event, handler);
+                    });
+                });
+                
+                return this;
+            }
         };
 
         if (js) {
@@ -813,14 +839,14 @@
     /**************************************************************************
      * Creates a hidden registry, and returns an interface to interact with it
      * 
-     * - fetch(key, Function({ value }) { }) 
+     * - fetch(key, Function({ key: key, value: value })) 
      * - stash(key, value)  
      *************************************************************************/
     function _createRegistry() {
         var _registry = {};
         return {
             fetch: function (key, fn) {
-                var val = { value: _registry[key] };
+                var val = { key: key, value: _registry[key] };
                 fn(val);
                 return val.value;
             },
