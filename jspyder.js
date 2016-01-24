@@ -927,7 +927,7 @@
         return {
             fetch: function (key, fn) {
                 var val = { key: key, value: _registry[key] };
-                fn(val);
+                (typeof fn === "function") && fn(val);
                 return val.value;
             },
             stash: function (key, val) {
