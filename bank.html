@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <link type="text/css" rel="stylesheet" href="bank.css" />
+    
+    <link type="text/css" rel="stylesheet" href="jspyder.css" />
+    <script type="text/javascript" src="jspyder.js"></script>
+    <script type="text/javascript" src="js-ajax.js"></script>
+    <script type="text/javascript" src="js-dtype.js"></script>
+    <script type="text/javascript" src="js-template.js"></script>
+</head>
+
+<body>
+    <script type="text/javascript">
+        var $t = js.template({
+            divisions: ["J2", "J2X", "J22", "J23", "J25", "J26", "J28", "J29"],
+            bank_navigation: [
+                { page: "home", text: "HOME" },
+                { page: "query", text: "ITEMIZED QUERY" },
+                { page: "input", text: "DATA ENTRY" },
+                { page: "filter", text: "DATA FILTERS" },
+                { page: "chart", text: "WEB CHARTS" },
+            ],
+            bank_subnav_constant: [
+                { subnav: "collapse", text: "Collapse" }
+            ],
+            bank_subnav_volatile: []
+        });
+        
+        var projectedTravel = {
+            table_header: "Projected Travel",
+            table_class: "projected travel",
+            table_columns: [
+                {
+                    tag: "division",
+                    text: "Division"
+                },
+                {
+                    tag: "fyq1",
+                    text: "1<sup>st</sup> Quarter"
+                },
+                {
+                    tag: "fyq2",
+                    text: "2<sup>nd</sup> Quarter"
+                },
+                {
+                    tag: "fyq3",
+                    text: "3<sup>rd</sup> Quarter"
+                },
+                {
+                    tag: "fyq4",
+                    text: "4<sup>th</sup> Quarter"
+                },
+                {
+                    tag: "fyTotal",
+                    text: "Total"
+                },
+                {
+                    tag: "fyRemaining",
+                    text: "Remaining"
+                }
+            ],
+            // ["Division", "Travel Budget", "1st Quarter", "2nd Quarter", "3rd Quarter", "4th Quarter", "Total", "Remaining"],
+            table_rows: [
+                { division: "J20", fyq1: 2000 }, 
+                { division: "J2X", fyq1: 2100 }, 
+                { division: "J22", fyq1: 2200 }, 
+                { division: "J23", fyq1: 2300 }, 
+                { division: "J25", fyq1: 2500 }, 
+                { division: "J26", fyq1: 2600 }, 
+                { division: "J28", fyq1: 2800 }, 
+                { division: "J29", fyq1: 2900 }
+            ]
+        };
+            
+        js.ajax("tmp/templates.xml")
+            .get(function(xhttp) {
+                var $xml = js.dom(xhttp.responseXML.firstChild),
+                    $template = js.template();
+                    
+                $xml.children(function(child) {
+                    $template.storeTemplate(child.getAttribute("name"), child.innerHTML);
+                });
+                
+                $t.compile("main-page", null, function(main) {
+                    js.dom(document.body).append(main);
+                })
+                
+                $t.compile("overview-table", projectedTravel, function(table) {
+                    js.dom(document.body).append(table);
+                    console.log(table);
+                });
+            });
+        
+    </script>
+</body>
+
+</html>

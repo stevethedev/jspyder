@@ -1,0 +1,78 @@
+<?xml version="1.0" ?> 
+<templates>
+    <!-- Main System Layout -->
+    <template name="main-page">
+        <div class="bank-banner">
+            <h1 class="bank-header" id="bank-header">Budget Analysis Kit</h1>
+            <ul id="bank-navigation" class="bank-navigation">
+                @each("bank_navigation", "button", "@insert_template(`bank-navigation-link`)")
+            </ul>
+        </div>
+        <div class="bank-subnavigation-container">
+            <ul id="bank-subnavigation-nodelete">
+                @each("bank_subnav_constant", "button", "@insert_template(`bank-subnavigation-link`)")
+            </ul>
+            <ul id="bank-subnavigation">
+                @each("bank_subnav_volatile", "button", "@insert_template(`bank-subnavigation-link`)")
+            </ul>
+        </div>
+        <div id="bank-content-panel" class="bank-content">
+            <!-- DATA GOES HERE -->
+        </div>
+    </template>
+    
+    <!-- ================================================================== -->
+    <!-- MAIN SYSTEM LINKS ================================================ -->
+    <!-- ================================================================== -->
+    <template name="bank-navigation-link">
+        @var("page", `@map_item("button","page")`)
+        @var("text", `@map_item("button","text")`)
+        <li data-page="${page}" class="link link-${page}">${text}</li>
+    </template>
+    
+    <!-- ================================================================== -->
+    <!-- SUBNAV LINKS ===================================================== -->
+    <!-- ================================================================== -->
+    <template name="bank-subnavigation-link">
+        @var("subnav", `@map_item("button", "subnav")`)
+        @var("text", `@map_item("button", "text")`)
+        <li data-subnav="${subnav}" class="subnav subnav-${subnav}">${text}</li> 
+    </template>
+    
+    <!-- Requires: table_class, table_columns, table_header, divisions -->
+    <template name="overview-table">
+        <table border="1" class="${table_class} table-banded table-hover bank-overview-table">
+            <thead>
+                <tr>
+                    <th colspan="@size(`table_columns`)">
+                        <h3>${table_header}</h3>
+                    </th>
+                </tr>
+                <tr>@each("table_columns", "header", "<td>@map_item(`header`, `text`)</td>")</tr>
+            </thead>
+            <tbody>
+                @each("table_rows", "table_row", "@insert_template(`overview-table-row`)")
+            </tbody>
+            <tfoot></tfoot>
+        </table>
+    </template>
+    
+    <!-- -->
+    <template name="overview-table-cell">
+        @var("column_tag", `@map_item("row_column", "tag")`)
+        <td>@map_item("table_row", ${column_tag})</td>
+    </template>
+    
+    <!-- -->
+    <template name="overview-table-row">
+        @var("division", `@map_item("table_row", "division")`)
+        <tr>@each("table_columns", "row_column", "@insert_template(`overview-table-cell`)")</tr>
+    </template>
+    
+    <!-- Requires: row_header, table_columns -->
+    <template name="overview-table-row-header">
+        <tr>
+            @each("table_columns", "content", "<td>${content}</td>")
+        </tr>
+    </template>
+</templates>

@@ -58,6 +58,7 @@
             return this;
         }
         js.createRegistry = _createRegistry;
+        js.registry = _createRegistry();
         
         _bootstrapEnv(js);
         
@@ -745,7 +746,7 @@
              * \param fn {Function}
              *****************************************************************/
             children: function (fn) {
-                this.each(function (i, element, elements) {
+                this.each(function (element, i, elements) {
                     for (var j = 0; j < element.children.length; j++) {
                         js_dom(element.children[j], fn, [element.children[j]]);
                     }

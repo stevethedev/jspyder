@@ -27,8 +27,30 @@ jspyder.extend.fn("ajax", function () {
     
     /**************************************************************************
      * Abstracts AJAX calls for simple use
+     * 
+     * \param url {String}
+     *      The URL to send the command against
+     * 
+     * \param data {Object}
+     *      A data object, if one is necessary, consisting of the information
+     *      to send to the server.  If one doesn't exist, then 
+     * 
+     * \param fn {}
      *************************************************************************/
-    function js_ajax(method, url, data, fn) {
+    function js_ajax(url, data, fn) {
+        var ajax = Object.create(js_ajax.fn);
+        
+        ajax.data = (typeof data === "object" && data ? data : {});
+        ajax.url = (typeof url === "string" ? url : ajax.url);
+        ajax.fn = (typeof fn === "function" ? fn : ajax.fn);
+        
+        if (typeof fn === "function") {
+            fn.apply(ajax);
+        }
+        return ajax;
+    } 
+    
+    function js_ajax_try(method, url, data, fn) {
         if (!url) { return this; }
              
         var xhttp = new XMLHttpRequest();
@@ -54,12 +76,23 @@ jspyder.extend.fn("ajax", function () {
         return this;
     };
     
-    js_ajax.get = function js_ajax_get(url, fn) {
-        return js_ajax("GET", url, fn);
-    };
-    js_ajax.post = function js_ajax_post(url, fn) {
-        return js_ajax("POST", url, fn);
-    };
+    js_ajax.fn = {
+        data: {},
+        url: "",
+        fn: function () { },
+        "get": function (fn) {
+            fn = (typeof fn === "function" ? fn : this.fn);
+            js_ajax_try("GET", this.url, this.data, fn || fn);
+        },
+        "head": function (fn) {
+            fn = (typeof fn === "function" ? fn : this.fn);
+            js_ajax_try("HEAD", this.url, this.data, fn);
+        },
+        "post": function (fn) {
+            fn = (typeof fn === "function" ? fn : this.fn);
+            js_ajax_try("POST", this.url, this.data, fn);
+        }
+    }
     
     return js_ajax;
 });
