@@ -21,15 +21,16 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  *****************************************************************************/
-
-(function (js) {
+jspyder.extend.fn("template", function () {
+    var js = this;
     if (!js) {
         console.error("Attempted to load module js-template without loading JSpyder");
         return null;
     }
 
     var _templates = js.createRegistry(),
-        __master_key = ((Math.random() * 0xFFFFFFFF)|0).toString(32);
+        _library = js.createRegistry(),
+        __master_key = ((Math.random() * 0xFFFFFFFF) | 0).toString(32);
     
     /**************************************************************************
      * Loads the passed template into memory under the identified [name], and
@@ -44,33 +45,210 @@
      *      An object defining match-variables in the key, and the values to
      *      substitute as the value.
      *************************************************************************/
-    function js_template(name, data) {
-        var template = _templates.fetch(name, function (data) {
-            // Firefix will turn null values to blank strings by default, but
-            // IE will turn [null] to "null" and [undefined] to "undefined"
-            data.value = (data.value || "");
-        });
-
+    function js_template(data) {
         if (!data || typeof data !== "object") {
             data = {};
         }
 
         function _setData(key, d) {
             if (key === __master_key) {
-                this.data = d;
+                data = d;
             }
         }
         
+        var compiled = "";
+        // obscures the interface for updating the compiled value,
+        // so that it can only be done from within the javascript object.
+        function _setCompiled(key, c) {
+            if (key === __master_key) {
+                compiled = c;
+            }
+        }
+
         var jsTmp = Object.create(js_template.fn, {
-            _name: { value: name },
-            _data: { value: data },
-            _setData: { value: _setData }
+            _data: { get: function () { return data; } },
+            _compiled: { get: function () { return compiled; } },
+            _setData: { value: _setData },
+            _setCompiled: { value: _setCompiled }
         });
         return jsTmp;
     }
 
+    // build the expressions to search for
+    var resIdentifier = "\\D[a-z0-9_]*",
+        resString = "\"(?:[^\"\\\\]|\\\\.)*\"",
+        resCommandLiteral = "\`(?:[^\`\\\\]|\\\\.)*\`",
+        resNumber = "\\d+(?:\\.\\d+)?",
+        resVariable = "\\$\\{" + resIdentifier + "\\}",
+        resFuncName = "\\@" + resIdentifier,
+        resFuncSep = "(?:\\s*,\\s*(?!\\)))?",
+        resFuncArgs = "\\s*(" + resCommandLiteral + "|" + resString + "|" + resNumber + "|" + resVariable + ")" + resFuncSep,
+        resFunction = [resFuncName, "\\((?:",
+            resFuncArgs,
+            ")*\\)"].join(''),
+        resSymbol = '(' + resFunction + '|' + resVariable + ')',
+
+        reIdentifier = new RegExp(resIdentifier, "i"),
+        reFuncArgs = new RegExp(resFuncArgs, "i"),
+        reString = new RegExp(resString, "i"),
+        reCommandLiteral = new RegExp(resCommandLiteral, "i"),
+        reNumber = new RegExp(resNumber),
+        reVariable = new RegExp(resVariable, "i"),
+        reFuncName = new RegExp(resFuncName, "i"),
+        reFunction = new RegExp(resFunction, "i"),
+        reSymbol = new RegExp(resSymbol, "i");
+
+    // Retrieves a value [name] from the context [ctx] object
+    function __parseVar(ctx, name) {
+        var value = ctx.data[name.substring(2, name.length - 1)];
+        return (typeof value === "undefined"
+            ? name
+            : value !== null
+                ? value
+                : "");
+    }
+
+    // parses and executes a function, if it exists, using the format:
+    // @[name](${var}, "string", 0.5);
+    function __parseFunction(tmp, ctx) {
+        var name, args = [], arg, result, len, cut;
+
+        name = tmp.match(reFuncName)[0].substring(1);
+        tmp = tmp.substring(tmp.indexOf("(") + 1, tmp.lastIndexOf(")"));
+        while (arg = reFuncArgs.exec(tmp)) {
+            cut = arg[0].length;
+            len = arg.length;
+            arg = arg[len - 1];
+            tmp = tmp.substring(cut);
+
+            if (!arg.search(reCommandLiteral)) {
+                args.push(arg.substring(1, arg.length - 1));
+            }
+            else if (!arg.search(reString)) {
+                args.push(arg.substring(1, arg.length - 1));
+            }
+            else if (!arg.search(reVariable)) {
+                args.push(__parse(arg, ctx.data));
+            }
+            else if (!arg.search(reNumber)) {
+                args.push(+arg);
+            }
+            else {
+                args.push(undefined);
+            }
+        }
+
+        var fn = ctx.lib.fetch(name);
+        if (fn) {
+            result = fn.apply(ctx.data, args);
+            if (typeof result !== "undefined" && result !== null) {
+                tmp = result;
+            }
+        }
+        else {
+            tmp = "@" + name + "(" + args.join(", ") + ")";
+        }
+        
+        return tmp;
+    }
+    
+    function __parse(tmp, data) {
+        // build the context object            
+        var ctx = {
+            data: data,
+            tmp: tmp,
+            lib: _library
+        };
+        
+        var found = null, str = "", index = 0, length;
+        while (found = reSymbol.exec(ctx.tmp)) {
+            index = found.index;
+            found = found[0];
+            length = found.length;
+            
+            str += ctx.tmp.substring(0, index);
+            
+            if (reFunction.test(found)) {
+                found = __parseFunction(found, ctx);
+            }
+            if (reVariable.test(found)) {
+                found = __parseVar(ctx, found);
+            }
+            
+            str += found;
+            ctx.tmp = ctx.tmp.substring(index + length);
+        }
+        str += ctx.tmp; // remaining string
+        
+        return str;
+    }
 
     js_template.fn = {
+        /**********************************************************************
+         * Loads the passed template into memory under the identified [name], 
+         * and allows the user to manipulate the template with the rest of the 
+         * commands.
+         * 
+         * \param name {String}
+         *      Identifier for a previously stored template.
+         * 
+         * \param data {Object=}
+         *      Data object to use when running the template, where keys
+         *      correspond to template values, and values correspond to the
+         *      data to substitute into the template.  If omitted (or null), 
+         *      then uses the object selected
+         * 
+         * \param fn {Function=}
+         *      An optional callback function to run immediately after the
+         *      template has completed parsing. Context is [data], parameter
+         *      is the completed template.  
+         *********************************************************************/
+        compile: function (name, data, fn) {
+            var template = _templates.fetch(name);
+            return this.compileExplicit(template, data, fn);
+        },
+
+        /**********************************************************************
+         * Loads the passed template into memory under the identified [name], 
+         * and allows the user to manipulate the template with the rest of the 
+         * commands.
+         * 
+         * \param template {String}
+         *      A string to run as the template.
+         * 
+         * \param data {Object=}
+         *      Data object to use when running the template, where keys
+         *      correspond to template values, and values correspond to the
+         *      data to substitute into the template.  If omitted (or null), 
+         *      then uses the object selected
+         * 
+         * \param fn {Function=}
+         *      An optional callback function to run immediately after the
+         *      template has completed parsing. Context is [data], parameter
+         *      is the completed template.  
+         *********************************************************************/
+        compileExplicit: function (template, data, fn) {
+            if (typeof data === "function" && !fn) {
+                fn = data;
+                data = null;
+            }
+            if (typeof template === "undefined") {
+                template = "";
+            }
+            var o = Object.create(this._data);
+            js.alg.each(data || {}, function (v, k, _, o) {
+                o[k] = v;
+            }, o);
+            var tmp = __parse(template, o);
+            
+            this._setCompiled(__master_key, tmp);
+            
+            typeof fn === "function" && fn.apply(this, [tmp]);
+            return this;
+        },
+        
+        output: function () { return this._compiled; },
+        
         /**********************************************************************
          * Loads the passed template into memory under the identified [name], 
          * and allows the user to manipulate the template with the rest of the 
@@ -80,21 +258,113 @@
          *      Identifier to use when referring to this template.
          * 
          * \param template {Any=}
-         *      Template string to load into the template, or [null] to remove
-         *      a template.
+         *      Template string to load into the template library, or [null] 
+         *      to remove the template from storage.
          *********************************************************************/
-        compile: function (template, data) {
+        storeTemplate: function (name, template) {
+            _templates.stash(name, (template || "").toString());
             return this;
         },
-        store: function (name, template) {
-            _templates.stash(name, (template || "").toString());
+        
+        /**********************************************************************
+         * Pulls the selected template, and runs [fn] with the template as the
+         * context. 
+         * 
+         * \param name {String}
+         *      Identifier to use when referring to this template.
+         * 
+         * \param fn {Function}
+         *      Callback to run with the template as the context.
+         *********************************************************************/
+        getTemplate: function (name, fn) {
+            _templates.fetch(name, fn);
+            return this;
+        },
+        
+        /**********************************************************************
+         * Registers a function with the templates library, to make it
+         * available within the templates.
+         * 
+         * \param name {String}
+         *      Identifier to within the templates.  Accessible by @name()
+         * 
+         * \param fn {Function}
+         *      Function to call when invoked by @name() in the templates.
+         *********************************************************************/
+        register: function (name, fn) {
+            if (typeof fn === "function") {
+                _library.stash(name, fn);
+            }
+            return this;
+        },
+        
+        /**********************************************************************
+         * Registers a set of functions through js.template.register()
+         * 
+         * \param o {Object}
+         *      Registers o's keys as function names, and o's values as
+         *      the functions to execute when @key() is invoked within a
+         *      template.
+         *********************************************************************/
+        registerSet: function (o) {
+            var self = this;
+            js.alg.each(o, function (v, k) { self.register(k, v); });
             return this;
         }
     };
 
     js_template.store = js_template.fn.store;
     js_template.compile = js_template.fn.compile;
-
+    js_template.compileExplicit = js_template.fn.compileExplicit;
+    js_template.register = js_template.fn.register;
+    js_template.registerSet = js_template.fn.registerSet;
+    
+    js_template.registerSet({
+        // matches an array [from] in data
+        // pushes results tp [push] in [template]
+        each: function (from, push, template) {
+            var data = this[from] || {},
+                pushObj = {},
+                ret = "",
+                $t = js_template(data);
+            function _copy(v) { ret += v; }
+            js.alg.each(data, function (v, k, data, ctx) {
+                pushObj[push] = v;
+                $t.compileExplicit(template, pushObj, _copy);
+            }, this);
+            
+            return ret;
+        },
+        
+        // fetches the template by [name], compiles it, and inserts
+        // it into the calling template.
+        insert_template: function (name) {
+            var tmp = "";
+            js_template(this).compile(name, function (v) { tmp = v; });
+            return tmp; 
+        },
+        
+        // branching logic.  If [test] is true, then inserts [pass],
+        // else inserts [fail].
+        // TODO: Make this native support, so that it won't have
+        // to parse both paths ad infinitum before executing the
+        // function.
+        iif: function (test, pass, fail) {
+            var $t = js_template(this);
+            
+            if (typeof test === "string") {
+                test = $t.compileExplicit(test).output();
+            }
+            
+            if (!!test) {
+                return $t.compileExplicit(pass).output();
+            }
+            else {
+                return $t.compileExplicit(fail).output();
+            }
+        }
+    })
+    
     js.template = js_template;
     return js_template;
-})(window.jspyder);
+});

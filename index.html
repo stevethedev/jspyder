@@ -111,15 +111,15 @@ js.dtype(o)
                 }
             };
             
-            function parseValue($var) {
-                if($var.charAt(0) !== "$") {
-                    return $var;
+            function parseValue($v) {
+                if($v.charAt(0) !== "$") {
+                    return $v;
                 }
-                $var = $var.substring(1);
-                if(values.hasOwnProperty($var)) {
-                    return values[$var];
+                $v = $v.substring(1);
+                if(values.hasOwnProperty($v)) {
+                    return values[$v];
                 }
-                throw new Error("JSpyder Template could not find value for " + $var + " in value library; returning a blank string, instead.");
+                throw new Error("JSpyder Template could not find value for " + $v + " in value library; returning a blank string, instead.");
                 return ""; 
             }
             
@@ -128,7 +128,7 @@ js.dtype(o)
                     var ret = functions[_fn].apply(values, args);
                     return typeof ret === "undefined" ? "" : ret;
                 }
-                throw new Error("JSpyder Template could not find function " + $var + " in library; returning a blank string, instead.");
+                throw new Error("JSpyder Template could not find function " + $v + " in library; returning a blank string, instead.");
                 return "";
             }
             
