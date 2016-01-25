@@ -313,7 +313,8 @@ jspyder.extend.fn("template", function () {
         }
     };
 
-    js_template.store = js_template.fn.store;
+    js_template.storeTemplate = js_template.fn.storeTempate;
+    js_template.getTemplate = js_template.fn.getTemplate;
     js_template.compile = js_template.fn.compile;
     js_template.compileExplicit = js_template.fn.compileExplicit;
     js_template.register = js_template.fn.register;
