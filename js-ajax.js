@@ -22,62 +22,44 @@
  * IN THE SOFTWARE.
  *****************************************************************************/
 
-html {
-    box-sizing: border-box;
-}
-*, *:before, *:after {
-    box-sizing: inherit;
-}
-
-/** SIZING CLASSES ***********************************************************/
-/* .spread-[max columns]-[span columns] */
-.spread-12-1
-{ width: calc( 100% / 12 ); }
-
-.spread-12-2, .spread-6-1
-{ width: calc( 100% / 6); }
-
-.spread-12-3, .spread-4-1
-{ width: 75%; }
-
-.spread-12-4, .spread-6-2, .spread-3-1
-{ width: calc( 100% / 3 ); }
-
-.spread-12-5
-{ width: calc( 500% / 12 ); }
-
-.spread-12-6, .spread-6-3, .spread-2-1
-{ width: calc( 100% / 3 ); }
-
-.spread-12-7
-{ width: calc( 700% / 12 ); }
-
-.spread-12-8, .spread-6-4, .spread-3-2
-{ width: calc( 200% / 3 ); }
-
-.spread-12-9, .spread-4-3 
-{ width: 75%; }
-
-.spread-12-10, .spread-6-5
-{ width: calc( 500% / 6 ); }
-
-.spread-12-11
-{ width: calc( 1100% / 12 ); }
-
-.spread-12-12, .spread-6-6, .spread-4-4, .spread-3-3, .spread-2-1, .spread-1-1
-{ width: 100%; }
-
-/** FORM ELEMENTS ************************************************************/
-
-input {
-    border: .1em solid rgba(0, 0, 0, 0.5);
-    padding: .4em;
-    border-radius: .2em;
-    box-shadow: 0px 0px .05em rgba(0, 0, 0, 0.2) inset;
-    margin: .1em;
-    display: block;
-}
-
-label {
-    display: block;
-}
+jspyder.extend.fn("ajax", function () {
+    var js = this;
+    
+    /**************************************************************************
+     * Abstracts AJAX calls for simple use
+     *************************************************************************/
+    function js_ajax(method, url, data, fn) {
+        if (!url) { return this; }
+             
+        var xhttp = new XMLHttpRequest();
+            
+        xhttp.onreadystatechange = function xhttp_onreadystatechange() {
+            if ((this.readyState === 4) && (typeof fn === "function")){
+                fn.apply(js, [this]);
+            }
+            return null;
+        };
+        
+        xhttp.open(method, url, true);
+        
+        if (!data) { data = {}; }
+        if (data.contentType) {
+            xhttp.setRequestHeader("Content-Type", data.contentType);
+        }
+        if (!data.cache) {
+            xhttp.setRequestHeader("Cache-Control", "no-cache");
+        }
+        
+        xhttp.send();
+        return this;
+    };
+    
+    js_ajax.get = function js_ajax_get(url, fn) {
+        return js_ajax("GET", url, fn);
+    };
+    js_ajax.post = function js_ajax_post(url, fn) {
+        return js_ajax("POST", url, fn);
+    };
+    
+    return js_ajax;
+});

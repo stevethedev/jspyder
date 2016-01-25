@@ -1,169 +1,117 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8" /> 
-        <link type="text/css" rel="stylesheet" href="jspyder.css" />
-        <script type="text/javascript" src="jspyder.js" ></script>
-    </head>
-    <body>
-        <div id="test">This is a test div.</div>
-        <label>Input Number</label>
-        <input id="input" />
-        <label>BYTE</label>
-        <input id="out-byte" />
-        <label>UBYTE</label>
-        <input id="out-ubyte" />
-        <label>SHORT</label>
-        <input id="out-short" />
-        <label>USHORT</label>
-        <input id="out-ushort" />
-        <label>INT</label>
-        <input id="out-int" />
-        <label>UINT</label>
-        <input id="out-uint" />
-        <label>FLOAT</label>
-        <input id="out-float" />
-        <label>DOUBLE</label>
-        <input id="out-double" />
-        <br />
-        <br />
-        
-        <script id="test-template" type="text/jspyder-template">
-            <div class="my-template-div">
-                @bold($name)
-            </div>
-        </script>
-        
-        <script type="text/javascript">
-            js.dom("#input", function() {
-                this.element(0, function() {
-                    this.addEventListener("input", function() {
-                        var value = this.value;
-                        
-                        js.dom("#out-byte").setAttrs({ "value": js.alg.byte(value) });
-                        js.dom("#out-ubyte").setAttrs({ "value": js.alg.ubyte(value) });
-                        js.dom("#out-short").setAttrs({ "value": js.alg.short(value) });
-                        js.dom("#out-ushort").setAttrs({ "value": js.alg.ushort(value) });
-                        js.dom("#out-int").setAttrs({ "value": js.alg.int(value) });
-                        js.dom("#out-uint").setAttrs({ "value": js.alg.uint(value) });
-                        js.dom("#out-float").setAttrs({ "value": js.alg.float(value) });
-                        js.dom("#out-double").setAttrs({ "value": js.alg.double(value) });
-                    });
-                });
+
+<head>
+    <meta charset="utf-8" />
+    <link type="text/css" rel="stylesheet" href="jspyder.css" />
+    <script type="text/javascript" src="jspyder.js"></script>
+    <script type="text/javascript" src="js-ajax.js"></script>
+    <script type="text/javascript" src="js-dtype.js"></script>
+    <script type="text/javascript" src="js-template.js"></script>
+</head>
+
+<body>
+    <div id="test">This is a test div.</div>
+    <div class="spread-3-1">
+        <div>
+            <label class="spread-3-1">Input Number</label class="spread-3-1">
+            <input class="spread-3-2" id="input" />
+        </div>
+        <div>
+            <label class="spread-3-1">BYTE</label class="spread-3-1">
+            <input class="spread-3-2" id="out-byte" />
+        </div>
+        <div>
+            <label class="spread-3-1">UBYTE</label class="spread-3-1">
+            <input class="spread-3-2" id="out-ubyte" />
+        </div>
+        <div>
+            <label class="spread-3-1">SHORT</label class="spread-3-1">
+            <input class="spread-3-2" id="out-short" />
+        </div>
+        <div>
+            <label class="spread-3-1">USHORT</label class="spread-3-1">
+            <input class="spread-3-2" id="out-ushort" />
+        </div>
+        <div>
+            <label class="spread-3-1">INT</label class="spread-3-1">
+            <input class="spread-3-2" id="out-int" />
+        </div>
+        <div>
+            <label class="spread-3-1">UINT</label class="spread-3-1">
+            <input class="spread-3-2" id="out-uint" />
+        </div>
+        <div>
+            <label class="spread-3-1">FLOAT</label class="spread-3-1">
+            <input class="spread-3-2" id="out-float" />
+        </div>
+        <div>
+            <label class="spread-3-1">DOUBLE</label class="spread-3-1">
+            <input class="spread-3-2" id="out-double" />
+        </div>
+    </div>
+    <br />
+    <br />
+
+    <script id="test-template" type="text/jspyder-template">
+        <div class="my-template-div">
+            @bold($name)
+        </div>
+    </script>
+
+    <script type="text/javascript">
+        js.dom("#input")
+            .on("input", function(evt) {
+                var value = this.value;
+                
+                js.dom("#out-byte").setAttrs({ "value": js.alg.byte(value) });
+                js.dom("#out-ubyte").setAttrs({ "value": js.alg.ubyte(value) });
+                js.dom("#out-short").setAttrs({ "value": js.alg.short(value) });
+                js.dom("#out-ushort").setAttrs({ "value": js.alg.ushort(value) });
+                js.dom("#out-int").setAttrs({ "value": js.alg.int(value) });
+                js.dom("#out-uint").setAttrs({ "value": js.alg.uint(value) });
+                js.dom("#out-float").setAttrs({ "value": js.alg.float(value) });
+                js.dom("#out-double").setAttrs({ "value": js.alg.double(value) });
             });
             
-            js.dom("#test", function() {
-                this.element(0, function() {
-                    this.addEventListener("mousedown", function() { console.log("mousedown"); }, true, true); 
-                });
+        js.dom("#test")
+            .on("mousedown", function(evt) { 
+                console.log("mousedown"); 
             });
-            js.dom("<button>Click Me to Click Text</button>").attach(document.body).element(0, function() {
-                this.addEventListener("mousedown", function() {
+                
+        js.dom("<button>Click Me to Click Text</button>")
+            .attach(document.body)
+            .on("mousedown", function(evt) {
+                js.dom("#test").element(0, function() {
+                    var e;
+                    try {
+                        e = new Event("mousedown", {"bubbles": true, "cancelable": false});
+                    }
+                    catch(_) {
+                        e = document.createEvent("Event");
+                        e.initEvent("mousedown", true, true);
+                    } 
+                    
                     js.dom("#test").element(0, function() {
-                        var e;
-                        try {
-                            e = new Event("mousedown", {"bubbles": true, "cancelable": false});
-                        }
-                        catch(_) {
-                            e = document.createEvent("Event");
-                            e.initEvent("mousedown", true, true);
-                        } 
-                        
-                        js.dom("#test").element(0, function() {
-                            this.dispatchEvent(e);
-                        });
+                        this.dispatchEvent(e);
                     });
                 });
             });
 
-function attachUByte(o, name, value, constant, strict) {
-  var buffer = new ArrayBuffer(1);
-  var arr = new Uint8Array(buffer);
-  arr[0] = value;
-  var interface = {
-    get: function() { return arr[0]; },
-    set: function(v) {
-      if(!constant) {
-          var num = (typeof v === "number" && v === v);
-        if(strict && !num) {
-         throw new Error("Attempted to set a non-numerical value of type \"" + typeof v + "\" (" + v + ") to a strict unsigned byte");
-        }
-        arr[0] = v;
-        return arr[0];
-      }
-      else {
-        throw new Error("Attempted to set a value to a constant unsigned byte");
-      }
-    },
-    enumerable: true
-  };
-  Object.defineProperty(o, name, interface);
-}
-
-function attachString(o, name, value, constant, strict) {
-  var data = String(value);
-  var interface = {
-    get: function() { return data; },
-    set: function(v) {
-      if(!constant) {
-        if(strict && (typeof v !== "string")) {
-          throw new Error("Attempted to set a non-numerical value of type \"" + typeof v + "\" (" + v + ") to a strict string");
-        }
-        data = String(v);
-        return data;
-      }
-      else {
-        throw new Error("Attempted to set a value to a constant string");
-      }
-    },
-    enumerable: true
-  };
-  Object.defineProperty(o, name, interface);
-}
-
-function attachChar(o, name, value, constant, strict) {
-  var buffer = new ArrayBuffer(2);
-  var data = new Uint16Array(buffer);
-  var interface = {
-    get: function() { return String.fromCharCode(data[0]); },
-    set: function(v) {
-      if(!constant) {
-        var str = ((typeof v === "string") && (v.length === 1)),
-            num = ((typeof v === "number") && (v === v));
-        if(strict && !str && !num) {
-          throw new Error("Attempted to set a non-numerical value of type \"" + typeof v + "\" (" + v + ") to a strict char");
-        }
-        data[0] = (typeof v === "string" ? v.charCodeAt(0) : +v);
-      }
-      else {
-        throw new Error("Attempted to set a value to a constant char");
-      }
-    },
-    enumerable: true
-  };
-  var _c = constant;
-  constant = false;
-  interface.set(value);
-  constant = _c;
-  Object.defineProperty(o, name, interface);
-}
-
 var o = {};
-
-attachUByte(o, "ubyte", 0);
-attachUByte(o, "cubyte", 0, true);
-attachUByte(o, "subyte", 0, false, true);
-attachUByte(o, "scubyte", 0, true, true);
-
-attachString(o, "string", "string");
-attachString(o, "cstring", "string", true);
-attachString(o, "sstring", "string", false, true);
-attachString(o, "csstring", "string", true, true);
-
-attachChar(o, "char", 63);
-attachChar(o, "cchar", 63, true);
-attachChar(o, "schar", 63, false, true);
-attachChar(o, "cschar", 63, true, true);
+js.dtype(o)
+    .ubyte("ubyte", 0)
+    .ubyte("subyte", 0, true)
+    .ubyte("cubyte", 0, false, true)
+    .ubyte("scubyte", 0, true, true)
+    .uchar("uchar", 63)
+    .uchar("suchar", 63, true)
+    .uchar("cuchar", 63, false, true)
+    .uchar("scuchar", 63, true, true)
+    .string("string", "string")
+    .string("sstring", "string", true)
+    .string("cstring", "string", false, true)
+    .string("scstring", "string", true, true)
 
             var template = document.querySelector("#test-template").innerHTML;
             
@@ -218,6 +166,7 @@ attachChar(o, "cschar", 63, true, true);
                     this.append(tmp);
                 });
             }
-        </script>
-    </body>
+    </script>
+</body>
+
 </html>
