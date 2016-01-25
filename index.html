@@ -82,20 +82,7 @@
         js.dom("<button>Click Me to Click Text</button>")
             .attach(document.body)
             .on("mousedown", function(evt) {
-                js.dom("#test").element(0, function() {
-                    var e;
-                    try {
-                        e = new Event("mousedown", {"bubbles": true, "cancelable": false});
-                    }
-                    catch(_) {
-                        e = document.createEvent("Event");
-                        e.initEvent("mousedown", true, true);
-                    } 
-                    
-                    js.dom("#test").element(0, function() {
-                        this.dispatchEvent(e);
-                    });
-                });
+                js.dom("#test").trigger("mousedown");
             });
 
 var o = {};
@@ -124,15 +111,15 @@ js.dtype(o)
                 }
             };
             
-            function parseValue($var) {
-                if($var.charAt(0) !== "$") {
-                    return $var;
+            function parseValue($v) {
+                if($v.charAt(0) !== "$") {
+                    return $v;
                 }
-                $var = $var.substring(1);
-                if(values.hasOwnProperty($var)) {
-                    return values[$var];
+                $v = $v.substring(1);
+                if(values.hasOwnProperty($v)) {
+                    return values[$v];
                 }
-                throw new Error("JSpyder Template could not find value for " + $var + " in value library; returning a blank string, instead.");
+                throw new Error("JSpyder Template could not find value for " + $v + " in value library; returning a blank string, instead.");
                 return ""; 
             }
             
@@ -141,7 +128,7 @@ js.dtype(o)
                     var ret = functions[_fn].apply(values, args);
                     return typeof ret === "undefined" ? "" : ret;
                 }
-                throw new Error("JSpyder Template could not find function " + $var + " in library; returning a blank string, instead.");
+                throw new Error("JSpyder Template could not find function " + $v + " in library; returning a blank string, instead.");
                 return "";
             }
             

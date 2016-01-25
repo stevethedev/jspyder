@@ -180,5 +180,38 @@ jspyder.extend.fn("dtype", function () {
         return this;
     };
     
+    js_dtype.jsstring = function attachJsString(name, value, strict, constant) {
+        var data = "",
+            _constant = false,
+            o = this.obj;
+            
+        var interface = {
+            get: function () {
+                return data.join('');
+            },
+            set: function (v) {
+                if (!_constant) {
+                    if (strict && typeof v !== "string") {
+                        throw _typeError(name, v, "jsstring");
+                    }
+                    else {
+                        if (typeof v === "undefined" || v === null) {
+                            v = "";
+                        }
+                        data = v;
+                    }
+                }
+                else {
+                    throw _constError(name, "jsstring");
+                }
+            },
+            enumerable: true
+        };
+        interface.set(value);
+        _constant = constant;
+        Object.defineProperty(o, name, interface);
+        return this;
+    }
+    
     return js_dtype;
 });
