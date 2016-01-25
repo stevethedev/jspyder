@@ -1,79 +1,99 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8" /> 
-        <link type="text/css" rel="stylesheet" href="jspyder.css" />
-        <script type="text/javascript" src="jspyder.js" ></script>
-        <script type="text/javascript" src="js-ajax.js" ></script>
-        <script type="text/javascript" src="js-dtype.js" ></script>
-    </head>
-    <body>
-        <div id="test">This is a test div.</div>
-        <label>Input Number</label>
-        <input id="input" />
-        <label>BYTE</label>
-        <input id="out-byte" />
-        <label>UBYTE</label>
-        <input id="out-ubyte" />
-        <label>SHORT</label>
-        <input id="out-short" />
-        <label>USHORT</label>
-        <input id="out-ushort" />
-        <label>INT</label>
-        <input id="out-int" />
-        <label>UINT</label>
-        <input id="out-uint" />
-        <label>FLOAT</label>
-        <input id="out-float" />
-        <label>DOUBLE</label>
-        <input id="out-double" />
-        <br />
-        <br />
-        
-        <script id="test-template" type="text/jspyder-template">
-            <div class="my-template-div">
-                @bold($name)
-            </div>
-        </script>
-        
-        <script type="text/javascript">
-            js.dom("#input", function() {
-                this.element(0, function() {
-                    this.addEventListener("input", function() {
-                        var value = this.value;
-                        
-                        js.dom("#out-byte").setAttrs({ "value": js.alg.byte(value) });
-                        js.dom("#out-ubyte").setAttrs({ "value": js.alg.ubyte(value) });
-                        js.dom("#out-short").setAttrs({ "value": js.alg.short(value) });
-                        js.dom("#out-ushort").setAttrs({ "value": js.alg.ushort(value) });
-                        js.dom("#out-int").setAttrs({ "value": js.alg.int(value) });
-                        js.dom("#out-uint").setAttrs({ "value": js.alg.uint(value) });
-                        js.dom("#out-float").setAttrs({ "value": js.alg.float(value) });
-                        js.dom("#out-double").setAttrs({ "value": js.alg.double(value) });
-                    });
-                });
+
+<head>
+    <meta charset="utf-8" />
+    <link type="text/css" rel="stylesheet" href="jspyder.css" />
+    <script type="text/javascript" src="jspyder.js"></script>
+    <script type="text/javascript" src="js-ajax.js"></script>
+    <script type="text/javascript" src="js-dtype.js"></script>
+    <script type="text/javascript" src="js-template.js"></script>
+</head>
+
+<body>
+    <div id="test">This is a test div.</div>
+    <div class="spread-3-1">
+        <div>
+            <label class="spread-3-1">Input Number</label class="spread-3-1">
+            <input class="spread-3-2" id="input" />
+        </div>
+        <div>
+            <label class="spread-3-1">BYTE</label class="spread-3-1">
+            <input class="spread-3-2" id="out-byte" />
+        </div>
+        <div>
+            <label class="spread-3-1">UBYTE</label class="spread-3-1">
+            <input class="spread-3-2" id="out-ubyte" />
+        </div>
+        <div>
+            <label class="spread-3-1">SHORT</label class="spread-3-1">
+            <input class="spread-3-2" id="out-short" />
+        </div>
+        <div>
+            <label class="spread-3-1">USHORT</label class="spread-3-1">
+            <input class="spread-3-2" id="out-ushort" />
+        </div>
+        <div>
+            <label class="spread-3-1">INT</label class="spread-3-1">
+            <input class="spread-3-2" id="out-int" />
+        </div>
+        <div>
+            <label class="spread-3-1">UINT</label class="spread-3-1">
+            <input class="spread-3-2" id="out-uint" />
+        </div>
+        <div>
+            <label class="spread-3-1">FLOAT</label class="spread-3-1">
+            <input class="spread-3-2" id="out-float" />
+        </div>
+        <div>
+            <label class="spread-3-1">DOUBLE</label class="spread-3-1">
+            <input class="spread-3-2" id="out-double" />
+        </div>
+    </div>
+    <br />
+    <br />
+
+    <script id="test-template" type="text/jspyder-template">
+        <div class="my-template-div">
+            @bold($name)
+        </div>
+    </script>
+
+    <script type="text/javascript">
+        js.dom("#input")
+            .on("input", function(evt) {
+                var value = this.value;
+                
+                js.dom("#out-byte").setAttrs({ "value": js.alg.byte(value) });
+                js.dom("#out-ubyte").setAttrs({ "value": js.alg.ubyte(value) });
+                js.dom("#out-short").setAttrs({ "value": js.alg.short(value) });
+                js.dom("#out-ushort").setAttrs({ "value": js.alg.ushort(value) });
+                js.dom("#out-int").setAttrs({ "value": js.alg.int(value) });
+                js.dom("#out-uint").setAttrs({ "value": js.alg.uint(value) });
+                js.dom("#out-float").setAttrs({ "value": js.alg.float(value) });
+                js.dom("#out-double").setAttrs({ "value": js.alg.double(value) });
             });
             
-            js.dom("#test", function() {
-                this.element(0, function() {
-                    this.addEventListener("mousedown", function() { console.log("mousedown"); }, true, true); 
-                });
+        js.dom("#test")
+            .on("mousedown", function(evt) { 
+                console.log("mousedown"); 
             });
-            js.dom("<button>Click Me to Click Text</button>").attach(document.body).element(0, function() {
-                this.addEventListener("mousedown", function() {
+                
+        js.dom("<button>Click Me to Click Text</button>")
+            .attach(document.body)
+            .on("mousedown", function(evt) {
+                js.dom("#test").element(0, function() {
+                    var e;
+                    try {
+                        e = new Event("mousedown", {"bubbles": true, "cancelable": false});
+                    }
+                    catch(_) {
+                        e = document.createEvent("Event");
+                        e.initEvent("mousedown", true, true);
+                    } 
+                    
                     js.dom("#test").element(0, function() {
-                        var e;
-                        try {
-                            e = new Event("mousedown", {"bubbles": true, "cancelable": false});
-                        }
-                        catch(_) {
-                            e = document.createEvent("Event");
-                            e.initEvent("mousedown", true, true);
-                        } 
-                        
-                        js.dom("#test").element(0, function() {
-                            this.dispatchEvent(e);
-                        });
+                        this.dispatchEvent(e);
                     });
                 });
             });
@@ -146,6 +166,7 @@ js.dtype(o)
                     this.append(tmp);
                 });
             }
-        </script>
-    </body>
+    </script>
+</body>
+
 </html>

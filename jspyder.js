@@ -46,6 +46,21 @@
         var js = global["jspyder"] = function () {
 
         }
+        
+        
+        // Extensible
+        js.extend = function js_extend(name, obj) {
+            Object.defineProperty(this, name, { value: obj });
+            return this;
+        };
+        js.extend.fn = function js_extend_fn(name, fn, args) {
+            js.extend(name, fn.apply(this, args));
+            return this;
+        }
+        js.createRegistry = _createRegistry;
+        
+        _bootstrapEnv(js);
+        
 
         // js.lib
         // Stores library functions
@@ -69,18 +84,78 @@
         _bootstrapAlg(js);
         _bootstrapDom(js);
         
-        // Extensible
-        js.extend = function js_extend(name, obj) {
-            Object.defineProperty(this, name, { value: obj });
-            return this;
-        };
-        js.extend.fn = function js_extend_fn(name, fn, args) {
-            js.extend(name, fn.apply(this, args));
-            return this;
-        }
         return js;
     }
 
+    /**************************************************************************
+     * Builds and attaches the js.alg object
+     *************************************************************************/
+    function _bootstrapEnv(js) {
+        var VERSION_OBJ = {
+                MAJOR_VERSION: 0,
+                MINOR_VERSION: 0,
+                PATCH_VERSION: 0
+            },
+            VERSION_STR = VERSION_OBJ.MAJOR_VERSION + "." + VERSION_OBJ.MINOR_VERSION + "." + VERSION_OBJ.PATCH_VERSION,
+            BROWSER_NAME = "",
+            BROWSER_VERSION = 0; 
+        
+        (function _detectBrowser() {
+            if (/*@cc_on!@*/false || !!document.documentMode) {
+                BROWSER_NAME = "Internet Explorer";
+                if (!window.attachEvent) { BROWSER_VERSION = 11; }
+                else if (/*@cc_on (document.documentMode == 10)!=@*/false) { BROWSER_VERSION = 10; }
+                else if (!window.requestAnimationFrame) { BROWSER_VERSION = 9; }
+                else if (!window.addEventListener) { BROWSER_VERSION = 8; }
+                else { BROWSER_VERSION = 7; }
+            }
+            else if (typeof window.InstallTrigger !== 'undefined') {
+                BROWSER_NAME = "Firefox";
+
+                if (Int8Array && Int8Array.prototype.sort) { BROWSER_VERSION = 7; }
+                else if (Node.innerText) { BROWSER_VERSION = 45; }
+                else if (Document.charset) { BROWSER_VERSION = 44; }
+                else if (Array.prototype.includes) { BROWSER_VERSION = 43; }
+                else if (Reflect) { BROWSER_VERSION = 42; }
+                else { BROWSER_VERSION = 41; }
+            }
+            else if (!!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0) {
+                BROWSER_NAME = "Opera";
+                BROWSER_VERSION = 1;
+            }
+            else if (!!window.chrome) {
+                BROWSER_NAME = "Chrome";
+                BROWSER_VERSION = 45;
+                //45 - 51;
+            }
+            else if (Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0) {
+                BROWSER_NAME = "Safari";
+                BROWSER_VERSION = 1;
+            }
+            else if (false) {
+                BROWSER_NAME = "Edge";
+                BROWSER_VERSION = 11;
+            }
+        })();
+        
+        var __browser = {
+            name: BROWSER_NAME,
+            version: BROWSER_VERSION
+        };
+        Object.freeze(__browser);
+        
+        var js_env = {
+            version: VERSION_STR,
+            versionNo: (
+                (VERSION_OBJ.MAJOR_VERSION << 16) +
+                (VERSION_OBJ.MINOR_VERSION << 8) +
+                (VERSION_OBJ.PATCH_VERSION)),
+            browser: __browser
+        };
+        Object.freeze(js_env);
+        
+        js.extend("env", js_env);
+    }
     /**************************************************************************
      * Builds and attaches the js.alg object
      *************************************************************************/
@@ -105,10 +180,10 @@
              * 
              * \param fn {Function}
              *      Function with the following parameters:
-             *       - The key of the current item
-             *       - The value of the current item
-             *       - A reference to [obj]
-             *       - A reference to [data]
+             *       1: The value of the current item
+             *       2: The key of the current item
+             *       3: A reference to [obj]
+             *       4: A reference to [data]
              * 
              *      The context of this variable points to a controller object
              *      with the members:
@@ -133,7 +208,7 @@
                 if (obj && typeof obj === "object") {
                     var newVal;
                     for (var i in obj) {
-                        newVal = fn.apply(ctl, [i, obj[i], obj, data]);
+                        newVal = fn.apply(ctl, [obj[i], i, obj, data]);
                         if (newVal) {
                             obj[i] = newVal;
                         }
@@ -186,7 +261,7 @@
             byte: function (u) {
                 if (typeof Int8Array === "undefined") {
                     u = +u;
-                    u = (u === u ? u : 0)&0xFF;
+                    u = (u === u ? u : 0) & 0xFF;
                     for (u; u < -0x80; u += 0x100);
                     for (u; u > 0x7F; u -= 0x100);
                     return u;
@@ -215,7 +290,7 @@
             short: function (u) {
                 if (typeof Int16Array === "undefined") {
                     u = +u;
-                    u = (u === u ? u : 0)&0xFFFF;
+                    u = (u === u ? u : 0) & 0xFFFF;
                     for (u; u < -0x8000; u += 0x10000);
                     for (u; u > 0x7FFF; u -= 0x10000);
                     return u;
@@ -316,7 +391,7 @@
         function _isNode(o) {
             return js.alg.bool(typeof Node === "object"
                 ? o instanceof Node
-                : o && typeof o === "object" && typeof o.nodeType === "number" && typeof o.nodeName === "string"); 
+                : o && typeof o === "object" && typeof o.nodeType === "number" && typeof o.nodeName === "string");
         }
 
         /**********************************************************************
@@ -344,7 +419,7 @@
             var clss = _getDomClasses(element),
                 index = clss.indexOf(cls),
                 change = false;
-                
+
             if (enable && index === -1) {
                 clss.push(cls);
                 change = true;
@@ -353,11 +428,11 @@
                 clss.splice(index, 1);
                 change = true;
             }
-            
+
             if (change) {
                 element.className = clss.join(" ");
             }
-            
+
             return change;
         }
         
@@ -397,32 +472,41 @@
          *      jsDom Object, based on js.dom.fn as the prototype
          *********************************************************************/
         function js_dom(element, fn, args) {
-            var s = element, el = Object.create(js_dom.fn);
+            element = element || [];
+            var s = element, el;
+            
+            if (!(element instanceof js.dom)) {
 
-            if (typeof s === "string") {
-                try {
-                    element = document.querySelectorAll(s);
-                } catch (e) {
-                    element = _parseHtml(s);
+                if (typeof s === "string") {
+                    try {
+                        element = document.querySelectorAll(s);
+                    } catch (e) {
+                        element = _parseHtml(s);
+                    }
                 }
-            }
 
 
-            if (_isElement(element)) {
-                element = [element];
-            }
+                if (_isElement(element)) {
+                    element = [element];
+                }
 
-            element = Array.prototype.slice.call(element, 0);
-            el._element = element;
-
-            if (!element.__jspyder) {
-                el.each(function (k, v) {
-                    v.__jspyder = _createRegistry();
+                element = Array.prototype.slice.call(element, 0);
+                el = Object.create(js_dom.fn, {
+                    _element: { value: element }
                 });
+
+                el.each(function (v) {
+                    if (!v.__jspyder) {
+                        v.__jspyder = _createRegistry();
+                    }
+                });
+            }
+            else {
+                el = element; 
             }
 
             el.use(fn, args);
-            return el; 
+            return el;
         }
 
         // Template for selected objects: js.dom.fn
@@ -432,18 +516,18 @@
             exp: function () {
                 return this._export;
             },
-            
-            get length() { return this._element.length; },
+
+            get count() { return this._element.length; },
 
             /******************************************************************
              * Iterates through all of the elements in the jsDom object.
              * 
              * \param fn {Function}
              *      Function with the following parameters:
-             *       - The key of the current item
-             *       - The value of the current item
-             *       - A reference to [obj]
-             *       - A reference to [data]
+             *       1: The value of the current item
+             *       2: The key of the current item
+             *       3: A reference to [obj]
+             *       4: A reference to [data]
              * 
              *      The context of this variable points to a controller object
              *      with the members:
@@ -455,7 +539,7 @@
              * \param data {any} 
              *      A data source to pass as the fourth value in [fn]
              *****************************************************************/
-            each: function(fn, data) {
+            each: function (fn, data) {
                 js.alg.each(this._element, fn, data);
                 return this;
             },
@@ -469,7 +553,7 @@
              * \param args {Array}
              *      Any parameters to pass to the function, in "apply" format
              *****************************************************************/
-            use: function(fn, args) {
+            use: function (fn, args) {
                 this._export = js.alg.use(this, fn, args);
                 return this;
             },
@@ -493,9 +577,9 @@
                     var _each = js.alg.each;
 
                     // iterate each dom item
-                    this.each(function (_1, el, _2, css) {
+                    this.each(function (el, _1, _2, css) {
                         // iterate each css field
-                        _each(css, function (attr, val, _1, el) {
+                        _each(css, function (val, attr, _1, el) {
                             el["style"][attr] = val;
                         }, el);
 
@@ -524,13 +608,13 @@
                     var _each = js.alg.each;
 
                     // iterate each element
-                    this.each(function (i, el, _2, css) {
+                    this.each(function (el, i, _2, css) {
                         var cStyle = getComputedStyle(el),
                             eStyle = el["style"];
                         css = (!(+i) ? css.first : css.others);
 
                         // iterate each css field
-                        _each(css, function (attr, _, css, data) {                                
+                        _each(css, function (_, attr, css, data) {                                
                             css[attr] = data.style[attr] || data.cStyle[attr];
                         }, { style: eStyle, cStyle: cStyle });
 
@@ -561,10 +645,10 @@
                     var _each = js.alg.each;
 
                     // iterate each element
-                    this.each(function (i, el, _2, attrs) {
+                    this.each(function (el, i, _2, attrs) {
                         attrs = (!i ? attrs.first : attrs.others);
                         // iterate each attribute
-                        _each(attrs, function (a, _, attrs) {
+                        _each(attrs, function (_, a, attrs) {
                             attrs[a] = a.getAttribute(a);
                         });
                         // callback
@@ -594,10 +678,10 @@
                     var _each = js.alg.each;
 
                     // iterate each element
-                    this.each(function (i, el, _2, attrs) {
+                    this.each(function (el, i, _2, attrs) {
                         attrs = (!(+i) ? attrs.first : attrs.others);
                         // iterate each attribute
-                        _each(attrs, function (a, v, attrs, el) {
+                        _each(attrs, function (v, a, attrs, el) {
                             if (v === null || typeof v === "undefined") {
                                 el.removeAttribute(a);
                             }
@@ -620,9 +704,9 @@
              *****************************************************************/
             parents: function (fn) {
                 var self = this;
-                this.each(function (i, element, elements) {
+                this.each(function (element, i, elements) {
                     var d = js_dom(element.parentNode, fn, [element]);
-                    
+
                     if (!js.alg.number(i)) { self._export = d; }
                 });
                 return this;
@@ -634,10 +718,10 @@
              * \param fn {Function}
              *****************************************************************/
             children: function (fn) {
-                var self = this;
                 this.each(function (i, element, elements) {
-                    var d = js_dom(element.children, fn, [element]);
-                    if(!js.alg.number(i)) { self._export = d; }
+                    for (var j = 0; j < element.children.length; j++) {
+                        js_dom(element.children[j], fn, [element.children[j]]);
+                    }
                 });
                 return this;
             },
@@ -650,11 +734,9 @@
              *      Index of the item to grab  
              * \param fn {Function}
              *****************************************************************/
-            item: function (n, fn) {
-                if (this._element[n]) {
-                    this._export = js_dom(this._element[n], fn);
-                }
-                return this;
+            at: function (n, fn) {
+                n = js.alg.uint(n);
+                return js_dom(this._element[n] || null, fn);
             },
             
             /******************************************************************
@@ -667,9 +749,9 @@
              *****************************************************************/
             element: function (n, fn) {
                 var self = this;
-                this.item(n, function () {
+                this.at(n, function () {
                     var el = this._element[0];
-                    if (el) {
+                    if (el && typeof fn === "function") {
                         fn.apply(el, [this]);
                     }
                     self._export = el;
@@ -693,7 +775,7 @@
                 var children = this;
                 js_dom(parent).element(0, function (p) {
                     var doc = document.createDocumentFragment();
-                    children.each(function (_1, child, _2, doc) {
+                    children.each(function (child, _1, _2, doc) {
                         doc.appendChild(child);
                     }, doc);
                     this.appendChild(doc);
@@ -713,7 +795,7 @@
             append: function (child) {
                 this.element(0, function () {
                     var doc = document.createDocumentFragment();
-                    js_dom(child).each(function (_1, c, _2, doc) {
+                    js_dom(child).each(function (c, _1, _2, doc) {
                         doc.appendChild(c);
                     }, doc);
                     this.appendChild(doc);
@@ -730,7 +812,7 @@
              *      jsDom object.
              *****************************************************************/
             remove: function () {
-                this.each(function (_1, child, _2) {
+                this.each(function (child) {
                     child.parentNode ? child.parentNode.removeChild(child) : null;
                 });
                 return this;
@@ -754,9 +836,9 @@
              *****************************************************************/
             setClasses: function (classes) {
                 // for every element jsDom...
-                this.each(function (_1, element, _2, classes) {
+                this.each(function (element, _1, _2, classes) {
                     // iterate the classes...
-                    js.alg.each(classes, function (className, classState, _1, element) {
+                    js.alg.each(classes, function (classState, className, _1, element) {
                         if (classState === "toggle") {
                             classState = !_getDomClass(element, className);
                         }
@@ -784,10 +866,10 @@
              *****************************************************************/
             getClasses: function (classes, fn) {
                 // for every element jsDom...
-                this.each(function (i, element, _2, classes) {
+                this.each(function (element, i, _2, classes) {
                     // iterate the classes...
                     classes = (js.alg.number(i) ? classes.first : classes.second);
-                    js.alg.each(classes, function (className, _1, _2, o) {
+                    js.alg.each(classes, function (_1, className, _2, o) {
                         o.classes[className] = _getDomClass(o.element, className);
                     }, { el: element, classes: classes });
                     
@@ -806,12 +888,26 @@
              *      An space-separated list of event types to trigger the
              *      callback on.
              * 
-             *      js.dom("#test").setClasses({ 
-             *          "turn-on": true, //< truthy
-             *          "turn-off": false, //< falsy
-             *          "toggle-class": "toggle" //< string literal
-             *      });
+             * \param handler {Function}
+             *      A callback function to use for the event callback.
              *****************************************************************/
+            on: function (events, handler) {
+                events = (events || "").split(/\s+/);
+                
+                js.alg.each(events, function (event, _1, _2, self) {
+                    js.alg.each(self._element, function (element) {
+                        element.addEventListener(event, handler);
+                        if (!element.__jspyder.fetch("js-events-" + event)) {
+                            element.__jspyder.stash("js-events-" + event, [handler]);
+                        }
+                        else {
+                            element.__jspyder.fetch("js-events-" + event).push(handler);
+                        }
+                    });
+                }, this);
+                
+                return this;
+            }
         };
 
         if (js) {
@@ -823,14 +919,14 @@
     /**************************************************************************
      * Creates a hidden registry, and returns an interface to interact with it
      * 
-     * - fetch(key, Function({ value }) { }) 
+     * - fetch(key, Function({ key: key, value: value })) 
      * - stash(key, value)  
      *************************************************************************/
     function _createRegistry() {
         var _registry = {};
         return {
             fetch: function (key, fn) {
-                var val = { value: _registry[key] };
+                var val = { key: key, value: _registry[key] };
                 fn(val);
                 return val.value;
             },
