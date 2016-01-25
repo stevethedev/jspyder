@@ -60,49 +60,44 @@
     </script>
 
     <script type="text/javascript">
-        js.dom("#input", function() {
-                this.element(0, function() {
-                    this.addEventListener("input", function() {
-                        var value = this.value;
-                        
-                        js.dom("#out-byte").setAttrs({ "value": js.alg.byte(value) });
-                        js.dom("#out-ubyte").setAttrs({ "value": js.alg.ubyte(value) });
-                        js.dom("#out-short").setAttrs({ "value": js.alg.short(value) });
-                        js.dom("#out-ushort").setAttrs({ "value": js.alg.ushort(value) });
-                        js.dom("#out-int").setAttrs({ "value": js.alg.int(value) });
-                        js.dom("#out-uint").setAttrs({ "value": js.alg.uint(value) });
-                        js.dom("#out-float").setAttrs({ "value": js.alg.float(value) });
-                        js.dom("#out-double").setAttrs({ "value": js.alg.double(value) });
-                    });
-                });
+        js.dom("#input")
+            .on("input", function(evt) {
+                var value = this.value;
+                
+                js.dom("#out-byte").setAttrs({ "value": js.alg.byte(value) });
+                js.dom("#out-ubyte").setAttrs({ "value": js.alg.ubyte(value) });
+                js.dom("#out-short").setAttrs({ "value": js.alg.short(value) });
+                js.dom("#out-ushort").setAttrs({ "value": js.alg.ushort(value) });
+                js.dom("#out-int").setAttrs({ "value": js.alg.int(value) });
+                js.dom("#out-uint").setAttrs({ "value": js.alg.uint(value) });
+                js.dom("#out-float").setAttrs({ "value": js.alg.float(value) });
+                js.dom("#out-double").setAttrs({ "value": js.alg.double(value) });
             });
             
-            js.dom("#test", function() {
-                this.element(0, function() {
-                    this.addEventListener("mousedown", function() { console.log("mousedown"); }, true, true); 
-                });
+        js.dom("#test")
+            .on("mousedown", function(evt) { 
+                console.log("mousedown"); 
             });
-            js.dom("<button>Click Me to Click Text</button>").attach(document.body).element(0, function() {
-                this.addEventListener("mousedown", function() {
+                
+        js.dom("<button>Click Me to Click Text</button>")
+            .attach(document.body)
+            .on("mousedown", function(evt) {
+                js.dom("#test").element(0, function() {
+                    var e;
+                    try {
+                        e = new Event("mousedown", {"bubbles": true, "cancelable": false});
+                    }
+                    catch(_) {
+                        e = document.createEvent("Event");
+                        e.initEvent("mousedown", true, true);
+                    } 
+                    
                     js.dom("#test").element(0, function() {
-                        var e;
-                        try {
-                            e = new Event("mousedown", {"bubbles": true, "cancelable": false});
-                        }
-                        catch(_) {
-                            e = document.createEvent("Event");
-                            e.initEvent("mousedown", true, true);
-                        } 
-                        
-                        js.dom("#test").element(0, function() {
-                            this.dispatchEvent(e);
-                        });
+                        this.dispatchEvent(e);
                     });
                 });
             });
 
-<<<<<<< HEAD
-=======
 var o = {};
 js.dtype(o)
     .ubyte("ubyte", 0)
@@ -118,7 +113,6 @@ js.dtype(o)
     .string("cstring", "string", false, true)
     .string("scstring", "string", true, true)
 
->>>>>>> f217f23c7c73a563d6b10b7ac039caabb93ef9d5
             var template = document.querySelector("#test-template").innerHTML;
             
             var values = {
