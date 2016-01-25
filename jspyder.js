@@ -54,7 +54,7 @@
             return this;
         };
         js.extend.fn = function js_extend_fn(name, fn, args) {
-            js.extend(name, fn.apply(this, args));
+            js.extend(name, fn.apply(js, args));
             return this;
         }
         js.createRegistry = _createRegistry;
@@ -102,7 +102,7 @@
         
         (function _detectBrowser() {
             if (/*@cc_on!@*/false || !!document.documentMode) {
-                BROWSER_NAME = "Internet Explorer";
+                BROWSER_NAME = "IE";
                 if (!window.attachEvent) { BROWSER_VERSION = 11; }
                 else if (/*@cc_on (document.documentMode == 10)!=@*/false) { BROWSER_VERSION = 10; }
                 else if (!window.requestAnimationFrame) { BROWSER_VERSION = 9; }
@@ -132,9 +132,36 @@
                 BROWSER_NAME = "Safari";
                 BROWSER_VERSION = 1;
             }
-            else if (false) {
+            else if (window.MSInputMethodContext) {
                 BROWSER_NAME = "Edge";
-                BROWSER_VERSION = 11;
+                if (JSON.stringify({foo: Symbol()}) === "{}") { BROWSER_VERSION = 13; }
+                else if (!window.RTCIceGatherOptions) { BROWSER_VERSION = 12; }
+                else { BROWSER_VERSION = 11; }
+            }
+            else if (false) {
+                BROWSER_NAME = "Safari"; 9.1;
+                if (window.CSS.supports) { BROWSER_VERSION = 9; }
+                else if (!window.CSS.supports) { BROWSER_VERSION = 8; }
+            }
+            else if (false) {
+                BROWSER_NAME = "iOS Safari";
+                BROWSER_VERSION = 8.4;
+                9.2; 9.3;
+            }
+            else if (false) {
+                BROWSER_NAME = "Opera Mini";
+                BROWSER_VERSION = 8;
+            }
+            else if (false) {
+                BROWSER_NAME = "Android Browser";
+                BROWSER_VERSION = 4.3;
+                4.4;
+                4.44;
+                46;
+            }
+            else if (false) {
+                BROWSER_NAME = "Chrome for Android";
+                BROWSER_VERSION = 47;
             }
         })();
         
@@ -907,6 +934,24 @@
                 }, this);
                 
                 return this;
+            },
+            
+            trigger: function (event) {
+                event = (event || "").toString().split(/\s+/);
+                
+                var e
+                for (var i = 0; i < event.length; i++) {
+                    try {
+                        e = new Event("mousedown", { "bubbles": true, "cancelable": false });
+                    }
+                    catch (_) {
+                        e = document.createEvent("Event");
+                        e.initEvent("mousedown", true, true);
+                    }
+                    this.each(function (el) {
+                        el.dispatchEvent(e);
+                    });
+                }
             }
         };
 
@@ -927,7 +972,7 @@
         return {
             fetch: function (key, fn) {
                 var val = { key: key, value: _registry[key] };
-                fn(val);
+                (typeof fn === "function") && fn(val);
                 return val.value;
             },
             stash: function (key, val) {
