@@ -419,6 +419,18 @@ jspyder.extend.fn("template", function () {
         
         js_log: function (data) {
             console.log(data);
+        },
+        
+        concat: function(str) {
+            for(var i = 1; i < arguments.length; i++) {
+                str += arguments[i];
+            }
+            return str;
+        },
+        
+        html: function(str) {
+            js.dom("<div>" + str + "</div>").getText(function(v) { str = v; });
+            return str;
         }
     })
     

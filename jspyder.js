@@ -59,31 +59,14 @@
         }
         js.createRegistry = _createRegistry;
         js.registry = _createRegistry();
-        
+
         _bootstrapEnv(js);
-
-        // js.lib
-        // Stores library functions
-        function jsLib(name, arg1) {
-            var fn;
-
-            fn = _jsLibFn[name];
-            if (!fn) {
-                return null;
-            }
-
-
-
-        }
-        var _jsLibFn = {};
-        Object.defineProperties(jsLib, {
-            fn: { value: _jsLibFn }
-        });
+        _bootstrapLib(js);
 
         // JSpyder Algorithms
         _bootstrapAlg(js);
         _bootstrapDom(js);
-        
+
         return js;
     }
 
@@ -92,14 +75,14 @@
      *************************************************************************/
     function _bootstrapEnv(js) {
         var VERSION_OBJ = {
-                MAJOR_VERSION: 0,
-                MINOR_VERSION: 0,
-                PATCH_VERSION: 0
-            },
+            MAJOR_VERSION: 0,
+            MINOR_VERSION: 0,
+            PATCH_VERSION: 0
+        },
             VERSION_STR = VERSION_OBJ.MAJOR_VERSION + "." + VERSION_OBJ.MINOR_VERSION + "." + VERSION_OBJ.PATCH_VERSION,
             BROWSER_NAME = "",
-            BROWSER_VERSION = 0; 
-        
+            BROWSER_VERSION = 0;
+
         (function _detectBrowser() {
             if (/*@cc_on!@*/false || !!document.documentMode) {
                 BROWSER_NAME = "IE";
@@ -116,7 +99,7 @@
                 else if (Node.innerText) { BROWSER_VERSION = 45; }
                 else if (Document.charset) { BROWSER_VERSION = 44; }
                 else if (Array.prototype.includes) { BROWSER_VERSION = 43; }
-                else if (Reflect) { BROWSER_VERSION = 42; }
+                else if (typeof window.Reflect !== "undefined") { BROWSER_VERSION = 42; }
                 else { BROWSER_VERSION = 41; }
             }
             else if (!!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0) {
@@ -134,7 +117,7 @@
             }
             else if (window.MSInputMethodContext) {
                 BROWSER_NAME = "Edge";
-                if (JSON.stringify({foo: Symbol()}) === "{}") { BROWSER_VERSION = 13; }
+                if (JSON.stringify({ foo: Symbol() }) === "{}") { BROWSER_VERSION = 13; }
                 else if (!window.RTCIceGatherOptions) { BROWSER_VERSION = 12; }
                 else { BROWSER_VERSION = 11; }
             }
@@ -164,13 +147,13 @@
                 BROWSER_VERSION = 47;
             }
         })();
-        
+
         var __browser = {
             name: BROWSER_NAME,
             version: BROWSER_VERSION
         };
         Object.freeze(__browser);
-        
+
         var js_env = {
             version: VERSION_STR,
             versionNo: (
@@ -180,7 +163,7 @@
             browser: __browser
         };
         Object.freeze(js_env);
-        
+
         js.extend("env", js_env);
     }
     /**************************************************************************
@@ -501,7 +484,7 @@
         function js_dom(element, fn, args) {
             element = element || [];
             var s = element, el;
-            
+
             if (!(element instanceof js.dom)) {
 
                 if (typeof s === "string") {
@@ -529,7 +512,7 @@
                 });
             }
             else {
-                el = element; 
+                el = element;
             }
 
             el.use(fn, args);
@@ -641,7 +624,7 @@
                         css = (!(+i) ? css.first : css.others);
 
                         // iterate each css field
-                        _each(css, function (_, attr, css, data) {                                
+                        _each(css, function (_, attr, css, data) {
                             css[attr] = data.style[attr] || data.cStyle[attr];
                         }, { style: eStyle, cStyle: cStyle });
 
@@ -676,7 +659,7 @@
                         attrs = (!i ? attrs.first : attrs.others);
                         // iterate each attribute
                         _each(attrs, function (_, a, attrs) {
-                            attrs[a] = a.getAttribute(a);
+                            attrs[a] = el.getAttribute(a);
                         });
                         // callback
                         if (typeof fn === "function") { js_dom(el, fn, [attrs]); }
@@ -895,9 +878,9 @@
                 // for every element jsDom...
                 this.each(function (element, i, _2, classes) {
                     // iterate the classes...
-                    classes = (js.alg.number(i) ? classes.first : classes.second);
+                    classes = (!js.alg.number(i) ? classes.first : classes.second);
                     js.alg.each(classes, function (_1, className, _2, o) {
-                        o.classes[className] = _getDomClass(o.element, className);
+                        o.classes[className] = _getDomClass(o.el, className);
                     }, { el: element, classes: classes });
                     
                     // run the callback
@@ -920,7 +903,7 @@
              *****************************************************************/
             on: function (events, handler) {
                 events = (events || "").split(/\s+/);
-                
+
                 js.alg.each(events, function (event, _1, _2, self) {
                     js.alg.each(self._element, function (element) {
                         element.addEventListener(event, handler);
@@ -932,13 +915,13 @@
                         }
                     });
                 }, this);
-                
+
                 return this;
             },
-            
+
             trigger: function (event) {
                 event = (event || "").toString().split(/\s+/);
-                
+
                 var e
                 for (var i = 0; i < event.length; i++) {
                     try {
@@ -952,6 +935,40 @@
                         el.dispatchEvent(e);
                     });
                 }
+
+                return this;
+            },
+
+            setHtml: function (html) {
+                this.each(function (element) {
+                    element.innerHTML = html || "";
+                });
+                return this;
+            },
+
+            getHtml: function (fn) {
+                if (typeof fn === "function") {
+                    this.each(function (element) {
+                        fn.call(element, element.innerHTML || "");
+                    });
+                }
+                return this;
+            },
+            
+            getText: function(fn) {
+                if(typeof fn === "function") {
+                    this.each(function(element) {
+                        fn.call(element, element.textContent || "");
+                    });
+                }
+                return this;
+            },
+            
+            setText: function(text) {
+                this.each(function(element) {
+                    element.textContent = text || "";
+                });
+                return this;
             }
         };
 
@@ -959,6 +976,42 @@
             Object.defineProperty(js, "dom", { value: js_dom });
         }
         return js_dom;
+    }
+
+    function _bootstrapLib(js) {
+        var _js_lib_repo = _createRegistry();
+        
+        // Retrieves the library function
+        function js_lib(name, args, fn) {
+            var _fn = _js_lib_repo.fetch(name),
+                ret = null;
+            if (_fn && typeof _fn === "function") {
+                ret = _fn.apply(js, args);
+            }
+            if (typeof fn === "function") {
+                fn.call(this, ret);
+            }
+            return this;
+        }
+        js_lib.register = function (name, fn) {
+            if (typeof name == "string") {
+                if (typeof fn === "function" || fn === null) {
+                    _js_lib_repo.stash(name, fn);
+                }
+            }
+
+            return this;
+        };
+        js_lib.registerSet = function (o) {
+            if (o && typeof o === "object") {
+                js.alg.each(o, function (fn, name) {
+                    js_lib.register(name, fn);
+                });
+            }
+            return this;
+        };
+
+        js.extend("lib", js_lib);
     }
     
     /**************************************************************************
