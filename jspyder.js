@@ -61,7 +61,6 @@
         js.registry = _createRegistry();
         
         _bootstrapEnv(js);
-        
 
         // js.lib
         // Stores library functions
@@ -961,7 +960,7 @@
         }
         return js_dom;
     }
-
+    
     /**************************************************************************
      * Creates a hidden registry, and returns an interface to interact with it
      * 

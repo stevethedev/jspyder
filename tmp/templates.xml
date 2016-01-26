@@ -9,10 +9,10 @@
             </ul>
         </div>
         <div class="bank-subnavigation-container">
-            <ul id="bank-subnavigation-nodelete">
+            <ul id="bank-subnavigation-nodelete" class="bank-subnavigation-list">
                 @each("bank_subnav_constant", "button", "@insert_template(`bank-subnavigation-link`)")
             </ul>
-            <ul id="bank-subnavigation">
+            <ul id="bank-subnavigation" class="bank-subnavigation-list">
                 @each("bank_subnav_volatile", "button", "@insert_template(`bank-subnavigation-link`)")
             </ul>
         </div>
