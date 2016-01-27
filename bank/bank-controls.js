@@ -14,7 +14,7 @@
                 data = {};
                 data[TOOLTIP_ATTR] = null;
                 this.getAttrs(data, function () {
-                    var text = data["data-tooltip"];
+                    var text = data[TOOLTIP_ATTR];
 
                     if (text) {
                         js.template({ tooltip: text })

@@ -1,6 +1,13 @@
 <?xml version="1.0" ?> 
 <templates>
-    <!-- Main System Layout -->
+    <!-- ================================================================== -->
+    <!-- MAIN SYSTEM LAYOUT =============================================== -->
+    <!-- ================================================================== -->
+    <!-- Expects:                                                           -->
+    <!--   bank_navigation[page,text]                                       -->
+    <!--   bank_subnav_constant[subnav,text,icon]                           -->
+    <!--   bank_subnav_volatile[subnav,text,icon]                           -->
+    <!-- ================================================================== -->
     <template name="main-page">
         <div class="bank-banner">
             <h1 class="bank-header" id="bank-header">Budget Analysis Kit</h1>
@@ -13,9 +20,7 @@
                 <ul id="bank-subnavigation-nodelete" class="bank-subnavigation-list list-1">
                     @each("bank_subnav_constant", "button", "@insert_template(`bank-subnavigation-link`)")
                 </ul>
-                <ul id="bank-subnavigation" class="bank-subnavigation-list list-2">
-                    @each("bank_subnav_volatile", "button", "@insert_template(`bank-subnavigation-link`)")
-                </ul>
+                @insert_template("bank-subnav-list")
             </div>
             <div id="bank-content-panel" class="bank-content">
                 <!-- DATA GOES HERE -->
@@ -23,8 +28,17 @@
         </div>
     </template>
     
+    <template name="bank-subnav-list">
+        <ul id="bank-subnavigation" class="bank-subnavigation-list list-2">
+            @each("bank_subnav_volatile", "button", "@insert_template(`bank-subnavigation-link`)")
+        </ul>
+    </template>
+    
     <!-- ================================================================== -->
     <!-- MAIN SYSTEM LINKS ================================================ -->
+    <!-- ================================================================== -->
+    <!-- Expects:                                                           -->
+    <!--   button[page,text]                                                -->
     <!-- ================================================================== -->
     <template name="bank-navigation-link">
         @var("page", `@map_item("button","page")`)
@@ -35,19 +49,29 @@
     <!-- ================================================================== -->
     <!-- SUBNAV LINKS ===================================================== -->
     <!-- ================================================================== -->
+    <!-- Expects:                                                           -->
+    <!--   button[subnav,icon,text]                                         -->
+    <!-- ================================================================== -->
     <template name="bank-subnavigation-link">
         @var("subnav", `@map_item("button", "subnav")`)
         @var("text", `@map_item("button", "text")`)
         @var("icon", `@map_item("button","icon")`)
-        @var("gt", `@html("&gt;")`)
-        @var("lt", `@html("&lt;")`)
-        @js_log(${gt})
+        @var("icon", `@iif(${icon}, ${icon}, "")`)
         <li data-subnav="${subnav}" class="subnav subnav-${subnav}">
+            <i class="${icon}">@concat("")</i>
             <span>${text}</span>
         </li> 
     </template>
     
-    <!-- Requires: table_class, table_columns, table_header, divisions -->
+    <!-- ================================================================== -->
+    <!-- OVERVIEW TABLE =================================================== -->
+    <!-- ================================================================== -->
+    <!-- Expects:                                                           -->
+    <!--   table_header                                                     -->
+    <!--   table_class                                                      -->
+    <!--   table_columns                                                    -->
+    <!--   table_rows                                                       -->
+    <!-- ================================================================== -->
     <template name="overview-table">
         <div class="bank-overview-container display inline-block">
             <table class="${table_class} table-banded table-hover bank-overview-table">
@@ -66,46 +90,77 @@
             </table>
         </div>
     </template>
+
+    <!-- ================================================================== -->
+    <!-- OVERVIEW TABLE ROWS ============================================== -->
+    <!-- ================================================================== -->
+    <!-- Expects:                                                           -->
+    <!--   table_columns                                                    -->
+    <!--   table_row[class]                                                 -->
+    <!-- ================================================================== -->
+    <template name="overview-table-row">
+        @var("row_class", `@map_item("table_row", "class")`)
+        <tr class="${row_class}">@each("table_columns", "table_column", "@insert_template(`overview-table-cell`)")</tr>
+    </template>
     
-    <!-- param: row_column -->
+    <!-- ================================================================== -->
+    <!-- OVERVIEW TABLE CELLS ============================================= -->
+    <!-- ================================================================== -->
+    <!-- Expects:                                                           -->
+    <!--   table_column[tag,class,default]                                  -->
+    <!--   table_row[$os_tag, $tooltip_tag, $column_tag]                    -->
+    <!-- ================================================================== -->
+    <!-- Creates:                                                           -->
+    <!--   cell_class                                                       -->
+    <!--   col_class                                                        -->
+    <!--   data                                                             -->
+    <!--   default                                                          -->
+    <!--   column_tag                                                       -->
+    <!--   os_tag                                                           -->
+    <!--   tooltip                                                          -->
+    <!--   tooltip_tag                                                      -->
+    <!-- ================================================================== -->
     <template name="overview-table-cell">
-        <!-- Get whether this is an overspent amount -->
-        @var("column_tag", `@map_item("row_column", "tag")`)
+        @var("column_tag", `@map_item("table_column", "tag")`)
         @var("os_tag", `@concat(${column_tag}, "_class")`)
-        @var("cell_class", `@map_item("table_row", ${os_tag})`)
+        @var("row_class", `@map_item("table_row", ${os_tag})`)
         
-        <!-- Get whether this has a tooltip -->
         @var("tooltip_tag", `@concat(${column_tag}, "_tooltip")`)
         @var("tooltip", `@map_item("table_row", ${tooltip_tag})`)
         
-        <!-- Get whether this has a class associated -->
-        @var("col_class", `@map_item("row_column", "class")`)
-        @var("row_class", `@map_item("row_column", "class")`)
-        @var("default", `@map_item("row_column", "default")`)
+        @var("col_class", `@map_item("table_column", "class")`)
+        @var("default", `@map_item("table_column", "default")`)
         
         @var("data", `@map_item("table_row", ${column_tag})`)
         
         <td>
-            <div class="position relative ${col_class} ${cell_class}" data-tooltip="${tooltip}" title="${tooltip}">
+            <div class="position relative ${col_class} ${row_class}" data-tooltip="${tooltip}" title="${tooltip}">
                 @iif(${data}, ${data}, ${default})
             </div>
         </td>
     </template>
     
-    <!-- -->
-    <template name="overview-table-row">
-        @var("division", `@map_item("table_row", "division")`)
-        <tr>@each("table_columns", "row_column", "@insert_template(`overview-table-cell`)")</tr>
-    </template>
-    
-    <!-- Requires: row_header, table_columns -->
+    <!-- ================================================================== -->
+    <!-- OVERVIEW ROW HEADER (2nd Row) ==================================== -->
+    <!-- ================================================================== -->
+    <!-- Expects:                                                           -->
+    <!--   table_columns                                                    -->
+    <!-- ================================================================== -->
+    <!-- Creates:                                                           -->
+    <!--   content                                                          -->
+    <!-- ================================================================== -->
     <template name="overview-table-row-header">
         <tr>
             @each("table_columns", "content", "<td>${content}</td>")
         </tr>
     </template>
     
-    <!-- Tooltip Template -->
+    <!-- ================================================================== -->
+    <!-- TOOLTIP TEMPLATE ================================================= -->
+    <!-- ================================================================== -->
+    <!-- Expects:                                                           -->
+    <!--   tooltip                                                          -->
+    <!-- ================================================================== -->
     <template name="js-tooltip">
         <span class="tooltip">${tooltip}</span>
     </template>

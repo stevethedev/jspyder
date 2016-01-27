@@ -43,6 +43,13 @@ $text-fonts: "Gill Sans MT", "Calibri", "sans-serif";
     background-image: -ms-repeating-linear-gradient(135deg, transparent, transparent .188em, $color .188em, $color .375em);
 }
 
+@mixin width-slide() {
+    -webkit-transition-property: width, margin-left;
+    -webkit-transition-duration: .5s;
+    transition-property: width, margin-left;
+    transition-duration: .5s;
+}
+
 html {
     font-size: 1em;
     padding: 0;
@@ -120,12 +127,6 @@ h1, h2, h3, h4, h5, h6, h7, h8, h9 {
     width: 100vw;
     padding-top: $menu-height-short + $viewport-padding;
     
-    &.collapsed-menu {
-        .bank-subnavigation-container {
-            width: $menu-width-collapsed;
-        }
-    }
-    
     // content area
     .bank-content {
         @include calc(width, "100% - " $menu-width-expanded);
@@ -135,7 +136,8 @@ h1, h2, h3, h4, h5, h6, h7, h8, h9 {
         padding-left: $viewport-padding;
         padding-right: $viewport-padding;
         padding-bottom: $viewport-padding;
-        transition-duration: .5s;
+        @include width-slide();
+        
         @at-root #{selector-replace(&, '.bank-viewport', '.bank-viewport.collapsed-menu')} {
             @include calc(width, "100% - " $menu-width-collapsed);
             margin-left: $menu-width-collapsed;
@@ -145,9 +147,8 @@ h1, h2, h3, h4, h5, h6, h7, h8, h9 {
     // subnavigation bar on the left side of the screen
     .bank-subnavigation-container {
         background-color: $color-menu;
-        height: 100vh;
         width: $menu-width-expanded;
-        transition-duration: 0.5s;
+        height: 100vh;
         position: absolute;
         margin: 0;
         left: 0;
@@ -155,6 +156,11 @@ h1, h2, h3, h4, h5, h6, h7, h8, h9 {
         padding-top: $menu-height-short + $viewport-padding;
         box-shadow: 0 .19em .19em rgba(0, 0, 0, 0.3);
         overflow: hidden;
+        @include width-slide();
+        
+        @at-root #{selector-replace(&, '.bank-viewport', '.bank-viewport.collapsed-menu')} {
+            width: $menu-width-collapsed;
+        }
         
         .bank-subnavigation-list {
             &.list-2 {
@@ -167,15 +173,22 @@ h1, h2, h3, h4, h5, h6, h7, h8, h9 {
             cursor: pointer;
 
             .subnav {
-                padding: .1em;
-                font-size: larger;
                 color: #000;
                 opacity: 0.6;
                 transition-duration: .3s;
+                padding: .1em;
                 
                 &:hover {
                     opacity: 0.9;
                     background-color: rgba(255, 255, 255, .3);
+                }
+                
+                i {
+                    vertical-align: middle;
+                }
+                
+                span {
+                    vertical-align: middle;
                 }
             }
         }

@@ -61,8 +61,6 @@ h1, h2, h3, h4, h5, h6, h7, h8, h9 {
   height: 100vh;
   width: 100vw;
   padding-top: 3.425em; }
-  .bank-viewport.collapsed-menu .bank-subnavigation-container {
-    width: 1.69em; }
   .bank-viewport .bank-content {
     width: -webkit-calc(100% -  12.5em);
     width: calc(100% -  12.5em);
@@ -73,6 +71,9 @@ h1, h2, h3, h4, h5, h6, h7, h8, h9 {
     padding-left: 0.3em;
     padding-right: 0.3em;
     padding-bottom: 0.3em;
+    -webkit-transition-property: width, margin-left;
+    -webkit-transition-duration: .5s;
+    transition-property: width, margin-left;
     transition-duration: .5s; }
     .bank-viewport.collapsed-menu .bank-content {
       width: -webkit-calc(100% -  1.69em);
@@ -80,16 +81,21 @@ h1, h2, h3, h4, h5, h6, h7, h8, h9 {
       margin-left: 1.69em; }
   .bank-viewport .bank-subnavigation-container {
     background-color: #C5CAE9;
-    height: 100vh;
     width: 12.5em;
-    transition-duration: 0.5s;
+    height: 100vh;
     position: absolute;
     margin: 0;
     left: 0;
     top: 0;
     padding-top: 3.425em;
     box-shadow: 0 0.19em 0.19em rgba(0, 0, 0, 0.3);
-    overflow: hidden; }
+    overflow: hidden;
+    -webkit-transition-property: width, margin-left;
+    -webkit-transition-duration: .5s;
+    transition-property: width, margin-left;
+    transition-duration: .5s; }
+    .bank-viewport.collapsed-menu .bank-subnavigation-container {
+      width: 1.69em; }
     .bank-viewport .bank-subnavigation-container .bank-subnavigation-list {
       width: 200px;
       list-style: outside none none;
@@ -99,14 +105,17 @@ h1, h2, h3, h4, h5, h6, h7, h8, h9 {
       .bank-viewport .bank-subnavigation-container .bank-subnavigation-list.list-2 {
         border-top: 1px solid rgba(0, 0, 0, 0.7); }
       .bank-viewport .bank-subnavigation-container .bank-subnavigation-list .subnav {
-        padding: .1em;
-        font-size: larger;
         color: #000;
         opacity: 0.6;
-        transition-duration: .3s; }
+        transition-duration: .3s;
+        padding: .1em; }
         .bank-viewport .bank-subnavigation-container .bank-subnavigation-list .subnav:hover {
           opacity: 0.9;
           background-color: rgba(255, 255, 255, 0.3); }
+        .bank-viewport .bank-subnavigation-container .bank-subnavigation-list .subnav i {
+          vertical-align: middle; }
+        .bank-viewport .bank-subnavigation-container .bank-subnavigation-list .subnav span {
+          vertical-align: middle; }
 
 .bank-overview-container {
   display: inline-block;

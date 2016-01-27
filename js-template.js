@@ -345,7 +345,13 @@ jspyder.extend.fn("template", function () {
         // it into the calling template.
         insert_template: function (name) {
             var tmp = "";
-            js_template(this).compile(name, function (v) { tmp = v; });
+            var o = Object.create(this);
+            
+            for(var i = 1; i < arguments.length; ++i) {
+                o[arguments[i]] = o[arguments[++i]];
+            }
+            
+            js_template(o).compile(name, function (v) { tmp = v; });
             return tmp; 
         },
         
