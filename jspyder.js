@@ -60,6 +60,7 @@
         js.createRegistry = _createRegistry;
         js.registry = _createRegistry();
 
+        _bootstrapLog(js);
         _bootstrapEnv(js);
         _bootstrapLib(js);
 
@@ -68,6 +69,41 @@
         _bootstrapDom(js);
 
         return js;
+    }
+
+    function _bootstrapLog(js) {
+        // levels: 0 (log), 1 (warn), 2 (error) 
+        function log(level, text) {
+            var offset = (arguments.length > 1 ? 1 : 0),
+                args = js.alg.sliceArray(arguments, offset),
+                err, warn, log;
+                
+            if(arguments.length === 1) {
+                level = 0;
+            }
+            
+            if(console) {
+                log = console.log || function() {};
+                warn = console.warn || log;
+                err = console.error || err;
+                
+                if(level === 2) { js.alg.use(console, err, args); }
+                else if(level === 1) { js.alg.use(console, warn, args); }
+                else { js.alg.use(console, log, args); }
+            }
+            
+            return this;
+        }
+        log.err = function(text) {
+            js.alg.use(js, log, [2].concat(js.alg.sliceArray(arguments, 0)));
+            return this;
+        }
+        log.warn = function(text) {
+            js.alg.use(js, log, [1].concat(js.alg.sliceArray(arguments, 0)));
+            return this;
+        }
+        
+        js.extend("log", log);
     }
 
     /**************************************************************************
@@ -384,6 +420,52 @@
                 byteArray[0] = u;
                 return byteArray[0];
             },
+            
+            sliceArray: function(a, n) {
+                var ret = a;
+                try {
+                    ret = Array.prototype.slice.call(a, n || 0);
+                }
+                catch(e) { ret = []; }
+                return ret;
+            },
+            
+            bindFn: function(thisArg, fn, args) {
+                args = (args && args.length
+                    ? js.alg.sliceArray(args)
+                    : !args
+                        ? []
+                        : [args]);
+                        
+                return function() {
+                    fn.apply(thisArg, args.concat(js.args.sliceArray(arguments)));
+                };
+            },
+            
+            mergeObj: function(base) {
+                var into = base,
+                    args = js.alg.sliceArray(arguments, 1);
+                    
+                js.alg.each(args, __eachObject, into);
+                
+                function __eachObject(from, _1, _2, into) {
+                    if(from && into) {
+                        js.alg.each(from, __eachProperty, into);
+                    }
+                }
+                
+                function __eachProperty(val, prop, from, into) {
+                    if(from.hasOwnProperty(prop)) {
+                        into[prop] = val;
+                    }
+                }
+
+                return base;
+            },
+            cloneObj: function(obj) {
+                if(!obj || typeof obj !== "object") { return obj; }
+                return js.alg.mergeObj(obj.constructor(), obj);
+            }
         };
 
         if (js) {

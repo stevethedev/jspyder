@@ -73,7 +73,7 @@ js.lib
         });
         
         if (subnav) {
-            js.alg.run(subnav.constructor);
+            js.alg.run(subnav.onload);
         }
         
         return;

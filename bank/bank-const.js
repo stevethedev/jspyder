@@ -34,10 +34,10 @@ var BANK_CONST = {
                 {
                     subnav: "home.overview", 
                     text: "Travel",
-                    constructor: function () {
+                    onload: function () {
+                        function _writeTable(data) { js.lib("addContent", [data]); }
                         var $travelTable = BANK_DATA.buildOverviewTableTemplateData("projected-travel"),
                             $trainingTable = BANK_DATA.buildOverviewTableTemplateData("projected-training");
-                        function _writeTable(data) { js.lib("addContent", [data]); }
                         
                         js.template()
                             .compile("overview-table", $travelTable, _writeTable)
@@ -55,15 +55,58 @@ var BANK_CONST = {
     
     // SP table definition
     SP_LIST: {
+        // list: "transaction"
         Transactions: {
-            // literal fields
-            "id": { name: "ID", text: "ID", type: "number" },
-            "division": { name: "Division", text: "Division", type: "text", default: "J2" },
-            "fyq1": { name: "FYQ1", text: "1<sup>st</sup> Quarter", data_class: "currency", type: "number", default: 0 },
-            "fyq2": { name: "FYQ2", text: "2<sup>nd</sup> Quarter", data_class: "currency", type: "number", default: 0 },
-            "fyq3": { name: "FYQ3", text: "3<sup>rd</sup> Quarter", data_class: "currency", type: "number", default: 0 },
-            "fyq4": { name: "FYQ4", text: "4<sup>th</sup> Quarter", data_class: "currency", type: "number", default: 0 },
-        }
+            config: {
+                url: "",
+                name: "",
+                success: function() {},
+                failure: function() {}
+            },
+            postCreation: function() {},
+            columns: {
+                "id": { name: "ID", text: "ID", type: "number" },
+                "division": { 
+                    name: "Division", 
+                    text: "Division", 
+                    type: "text", 
+                    default: "J2" },
+                "travelCost": {
+                    name: "Travel_x0020_Cost",
+                    text: "Travel Cost",
+                    type: "number",
+                    default: 0
+                },
+                "trainingCost": {
+                    name: "Training_x0020_Cost",
+                    text: "Training Cost",
+                    type: "number",
+                    default: 0
+                }
+                "fyq1": { 
+                    name: "FYQ1", 
+                    text: "1<sup>st</sup> Quarter", 
+                    data_class: "currency", 
+                    type: "number", 
+                    default: 0,
+                    macro: true,
+                    process: function(value, row, column) {  } },
+                "fyq2": { name: "FYQ2", text: "2<sup>nd</sup> Quarter", data_class: "currency", type: "number", default: 0 },
+                "fyq3": { name: "FYQ3", text: "3<sup>rd</sup> Quarter", data_class: "currency", type: "number", default: 0 },
+                "fyq4": { name: "FYQ4", text: "4<sup>th</sup> Quarter", data_class: "currency", type: "number", default: 0 },
+            }
+        },
+        // list: "allocations"
+        Allocations: {
+            config: {},
+            postCreation: function() {},
+            columns: {
+                "id": { name: "ID", text: "ID", type: "number" },
+                "organization": { name: "", text: "Division" },
+                "allocYear": { name: "", text: "Allocated" },
+                "fyq1": { } 
+            }
+        },
     },
     
     // data for the constructed overview tables
@@ -72,8 +115,22 @@ var BANK_CONST = {
             id: "projected-travel", 
             title: "Projected Travel",
             class: "projected travel",
-            columns: ["division", "fyq1", "fyq2", "fyq3", "fyq4", "fyTotal", "fyRemaining"],
-            rows: []
+            columns: [
+                // list: list to get the data from
+                // column: field to read the data from
+                { list: "transaction", column: "division" },
+                { list: "allocation", column: "allocated" },
+                { list: "transaction", column: "fyq1" },
+                { list: "transaction", column: "fyq2" },
+                { list: "transaction", column: "fyq3" },
+                { list: "transaction", column: "fyq4" },
+                { list: "transaction", column: "fyTotal" },
+                { list: "transaction", column: "fyRemaining" }
+            ],
+            rows: [],
+            filters: [
+                {  }
+            ]
         }
     ]
 };
