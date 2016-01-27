@@ -253,6 +253,11 @@
                     ? fn.apply(_this, args)
                     : undefined);
             },
+            
+            run: function (fn) {
+                if (typeof fn === "function") { fn(); }
+                return this;
+            },
 
             /******************************************************************
              * Coerces any value to a boolean

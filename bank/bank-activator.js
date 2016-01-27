@@ -1,15 +1,22 @@
 // bank-activate
 js.lib
 
-    // writes the initial page layout
-    .register("initBank", function (main) {
-        js.dom(document.body).append(main);
+// writes the initial page layout
+    .register("initBank", function () {
+        js.template(BANK_DATA.initData)
+            .compile("main-page", null, function (main) {
+                js.dom(document.body).append(main);
+            })
+            .compile("overview-table", projectedTravel, function (table) {
+                js.lib("setContent", [table]);
+            });
 
         js.lib("initLinks")
-            .lib("activateConstSubnav");
+            .lib("activateConstSubnav")
+            .lib("loadPage")
     })
 
-    // initializes the links across the top of the window
+// initializes the links across the top of the window
     .register("initLinks", function () {
         js.dom(".bank-navigation .link").each(function (link) {
             var $link = js.dom(link);
@@ -22,7 +29,7 @@ js.lib
         });
     })
 
-    // initializes the base subnavigation menu
+// initializes the base subnavigation menu
     .register("activateConstSubnav", function () {
         var $viewport = js.dom(".bank-viewport");
 
@@ -35,24 +42,41 @@ js.lib
             });
     })
     
-    // inserts new data to the page.
-    .register("addContent", function(v) {
+// inserts new data to the page.
+    .register("addContent", function (v) {
         js.dom("#bank-content-panel").append(v);
     })
     
-    // removes all data from the page
-    .register("clearContent", function() {
+// removes all data from the page
+    .register("clearContent", function () {
         js.dom("#bank-content-panel").setHtml("");
     })
     
-    // replaces the current data on the page
-    .register("setContent", function(v) {
+// replaces the current data on the page
+    .register("setContent", function (v) {
         js.dom("#bank-content-panel").setHtml("").append(v);
     })
     
-    // processes a page open
-    .register("getPage", function(page) {
-        console.log(page);
+// processes a page open
+    .register("loadPage", function (pageID, subnavID) {
+        var page = BANK_DATA.getPageData(pageID),
+            dSubnavID = page.defaultSubnav,
+            subnav = null;
+            
+        js.alg.each(page.subnav, function (nav) {
+            if (!subnav && nav.subnav === dSubnavID) {
+                subnav = nav;
+            }
+            if (nav.subnav === subnavID) {
+                subnav = nav;
+            }
+        });
+        
+        if (subnav) {
+            js.alg.run(subnav.constructor);
+        }
+        
+        return;
     })
 
     .register("setSubnavCollapsed", function (collapsed) {
@@ -61,10 +85,10 @@ js.lib
         });
     })
     
-    // loads subnav data
-    .register("setSubnav", function(subnav) {
+// loads subnav data
+    .register("setSubnav", function (subnav) {
         js.template(subnav).compile(
-            "bank-subnav-list", function(data) {
+            "bank-subnav-list", function (data) {
                 js.dom("#bank-subnavigation").remove();
                 js.dom(".bank-subnavigation-container").append(data);
             });

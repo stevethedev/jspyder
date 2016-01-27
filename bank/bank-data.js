@@ -67,13 +67,24 @@ var DATA = {
 }
 
 var BANK_DATA = {
+    get initData() {
+        var o = {
+            bank_navigation: BANK_DATA.navigationLinks,
+            bank_subnav_constant: BANK_DATA.constSubnavData,//[[subnav,text,icon]]
+            //bank_subnav_volatile: BANK_DATA.getPageSubnav(),//[[subnav,text,icon]]
+        };
+        
+        return o;
+    },
+    
     // nav bar across the top of the page
     get navigationLinks() { return BANK_CONST.MAIN_NAVIGATION; },
+    get constSubnavData() { return BANK_CONST.CONSTANT_SUBNAV; },
     get subnavData() { return BANK_CONST.SUB_NAVIGATION; },
     
     // page information
     get uiPages() { return BANK_CONST.PAGES; },
-    getPageData(page) { return BANK_DATA.uiPages[page] || {}; },
+    getPageData(page) { return BANK_DATA.uiPages[page] || BANK_DATA.uiPages[BANK_CONST.MAIN_NAVIGATION_DEFAULT]; },
     getPageSubnav(page) { return BANK_DATA.getPageData(page).subnav || []; },
     
     // division information
@@ -97,6 +108,7 @@ var BANK_DATA = {
                 ret = table;
             }
         });
+        
         return ret;
     },
     // gets a list of table ids for tables associated with the given
@@ -112,11 +124,23 @@ var BANK_DATA = {
     },
     
     // build overview table template data
-    buildOverviewTableTemplateData: function(tableId) {
+    buildOverviewTableTemplateData: function (tableId) {
+        // first level data filters
         var template = Object.create(this._overviewTableTemplate),
             data = BANK_DATA.getOverviewTable(tableId);
             
+        if (data) {
+            if (data.title) { template.table_header = data.title; }
+            if (data.class) { template.table_class = data.class; }
+            // second level data filters
+            if (data.columns) { template.table_columns = data.columns; }
+            // third level filters and calculations should be done here.
+            if (data.rows) { template.table_rows = data.rows; }
+        }
         
+        console.log(template);
+        
+        return template;
     },
     _overviewTableTemplate: {
         table_header: "",

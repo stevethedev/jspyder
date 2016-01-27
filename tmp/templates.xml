@@ -4,9 +4,9 @@
     <!-- MAIN SYSTEM LAYOUT =============================================== -->
     <!-- ================================================================== -->
     <!-- Expects:                                                           -->
-    <!--   bank_navigation[page,text]                                       -->
-    <!--   bank_subnav_constant[subnav,text,icon]                           -->
-    <!--   bank_subnav_volatile[subnav,text,icon]                           -->
+    <!--   bank_navigation[[page,text]]                                     -->
+    <!--   bank_subnav_constant[[subnav,text,icon]]                         -->
+    <!--   bank_subnav_volatile[[subnav,text,icon]]                         -->
     <!-- ================================================================== -->
     <template name="main-page">
         <div class="bank-banner">
@@ -28,6 +28,12 @@
         </div>
     </template>
     
+    <!-- ================================================================== -->
+    <!-- SUBNAV LINKS ===================================================== -->
+    <!-- ================================================================== -->
+    <!-- Expects:                                                           -->
+    <!--   bank_subnav_volatile[$button[page,text]]                         -->
+    <!-- ================================================================== -->
     <template name="bank-subnav-list">
         <ul id="bank-subnavigation" class="bank-subnavigation-list list-2">
             @each("bank_subnav_volatile", "button", "@insert_template(`bank-subnavigation-link`)")

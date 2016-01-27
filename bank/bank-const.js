@@ -21,18 +21,31 @@ var BANK_CONST = {
         { page: "chart", text: "WEB CHARTS" }
     ],
     
+    CONSTANT_SUBNAV: [
+        { subnav: "collapse", text: "Collapse", icon: "compare-arrows" }
+    ],
+    
+    MAIN_NAVIGATION_DEFAULT: "home",
+    
     // page data
     PAGES: {
         home: {
             subnav: [
                 {
                     subnav: "home.overview", 
-                    text: "Overview",
-                    constructor: function() {
+                    text: "Travel",
+                    constructor: function () {
+                        var $travelTable = BANK_DATA.buildOverviewTableTemplateData("projected-travel"),
+                            $trainingTable = BANK_DATA.buildOverviewTableTemplateData("projected-training");
+                        function _writeTable(data) { js.lib("addContent", [data]); }
                         
+                        js.template()
+                            .compile("overview-table", $travelTable, _writeTable)
+                            .compile("overview-table", $trainingTable, _writeTable);
                     }
                 }
-            ]
+            ],
+            defaultSubnav: "home.overview"
         }
     },
     
@@ -55,7 +68,13 @@ var BANK_CONST = {
     
     // data for the constructed overview tables
     OVERVIEW_TABLES: [
-        { id: "" }
+        { 
+            id: "projected-travel", 
+            title: "Projected Travel",
+            class: "projected travel",
+            columns: ["division", "fyq1", "fyq2", "fyq3", "fyq4", "fyTotal", "fyRemaining"],
+            rows: []
+        }
     ]
 };
 
