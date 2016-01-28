@@ -3,11 +3,12 @@
 
 <head>
     <meta charset="utf-8" />
-    <link type="text/css" rel="stylesheet" href="jspyder.css" />
-    <script type="text/javascript" src="jspyder.js"></script>
-    <script type="text/javascript" src="js-ajax.js"></script>
-    <script type="text/javascript" src="js-dtype.js"></script>
-    <script type="text/javascript" src="js-template.js"></script>
+    <link type="text/css" rel="stylesheet" href="css/jspyder.css" />
+    <link type="text/css" rel="stylesheet" href="css/material-icons.css" />
+    <script type="text/javascript" src="js/jspyder.js"></script>
+    <script type="text/javascript" src="js/js-ajax.js"></script>
+    <script type="text/javascript" src="js/js-dtype.js"></script>
+    <script type="text/javascript" src="js/js-template.js"></script>
 </head>
 
 <body>
@@ -82,90 +83,89 @@
         js.dom("<button>Click Me to Click Text</button>")
             .attach(document.body)
             .on("mousedown", function(evt) {
-                js.dom("#test").element(0, function() {
-                    var e;
-                    try {
-                        e = new Event("mousedown", {"bubbles": true, "cancelable": false});
-                    }
-                    catch(_) {
-                        e = document.createEvent("Event");
-                        e.initEvent("mousedown", true, true);
-                    } 
+                js.dom("#test").trigger("mousedown");
+            });
+        
+        var o = {};
+        js.dtype(o)
+            .ubyte("ubyte", 0)
+            .ubyte("subyte", 0, true)
+            .ubyte("cubyte", 0, false, true)
+            .ubyte("scubyte", 0, true, true)
+            .uchar("uchar", 63)
+            .uchar("suchar", 63, true)
+            .uchar("cuchar", 63, false, true)
+            .uchar("scuchar", 63, true, true)
+            .string("string", "string")
+            .string("sstring", "string", true)
+            .string("cstring", "string", false, true)
+            .string("scstring", "string", true, true);
+            
+        var $t = js.template({
+            divisions: ["J2", "J2X", "J22", "J23", "J25", "J26", "J28", "J29"]
+        });
+        
+        var projectedTravel = {
+            table_header: "Projected Travel",
+            table_class: "projected travel",
+            table_columns: [
+                {
+                    tag: "division",
+                    text: "Division"
+                },
+                {
+                    tag: "fyq1",
+                    text: "1<sup>st</sup> Quarter"
+                },
+                {
+                    tag: "fyq2",
+                    text: "2<sup>nd</sup> Quarter"
+                },
+                {
+                    tag: "fyq3",
+                    text: "3<sup>rd</sup> Quarter"
+                },
+                {
+                    tag: "fyq4",
+                    text: "4<sup>th</sup> Quarter"
+                },
+                {
+                    tag: "fyTotal",
+                    text: "Total"
+                },
+                {
+                    tag: "fyRemaining",
+                    text: "Remaining"
+                }
+            ],
+            // ["Division", "Travel Budget", "1st Quarter", "2nd Quarter", "3rd Quarter", "4th Quarter", "Total", "Remaining"],
+            table_rows: [
+                { division: "J20", fyq1: 2000 }, 
+                { division: "J2X", fyq1: 2100 }, 
+                { division: "J22", fyq1: 2200 },
+                { division: "J23", fyq1: 2300 }, 
+                { division: "J25", fyq1: 2500 }, 
+                { division: "J26", fyq1: 2600 }, 
+                { division: "J28", fyq1: 2800 }, 
+                { division: "J29", fyq1: 2900 }
+            ]
+        };
+            
+        js.ajax("tmp/templates.xml")
+            .get(function(xhttp) {
+                var $xml = js.dom(xhttp.responseXML.firstChild),
+                    $template = js.template();
                     
-                    js.dom("#test").element(0, function() {
-                        this.dispatchEvent(e);
-                    });
+                $xml.children(function(child) {
+                    $template.storeTemplate(child.getAttribute("name"), child.innerHTML);
+                });
+                
+                $t.compile("overview-table", projectedTravel, function(table) {
+                    js.dom(document.body).append(table);
+                    console.log(table);
                 });
             });
-
-var o = {};
-js.dtype(o)
-    .ubyte("ubyte", 0)
-    .ubyte("subyte", 0, true)
-    .ubyte("cubyte", 0, false, true)
-    .ubyte("scubyte", 0, true, true)
-    .uchar("uchar", 63)
-    .uchar("suchar", 63, true)
-    .uchar("cuchar", 63, false, true)
-    .uchar("scuchar", 63, true, true)
-    .string("string", "string")
-    .string("sstring", "string", true)
-    .string("cstring", "string", false, true)
-    .string("scstring", "string", true, true)
-
-            var template = document.querySelector("#test-template").innerHTML;
-            
-            var values = {
-                name: "Steven Jimenez"
-            };
-            var functions = {
-                bold: function(name) {
-                    return "<b>" + name + "</b>"; 
-                }
-            };
-            
-            function parseValue($var) {
-                if($var.charAt(0) !== "$") {
-                    return $var;
-                }
-                $var = $var.substring(1);
-                if(values.hasOwnProperty($var)) {
-                    return values[$var];
-                }
-                throw new Error("JSpyder Template could not find value for " + $var + " in value library; returning a blank string, instead.");
-                return ""; 
-            }
-            
-            function parseFn(_fn, args) {
-                if(functions.hasOwnProperty(_fn)) {
-                    var ret = functions[_fn].apply(values, args);
-                    return typeof ret === "undefined" ? "" : ret;
-                }
-                throw new Error("JSpyder Template could not find function " + $var + " in library; returning a blank string, instead.");
-                return "";
-            }
-            
-            function parseTemplate(tmp) {
-                var fnStack, fnName, fnArgs, fnResult;
-                while(fnStack = tmp.match(/@(.+)\((?:(.*),?)*\)/)) { 
-                    fnName = fnStack[1];
-                    fnArgs = fnStack.slice(2);
-                    for(var i = 0; i < fnArgs.length; i++) {
-                        fnArgs[i] = parseValue(fnArgs[i]);
-                    }
-                    fnResult = parseFn(fnName, fnArgs);
-                    tmp = tmp.replace(/@(.+)\((?:(.*),?)*\)/, fnResult);
-                }
-                
-                return tmp;
-            }
-            
-            function insertTemplate(location, tmp) {
-                js.dom(location).item(0, function() {
-                    tmp = parseTemplate(tmp);
-                    this.append(tmp);
-                });
-            }
+        
     </script>
 </body>
 
