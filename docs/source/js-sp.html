@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='global-property-'>/******************************************************************************
+</span> * The MIT License (MIT)
+ *
+ * Copyright (c) 2015 Steven Jimenez
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the &quot;Software&quot;), to 
+ * deal in the Software without restriction, including without limitation the 
+ * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or 
+ * sell copies of the Software, and to permit persons to whom the Software is 
+ * furnished to do so, subject to the following conditions:
+ *  
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+ * IN THE SOFTWARE.
+ *****************************************************************************/
+ 
+js.extend.fn(&quot;sp&quot;, function () {
+<span id='jspyder-sp'>    /**************************************************************************
+</span>     * @class jspyder.sp
+     * @extends jspyder
+     * 
+     * # Managed Objects:
+     * ## JSpyder SharePoint List Reference (jspyder.sp.list)
+     * ## JSpyder SharePoint Query Reference (jspyder.sp.query)
+     *************************************************************************/
+    function sp() {};
+    
+<span id='jspyder-sp-list'>    /**************************************************************************
+</span>     * @class jspyder.sp.list
+     * @extends jspyder.sp
+     * 
+     * @param {Object} config
+     *      A configuration object for the initial setup of the SP list 
+     *      reference. Though a valid object will return if this parameter
+     *      is not included, it will not point anywhere and trying to use it
+     *      may throw errors.
+     * 
+     * @param {String} [config.url]
+     *      The site collection the sharepoint list belongs to.
+     * 
+     * @param {String} [config.name]
+     *      The name of the sharepoint list to connect to.
+     * 
+     * @param {Function} [config.success]
+     *      The default function to fire when a [sp.list.pull]{#sp.list.pull}
+     *      command completes successfully.
+     * 
+     * @param {Function} [config.failure]
+     *      The default function to fire when a [sp.list.pull]{#sp.list.pull}
+     *      command fails.
+     * 
+     * @param {String} [config.caml]
+     *      The CAML configuration to use when initializing the sharepoint
+     *      list reference.
+     * 
+     * @return {Object} 
+     *      A JSpyder SharePoint List Reference Object ([sp.list]{#sp.list})
+     *************************************************************************/
+    sp.list =  function spList(config, fn) {
+         
+        if (!window.SP) {
+            js.log.warn(
+                &quot;Ensure that MicrosoftAjax.js, sp.runtime.js, and sp.js &quot; +
+                &quot;have been loaded before using JSpyder SharePoint Interface&quot;);
+        }
+
+        var list = Object.create(sp.list.fn);
+
+        if (config) {
+            if (config.url) {
+                list._url = config.url;
+            }
+            if (config.name) {
+                list._name = config.name;
+            }
+            if (typeof config.success === &quot;function&quot;) {
+                list._success = config.success;
+            }
+            if (typeof config.failure === &quot;function&quot;) {
+                list._failure = config.failure;
+            }
+            if (config.caml) {
+                list._caml = config.caml;
+            }
+        }
+        js.alg.use(list, fn);
+
+        return list;
+    }
+
+    var __rowLimit = 10000;
+    var __caml = &quot;&lt;View&gt;&lt;Query&gt;&lt;Where&gt;&lt;Geq&gt;&lt;FieldRef Name='ID' /&gt;&quot;
+        + &quot;&lt;Value Type='Number'&gt;1&lt;/Value&gt;&lt;/Geq&gt;&lt;/Where&gt;&lt;/Query&gt;&quot;
+        + &quot;&lt;RowLimit&gt;&quot; + __rowLimit + &quot;&lt;/RowLimit&gt;&lt;/View&gt;&quot;
+
+    sp.list.fn = {
+        // private:
+        _url: &quot;&quot;,
+        _name: &quot;&quot;,
+        _success: function () { },
+        _failure: function () { },
+        _caml: __caml,
+        _columns: {},
+        _rows: [],
+        
+<span id='jspyder-sp-list-method-addColumn'>        /**********************************************************************
+</span>         * Adds a single column to the SP List proxy
+         * 
+         * @param {String} name
+         *      The way this column will be referred to in javascript
+         * 
+         * @param {Object} data
+         *      The template overrides for the sharepoint list column 
+         *      reference. The fields included will overwrite all default
+         *      values except &quot;name&quot; or &quot;list&quot;, as they are read-only 
+         *      attributes pointing back to the defined name and list object, 
+         *      respectively.   
+         * 
+         *          @param {String} [data.internal] 
+         *              Name of the sharepoint field, to SharePoint.  If the
+         *              list reference is expected to fill a value with data
+         *              from the server, then this field must accurately reflect
+         *              the actual name.
+         * 
+         *          @param {String} [data.text]     
+         *              Name of the sharepoint field, to the user.  This will be
+         *              the human-readable name, which can include spaces and
+         *              punctuation.
+         * 
+         *          @param {String} [data.type]     
+         *              SharePoint field data type, in all lower-case string.
+         * 
+         *          @param {String} [data.default]  
+         *              Default value, if none can be found on a query.
+         * 
+         *          @param {Function} [data.macro]  
+         *              Defines a custom value lookup.  This will override (and
+         *              not consider) any values found if a data.internal parameter
+         *              is provided.
+         *********************************************************************/
+        addColumn: function(name, data) {
+            var column = Object.create(sp.column.fn, {
+                list: { value: this },
+                name: { value: name }
+            });
+            
+            js.alg.mergeObj(column, data);
+            
+            this._columns[name] = column;
+            
+            return this;
+        },
+<span id='jspyder-sp-list-method-addColumns'>        /**********************************************************************
+</span>         * Adds a group of columns to the SP List proxy, via this.addColumn,
+         * where keys correspond to the [name] parameter, and values correspond
+         * to the [data] parameter.
+         * 
+         * @param {Object} dataObj
+         *********************************************************************/
+        addColumns: function(dataObj) {
+            js.alg.each(dataObj, function(data, name, dataObj, list) {
+                list.addColumn(name, data);
+            }, this);
+            return this;
+        },
+        
+<span id='jspyder-sp-list-method-getColumn'>        /**********************************************************************
+</span>         * Gets the column template by name, as identified in js.sp.list.addColumn
+         * 
+         * @param {String} name
+         *      The name of the field to retrieve the template for. Note that
+         *      any changes to the template will change the template for all
+         *      of the derived values within the table.
+         *********************************************************************/
+        getColumn: function(name) {
+            return (this._columns[name]
+                ? this._columns[name] 
+                : Object.create(sp.column.fn, {
+                    list: { value: this },
+                    name: { value: name }}));
+        },
+        
+<span id='jspyder-sp-list-method-getRow'>        /**********************************************************************
+</span>         * Gets the row number from the cache of stored values.  Note that this
+         * number does not necessarily correspond to the row ID within 
+         * SharePoint.
+         * 
+         * @param {Number} n
+         *      The row number to retrieve from the cache.
+         *********************************************************************/
+        getRow: function(n) {
+            return this._rows[n]; 
+        },
+        
+<span id='jspyder-sp-list-method-getRowCount'>        /**********************************************************************
+</span>         * Retrieves the number of rows within the cache.
+         * 
+         * @return {Number}
+         *********************************************************************/
+        getRowCount: function(n) {
+            return this._rows.length;
+        },
+        
+<span id='jspyder-sp-list-method-pull'>        /**********************************************************************
+</span>         * Executes an asynchronous read-query from the server to pull in 
+         * fresh data. It is important to note, when using this function, that
+         * any subsequent or chained functions will likely execute before this
+         * query has returned.
+         * 
+         * @param {Function} [success]
+         *      The function to execute after data has been loaded into the
+         *      jsSPList object, iif the query was successful.  This function
+         *      will be executed instead of the success function identified
+         *      in the constructor.
+         * 
+         * @param {Function} [failure]
+         *      The function to execute if the data query failed, accepting
+         *      [sender, args] as the parameters.  This function will be 
+         *      executed instead of the failure function identified in the
+         *      constructor.
+         *********************************************************************/
+        pull: function (success, failure) {
+            var ctx = new window.SP.ClientContext(this._url),
+                list = ctx.get_web().getByTitle(this._name),
+                caml = new window.SP.CamlQuery(),
+                successFn = (typeof success === &quot;function&quot;
+                    ? success
+                    : this._success),
+                failureFn = (typeof failure === &quot;function&quot;
+                    ? failure
+                    : this._failure);
+
+            caml.set_viewXml(this.caml);
+            var listItems = list.getItems(caml);
+
+            ctx.load(listItems);
+            ctx.executeQueryAsync(
+                js.alg.bindFn(this, __successParse, [ctx, listItems, successFn]),
+                js.alg.bindFn(this, __failureParse, [ctx, listItems, failureFn]));
+            return this;
+        },
+        
+<span id='jspyder-sp-list-method-query'>        /**********************************************************************
+</span>         * Creates a new query object. This function is synchronous, and 
+         * executes data currently residing in the cache.
+         * 
+         * @param {Array} criteria
+         *      A list of criteria to run against the list reference's cache.
+         *      Expected as an array of query objects.  See jspyder.sp.query.filter
+         * 
+         * @return {Object}
+         *      [Query Reference]{#sp.query}
+         *********************************************************************/
+        query: function (criteria) {
+            var query = __makeQuery(this).reset();
+            return (criteria instanceof Array
+                ? query.filters(criteria)
+                : query.filter(criteria));
+        },
+
+<span id='jspyder-sp-list-method-clearData'>        /**********************************************************************
+</span>         * Clears all cached data within the list reference.  This is function
+         * is automatically called when pulling data from the SharePoint List,
+         * and should not be necessary for most implementations.
+         *********************************************************************/
+        clearData: function () {
+            this._rows = [];
+            js.alg.each(this._columns, function (colData) {
+                colData.rowIDs = {}; //&lt; stores RowID:[Value,Value,Value]
+                colData.values = {}; //&lt; stores Value:[RowID,RowID,RowID] 
+            });
+            return this;
+        },
+        
+<span id='jspyder-sp-list-method-push'>        /**********************************************************************
+</span>         * Pushes changed data to the server.
+         * 
+         * !TODO: Implement the logic for this:
+         *  1: Loop through all rows
+         *  2: Loop through all columns
+         *  3: Find relevant changes
+         *  4: Stash them in ClientContext
+         *  5: Push
+         * 
+         * Alternatively, I could cache the changed values when I mark them as
+         * &quot;dirty&quot;. 
+         *********************************************************************/
+        push: function() {}
+    };
+
+<span id='jspyder-sp-list-method-__successParse'>    /**************************************************************************
+</span>     * @private
+     * Called after a successful query; loads data into the list reference.
+     * 
+     * @param {Object} listItems
+     *      SharePoint List Items collectionbeing processed
+     * 
+     * @param {Function} successFn
+     *      Function to run after SP List has completed
+     * 
+     * @param {Object} sender
+     *      Pushed in by SharePoint
+     * 
+     * @param {Object} args
+     *      Pushed in by SharePoint  
+     *************************************************************************/
+    function __successParse(listItems, successFn, sender, args) {
+        var itemEnumerator = listItems.getEnumerator(),
+            jsEach = js.alg.each,
+            columns = this._columns,
+            currentItem = null,
+            data = null,
+            row = null;
+
+        this.clearColumnData();
+        
+        // move through each item
+        while (itemEnumerator.moveNext()) {
+            row = {};
+            currentItem = itemEnumerator.get_current();
+            // grab each of our stored items
+            data = { item: currentItem, id: currentItem.get_id(), _row: row };
+            jsEach(columns, __pushRow, data);
+            this._rows.push(row);
+        }
+
+        successFn(sender, args);
+    }
+    
+<span id='jspyder-sp-list-method-__pushRow'>    /**************************************************************************
+</span>     * @private
+     * Called in a loop to push data into the SP List Reference. This function 
+     * is defined outside of the loop for efficiency.
+     * 
+     * @param {Object} colData
+     *      Individual column template (based on sp.column.fn)
+     * 
+     * @param {String} colName
+     *      Column's internal reference ID, defined in constructor
+     * 
+     * @param {Object} columns
+     *      Collection of js column references
+     * 
+     * @param {Object} data
+     *      Collection of relevant loop data, pushed in my js.alg.each.
+     *      Includes data.item (sharepoint row reference), data.id (value of
+     *      associated row ID in sharepoint), and data._row (reference to
+     *      list reference's row getting pushed into the stack).  
+     *************************************************************************/
+    function __pushRow(colData, colName, columns, data) {
+        var rowID = data.id,
+            row = data._row,
+            dirty = false,
+            cell = Object.create(colData, {
+                rowID: { value: rowID },
+                dirty: { get: function() { return dirty; } },
+                value: {
+                    get: function () {
+                        return (typeof this.macro === &quot;function&quot;
+                            ? this.macro()
+                            : colValue);
+                    },
+                    set: function (v) {
+                        if (!colData.internal) {
+                            colValue = v;
+                            dirty = true;
+                        }
+                    }
+                }
+            }),
+            colValue = colData.default;
+
+        if (colData.internal) {
+            colValue = data.item.get_value(colData.internal);
+            
+            // eventually, this will need to change to support multi-value fields.
+            //colData.rowIDs[rowID] = colValue;
+
+            //if (!colData.values[colValue]) {
+            //    colData.values[colValue] = [];
+            //}
+            //colData.values[colValue].push(rowID);
+        }
+        
+        row[colData.name] = cell;
+
+        return;
+    }
+
+<span id='jspyder-sp-list-method-__failureParse'>    /**************************************************************************
+</span>     * @private
+     * Called after a failed query; loads data into the list reference.
+     * 
+     * @param {Object} listItems
+     *      SharePoint List Items collectionbeing processed
+     * 
+     * @param {Function} failureFn
+     *      Function to run after SP List has completed
+     * 
+     * @param {Object} sender
+     *      Pushed in by SharePoint
+     * 
+     * @param {Object} args
+     *      Pushed in by SharePoint  
+     *************************************************************************/
+    function __failureParse(listItems, failureFn, sender, args) {
+        failureFn(sender, args);
+    }
+
+
+<span id='jspyder-sp-query'>    /**************************************************************************
+</span>     * @class jspyder.sp.query
+     * @extends jspyder.sp
+     * 
+     * This class should not generally be directly created in scripts. Instead,
+     * it should be either created by a call to jspyder.sp.list.query() or a 
+     * call to jspyder.sp.query.clone in order to ensure that it was properly 
+     * configured at creation and before use.
+     *************************************************************************/
+    sp.query = function(list) {
+        return Object.create(sp.query.fn, { _list: { value: list } });
+    };
+    
+    sp.query.fn = {
+<span id='jspyder-sp-query-property-_list'>        /** @private Overwritten at creation. */
+</span>        _list: null,
+<span id='jspyder-sp-query-property-_rows'>        /** @private Overwritten at creation and reset. */
+</span>        _rows: null,
+        
+<span id='jspyder-sp-query-method-reset'>        /**********************************************************************
+</span>         * Resets the query object to include all of the available rows in the
+         * associated list's cache.
+         *********************************************************************/
+        reset: function() {
+            this._rows = this._list._rows.slice(0);
+            return this;
+        },
+        
+<span id='jspyder-sp-query-method-filter'>        /**********************************************************************
+</span>         * Applies a single filter against the data stored in the cache.
+         *
+         * @param {Object} filterData
+         *      A filter definition, with the following property set:
+         *       - column: Required.  Name of the column being filtered.
+         *       - geq:  &quot;Field value &gt;= this.geq&quot;       (3 &gt;= 3)
+         *       - leq:  &quot;Field value &lt;= this.leq&quot;       (3 &lt;= 3)
+         *       - gt:   &quot;Field value &gt; this.gt&quot;         (3 &gt; 2)
+         *       - lt:   &quot;Field value &lt; this.lt&quot;         (3 &lt; 4)
+         *       - eq:   &quot;Field value == this.eq&quot;        (3 == &quot;3&quot;)
+         *       - seq:  &quot;Field value === this.seq&quot;      (3 === 3)
+         *       - neq:  &quot;Field value != this.neq&quot;       (3 != 4)
+         *       - snq:  &quot;Field value !== this.snq&quot;      (3 !== &quot;3&quot;)
+         *       - test: &quot;Field value matches this.test&quot; (/^3/.test(3000))
+         *********************************************************************/
+        filter: function(filterData) {
+            js.alg.each(this._rows, __parseRows, [filterData]);
+            return this
+        },
+        
+<span id='jspyder-sp-query-method-filters'>        /**********************************************************************
+</span>         * Applies a set of filters against the data stored in the cache. Due
+         * to the nature of the filtering algorithm, this is the more efficient
+         * of the two methods, as it requires fewer passes to apply multiple
+         * filters.  (See: jspyder.sp.query.filter)
+         *
+         * @param {Array} filterArray
+         *      Array of filter collections
+         *********************************************************************/
+        filters: function(filterArray) {
+            js.alg.each(this._rows, __parseRows, filterArray);
+            return this;
+        },
+        
+<span id='jspyder-sp-query-method-data'>        /**********************************************************************
+</span>         * Retrieves all stored data, and runs the function defined by [fn]
+         * with the context [this] and the parameter pointing to a copy of the
+         * data set.  Note that any changes to the array will mark the row for
+         * change in the owning list.  
+         *
+         * @param {Function} fn
+         *      Function to execute, with the context of the jspyder.sp.query
+         *      object, and the first argument being the stored row references
+         *      as an array.
+         *********************************************************************/
+        data: function(fn) {
+            js.alg.use(this, fn, [this._rows]);
+            return this;
+        },
+        
+<span id='jspyder-sp-query-method-sum'>        /**********************************************************************
+</span>         * Retrieves the sum of all of the stored data, if it is numerical.
+         * It not numerical, then makes no change to the default value 
+         * provided.
+         *
+         * @param {Object} columns
+         *      Object using column names (See: jspyder.sp.list) as the keys.
+         *      Values are pushed into the object, and then [fn] is executed,
+         *      with the context of the jspyder.sp.query object, and the 
+         *      [columns] object as the first argument.
+         * 
+         * @param {Function} fn
+         *      A callback function, using the jspyder.sp.query object as the
+         *      context, and the columns object as the first argument.
+         *********************************************************************/
+        sum: function(columns, fn) {
+            this.data(function(rows) {
+                js.alg.each(rows, _rows, columns);
+                js.alg.use(this, fn, [columns]);
+            });
+            
+            function _rows(row, _, rows, columns) {
+                js.alg.each(row, _columns, columns);
+            }
+            function _columns(value, colName, columns) {
+                if(typeof value === &quot;number&quot;) {
+                    columns[colName] += value;
+                }
+            }
+            
+            return this;
+        },
+        
+<span id='jspyder-sp-query-method-clone'>        /**********************************************************************
+</span>         * Creates a copy of the jspyder.sp.query object; pointing to the same
+         * jspyder.sp.list object, but with its own context of data copied from
+         * the current cache.
+         * 
+         * @return {Object} jspyder.sp.query object clone.
+         *********************************************************************/
+        clone: function() {
+            var clone = __makeQuery(this._list);
+            clone._rows = this._rows.slice(0);
+            return clone;
+        }
+    };
+
+<span id='jspyder-sp-query-method-__parseRows'>    /**********************************************************************
+</span>     * @private
+     * Separated from jspyder.sp.query.filter for memory efficiency.
+     * 
+     * @param {Object} value
+     *      Row from this._rows
+     * 
+     * @param {Number} id
+     *      Row index from row
+     * 
+     * @param {Array} _rows
+     *      this._rows
+     * 
+     * @param {Object} filterData
+     *      Collection of filters.  See jspyder.sp.query.filter
+     *********************************************************************/
+    function __parseRows(row, id, _rows, filterData) {
+        if(!row) { // catch null values
+            return;
+        }
+        
+        var f, filter, drop, value;
+        
+        for(f = 0; f &lt; filterData.length; f++) {
+            filter = filterData[f];
+            // make sure we have a column identified.
+            if(!filter.name) { continue; }
+            value = row[filter.name].value;
+            drop = false;
+            switch(filter) {
+                case &quot;gt&quot; :  drop = !(value &gt;   filter.gt ); break; 
+                case &quot;geq&quot;:  drop = !(value &gt;=  filter.geq); break; 
+                case &quot;leq&quot;:  drop = !(value &lt;=  filter.leq); break; 
+                case &quot;lt&quot; :  drop = !(value &lt;   filter.lt ); break;
+                case &quot;eq&quot; :  drop = !(value ==  filter.eq ); break;
+                case &quot;seq&quot;:  drop = !(value === filter.seq); break;
+                case &quot;neq&quot;:  drop = !(value !=  filter.neq); break;
+                case &quot;snq&quot;:  drop = !(value !== filter.snq); break;
+                case &quot;test&quot;: 
+                    if(filter.test instanceof RegExp) { //&lt; prevent invalid regexp values from breaking our query
+                        drop = !(filter.test === &quot;regex&quot; &amp;&amp; filter.test.test(value));
+                    }
+                    break;
+            }
+            if(drop) {
+                _rows[id] = null;
+            }
+        }
+        
+        _rows.sort().splice(_rows.indexOf(null));
+        
+        return this;
+    }
+    
+    // used in sp list
+    sp.column = function() {};
+    sp.column.fn = {
+        internal: &quot;&quot;,
+        text: &quot;&quot;,
+        type: &quot;string&quot;,
+        default: &quot;&quot;
+    };
+
+    return sp;
+});
+
+//! js-sp.js</pre>
+</body>
+</html>

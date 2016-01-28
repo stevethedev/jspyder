@@ -23,28 +23,43 @@
  *****************************************************************************/
 jspyder.extend.fn("dtype", function () {
     
-    // obj : context for all other operations
-    // fn : callback function for creation
+    /**************************************************************************
+     * @class jspyder.dtype
+     * @extends jspyder
+     * 
+     * Attaches strong-typed fields to javascript objects, which cannot be
+     * mutated from their initial data types (and can optionally be set
+     * as constant values, or throw errors when invalid data types are
+     * applied).
+     * 
+     * @param {Object} obj
+     *      The object against which all of the other operations will be run
+     *      against.
+     * 
+     * @param {Function} [fn]
+     *      A callback function, which will be executed using the current
+     *      jspyder.dtype object as the context, and the object [obj] as its
+     *      first parameter.
+     *************************************************************************/
     function js_dtype(obj, fn) {
         var dtype = Object.create(js_dtype);
         dtype.obj = obj;
-        if (typeof fn === "function") {
-            fn.call(dtype, obj);
-        }
+        js.alg.use(dtype, obj);
         return dtype;
     }
     
     /**************************************************************************
+     * @private
      * Returns a TypeError based on a template. Private function standardizes
      * error message.
      * 
-     * \param name {String}
+     * @param {String} name
      *      Name assigned to the variable upon creation.
      * 
-     * \param val {Any}
+     * @param {Any} val
      *      The value being assigned to the variable.
      * 
-     * \param eType {String}
+     * @param {String} eType
      *      The expected data type. 
      *************************************************************************/
     function _typeError(name, val, eType) {
@@ -78,20 +93,20 @@ jspyder.extend.fn("dtype", function () {
      *      o.lazy += "5" // = 5 + "5" = "55"
      *      o.strict += "5" // TypeError
      * 
-     * \param name {String}
+     * @param {String} name
      *      The name to identify the data-type with on object [o].
      * 
-     * \param value {Number=0}
+     * @param {Number} [value=0]
      *      An initial assignment operation.  If this is a constant, then
      *      this is how the first assignment will be made.  If this is strict,
      *      then an invalid value will immediately throw a TypeError.
      * 
-     * \param strict {Boolean=false}
+     * @param {Boolean} [strict=false]
      *      Whether to mark this object for on-assignment type-checking.  If
      *      true, then any assignment operations will trigger a type-check,
      *      and invalid types will throw a TypeError.
      * 
-     * \param constant {Boolean=false}
+     * @param {Boolean} [constant=false]
      *      Whether to mark this object as a constant.  If identified as a
      *      constant, then the value cannot be changed from the value assigned
      *      by parameter [value].
@@ -101,7 +116,7 @@ jspyder.extend.fn("dtype", function () {
             _constant = false,
             o = this.obj;
             
-        var interface = {
+        var _interface = {
             get: function () { return data[0]; },
             set: function (v) {
                 if (!_constant) {
@@ -119,18 +134,19 @@ jspyder.extend.fn("dtype", function () {
             enumerable: true
         };
         
-        interface.set(value);
+        _interface.set(value);
         _constant = constant;
-        Object.defineProperty(o, name, interface);
+        Object.defineProperty(o, name, _interface);
         return this;
     };
 
+    /** attaches a strong-typed string to the object */
     js_dtype["string"] = function attachString(name, value, strict, constant) {
         var data = String(value),
             _constant = false,
             o = this.obj;
             
-        var interface = {
+        var _interface = {
             get: function () { return data; },
             set: function (v) {
                 if (!_constant) {
@@ -147,17 +163,22 @@ jspyder.extend.fn("dtype", function () {
             enumerable: true
         };
         
-        interface.set(value);
+        _interface.set(value);
         _constant = constant;
-        Object.defineProperty(o, name, interface);
+        Object.defineProperty(o, name, _interface);
         return this;
     };
 
+    /** 
+     * Attaches a strong-typed unsigned char type to the document.  Of note,
+     * this data type can take both numerical data (ushort) or character
+     * data (single characters). 
+     */
     js_dtype.uchar = function attachChar(name, value, strict, constant) {
         var data = new Uint16Array(new ArrayBuffer(2)),
             _constant = false,
             o = this.obj;
-        var interface = {
+        var _interface = {
             get: function () { return String.fromCharCode(data[0]); },
             set: function (v) {
                 if (!_constant) {
@@ -174,18 +195,19 @@ jspyder.extend.fn("dtype", function () {
             },
             enumerable: true
         };
-        interface.set(value);
+        _interface.set(value);
         _constant = constant;
-        Object.defineProperty(o, name, interface);
+        Object.defineProperty(o, name, _interface);
         return this;
     };
     
+    /** Creates a jspyder-string object, which can (itself) be passed as a reference */
     js_dtype.jsstring = function attachJsString(name, value, strict, constant) {
         var data = "",
             _constant = false,
             o = this.obj;
             
-        var interface = {
+        var _interface = {
             get: function () {
                 return data.join('');
             },
@@ -207,9 +229,9 @@ jspyder.extend.fn("dtype", function () {
             },
             enumerable: true
         };
-        interface.set(value);
+        _interface.set(value);
         _constant = constant;
-        Object.defineProperty(o, name, interface);
+        Object.defineProperty(o, name, _interface);
         return this;
     }
     
