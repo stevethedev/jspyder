@@ -69,18 +69,6 @@ js.alg.run(function () {
     var __transactionList = null,
         __allocationList = null;
         
-    function __loadDummyData() {
-        BANK_DATA.transactionList._rows.push(
-            { division: "J20", fyq1: 2000 },
-            { division: "J2X", fyq1: 2100 },
-            { division: "J22", fyq1: 2200 },
-            { division: "J23", fyq1: 2300 },
-            { division: "J25", fyq1: 2500 },
-            { division: "J26", fyq1: 2600 },
-            { division: "J28", fyq1: 2800 }
-        );
-    }
-        
     var BANK_DATA = {
         get initData() {
             var o = {

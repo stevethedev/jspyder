@@ -14,16 +14,19 @@ js.extend.fn("sp", function () {
 
         if (config) {
             if (config.url) {
-                list.url = config.url;
+                list._url = config.url;
             }
             if (config.name) {
-                list.name = config.name;
+                list._name = config.name;
             }
             if (typeof config.success === "function") {
-                list.success = config.success;
+                list._success = config.success;
             }
             if (typeof config.failure === "function") {
-                list.failure = config.failure;
+                list._failure = config.failure;
+            }
+            if (config.caml) {
+                list._caml = config.caml;
             }
         }
         js.alg.use(list, fn);
@@ -101,7 +104,7 @@ js.extend.fn("sp", function () {
         },
         ///---------
         getRow: function(n) {
-            return _rows[n]; 
+            return this._rows[n]; 
         },
         /**********************************************************************
          * Executes an asynchronous read-query from the server to pull in 
@@ -122,9 +125,9 @@ js.extend.fn("sp", function () {
          *      constructor.
          *********************************************************************/
         pull: function (success, failure) {
-            var ctx = new SP.ClientContext(this._url),
+            var ctx = new window.SP.ClientContext(this._url),
                 list = ctx.get_web().getByTitle(this._name),
-                caml = new SP.CamlQuery(),
+                caml = new window.SP.CamlQuery(),
                 successFn = (typeof success === "function"
                     ? success
                     : this._success),
@@ -165,10 +168,10 @@ js.extend.fn("sp", function () {
          *      Returns a reference to a jsSPQuery object   
          *********************************************************************/
         query: function (criteria) {
-            var ids = js.alg.cloneObj(this._columns.values);
-            var query = __makeQuery(this);
-            
-            return query.reset().filters(criteria);
+            var query = __makeQuery(this).reset();
+            return (criteria instanceof Array
+                ? query.filters(criteria)
+                : query.filter(criteria));
         },
         // clears all of the stored data (e.g. before fetching new data)
         clearData: function () {
@@ -184,8 +187,23 @@ js.extend.fn("sp", function () {
         push: function() {}
     };
 
-    // defined here to keep the code smaller, above
-    function __successParse(clientContext, listItems, successFn, sender, args) {
+    /**************************************************************************
+     * (PRIVATE) Called after a successful query; loads data into the list
+     * reference.
+     * 
+     * \param listItems {Object}
+     *      SharePoint List Items collectionbeing processed
+     * 
+     * \param successFn {Function}
+     *      Function to run after SP List has completed
+     * 
+     * \param sender {Object}
+     *      Pushed in by SharePoint
+     * 
+     * \param args {Object}
+     *      Pushed in by SharePoint  
+     *************************************************************************/
+    function __successParse(listItems, successFn, sender, args) {
         var itemEnumerator = listItems.getEnumerator(),
             jsEach = js.alg.each,
             columns = this._columns,
@@ -200,46 +218,75 @@ js.extend.fn("sp", function () {
             row = {};
             currentItem = itemEnumerator.get_current();
             // grab each of our stored items
-            data = { row: currentItem, id: currentItem.get_id(), _row: row };
+            data = { item: currentItem, id: currentItem.get_id(), _row: row };
             jsEach(columns, __pushRow, data);
             this._rows.push(row);
         }
 
-        function __pushRow(colData, colName, columns, data) {
-            var rowID = data.id,
-                row = data._row,
-                dirty = false,
-                cellConfig = {
-                    rowID: { value: rowID },
-                    dirty: { get: function() { return dirty; } },
-                    value: { get: function() { return colValue; },
-                             set: function(v) { colValue = v; dirty = !this.macro; } }
-                },
-                cell = Object.create(colData, cellConfig),
-                colValue = colData.default;
-
-            if (colData.internal) {
-                colValue = data.row.get_value(colData.internal);
-                
-                // eventually, this will need to change to support multi-value fields.
-                colData.rowIDs[rowID] = colValue;
-
-                if (!colData.values[colValue]) {
-                    colData.values[colValue] = [];
-                }
-                colData.values[colValue].push(rowID);
-            }
-            
-            row[colData.name] = cellConfig;
-
-            return;
-        }
-
         successFn(sender, args);
+    }
+    
+    /**************************************************************************
+     * (PRIVATE) Called in a loop to push data into the SP List Reference.
+     * This function is defined outside of the loop for efficiency.
+     * 
+     * \param colData {Object}
+     *      Individual column template (based on sp.fn.column)
+     * 
+     * \param colName {String}
+     *      Column's internal reference ID, defined in constructor
+     * 
+     * \param columns {Object}
+     *      Collection of js column references
+     * 
+     * \param data {Object}
+     *      Collection of relevant loop data, pushed in my js.alg.each.
+     *      Includes data.item (sharepoint row reference), data.id (value of
+     *      associated row ID in sharepoint), and data._row (reference to
+     *      list reference's row getting pushed into the stack).  
+     *************************************************************************/
+    function __pushRow(colData, colName, columns, data) {
+        var rowID = data.id,
+            row = data._row,
+            dirty = false,
+            cell = Object.create(colData, {
+                rowID: { value: rowID },
+                dirty: { get: function() { return dirty; } },
+                value: {
+                    get: function () {
+                        return (typeof this.macro === "function"
+                            ? this.macro()
+                            : colValue);
+                    },
+                    set: function (v) {
+                        if (!colData.internal) {
+                            colValue = v;
+                            dirty = true;
+                        }
+                    }
+                }
+            }),
+            colValue = colData.default;
+
+        if (colData.internal) {
+            colValue = data.item.get_value(colData.internal);
+            
+            // eventually, this will need to change to support multi-value fields.
+            //colData.rowIDs[rowID] = colValue;
+
+            //if (!colData.values[colValue]) {
+            //    colData.values[colValue] = [];
+            //}
+            //colData.values[colValue].push(rowID);
+        }
+        
+        row[colData.name] = cell;
+
+        return;
     }
 
     // defined here to keep the code smaller, above
-    function __failureParse(clientContext, listItems, failureFn, sender, args) {
+    function __failureParse(listItems, failureFn, sender, args) {
         failureFn(sender, args);
     }
 
@@ -255,72 +302,28 @@ js.extend.fn("sp", function () {
         },
         
         /**********************************************************************
-         * (PRIVATE) Separated from filter function for speed purposes.
-         * 
-         * \param value {Object}
-         *      Row from this._rows
-         * 
-         * \param id {Number}
-         *      Row index from row
-         * 
-         * \param _rows {Array}
-         *      this._rows
-         * 
-         * \param filterData {Object}
-         *      Collection of filters
-         *********************************************************************/
-        _parseRows: function(row, id, _rows, filterData) {
-            if(!row) { // catch null values
-                return;
-            }
-            
-            var f, filter, drop, value;
-            
-            for(f = 0; f < filterData.length; f++) {
-                filter = filterData[f];
-                // make sure we have a column identified.
-                if(!filter.name) { continue; }
-                value = row[filter.name].value;
-                drop = false;
-                switch(filter) {
-                    case "gt" : drop = !(value >   filter.gt ); break; 
-                    case "geq": drop = !(value >=  filter.geq); break; 
-                    case "leq": drop = !(value <=  filter.leq); break; 
-                    case "lt" : drop = !(value <   filter.lt ); break;
-                    case "eq" : drop = !(value ==  filter.eq ); break;
-                    case "seq": drop = !(value === filter.seq); break;
-                    case "neq": drop = !(value !=  filter.neq); break;
-                    case "snq": drop = !(value !== filter.snq); break;
-                }
-                if(drop) {
-                    _rows[id] = null;
-                }
-            }
-            
-            _rows.sort().splice(_rows.indexOf(null));
-            
-            return this;
-        },
-        
-        /**********************************************************************
          * Applies a single filter against the data stored in the cache.
          *
          * \param filterData {Object}
          *      Collection of filters
          *********************************************************************/
         filter: function(filterData) {
-            js.alg.each(this._rows, this._parseRows, [filterData]);
+            js.alg.each(this._rows, _parseRows, [filterData]);
             return this
         },
         
         /**********************************************************************
-         * Applies a set of filters against the data stored in the cache.
+         * Applies a set of filters against the data stored in the cache. Due
+         * to the nature of the filtering algorithm, this is the more efficient
+         * of the two methods, as it requires fewer passes to apply multiple
+         * filters; but completes 
+         * filters; but 
          *
          * \param filterArray {Array}
          *      Array of filter collections
          *********************************************************************/
         filters: function(filterArray) {
-            js.alg.each(this._rows, this._parseRows, filterArray);
+            js.alg.each(this._rows, _parseRows, filterArray);
             return this;
         },
         
@@ -357,6 +360,55 @@ js.extend.fn("sp", function () {
         }
     };
 
+    /**********************************************************************
+     * (PRIVATE) Separated from filter function for speed purposes.
+     * 
+     * \param value {Object}
+     *      Row from this._rows
+     * 
+     * \param id {Number}
+     *      Row index from row
+     * 
+     * \param _rows {Array}
+     *      this._rows
+     * 
+     * \param filterData {Object}
+     *      Collection of filters
+     *********************************************************************/
+    function _parseRows(row, id, _rows, filterData) {
+        if(!row) { // catch null values
+            return;
+        }
+        
+        var f, filter, drop, value;
+        
+        for(f = 0; f < filterData.length; f++) {
+            filter = filterData[f];
+            // make sure we have a column identified.
+            if(!filter.name) { continue; }
+            value = row[filter.name].value;
+            drop = false;
+            switch(filter) {
+                case "gt" : drop = !(value >   filter.gt ); break; 
+                case "geq": drop = !(value >=  filter.geq); break; 
+                case "leq": drop = !(value <=  filter.leq); break; 
+                case "lt" : drop = !(value <   filter.lt ); break;
+                case "eq" : drop = !(value ==  filter.eq ); break;
+                case "seq": drop = !(value === filter.seq); break;
+                case "neq": drop = !(value !=  filter.neq); break;
+                case "snq": drop = !(value !== filter.snq); break;
+            }
+            if(drop) {
+                _rows[id] = null;
+            }
+        }
+        
+        _rows.sort().splice(_rows.indexOf(null));
+        
+        return this;
+    }
+    
+    // builds a new query object
     function __makeQuery(list) {
         return Object.create(sp.fn.query, { _list: { value: list } });
     }

@@ -65,35 +65,49 @@ var BANK_CONST = {
             },
             postCreation: function() {},
             columns: {
-                "id": { name: "ID", text: "ID", type: "number" },
+                "id": { internal: "ID", text: "ID", type: "number" },
                 "division": { 
-                    name: "Division", 
+                    internal: "Division", 
                     text: "Division", 
                     type: "text", 
                     default: "J2" },
                 "travelCost": {
-                    name: "Travel_x0020_Cost",
+                    internal: "Travel_x0020_Cost",
                     text: "Travel Cost",
                     type: "number",
-                    default: 0
-                },
+                    default: 0 },
                 "trainingCost": {
-                    name: "Training_x0020_Cost",
+                    internal: "Training_x0020_Cost",
                     text: "Training Cost",
                     type: "number",
-                    default: 0
-                }
-                "fyq1": { 
-                    name: "FYQ1", 
+                    default: 0 },
+                "fiscalYear": {
+                    internal: "Fiscal_x0020_Year",
+                    text: "Fiscal Year",
+                    type: "text" },
+                "fiscalQuarter": {
+                    internal: "Fiscal_x0020_Quarter",
+                    text: "Fiscal Quarter",
+                    type: "number", //< 0: 1st Quarter, 1: 2nd Quarter, etc.
+                    default: 0 },
+                "fyq1Training": {  
                     text: "1<sup>st</sup> Quarter", 
                     data_class: "currency", 
-                    type: "number", 
+                    type: "number",
                     default: 0,
-                    macro: true,
-                    process: function(value, row, column) {  } },
-                "fyq2": { name: "FYQ2", text: "2<sup>nd</sup> Quarter", data_class: "currency", type: "number", default: 0 },
-                "fyq3": { name: "FYQ3", text: "3<sup>rd</sup> Quarter", data_class: "currency", type: "number", default: 0 },
-                "fyq4": { name: "FYQ4", text: "4<sup>th</sup> Quarter", data_class: "currency", type: "number", default: 0 },
+                    macro: function (row) { return (row["fiscalQuarter"] === 0 ? row["trainingCost"] : this.default); } },
+                "fyq2Trianing": {
+                    text: "2<sup>nd</sup> Quarter",
+                    data_class: "currency",
+                    type: "number",
+                    default: 0,
+                    macro: function (row) { return (row["fiscalQuarter"] === 1 ? row["trainingCost"] : this.default); } },
+                "fyq3": {
+                    text: "3<sup>rd</sup> Quarter", 
+                    data_class: "currency", 
+                    type: "number", 
+                    default: 0 },
+                "fyq4": { text: "4<sup>th</sup> Quarter", data_class: "currency", type: "number", default: 0 },
             }
         },
         // list: "allocations"
