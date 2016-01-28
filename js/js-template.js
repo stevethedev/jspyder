@@ -121,8 +121,11 @@ jspyder.extend.fn("template", function () {
             arg = arg[len - 1];
             tmp = tmp.substring(cut);
 
-            if (!arg.search(reCommandLiteral)) {
-                args.push(arg.substring(1, arg.length - 1));
+            if (!arg.search(reFunction)) {
+                args.push(__parse(arg, ctx.data));
+            }
+            else if (!arg.search(reCommandLiteral)) {
+                args.push(__parse(arg.substring(1, arg.length - 1), ctx.data));
             }
             else if (!arg.search(reString)) {
                 args.push(arg.substring(1, arg.length - 1));
@@ -134,7 +137,7 @@ jspyder.extend.fn("template", function () {
                 args.push(+arg);
             }
             else {
-                args.push(undefined);
+                args.push(__parse(arg, ctx.data));
             }
         }
 
@@ -167,6 +170,7 @@ jspyder.extend.fn("template", function () {
             length = found.length;
             
             str += ctx.tmp.substring(0, index);
+            ctx.tmp = ctx.tmp.substring(index + length);
             
             if (reFunction.test(found)) {
                 found = __parseFunction(found, ctx);
@@ -176,7 +180,6 @@ jspyder.extend.fn("template", function () {
             }
             
             str += found;
-            ctx.tmp = ctx.tmp.substring(index + length);
         }
         str += ctx.tmp; // remaining string
         
@@ -235,6 +238,7 @@ jspyder.extend.fn("template", function () {
             if (typeof template === "undefined") {
                 template = "";
             }
+            template = template.replace(/[\n\r\f\s]+/gi, " ");
             var o = Object.create(this._data);
             js.alg.each(data || {}, function (v, k, _, o) {
                 o[k] = v;
@@ -321,17 +325,17 @@ jspyder.extend.fn("template", function () {
     js_template.registerSet = js_template.fn.registerSet;
     
     js_template.registerSet({
-        // matches an array [from] in data
+        // matches an array [frm] in data
         // pushes results tp [push] in [template]
-        each: function (from, push, template) {
-            var data = this[from] || {},
-                pushObj = {},
+        each: function (frm, push, template) {
+            var data = this[frm] || {},
+                pushObj = Object.create(this),
                 ret = "",
                 $t = js_template(data);
-            function _copy(v) { ret += v; }
+                
             js.alg.each(data, function (v, k, data, ctx) {
                 pushObj[push] = v;
-                $t.compileExplicit(template, pushObj, _copy);
+                ret += $t.compileExplicit(template, pushObj).output();
             }, this);
             
             return ret;
@@ -341,7 +345,13 @@ jspyder.extend.fn("template", function () {
         // it into the calling template.
         insert_template: function (name) {
             var tmp = "";
-            js_template(this).compile(name, function (v) { tmp = v; });
+            var o = Object.create(this);
+            
+            for(var i = 1; i < arguments.length; ++i) {
+                o[arguments[i]] = o[arguments[++i]];
+            }
+            
+            js_template(o).compile(name, function (v) { tmp = v; });
             return tmp; 
         },
         
@@ -363,6 +373,70 @@ jspyder.extend.fn("template", function () {
             else {
                 return $t.compileExplicit(fail).output();
             }
+        },
+        
+        // gets the size of an array
+        size: function (arrayName) {
+            var data = this[arrayName];
+            
+            return (data && data.length
+                ? data.length
+                : typeof data === "undefined"
+                    ? 0
+                    : 1); 
+        },
+        
+        // adds two numbers together
+        add: function (n, a) {
+            return js.alg.number(js.alg.number(n) + js.alg.number(a));
+        },
+        
+        "var": function (name, value) {
+            if (arguments.length === 1) {
+                return this[name] || "";
+            }
+            this[name] = value;
+            return "";
+        },
+        
+        // @map("myMap", "key", "value", "key", "value", ...)
+        map: function (name) {
+            var map = {};
+            
+            for (var i = 1; i < arguments.length; i += 2) {
+                map[arguments[i]] = arguments[i + 1];
+            }
+            
+            this[name] = map;
+            return "";
+        },
+        
+        map_item: function (map, id) {
+            map = this[map];
+            return (map ? map[id] : id);
+        },
+        
+        
+        js_registry: function (key) {
+            var data = js.registry.fetch(key);
+            return (data === null || typeof data === "undefined"
+                ? "" : data);
+        },
+        
+        js_log: function (data) {
+            console.log(data);
+        },
+        
+        concat: function(str) {
+            for(var i = 1; i < arguments.length; i++) {
+                str += arguments[i];
+            }
+            return str;
+        },
+        
+        html: function(str) {
+            js.dom("<div>" + str + "</div>").getText(function(v) { str = v; });
+            return str;
         }
     })
     

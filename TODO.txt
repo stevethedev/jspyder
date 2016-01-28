@@ -1,0 +1,4 @@
+1. Build the SP lists associated with the BANK Transaction and Allocation information, based on what we already have in production.
+2. Build the bindings between JSpyder and BANK to display table data.
+3. Build the left-side menu for subnav, dynamically.
+4. Consider cannibalizing the BANK framework I started on NIPR.

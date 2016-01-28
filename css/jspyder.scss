@@ -81,3 +81,63 @@ input {
 label {
     display: block;
 }
+
+/* XS */
+@media screen {
+    .screen-xs-align-center { text-align: center; }
+    .screen-xs-align-left { text-align: left; }
+    .screen-xs-align-right { text-align: right; }
+    .screen-xs-position-absolute { position: absolute; }
+    .screen-xs-position-static { position: static; }
+    .screen-xs-right { right: 0; }
+    .screen-xs-left { left: 0; }
+}
+@media screen and (min-width: 1120px) {
+    .screen-sm-align-center { text-align: center; }
+    .screen-sm-align-left { text-align: left; }
+    .screen-sm-align-right { text-align: right; }
+    .screen-sm-position-absolute { position: absolute; }
+    .screen-sm-position-static { position: static; }
+    .screen-sm-right { right: 0; }
+    .screen-sm-left { left: 0; }
+}
+@media screen and (min-width: 1200px) {
+    .screen-md-align-center { text-align: center; }
+    .screen-md-align-left { text-align: left; }
+    .screen-md-align-right { text-align: right; }
+    .screen-md-position-absolute { position: absolute; }
+    .screen-md-position-static { position: static; }
+    .screen-md-right { right: 0; }
+    .screen-md-left { left: 0; }
+}
+@media screen and (min-width: 2000px) {
+    .screen-lg-align-center { text-align: center; }
+    .screen-lg-align-left { text-align: left; }
+    .screen-lg-align-right { text-align: right; }
+    .screen-lg-position-absolute { position: absolute; }
+    .screen-lg-position-static { position: static; }
+    .screen-lg-right { right: 0; }
+    .screen-lg-left { left: 0; }
+}
+
+
+.display {
+    &.inline-block { display: inline-block; }
+    &.block { display: block; }
+}
+
+.position {
+    &.relative { position: relative; }
+    &.absolute { position: absolute; }
+    &.static { position: static; }
+}
+
+.cursor-help { cursor: help; }
+.cursor-wait { cursor: wait; }
+.cursor-pointer { cursor: pointer; }
+
+sup {
+    position:relative;
+	top:-0.2em;
+	vertical-align:top;
+}
