@@ -58,33 +58,52 @@
             return this;
         }
         js.createRegistry = _createRegistry;
-        
+        js.registry = _createRegistry();
+
+        _bootstrapLog(js);
         _bootstrapEnv(js);
-        
-
-        // js.lib
-        // Stores library functions
-        function jsLib(name, arg1) {
-            var fn;
-
-            fn = _jsLibFn[name];
-            if (!fn) {
-                return null;
-            }
-
-
-
-        }
-        var _jsLibFn = {};
-        Object.defineProperties(jsLib, {
-            fn: { value: _jsLibFn }
-        });
+        _bootstrapLib(js);
 
         // JSpyder Algorithms
         _bootstrapAlg(js);
         _bootstrapDom(js);
-        
+
         return js;
+    }
+
+    function _bootstrapLog(js) {
+        // levels: 0 (log), 1 (warn), 2 (error) 
+        function log(level, text) {
+            var offset = (arguments.length > 1 ? 1 : 0),
+                args = js.alg.sliceArray(arguments, offset),
+                err, warn, log;
+                
+            if(arguments.length === 1) {
+                level = 0;
+            }
+            
+            if(console) {
+                log = console.log || function() {};
+                warn = console.warn || log;
+                err = console.error || err;
+                
+                if(level === 2) { js.alg.use(console, err, args); }
+                else if(level === 1) { js.alg.use(console, warn, args); }
+                else { js.alg.use(console, log, args); }
+            }
+            
+            return this;
+        }
+        log.err = function(text) {
+            js.alg.use(js, log, [2].concat(js.alg.sliceArray(arguments, 0)));
+            return this;
+        }
+        log.warn = function(text) {
+            js.alg.use(js, log, [1].concat(js.alg.sliceArray(arguments, 0)));
+            return this;
+        }
+        
+        js.extend("log", log);
     }
 
     /**************************************************************************
@@ -92,14 +111,14 @@
      *************************************************************************/
     function _bootstrapEnv(js) {
         var VERSION_OBJ = {
-                MAJOR_VERSION: 0,
-                MINOR_VERSION: 0,
-                PATCH_VERSION: 0
-            },
+            MAJOR_VERSION: 0,
+            MINOR_VERSION: 0,
+            PATCH_VERSION: 0
+        },
             VERSION_STR = VERSION_OBJ.MAJOR_VERSION + "." + VERSION_OBJ.MINOR_VERSION + "." + VERSION_OBJ.PATCH_VERSION,
             BROWSER_NAME = "",
-            BROWSER_VERSION = 0; 
-        
+            BROWSER_VERSION = 0;
+
         (function _detectBrowser() {
             if (/*@cc_on!@*/false || !!document.documentMode) {
                 BROWSER_NAME = "IE";
@@ -116,7 +135,7 @@
                 else if (Node.innerText) { BROWSER_VERSION = 45; }
                 else if (Document.charset) { BROWSER_VERSION = 44; }
                 else if (Array.prototype.includes) { BROWSER_VERSION = 43; }
-                else if (Reflect) { BROWSER_VERSION = 42; }
+                else if (typeof window.Reflect !== "undefined") { BROWSER_VERSION = 42; }
                 else { BROWSER_VERSION = 41; }
             }
             else if (!!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0) {
@@ -134,7 +153,7 @@
             }
             else if (window.MSInputMethodContext) {
                 BROWSER_NAME = "Edge";
-                if (JSON.stringify({foo: Symbol()}) === "{}") { BROWSER_VERSION = 13; }
+                if (JSON.stringify({ foo: Symbol() }) === "{}") { BROWSER_VERSION = 13; }
                 else if (!window.RTCIceGatherOptions) { BROWSER_VERSION = 12; }
                 else { BROWSER_VERSION = 11; }
             }
@@ -164,13 +183,13 @@
                 BROWSER_VERSION = 47;
             }
         })();
-        
+
         var __browser = {
             name: BROWSER_NAME,
             version: BROWSER_VERSION
         };
         Object.freeze(__browser);
-        
+
         var js_env = {
             version: VERSION_STR,
             versionNo: (
@@ -180,7 +199,7 @@
             browser: __browser
         };
         Object.freeze(js_env);
-        
+
         js.extend("env", js_env);
     }
     /**************************************************************************
@@ -269,6 +288,11 @@
                 return (typeof fn === "function"
                     ? fn.apply(_this, args)
                     : undefined);
+            },
+            
+            run: function (fn) {
+                if (typeof fn === "function") { fn(); }
+                return this;
             },
 
             /******************************************************************
@@ -396,6 +420,52 @@
                 byteArray[0] = u;
                 return byteArray[0];
             },
+            
+            sliceArray: function(a, n) {
+                var ret = a;
+                try {
+                    ret = Array.prototype.slice.call(a, n || 0);
+                }
+                catch(e) { ret = []; }
+                return ret;
+            },
+            
+            bindFn: function(thisArg, fn, args) {
+                args = (args && args.length
+                    ? js.alg.sliceArray(args)
+                    : !args
+                        ? []
+                        : [args]);
+                        
+                return function() {
+                    fn.apply(thisArg, args.concat(js.args.sliceArray(arguments)));
+                };
+            },
+            
+            mergeObj: function(base) {
+                var into = base,
+                    args = js.alg.sliceArray(arguments, 1);
+                    
+                js.alg.each(args, __eachObject, into);
+                
+                function __eachObject(from, _1, _2, into) {
+                    if(from && into) {
+                        js.alg.each(from, __eachProperty, into);
+                    }
+                }
+                
+                function __eachProperty(val, prop, from, into) {
+                    if(from.hasOwnProperty(prop)) {
+                        into[prop] = val;
+                    }
+                }
+
+                return base;
+            },
+            cloneObj: function(obj) {
+                if(!obj || typeof obj !== "object") { return obj; }
+                return js.alg.mergeObj(obj.constructor(), obj);
+            }
         };
 
         if (js) {
@@ -501,7 +571,7 @@
         function js_dom(element, fn, args) {
             element = element || [];
             var s = element, el;
-            
+
             if (!(element instanceof js.dom)) {
 
                 if (typeof s === "string") {
@@ -529,7 +599,7 @@
                 });
             }
             else {
-                el = element; 
+                el = element;
             }
 
             el.use(fn, args);
@@ -641,7 +711,7 @@
                         css = (!(+i) ? css.first : css.others);
 
                         // iterate each css field
-                        _each(css, function (_, attr, css, data) {                                
+                        _each(css, function (_, attr, css, data) {
                             css[attr] = data.style[attr] || data.cStyle[attr];
                         }, { style: eStyle, cStyle: cStyle });
 
@@ -676,7 +746,7 @@
                         attrs = (!i ? attrs.first : attrs.others);
                         // iterate each attribute
                         _each(attrs, function (_, a, attrs) {
-                            attrs[a] = a.getAttribute(a);
+                            attrs[a] = el.getAttribute(a);
                         });
                         // callback
                         if (typeof fn === "function") { js_dom(el, fn, [attrs]); }
@@ -745,7 +815,7 @@
              * \param fn {Function}
              *****************************************************************/
             children: function (fn) {
-                this.each(function (i, element, elements) {
+                this.each(function (element, i, elements) {
                     for (var j = 0; j < element.children.length; j++) {
                         js_dom(element.children[j], fn, [element.children[j]]);
                     }
@@ -895,9 +965,9 @@
                 // for every element jsDom...
                 this.each(function (element, i, _2, classes) {
                     // iterate the classes...
-                    classes = (js.alg.number(i) ? classes.first : classes.second);
+                    classes = (!js.alg.number(i) ? classes.first : classes.second);
                     js.alg.each(classes, function (_1, className, _2, o) {
-                        o.classes[className] = _getDomClass(o.element, className);
+                        o.classes[className] = _getDomClass(o.el, className);
                     }, { el: element, classes: classes });
                     
                     // run the callback
@@ -920,7 +990,7 @@
              *****************************************************************/
             on: function (events, handler) {
                 events = (events || "").split(/\s+/);
-                
+
                 js.alg.each(events, function (event, _1, _2, self) {
                     js.alg.each(self._element, function (element) {
                         element.addEventListener(event, handler);
@@ -932,13 +1002,13 @@
                         }
                     });
                 }, this);
-                
+
                 return this;
             },
-            
+
             trigger: function (event) {
                 event = (event || "").toString().split(/\s+/);
-                
+
                 var e
                 for (var i = 0; i < event.length; i++) {
                     try {
@@ -952,6 +1022,40 @@
                         el.dispatchEvent(e);
                     });
                 }
+
+                return this;
+            },
+
+            setHtml: function (html) {
+                this.each(function (element) {
+                    element.innerHTML = html || "";
+                });
+                return this;
+            },
+
+            getHtml: function (fn) {
+                if (typeof fn === "function") {
+                    this.each(function (element) {
+                        fn.call(element, element.innerHTML || "");
+                    });
+                }
+                return this;
+            },
+            
+            getText: function(fn) {
+                if(typeof fn === "function") {
+                    this.each(function(element) {
+                        fn.call(element, element.textContent || "");
+                    });
+                }
+                return this;
+            },
+            
+            setText: function(text) {
+                this.each(function(element) {
+                    element.textContent = text || "";
+                });
+                return this;
             }
         };
 
@@ -961,6 +1065,42 @@
         return js_dom;
     }
 
+    function _bootstrapLib(js) {
+        var _js_lib_repo = _createRegistry();
+        
+        // Retrieves the library function
+        function js_lib(name, args, fn) {
+            var _fn = _js_lib_repo.fetch(name),
+                ret = null;
+            if (_fn && typeof _fn === "function") {
+                ret = _fn.apply(js, args);
+            }
+            if (typeof fn === "function") {
+                fn.call(this, ret);
+            }
+            return this;
+        }
+        js_lib.register = function (name, fn) {
+            if (typeof name == "string") {
+                if (typeof fn === "function" || fn === null) {
+                    _js_lib_repo.stash(name, fn);
+                }
+            }
+
+            return this;
+        };
+        js_lib.registerSet = function (o) {
+            if (o && typeof o === "object") {
+                js.alg.each(o, function (fn, name) {
+                    js_lib.register(name, fn);
+                });
+            }
+            return this;
+        };
+
+        js.extend("lib", js_lib);
+    }
+    
     /**************************************************************************
      * Creates a hidden registry, and returns an interface to interact with it
      * 
