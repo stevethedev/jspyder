@@ -154,6 +154,7 @@ js.extend.fn("sp", function () {
          *      Expected as an array of jsSPQueryCommand objects, with expected
          *      values being:
          * 
+         *       - column (name of the column being filtered)
          *       - geq(>=)
          *       - leq(<=)
          *       - gt(>)
@@ -162,7 +163,7 @@ js.extend.fn("sp", function () {
          *       - seq(===)
          *       - neq(!=)
          *       - snq(!==)
-         *       - column (name of the column being filtered)
+         *       - test(regular expression test)
          * 
          * \return {Object}
          *      Returns a reference to a jsSPQuery object   
@@ -389,14 +390,15 @@ js.extend.fn("sp", function () {
             value = row[filter.name].value;
             drop = false;
             switch(filter) {
-                case "gt" : drop = !(value >   filter.gt ); break; 
-                case "geq": drop = !(value >=  filter.geq); break; 
-                case "leq": drop = !(value <=  filter.leq); break; 
-                case "lt" : drop = !(value <   filter.lt ); break;
-                case "eq" : drop = !(value ==  filter.eq ); break;
-                case "seq": drop = !(value === filter.seq); break;
-                case "neq": drop = !(value !=  filter.neq); break;
-                case "snq": drop = !(value !== filter.snq); break;
+                case "gt" :  drop = !(value >   filter.gt ); break; 
+                case "geq":  drop = !(value >=  filter.geq); break; 
+                case "leq":  drop = !(value <=  filter.leq); break; 
+                case "lt" :  drop = !(value <   filter.lt ); break;
+                case "eq" :  drop = !(value ==  filter.eq ); break;
+                case "seq":  drop = !(value === filter.seq); break;
+                case "neq":  drop = !(value !=  filter.neq); break;
+                case "snq":  drop = !(value !== filter.snq); break;
+                case "test": drop = !(filter.test.test(value)); break; // receives a regexp
             }
             if(drop) {
                 _rows[id] = null;
