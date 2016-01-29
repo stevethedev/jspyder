@@ -114,8 +114,8 @@ js.extend.fn(&quot;sp&quot;, function () {
     }
 
     var __rowLimit = 10000;
-    var __caml = &quot;&lt;View&gt;&lt;Query&gt;&lt;Where&gt;&lt;Geq&gt;&lt;FieldRef Name='ID' /&gt;&quot;
-        + &quot;&lt;Value Type='Number'&gt;1&lt;/Value&gt;&lt;/Geq&gt;&lt;/Where&gt;&lt;/Query&gt;&quot;
+    var __caml = &quot;&lt;View&gt;&lt;Query&gt;&lt;Where&gt;&lt;Geq&gt;&lt;FieldRef Name=&#39;ID&#39; /&gt;&quot;
+        + &quot;&lt;Value Type=&#39;Number&#39;&gt;1&lt;/Value&gt;&lt;/Geq&gt;&lt;/Where&gt;&lt;/Query&gt;&quot;
         + &quot;&lt;RowLimit&gt;&quot; + __rowLimit + &quot;&lt;/RowLimit&gt;&lt;/View&gt;&quot;
 
     sp.list.fn = {
@@ -270,7 +270,7 @@ js.extend.fn(&quot;sp&quot;, function () {
          * executes data currently residing in the cache.
          * 
          * @param {Array} criteria
-         *      A list of criteria to run against the list reference's cache.
+         *      A list of criteria to run against the list reference&#39;s cache.
          *      Expected as an array of query objects.  See jspyder.sp.query.filter
          * 
          * @return {Object}
@@ -361,7 +361,7 @@ js.extend.fn(&quot;sp&quot;, function () {
      *      Individual column template (based on sp.column.fn)
      * 
      * @param {String} colName
-     *      Column's internal reference ID, defined in constructor
+     *      Column&#39;s internal reference ID, defined in constructor
      * 
      * @param {Object} columns
      *      Collection of js column references
@@ -370,7 +370,7 @@ js.extend.fn(&quot;sp&quot;, function () {
      *      Collection of relevant loop data, pushed in my js.alg.each.
      *      Includes data.item (sharepoint row reference), data.id (value of
      *      associated row ID in sharepoint), and data._row (reference to
-     *      list reference's row getting pushed into the stack).  
+     *      list reference&#39;s row getting pushed into the stack).  
      *************************************************************************/
     function __pushRow(colData, colName, columns, data) {
         var rowID = data.id,
@@ -454,7 +454,7 @@ js.extend.fn(&quot;sp&quot;, function () {
         
 <span id='jspyder-sp-query-method-reset'>        /**********************************************************************
 </span>         * Resets the query object to include all of the available rows in the
-         * associated list's cache.
+         * associated list&#39;s cache.
          *********************************************************************/
         reset: function() {
             this._rows = this._list._rows.slice(0);
