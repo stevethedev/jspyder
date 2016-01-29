@@ -16,4 +16,4 @@ echo " > Clearing Old Documentation..."
 rm -d -r docs
 
 echo " > Writing New Documentation..."
-jsduck ./js --output ./docs
+jsduck --title "JSpyder" ./js --output ./docs
