@@ -91,6 +91,10 @@ js.extend.fn("sp", function () {
                 list._caml = config.caml;
             }
         }
+        
+        list._columns = {};
+        list._rows = [];
+        
         js.alg.use(list, fn);
 
         return list;
@@ -229,7 +233,7 @@ js.extend.fn("sp", function () {
          *********************************************************************/
         pull: function (success, failure) {
             var ctx = new window.SP.ClientContext(this._url),
-                list = ctx.get_web().getByTitle(this._name),
+                list = ctx.get_web().get_lists().getByTitle(this._name),
                 caml = new window.SP.CamlQuery(),
                 successFn = (typeof success === "function"
                     ? success
@@ -243,8 +247,8 @@ js.extend.fn("sp", function () {
 
             ctx.load(listItems);
             ctx.executeQueryAsync(
-                js.alg.bindFn(this, __successParse, [ctx, listItems, successFn]),
-                js.alg.bindFn(this, __failureParse, [ctx, listItems, failureFn]));
+                js.alg.bindFn(this, __successParse, [listItems, successFn]),
+                js.alg.bindFn(this, __failureParse, [listItems, failureFn]));
             return this;
         },
         
@@ -260,7 +264,7 @@ js.extend.fn("sp", function () {
          *      [Query Reference]{#sp.query}
          *********************************************************************/
         query: function (criteria) {
-            var query = __makeQuery(this).reset();
+            var query = sp.query(this).reset();
             return (criteria instanceof Array
                 ? query.filters(criteria)
                 : query.filter(criteria));
@@ -320,7 +324,7 @@ js.extend.fn("sp", function () {
             data = null,
             row = null;
 
-        this.clearColumnData();
+        this.clearData();
         
         // move through each item
         while (itemEnumerator.moveNext()) {
@@ -365,7 +369,7 @@ js.extend.fn("sp", function () {
                 value: {
                     get: function () {
                         return (typeof this.macro === "function"
-                            ? this.macro()
+                            ? this.macro(row)
                             : colValue);
                     },
                     set: function (v) {
@@ -379,7 +383,7 @@ js.extend.fn("sp", function () {
             colValue = colData.default;
 
         if (colData.internal) {
-            colValue = data.item.get_value(colData.internal);
+            colValue = data.item.get_item(colData.internal);
             
             // eventually, this will need to change to support multi-value fields.
             //colData.rowIDs[rowID] = colValue;
@@ -390,9 +394,34 @@ js.extend.fn("sp", function () {
             //colData.values[colValue].push(rowID);
         }
         
+        colValue = __parseValueType(colData, colValue);
+        
         row[colData.name] = cell;
 
         return;
+    }
+    
+    /**
+     * Parses the colData variable for the value type, and then ensures that
+     * value meets those requirements.  If it does not meet the requirements,
+     * then it is either converted to the correct data type, or it is set to
+     * the default value.
+     * 
+     * @param {Object} colData
+     *      Column template (based on sp.column.fn)
+     * 
+     * @param {Mixed} value
+     *      The value to test and/or convert.
+     */
+    function __parseValueType(colData, value) {
+        switch(colData.type) {
+            case "number" :
+                value = js.alg.number(value);
+                break;
+            default:
+                break;
+        }
+        return value;
     }
 
     /**************************************************************************
@@ -461,7 +490,9 @@ js.extend.fn("sp", function () {
          *       - test: "Field value matches this.test" (/^3/.test(3000))
          *********************************************************************/
         filter: function(filterData) {
-            js.alg.each(this._rows, __parseRows, [filterData]);
+            if(filterData) {
+                js.alg.each(this._rows, __parseRows, [filterData]);
+            }
             return this
         },
         
@@ -512,6 +543,10 @@ js.extend.fn("sp", function () {
          *********************************************************************/
         sum: function(columns, fn) {
             this.data(function(rows) {
+                // initialize default values...
+                js.alg.each(columns, function(column, key, columns) {
+                    columns[key] = column.value || column.default;
+                });
                 js.alg.each(rows, _rows, columns);
                 js.alg.use(this, fn, [columns]);
             });
@@ -519,9 +554,16 @@ js.extend.fn("sp", function () {
             function _rows(row, _, rows, columns) {
                 js.alg.each(row, _columns, columns);
             }
-            function _columns(value, colName, columns) {
-                if(typeof value === "number") {
-                    columns[colName] += value;
+            function _columns(value, colName, _, out) {
+                switch(value.type) {
+                    case "number":
+                        out[colName] = js.alg.number(out[colName]) + js.alg.number(value.value);
+                        break;
+                        
+                    case "string":
+                    default: 
+                        out[colName] = value.value;
+                        break;
                 }
             }
             
@@ -536,7 +578,7 @@ js.extend.fn("sp", function () {
          * @return {Object} jspyder.sp.query object clone.
          *********************************************************************/
         clone: function() {
-            var clone = __makeQuery(this._list);
+            var clone = sp.query(this._list);
             clone._rows = this._rows.slice(0);
             return clone;
         }
@@ -568,30 +610,37 @@ js.extend.fn("sp", function () {
         for(f = 0; f < filterData.length; f++) {
             filter = filterData[f];
             // make sure we have a column identified.
-            if(!filter.name) { continue; }
-            value = row[filter.name].value;
+            if(!filter) { continue; } 
+            if(!filter.column) { continue; }
+            value = row[filter.column].value;
             drop = false;
-            switch(filter) {
-                case "gt" :  drop = !(value >   filter.gt ); break; 
-                case "geq":  drop = !(value >=  filter.geq); break; 
-                case "leq":  drop = !(value <=  filter.leq); break; 
-                case "lt" :  drop = !(value <   filter.lt ); break;
-                case "eq" :  drop = !(value ==  filter.eq ); break;
-                case "seq":  drop = !(value === filter.seq); break;
-                case "neq":  drop = !(value !=  filter.neq); break;
-                case "snq":  drop = !(value !== filter.snq); break;
-                case "test": 
-                    if(filter.test instanceof RegExp) { //< prevent invalid regexp values from breaking our query
-                        drop = !(filter.test === "regex" && filter.test.test(value));
-                    }
-                    break;
+            
+            if(!drop && (typeof filter.gt  !== "undefined")) { drop = !(value >   filter.gt ); } 
+            if(!drop && (typeof filter.geq !== "undefined")) { drop = !(value >=  filter.geq); } 
+            if(!drop && (typeof filter.leq !== "undefined")) { drop = !(value <=  filter.leq); } 
+            if(!drop && (typeof filter.lt  !== "undefined")) { drop = !(value <   filter.lt ); }
+            if(!drop && (typeof filter.eq  !== "undefined")) { drop = !(value ==  filter.eq ); }
+            if(!drop && (typeof filter.seq !== "undefined")) { drop = !(value === filter.seq); }
+            if(!drop && (typeof filter.neq !== "undefined")) { drop = !(value !=  filter.neq); }
+            if(!drop && (typeof filter.snq !== "undefined")) { drop = !(value !== filter.snq); }
+            
+            if(!drop && (typeof filter.test !== "undefined")) { 
+                // prevent invalid regexp values from breaking our query
+                if(filter.test instanceof RegExp) { 
+                    drop = !(filter.test.test(value));
+                }
             }
             if(drop) {
                 _rows[id] = null;
             }
         }
         
-        _rows.sort().splice(_rows.indexOf(null));
+        var index;
+        _rows.sort();
+        index = _rows.indexOf(null);
+        if(index > -1) {
+            _rows.splice(index);
+        }
         
         return this;
     }

@@ -337,10 +337,7 @@
                 if (obj && typeof obj === "object") {
                     var newVal;
                     for (var i in obj) {
-                        newVal = fn.apply(ctl, [obj[i], i, obj, data]);
-                        if (newVal) {
-                            obj[i] = newVal;
-                        }
+                        fn.apply(ctl, [obj[i], i, obj, data]);
                         if (_break) {
                             break;
                         }
@@ -561,7 +558,7 @@
                         
                 return function() {
                     var ret = null;
-                    if(typeof fn === "function") { ret = fn.apply(thisArg, args.concat(js.args.sliceArray(arguments))); }
+                    if(typeof fn === "function") { ret = fn.apply(thisArg, args.concat(js.alg.sliceArray(arguments))); }
                     return ret;
                 };
             },
@@ -585,12 +582,14 @@
                     if(from && into) {
                         js.alg.each(from, __eachProperty, into);
                     }
+                    return;
                 }
                 
                 function __eachProperty(val, prop, from, into) {
                     if(from.hasOwnProperty(prop)) {
                         into[prop] = val;
                     }
+                    return;
                 }
 
                 return base;
