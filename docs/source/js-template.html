@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='global-property-'>/******************************************************************************
+</span> * The MIT License (MIT)
+ *
+ * Copyright (c) 2015 Steven Jimenez
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the &quot;Software&quot;), to 
+ * deal in the Software without restriction, including without limitation the 
+ * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or 
+ * sell copies of the Software, and to permit persons to whom the Software is 
+ * furnished to do so, subject to the following conditions:
+ *  
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+ * IN THE SOFTWARE.
+ *****************************************************************************/
+jspyder.extend.fn(&quot;template&quot;, function () {
+    var js = this;
+    if (!js) {
+        console.error(&quot;Attempted to load module js-template without loading JSpyder&quot;);
+        return null;
+    }
+
+    var _templates = js.createRegistry(),
+        _library = js.createRegistry(),
+        __master_key = ((Math.random() * 0xFFFFFFFF) | 0).toString(32);
+    
+<span id='global-method-js_template'>    /**************************************************************************
+</span>     * Loads the passed template into memory under the identified [name], and
+     * allows the user to manipulate the template with the rest of the 
+     * commands.
+     * 
+     * \param name {String}
+     *      The name of a saved template to load from the library.  These can
+     *      be stored in memory using js.template.store(name, template);
+     * 
+     * \param data {Object}
+     *      An object defining match-variables in the key, and the values to
+     *      substitute as the value.
+     *************************************************************************/
+    function js_template(data) {
+        if (!data || typeof data !== &quot;object&quot;) {
+            data = {};
+        }
+
+        function _setData(key, d) {
+            if (key === __master_key) {
+                data = d;
+            }
+        }
+        
+        var compiled = &quot;&quot;;
+        // obscures the interface for updating the compiled value,
+        // so that it can only be done from within the javascript object.
+        function _setCompiled(key, c) {
+            if (key === __master_key) {
+                compiled = c;
+            }
+        }
+
+        var jsTmp = Object.create(js_template.fn, {
+            _data: { get: function () { return data; } },
+            _compiled: { get: function () { return compiled; } },
+            _setData: { value: _setData },
+            _setCompiled: { value: _setCompiled }
+        });
+        return jsTmp;
+    }
+
+    // build the expressions to search for
+    var resIdentifier = &quot;\\D[a-z0-9_]*&quot;,
+        resString = &quot;\&quot;(?:[^\&quot;\\\\]|\\\\.)*\&quot;&quot;,
+        resCommandLiteral = &quot;\`(?:[^\`\\\\]|\\\\.)*\`&quot;,
+        resNumber = &quot;\\d+(?:\\.\\d+)?&quot;,
+        resVariable = &quot;\\$\\{&quot; + resIdentifier + &quot;\\}&quot;,
+        resFuncName = &quot;\\@&quot; + resIdentifier,
+        resFuncSep = &quot;(?:\\s*,\\s*(?!\\)))?&quot;,
+        resFuncArgs = &quot;\\s*(&quot; + resCommandLiteral + &quot;|&quot; + resString + &quot;|&quot; + resNumber + &quot;|&quot; + resVariable + &quot;)&quot; + resFuncSep,
+        resFunction = [resFuncName, &quot;\\((?:&quot;,
+            resFuncArgs,
+            &quot;)*\\)&quot;].join(&#39;&#39;),
+        resSymbol = &#39;(&#39; + resFunction + &#39;|&#39; + resVariable + &#39;)&#39;,
+
+        reIdentifier = new RegExp(resIdentifier, &quot;i&quot;),
+        reFuncArgs = new RegExp(resFuncArgs, &quot;i&quot;),
+        reString = new RegExp(resString, &quot;i&quot;),
+        reCommandLiteral = new RegExp(resCommandLiteral, &quot;i&quot;),
+        reNumber = new RegExp(resNumber),
+        reVariable = new RegExp(resVariable, &quot;i&quot;),
+        reFuncName = new RegExp(resFuncName, &quot;i&quot;),
+        reFunction = new RegExp(resFunction, &quot;i&quot;),
+        reSymbol = new RegExp(resSymbol, &quot;i&quot;);
+
+    // Retrieves a value [name] from the context [ctx] object
+    function __parseVar(ctx, name) {
+        var value = ctx.data[name.substring(2, name.length - 1)];
+        return (typeof value === &quot;undefined&quot;
+            ? name
+            : value !== null
+                ? value
+                : &quot;&quot;);
+    }
+
+    // parses and executes a function, if it exists, using the format:
+    // @[name](${var}, &quot;string&quot;, 0.5);
+    function __parseFunction(tmp, ctx) {
+        var name, args = [], arg, result, len, cut;
+
+        name = tmp.match(reFuncName)[0].substring(1);
+        tmp = tmp.substring(tmp.indexOf(&quot;(&quot;) + 1, tmp.lastIndexOf(&quot;)&quot;));
+        while (arg = reFuncArgs.exec(tmp)) {
+            cut = arg[0].length;
+            len = arg.length;
+            arg = arg[len - 1];
+            tmp = tmp.substring(cut);
+
+            if (!arg.search(reFunction)) {
+                args.push(__parse(arg, ctx.data));
+            }
+            else if (!arg.search(reCommandLiteral)) {
+                args.push(__parse(arg.substring(1, arg.length - 1), ctx.data));
+            }
+            else if (!arg.search(reString)) {
+                args.push(arg.substring(1, arg.length - 1));
+            }
+            else if (!arg.search(reVariable)) {
+                args.push(__parse(arg, ctx.data));
+            }
+            else if (!arg.search(reNumber)) {
+                args.push(+arg);
+            }
+            else {
+                args.push(__parse(arg, ctx.data));
+            }
+        }
+
+        var fn = ctx.lib.fetch(name);
+        if (fn) {
+            result = fn.apply(ctx.data, args);
+            if (typeof result !== &quot;undefined&quot; &amp;&amp; result !== null) {
+                tmp = result;
+            }
+        }
+        else {
+            tmp = &quot;@&quot; + name + &quot;(&quot; + args.join(&quot;, &quot;) + &quot;)&quot;;
+        }
+        
+        return tmp;
+    }
+    
+    function __parse(tmp, data) {
+        // build the context object            
+        var ctx = {
+            data: data,
+            tmp: tmp,
+            lib: _library
+        };
+        
+        var found = null, str = &quot;&quot;, index = 0, length;
+        while (found = reSymbol.exec(ctx.tmp)) {
+            index = found.index;
+            found = found[0];
+            length = found.length;
+            
+            str += ctx.tmp.substring(0, index);
+            ctx.tmp = ctx.tmp.substring(index + length);
+            
+            if (reFunction.test(found)) {
+                found = __parseFunction(found, ctx);
+            }
+            if (reVariable.test(found)) {
+                found = __parseVar(ctx, found);
+            }
+            
+            str += found;
+        }
+        str += ctx.tmp; // remaining string
+        
+        return str;
+    }
+
+    js_template.fn = {
+<span id='global-method-compile'>        /**********************************************************************
+</span>         * Loads the passed template into memory under the identified [name], 
+         * and allows the user to manipulate the template with the rest of the 
+         * commands.
+         * 
+         * \param name {String}
+         *      Identifier for a previously stored template.
+         * 
+         * \param data {Object=}
+         *      Data object to use when running the template, where keys
+         *      correspond to template values, and values correspond to the
+         *      data to substitute into the template.  If omitted (or null), 
+         *      then uses the object selected
+         * 
+         * \param fn {Function=}
+         *      An optional callback function to run immediately after the
+         *      template has completed parsing. Context is [data], parameter
+         *      is the completed template.  
+         *********************************************************************/
+        compile: function (name, data, fn) {
+            var template = _templates.fetch(name);
+            return this.compileExplicit(template, data, fn);
+        },
+
+<span id='global-method-compileExplicit'>        /**********************************************************************
+</span>         * Loads the passed template into memory under the identified [name], 
+         * and allows the user to manipulate the template with the rest of the 
+         * commands.
+         * 
+         * \param template {String}
+         *      A string to run as the template.
+         * 
+         * \param data {Object=}
+         *      Data object to use when running the template, where keys
+         *      correspond to template values, and values correspond to the
+         *      data to substitute into the template.  If omitted (or null), 
+         *      then uses the object selected
+         * 
+         * \param fn {Function=}
+         *      An optional callback function to run immediately after the
+         *      template has completed parsing. Context is [data], parameter
+         *      is the completed template.  
+         *********************************************************************/
+        compileExplicit: function (template, data, fn) {
+            if (typeof data === &quot;function&quot; &amp;&amp; !fn) {
+                fn = data;
+                data = null;
+            }
+            if (typeof template === &quot;undefined&quot;) {
+                template = &quot;&quot;;
+            }
+            template = template.replace(/[\n\r\f\s]+/gi, &quot; &quot;);
+            var o = Object.create(this._data);
+            js.alg.each(data || {}, function (v, k, _, o) {
+                o[k] = v;
+            }, o);
+            var tmp = __parse(template, o);
+            
+            this._setCompiled(__master_key, tmp);
+            
+            typeof fn === &quot;function&quot; &amp;&amp; fn.apply(this, [tmp]);
+            return this;
+        },
+        
+        output: function () { return this._compiled; },
+        
+<span id='global-method-storeTemplate'>        /**********************************************************************
+</span>         * Loads the passed template into memory under the identified [name], 
+         * and allows the user to manipulate the template with the rest of the 
+         * commands.
+         * 
+         * \param name {String}
+         *      Identifier to use when referring to this template.
+         * 
+         * \param template {Any=}
+         *      Template string to load into the template library, or [null] 
+         *      to remove the template from storage.
+         *********************************************************************/
+        storeTemplate: function (name, template) {
+            _templates.stash(name, (template || &quot;&quot;).toString());
+            return this;
+        },
+        
+<span id='global-method-getTemplate'>        /**********************************************************************
+</span>         * Pulls the selected template, and runs [fn] with the template as the
+         * context. 
+         * 
+         * \param name {String}
+         *      Identifier to use when referring to this template.
+         * 
+         * \param fn {Function}
+         *      Callback to run with the template as the context.
+         *********************************************************************/
+        getTemplate: function (name, fn) {
+            _templates.fetch(name, fn);
+            return this;
+        },
+        
+<span id='global-method-register'>        /**********************************************************************
+</span>         * Registers a function with the templates library, to make it
+         * available within the templates.
+         * 
+         * \param name {String}
+         *      Identifier to within the templates.  Accessible by @name()
+         * 
+         * \param fn {Function}
+         *      Function to call when invoked by @name() in the templates.
+         *********************************************************************/
+        register: function (name, fn) {
+            if (typeof fn === &quot;function&quot;) {
+                _library.stash(name, fn);
+            }
+            return this;
+        },
+        
+<span id='global-method-registerSet'>        /**********************************************************************
+</span>         * Registers a set of functions through js.template.register()
+         * 
+         * \param o {Object}
+         *      Registers o&#39;s keys as function names, and o&#39;s values as
+         *      the functions to execute when @key() is invoked within a
+         *      template.
+         *********************************************************************/
+        registerSet: function (o) {
+            var self = this;
+            js.alg.each(o, function (v, k) { self.register(k, v); });
+            return this;
+        }
+    };
+
+    js_template.storeTemplate = js_template.fn.storeTempate;
+    js_template.getTemplate = js_template.fn.getTemplate;
+    js_template.compile = js_template.fn.compile;
+    js_template.compileExplicit = js_template.fn.compileExplicit;
+    js_template.register = js_template.fn.register;
+    js_template.registerSet = js_template.fn.registerSet;
+    
+    js_template.registerSet({
+        // matches an array [frm] in data
+        // pushes results tp [push] in [template]
+        each: function (frm, push, template) {
+            var data = this[frm] || {},
+                pushObj = Object.create(this),
+                ret = &quot;&quot;,
+                $t = js_template(data);
+                
+            js.alg.each(data, function (v, k, data, ctx) {
+                pushObj[push] = v;
+                ret += $t.compileExplicit(template, pushObj).output();
+            }, this);
+            
+            return ret;
+        },
+        
+        // fetches the template by [name], compiles it, and inserts
+        // it into the calling template.
+        insert_template: function (name) {
+            var tmp = &quot;&quot;;
+            var o = Object.create(this);
+            
+            for(var i = 1; i &lt; arguments.length; ++i) {
+                o[arguments[i]] = o[arguments[++i]];
+            }
+            
+            js_template(o).compile(name, function (v) { tmp = v; });
+            return tmp; 
+        },
+        
+        // branching logic.  If [test] is true, then inserts [pass],
+        // else inserts [fail].
+        // TODO: Make this native support, so that it won&#39;t have
+        // to parse both paths ad infinitum before executing the
+        // function.
+        iif: function (test, pass, fail) {
+            var $t = js_template(this);
+            
+            if (typeof test === &quot;string&quot;) {
+                test = $t.compileExplicit(test).output();
+            }
+            
+            if (!!test) {
+                return $t.compileExplicit(pass).output();
+            }
+            else {
+                return $t.compileExplicit(fail).output();
+            }
+        },
+        
+        // gets the size of an array
+        size: function (arrayName) {
+            var data = this[arrayName];
+            
+            return (data &amp;&amp; data.length
+                ? data.length
+                : typeof data === &quot;undefined&quot;
+                    ? 0
+                    : 1); 
+        },
+        
+        // adds two numbers together
+        add: function (n, a) {
+            return js.alg.number(js.alg.number(n) + js.alg.number(a));
+        },
+        
+        &quot;var&quot;: function (name, value) {
+            if (arguments.length === 1) {
+                return this[name] || &quot;&quot;;
+            }
+            this[name] = value;
+            return &quot;&quot;;
+        },
+        
+        // @map(&quot;myMap&quot;, &quot;key&quot;, &quot;value&quot;, &quot;key&quot;, &quot;value&quot;, ...)
+        map: function (name) {
+            var map = {};
+            
+            for (var i = 1; i &lt; arguments.length; i += 2) {
+                map[arguments[i]] = arguments[i + 1];
+            }
+            
+            this[name] = map;
+            return &quot;&quot;;
+        },
+        
+        map_item: function (map, id) {
+            map = this[map];
+            return (map ? map[id] : id);
+        },
+        
+        
+        js_registry: function (key) {
+            var data = js.registry.fetch(key);
+            return (data === null || typeof data === &quot;undefined&quot;
+                ? &quot;&quot; : data);
+        },
+        
+        js_log: function (data) {
+            console.log(data);
+        },
+        
+        concat: function(str) {
+            for(var i = 1; i &lt; arguments.length; i++) {
+                str += arguments[i];
+            }
+            return str;
+        },
+        
+        html: function(str) {
+            js.dom(&quot;&lt;div&gt;&quot; + str + &quot;&lt;/div&gt;&quot;).getText(function(v) { str = v; });
+            return str;
+        }
+    })
+    
+    js.template = js_template;
+    return js_template;
+});</pre>
+</body>
+</html>

@@ -22,20 +22,22 @@
  * IN THE SOFTWARE.
  *****************************************************************************/
 
-jspyder.extend.fn("ajax", function () {
-    var js = this;
-    
+jspyder.extend.fn("ajax", function (js) {
     /**************************************************************************
+     * @class jspyder.ajax
+     * @extends jspyder
+     * 
      * Abstracts AJAX calls for simple use
      * 
-     * \param url {String}
+     * @param {String} url
      *      The URL to send the command against
      * 
-     * \param data {Object}
+     * @param {Object} data
      *      A data object, if one is necessary, consisting of the information
      *      to send to the server.  If one doesn't exist, then 
      * 
-     * \param fn {}
+     * @param {Function} fn
+     *      The callback function to perform once the AJAX call has completed.
      *************************************************************************/
     function js_ajax(url, data, fn) {
         var ajax = Object.create(js_ajax.fn);
@@ -50,7 +52,11 @@ jspyder.extend.fn("ajax", function () {
         return ajax;
     } 
     
-    function js_ajax_try(method, url, data, fn) {
+    /**************************************************************************
+     * @private
+     * Internals for running the AJAX query.
+     *************************************************************************/
+    function __js_ajax_try(method, url, data, fn) {
         if (!url) { return this; }
              
         var xhttp = new XMLHttpRequest();
@@ -76,23 +82,29 @@ jspyder.extend.fn("ajax", function () {
         return this;
     };
     
+    /**************************************************************************
+     * @class jspyder.ajax.fn
+     * @extends jspyder.ajax
+     * 
+     * Prototype for created ajax objects.
+     *************************************************************************/
     js_ajax.fn = {
         data: {},
         url: "",
         fn: function () { },
         "get": function (fn) {
             fn = (typeof fn === "function" ? fn : this.fn);
-            js_ajax_try("GET", this.url, this.data, fn || fn);
+            __js_ajax_try("GET", this.url, this.data, fn || fn);
         },
         "head": function (fn) {
             fn = (typeof fn === "function" ? fn : this.fn);
-            js_ajax_try("HEAD", this.url, this.data, fn);
+            __js_ajax_try("HEAD", this.url, this.data, fn);
         },
         "post": function (fn) {
             fn = (typeof fn === "function" ? fn : this.fn);
-            js_ajax_try("POST", this.url, this.data, fn);
+            __js_ajax_try("POST", this.url, this.data, fn);
         }
     }
     
     return js_ajax;
-});
+}, jspyder);
