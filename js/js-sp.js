@@ -1,4 +1,4 @@
-/******************************************************************************
+/* ****************************************************************************
  * The MIT License (MIT)
  *
  * Copyright (c) 2015 Steven Jimenez
@@ -20,12 +20,12 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
- *****************************************************************************/
+ * ***************************************************************************/
  
 js.extend.fn("sp", function () {
     /**************************************************************************
      * @class jspyder.sp
-     * @extends jspyder
+     * @member jspyder
      * 
      * # Managed Objects:
      * ## JSpyder SharePoint List Reference (jspyder.sp.list)

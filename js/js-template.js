@@ -1,4 +1,4 @@
-/******************************************************************************
+/* ****************************************************************************
  * The MIT License (MIT)
  *
  * Copyright (c) 2015 Steven Jimenez
@@ -20,7 +20,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
- *****************************************************************************/
+ * ***************************************************************************/
 jspyder.extend.fn("template", function () {
     var js = this;
     if (!js) {
@@ -33,15 +33,18 @@ jspyder.extend.fn("template", function () {
         __master_key = ((Math.random() * 0xFFFFFFFF) | 0).toString(32);
     
     /**************************************************************************
+     * @class jspyder.template
+     * @member jspyder
+     * 
      * Loads the passed template into memory under the identified [name], and
      * allows the user to manipulate the template with the rest of the 
      * commands.
      * 
-     * \param name {String}
+     * @param {String} name
      *      The name of a saved template to load from the library.  These can
      *      be stored in memory using js.template.store(name, template);
      * 
-     * \param data {Object}
+     * @param {Object} data
      *      An object defining match-variables in the key, and the values to
      *      substitute as the value.
      *************************************************************************/
@@ -188,20 +191,22 @@ jspyder.extend.fn("template", function () {
 
     js_template.fn = {
         /**********************************************************************
+         * @member jspyder.template
+         * 
          * Loads the passed template into memory under the identified [name], 
          * and allows the user to manipulate the template with the rest of the 
          * commands.
          * 
-         * \param name {String}
+         * @param {String} name
          *      Identifier for a previously stored template.
          * 
-         * \param data {Object=}
+         * @param {Object=} data
          *      Data object to use when running the template, where keys
          *      correspond to template values, and values correspond to the
          *      data to substitute into the template.  If omitted (or null), 
          *      then uses the object selected
          * 
-         * \param fn {Function=}
+         * @param {Function=} fn
          *      An optional callback function to run immediately after the
          *      template has completed parsing. Context is [data], parameter
          *      is the completed template.  
@@ -212,20 +217,22 @@ jspyder.extend.fn("template", function () {
         },
 
         /**********************************************************************
+         * @member jspyder.template
+         * 
          * Loads the passed template into memory under the identified [name], 
          * and allows the user to manipulate the template with the rest of the 
          * commands.
          * 
-         * \param template {String}
+         * @param {String} template
          *      A string to run as the template.
          * 
-         * \param data {Object=}
+         * @param {Object=} data
          *      Data object to use when running the template, where keys
          *      correspond to template values, and values correspond to the
          *      data to substitute into the template.  If omitted (or null), 
          *      then uses the object selected
          * 
-         * \param fn {Function=}
+         * @param {Function=} fn
          *      An optional callback function to run immediately after the
          *      template has completed parsing. Context is [data], parameter
          *      is the completed template.  
@@ -254,14 +261,16 @@ jspyder.extend.fn("template", function () {
         output: function () { return this._compiled; },
         
         /**********************************************************************
+         * @member jspyder.template
+         * 
          * Loads the passed template into memory under the identified [name], 
          * and allows the user to manipulate the template with the rest of the 
          * commands.
          * 
-         * \param name {String}
+         * @param {String} name
          *      Identifier to use when referring to this template.
          * 
-         * \param template {Any=}
+         * @param {Mixed=} template
          *      Template string to load into the template library, or [null] 
          *      to remove the template from storage.
          *********************************************************************/
@@ -271,13 +280,15 @@ jspyder.extend.fn("template", function () {
         },
         
         /**********************************************************************
+         * @member jspyder.template
+         * 
          * Pulls the selected template, and runs [fn] with the template as the
          * context. 
          * 
-         * \param name {String}
+         * @param {String} name
          *      Identifier to use when referring to this template.
          * 
-         * \param fn {Function}
+         * @param {Function} fn
          *      Callback to run with the template as the context.
          *********************************************************************/
         getTemplate: function (name, fn) {
@@ -286,14 +297,16 @@ jspyder.extend.fn("template", function () {
         },
         
         /**********************************************************************
+         * @member jspyder.template
+         * 
          * Registers a function with the templates library, to make it
          * available within the templates.
          * 
-         * \param name {String}
-         *      Identifier to within the templates.  Accessible by @name()
+         * @param {String} name
+         *      Identifier to within the templates.  Accessible by name()
          * 
-         * \param fn {Function}
-         *      Function to call when invoked by @name() in the templates.
+         * @param {Function} fn
+         *      Function to call when invoked by name() in the templates.
          *********************************************************************/
         register: function (name, fn) {
             if (typeof fn === "function") {
@@ -303,9 +316,11 @@ jspyder.extend.fn("template", function () {
         },
         
         /**********************************************************************
+         * @member jspyder.template
+         * 
          * Registers a set of functions through js.template.register()
          * 
-         * \param o {Object}
+         * @param {Object} o
          *      Registers o's keys as function names, and o's values as
          *      the functions to execute when @key() is invoked within a
          *      template.

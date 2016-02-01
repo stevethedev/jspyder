@@ -1,4 +1,4 @@
-/******************************************************************************
+/* ****************************************************************************
  * The MIT License (MIT)
  *
  * Copyright (c) 2015 Steven Jimenez
@@ -20,12 +20,12 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
- *****************************************************************************/
+ * ***************************************************************************/
 jspyder.extend.fn("dtype", function () {
     
     /**************************************************************************
      * @class jspyder.dtype
-     * @extends jspyder
+     * @member jspyder
      * 
      * Attaches strong-typed fields to javascript objects, which cannot be
      * mutated from their initial data types (and can optionally be set
@@ -56,7 +56,7 @@ jspyder.extend.fn("dtype", function () {
      * @param {String} name
      *      Name assigned to the variable upon creation.
      * 
-     * @param {Any} val
+     * @param {Mixed} val
      *      The value being assigned to the variable.
      * 
      * @param {String} eType

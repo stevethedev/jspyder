@@ -15,8 +15,8 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js"><span id='global-property-'>/******************************************************************************
-</span> * The MIT License (MIT)
+  <pre class="prettyprint lang-js">/* ****************************************************************************
+ * The MIT License (MIT)
  *
  * Copyright (c) 2015 Steven Jimenez
  * 
@@ -37,25 +37,28 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
- *****************************************************************************/
+ * ***************************************************************************/
 
-jspyder.extend.fn(&quot;ajax&quot;, function (js) {
-<span id='jspyder-ajax'>    /**************************************************************************
+jspyder.extend.fn(&quot;ajax&quot;, function () {
+    var js = this;
+    
+<span id='jspyder-ajax'>    /**
 </span>     * @class jspyder.ajax
-     * @extends jspyder
+     * @member jspyder
      * 
-     * Abstracts AJAX calls for simple use
+     * Abstracts Ajax calls for simple use via callbacks.
      * 
      * @param {String} url
      *      The URL to send the command against
      * 
      * @param {Object} data
      *      A data object, if one is necessary, consisting of the information
-     *      to send to the server.  If one doesn&#39;t exist, then 
+     *      to send to the server.  If one is not provided, then a blank 
+     *      dataset is initialized.
      * 
      * @param {Function} fn
      *      The callback function to perform once the AJAX call has completed.
-     *************************************************************************/
+     */
     function js_ajax(url, data, fn) {
         var ajax = Object.create(js_ajax.fn);
         
@@ -69,10 +72,11 @@ jspyder.extend.fn(&quot;ajax&quot;, function (js) {
         return ajax;
     } 
     
-<span id='jspyder-ajax-method-__js_ajax_try'>    /**************************************************************************
+<span id='jspyder-ajax-method-__js_ajax_try'>    /**
 </span>     * @private
+     * 
      * Internals for running the AJAX query.
-     *************************************************************************/
+     */
     function __js_ajax_try(method, url, data, fn) {
         if (!url) { return this; }
              
@@ -99,32 +103,93 @@ jspyder.extend.fn(&quot;ajax&quot;, function (js) {
         return this;
     };
     
-<span id='jspyder-ajax-fn'>    /**************************************************************************
-</span>     * @class jspyder.ajax.fn
-     * @extends jspyder.ajax
+<span id='jspyder-ajax-property-fn'>    /**
+</span>     * @property fn
+     * @member jspyder.ajax
      * 
      * Prototype for created ajax objects.
-     *************************************************************************/
+     */
     js_ajax.fn = {
+<span id='jspyder-ajax-fn-property-data'>        /**
+</span>         * @property {Object} data
+         * @member jspyder.ajax.fn
+         * 
+         * Information which will be (or has been) sent to the server via the
+         * Ajax call. 
+         */
         data: {},
+        
+<span id='jspyder-ajax-fn-property-url'>        /**
+</span>         * @property {String} url
+         * @member jspyder.ajax.fn
+         * 
+         * URL which data will be (or has been) setn to via the Ajax call.
+         */
         url: &quot;&quot;,
+        
+<span id='jspyder-ajax-fn-property-fn'>        /**
+</span>         * @property {Function} fn
+         * @member jspyder.ajax.fn
+         * 
+         * Function which will be executed after the Ajax call has returned.
+         */
         fn: function () { },
+        
+<span id='jspyder-ajax-fn-property-get'>        /**
+</span>         * @property {Function} get
+         * @member jspyder.ajax.fn
+         * 
+         * @param {Function} [fn]
+         *      A function to execute in place of the stored callback function.
+         *      If no function is provided, then the default function provided
+         *      at initialization will be used.
+         * 
+         * Executes the Ajax template as a &quot;GET&quot; call 
+         */
         &quot;get&quot;: function (fn) {
             fn = (typeof fn === &quot;function&quot; ? fn : this.fn);
-            __js_ajax_try(&quot;GET&quot;, this.url, this.data, fn || fn);
+            __js_ajax_try(&quot;GET&quot;, this.url, this.data, fn);
+            return this;
         },
+        
+<span id='jspyder-ajax-fn-property-head'>        /**
+</span>         * @property {Function} head
+         * @member jspyder.ajax.fn
+         * 
+         * @param {Function} [fn]
+         *      A function to execute in place of the stored callback function.
+         *      If no function is provided, then the default function provided
+         *      at initialization will be used.
+         * 
+         * Executes the Ajax template as a &quot;HEAD&quot; call 
+         */
         &quot;head&quot;: function (fn) {
             fn = (typeof fn === &quot;function&quot; ? fn : this.fn);
             __js_ajax_try(&quot;HEAD&quot;, this.url, this.data, fn);
+            return this;
         },
+        
+<span id='jspyder-ajax-fn-property-post'>        /**
+</span>         * @property {Function} post
+         * @member jspyder.ajax.fn
+         * 
+         * @param {Function} [fn]
+         *      A function to execute in place of the stored callback function.
+         *      If no function is provided, then the default function provided
+         *      at initialization will be used.
+         * 
+         * Executes the Ajax template as a &quot;POST&quot; call 
+         */
         &quot;post&quot;: function (fn) {
             fn = (typeof fn === &quot;function&quot; ? fn : this.fn);
             __js_ajax_try(&quot;POST&quot;, this.url, this.data, fn);
+            return this;
         }
     }
     
     return js_ajax;
-}, jspyder);
+});
+
 </pre>
 </body>
 </html>
