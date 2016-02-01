@@ -1,0 +1,22 @@
+1. Build input fields with js-forms
+2. Build dropdown menu with js-forms
+3. Build multi-select dropdown menu with js-forms (based on checkbox and dropdown)
+4. Build radio selectors with js-forms
+5. Build button fields
+6. Build submit button fields (based on button)
+7. Build reset button fields (based on button)
+8. Build toggle buttons with js-forms (Based on checkbox and button)
+9. Build radio button with js-forms (based on radio selector and button)
+10. Build autocomplete fields (based on input and dropdown)
+11. Build numerical fields (based on input)
+12. Build date fields (based on input)
+13. Build time fields (based on input)
+14. Build date/time fields (based on date and time fields)
+15. Build validation logic for all fields and field types
+16. Build submission logic for form
+17. Build reset logic for form
+18. Build failed submission logic for form
+19. Build insertion logic for form
+    > Load form template into memory as a string
+      >> Designate form fields with same formatting as the js-template library 
+    > Insert whole form as a single element

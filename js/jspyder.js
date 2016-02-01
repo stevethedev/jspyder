@@ -1303,7 +1303,7 @@
             
             /** @private */
             _and: function(_elements) {
-                js.alg.joinArray(_elements, this._elements);
+                js.alg.joinArray(_elements, this._element);
             }
         };
 

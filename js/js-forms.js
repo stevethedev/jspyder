@@ -186,7 +186,7 @@
          *      a label is provided, then this will default to the label.
          */
         addField: function(name, config) {
-            var $field, 
+            var $field = js.dom(), 
                 cfg = Object.create(js_form.fn.fieldTemplate);
             
             // copy all of the config options over, if they exist.    
@@ -195,14 +195,50 @@
             
             switch (cfg.type) {
                 case "checkbox":
-                    // TODO: Add all of the input styles 
+                    js.alg.each(cfg.values, this._createCheckboxes, { $field: $field, cfg: cfg });
+                    break;
+                    
+                case "textarea":
+                    $field.and("<textarea name=\"" + cfg.name + "\" >");
+                    break;
+                    
+                case "dropdown":
+                case "hidden":
                 case "input":
                 default:
-                    $field = js.dom("<input></input>");
+                    $field.and("<input name=\"" + cfg.name + "\"></input>");
+                    
+                    if (cfg.type === "hidden") {
+                        $field.setCss({ "display": "none !important" });
+                    }
+                    
+                    if (cfg.type === "dropdown") {
+                        // do dropdown stuff
+                    }
+                    
+                    if (cfg.type === "autocomplete") {
+                        // do autocomplete stuff (similar to dropdown)
+                    }
+                    
                     break;
             }
             
+            if (!this._fields) {
+                this._fields = {};
+            }
+            this._fields[name] = $field;
+            
             return this;
+        },
+        
+        _createCheckboxes: function (option, index, options, context) {
+            var $field = context.$field,
+                cfg = context.cfg;
+        
+            $field.and(
+                "<input value=\"" + (option.value || option.text) +
+                "\" name=\"" + cfg.name + "\" type=\"checkbox\" />" +
+                "<label>" + (option.text || option.value) + "</label>");
         },
         
         fieldTemplate: {
