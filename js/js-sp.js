@@ -493,7 +493,7 @@ js.extend.fn("sp", function () {
             if(filterData) {
                 js.alg.each(this._rows, __parseRows, [filterData]);
             }
-            return this
+            return this._cleanRows();
         },
         
         /**********************************************************************
@@ -507,6 +507,15 @@ js.extend.fn("sp", function () {
          *********************************************************************/
         filters: function(filterArray) {
             js.alg.each(this._rows, __parseRows, filterArray);
+            return this._cleanRows();
+        },
+        
+        _cleanRows: function() {
+            this._rows.sort();
+            var index = this._rows.indexOf(null);
+            if(index > -1) {
+                this._rows.splice(index);
+            }
             return this;
         },
         
@@ -633,13 +642,6 @@ js.extend.fn("sp", function () {
             if(drop) {
                 _rows[id] = null;
             }
-        }
-        
-        var index;
-        _rows.sort();
-        index = _rows.indexOf(null);
-        if(index > -1) {
-            _rows.splice(index);
         }
         
         return this;

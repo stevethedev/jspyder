@@ -79,7 +79,9 @@ jspyder.extend.fn("form", function () {
             // reset function
             if (config.reset) { form._reset = config.reset; }
             // form elements
-            if (config.elements) { }
+            if (config.elements) {
+                form.addFields(config.elements);
+            }
         }
 
         if (typeof fn === "function") {
@@ -145,6 +147,21 @@ jspyder.extend.fn("form", function () {
          * deal directly with making calls to the DOM.
          */
         _fields: null,
+        
+        /**
+         * @method
+         * Adds a group of fields using jspyder.form.addField
+         */
+        
+        addFields: function(fields) {
+            js.alg.each(fields, this._addFields, { self: this });
+            return this;
+        },
+        
+        _addFields: function(field, name, fields, context) {
+            context.self.addField(name, field);
+            return;
+        },
         
         /**
          * @method
