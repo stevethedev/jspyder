@@ -23,6 +23,9 @@
  * ***************************************************************************/
  
 js.extend.fn("sp", function () {
+    /** @ignore */
+    var js = window.jspyder;
+    
     /**************************************************************************
      * @class jspyder.sp
      * @member jspyder
@@ -383,15 +386,20 @@ js.extend.fn("sp", function () {
             colValue = colData.default;
 
         if (colData.internal) {
-            colValue = data.item.get_item(colData.internal);
+            try {
+                colValue = data.item.get_item(colData.internal);
             
-            // eventually, this will need to change to support multi-value fields.
-            //colData.rowIDs[rowID] = colValue;
+                // eventually, this will need to change to support multi-value fields.
+                colData.rowIDs[rowID] = colValue;
 
-            //if (!colData.values[colValue]) {
-            //    colData.values[colValue] = [];
-            //}
-            //colData.values[colValue].push(rowID);
+                if (!colData.values[colValue]) {
+                colData.values[colValue] = [];
+                }
+                colData.values[colValue].push(rowID);
+            }
+            catch(e) {
+                js.log.warn("Could not load data from column name " + colData.internal);
+            }
         }
         
         colValue = __parseValueType(colData, colValue);
