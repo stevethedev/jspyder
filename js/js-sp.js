@@ -640,6 +640,9 @@ js.extend.fn("sp", function () {
             if(!drop && (typeof filter.seq !== "undefined")) { drop = !(value === filter.seq); }
             if(!drop && (typeof filter.neq !== "undefined")) { drop = !(value !=  filter.neq); }
             if(!drop && (typeof filter.snq !== "undefined")) { drop = !(value !== filter.snq); }
+            // binary
+            if(!drop && (typeof filter.and !== "undefined")) { drop = !((value & filter.and) === filter.and); }
+            if(!drop && (typeof filter.not !== "undefined")) { drop = !((value ^ filter.not) === filter.not); }
             
             if(!drop && (typeof filter.test !== "undefined")) { 
                 // prevent invalid regexp values from breaking our query
