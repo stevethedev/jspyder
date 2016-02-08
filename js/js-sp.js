@@ -423,6 +423,7 @@ js.extend.fn("sp", function () {
      */
     function __parseValueType(colData, value) {
         switch(colData.type) {
+            case "bitflag":
             case "number" :
                 value = js.alg.number(value);
                 break;
@@ -561,30 +562,34 @@ js.extend.fn("sp", function () {
         sum: function(columns, fn) {
             this.data(function(rows) {
                 // initialize default values...
-                js.alg.each(columns, function(column, key, columns) {
-                    columns[key] = column.value || column.default;
-                });
-                js.alg.each(rows, _rows, columns);
-                js.alg.use(this, fn, [columns]);
+                js.alg.each(columns, sp.query.fn._sum)
+                    .alg.each(rows, sp.query.fn._sumRows, columns)
+                    .alg.use(this, fn, [columns]);
             });
             
-            function _rows(row, _, rows, columns) {
-                js.alg.each(row, _columns, columns);
-            }
-            function _columns(value, colName, _, out) {
-                switch(value.type) {
-                    case "number":
-                        out[colName] = js.alg.number(out[colName]) + js.alg.number(value.value);
-                        break;
-                        
-                    case "string":
-                    default: 
-                        out[colName] = value.value;
-                        break;
-                }
-            }
-            
             return this;
+        },
+        
+        _sum: function(column, key, columns) {
+            columns[key] = column.value || column.default;
+        },
+                
+        _sumRows: function (row, _, rows, columns) {
+            js.alg.each(row, sp.query.fn._sumColumns, columns);
+        },
+        
+        _sumColumns: function (value, colName, _, out) {
+            switch(value.type) {
+                case "number":
+                    out[colName] = js.alg.number(out[colName]) + js.alg.number(value.value);
+                    break;
+                    
+                case "string":
+                case "bitflag":
+                default: 
+                    out[colName] = value.value;
+                    break;
+            }
         },
         
         /**********************************************************************
@@ -642,7 +647,7 @@ js.extend.fn("sp", function () {
             if(!drop && (typeof filter.snq !== "undefined")) { drop = !(value !== filter.snq); }
             // binary
             if(!drop && (typeof filter.and !== "undefined")) { drop = !((value & filter.and) === filter.and); }
-            if(!drop && (typeof filter.not !== "undefined")) { drop = !((value ^ filter.not) === filter.not); }
+            if(!drop && (typeof filter.not !== "undefined")) { drop = !((value & filter.not) !== filter.not); }
             
             if(!drop && (typeof filter.test !== "undefined")) { 
                 // prevent invalid regexp values from breaking our query
@@ -664,7 +669,8 @@ js.extend.fn("sp", function () {
         internal: "",
         text: "",
         type: "string",
-        default: ""
+        default: "",
+        valueOf: function() { return this.value; }
     };
 
     return sp;

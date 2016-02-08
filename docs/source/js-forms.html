@@ -39,7 +39,7 @@
  * IN THE SOFTWARE.
  * ***************************************************************************/
 
- jspyder.extend.fn(&quot;form&quot;, function() {
+jspyder.extend.fn(&quot;form&quot;, function () {
     var js = this;
     
 <span id='jspyder-form'>    /**
@@ -88,26 +88,27 @@
         });
         
         // load in the configuration options
-        if(config) {
+        if (config) {
             // success function
-            if(config.success) { form._success = config.success; }
+            if (config.success) { form._success = config.success; }
             // failure function
-            if(config.failure) { form._failure = config.failure; }
+            if (config.failure) { form._failure = config.failure; }
             // reset function
-            if(config.reset) { form._reset = config.reset; }
+            if (config.reset) { form._reset = config.reset; }
             // form elements
-            if(config.elements) {  }
+            if (config.elements) {
+                form.addFields(config.elements);
+            }
         }
-        
-        if(typeof fn === &quot;function&quot;) {
+
+        if (typeof fn === &quot;function&quot;) {
             fn.apply(this);
         }
-        
+
         return form;
     }
-    
+
     js_form.fn = {
-        // private:
 <span id='jspyder-form-method-_submit'>        /**
 </span>         * @private
          * @method
@@ -119,7 +120,7 @@
          *      An object where keys correspond to input names, and values
          *      correspond to the values they are storing.
          */
-        _submit: function(values, invalid) { return this; },
+        _submit: function (values, invalid) { return this; },
         
 <span id='jspyder-form-method-_failed'>        /**
 </span>         * @private
@@ -136,7 +137,7 @@
          *      An object of invalid fields where keys correspond to input
          *      names, and values correspond to the values they are storing.
          */
-        _failed: function(values, invalid) { return this; },
+        _failed: function (values, invalid) { return this; },
         
 <span id='jspyder-form-method-_reset'>        /**
 </span>         * @private
@@ -144,7 +145,7 @@
          * 
          * Callback function which will execute if the reset event is received.
          */
-        _reset: function() { return this; },
+        _reset: function () { return this; },
         
 <span id='jspyder-form-property-_dom'>        /**
 </span>         * @private
@@ -162,6 +163,21 @@
          * deal directly with making calls to the DOM.
          */
         _fields: null,
+        
+<span id='jspyder-form-method-addFields'>        /**
+</span>         * @method
+         * Adds a group of fields using jspyder.form.addField where keys
+         * correspond to field names and values correspond to field templates.
+         * 
+         * @param {Object} fields
+         */
+        
+        addFields: function(fields) {
+            for (var name in fields) {
+                this.addField(name, fields[name])
+            }
+            return this;
+        },
         
 <span id='jspyder-form-method-addField'>        /**
 </span>         * @method
@@ -201,61 +217,228 @@
          * @param {String} [config.values.value]
          *      The value for this particular option.  If this is omitted, and
          *      a label is provided, then this will default to the label.
+         * 
+         * @param {String} [config.section]
+         *      The name of a section to add this particular field to.  If
+         *      blank, then this field is not added directly to the list.
          */
-        addField: function(name, config) {
-            var $field = js.dom(), 
-                cfg = Object.create(js_form.fn.fieldTemplate);
+        addField: function (name, config) {
+            var $field = js.dom(),
+                cfg = Object.create(js_form.fn.fieldTemplate),
+                option, i;
             
             // copy all of the config options over, if they exist.    
             js.alg.mergeObj(cfg, config);
-            if(config.values) { cfg.values = js.alg.sliceArray(config.values); }
-            
+            if (config.values) { cfg.values = js.alg.sliceArray(config.values); }
+
             switch (cfg.type) {
+                // case &quot;section&quot;:
+                //     break;
+                    
                 case &quot;checkbox&quot;:
-                    js.alg.each(cfg.values, this._createCheckboxes, { $field: $field, cfg: cfg });
+                    // js.alg.each(cfg.values, this._createCheckboxes, { $field: $field, cfg: cfg, name: name });
+                    for (i = 0; i &lt; config.values.length; i++) {
+                        option = config.values[i];
+                        $field.and(
+                            &quot;&lt;input value=\&quot;&quot; + (option.value || option.text) +
+                            &quot;\&quot; name=\&quot;&quot; + name + &quot;\&quot; type=\&quot;checkbox\&quot; /&gt;&quot; +
+                            &quot;&lt;label&gt;&quot; + (option.text || option.value) + &quot;&lt;/label&gt;&quot;);
+                    }
                     break;
-                    
+
                 case &quot;textarea&quot;:
-                    $field.and(&quot;&lt;textarea name=\&quot;&quot; + cfg.name + &quot;\&quot; &gt;&quot;);
+                    $field.and(&quot;&lt;textarea name=\&quot;&quot; + name + &quot;\&quot; &gt;&quot;);
                     break;
-                    
+
                 case &quot;dropdown&quot;:
                 case &quot;hidden&quot;:
                 case &quot;input&quot;:
                 default:
-                    $field.and(&quot;&lt;input name=\&quot;&quot; + cfg.name + &quot;\&quot;&gt;&lt;/input&gt;&quot;);
-                    
+                    $field.and(&quot;&lt;input name=\&quot;&quot; + name + &quot;\&quot;&gt;&lt;/input&gt;&quot;);
+
                     if (cfg.type === &quot;hidden&quot;) {
                         $field.setCss({ &quot;display&quot;: &quot;none !important&quot; });
                     }
-                    
+
                     if (cfg.type === &quot;dropdown&quot;) {
                         // do dropdown stuff
                     }
-                    
+
                     if (cfg.type === &quot;autocomplete&quot;) {
                         // do autocomplete stuff (similar to dropdown)
                     }
-                    
+
                     break;
             }
-            
+
             if (!this._fields) {
                 this._fields = {};
             }
-            this._fields[name] = $field;
+            this._fields[name] = { type: cfg.type, field: $field, section: config.section || null };
+
+            return this;
+        },
+
+<span id='jspyder-form-method-'>        /**
+</span>         * @private
+         * @method
+         * 
+         * Constructor for creating a series of checkbox elements.  These are
+         * added sequentially.
+         * 
+         * @param {Object} option
+         * @param {String} [option.text] Label for checkbox element
+         * @param {String} [option.value] Value to set for the checkbox element
+         * @param {Number} index The ID number for the current option
+         * @param {Object[]} options Array of options being iterated
+         * @param {Object} context
+         * @param {String} context.name The name these fields will be stored under.
+         * @param {Object} context.$field JSpyder DOM the checkboxes are being added to.
+         */
+        // _createCheckboxes: function (option, index, options, context) {
+        //     var $field = context.$field,
+        //         name = context.name;
+
+        //     $field.and(
+        //         &quot;&lt;input value=\&quot;&quot; + (option.value || option.text) +
+        //         &quot;\&quot; name=\&quot;&quot; + name + &quot;\&quot; type=\&quot;checkbox\&quot; /&gt;&quot; +
+        //         &quot;&lt;label&gt;&quot; + (option.text || option.value) + &quot;&lt;/label&gt;&quot;);
+        // },
+
+<span id='jspyder-form-method-values'>        /**
+</span>         * @method
+         * 
+         * Retrieves the values of all of the elements in the JS-Form.
+         * 
+         * @param {Function} fn
+         *      A callback function to execute after the values have been
+         *      calculated.  The context points back to the js-form.
+         * @param {Object} fn.values
+         *      The values of all of the form elements are pushed into the
+         *      first parameter of the function fn.
+         */
+        values: function (fn) {
+            var values = {};
+            // js.alg.each(this._fields, this._values, { self: this, values: values });
             
+            var $field, $type, name;
+            for (name in this._fields) {
+                $field = this._fields[name].field;
+                $type = this._fields[name].type;
+                values[name] = null;
+
+                switch ($type) {
+                    case &quot;checkbox&quot;:
+                        values[name] = self._checkboxValue($field);
+                        break;
+                    default:
+                        values[name] = self._genericValue($field);
+                        break;
+                }
+            }
+                
+            fn.apply(this, [values]);
             return this;
         },
         
-        _createCheckboxes: function (option, index, options, context) {
-            var $field = context.$field,
-                cfg = context.cfg;
+<span id='jspyder-form-method-'>        /**
+</span>         * @private
+         * @method
+         * 
+         * Logical loop for jspyder.form.values; separated from the main
+         * function for efficient memory-management.
+         * 
+         * @param {Object} fieldSet
+         *      A pair of values being pushed in from jspyder.form._fields
+         * 
+         * @param {String} fieldSet.type
+         *      The type of element being created.
+         * 
+         * @param {Object} fieldSet.field
+         *      A reference to the JS-DOM object containing the form fields.
+         * 
+         * @param {String} name
+         *      The name of the current field in the iterator.
+         * 
+         * @param {Object} fields
+         *      Reference to jspyder.form._fields
+         * 
+         * @param {Object} context
+         * @param {Object} context.values
+         *      Reference to the field values which are being returned by
+         *      jspyder.form.values
+         * 
+         * @param {Object} context.self
+         *      JS-Form
+         */
+        // _values: function (fieldSet, name, fields, context) {
+        //     var self = context.self,
+        //         values = context.values,
+        //         $field = fieldSet.field,
+        //         $type = fieldSet.type;
+                
+        //     values[name] = null;
+                
+        //     switch ($type) {
+        //         case &quot;checkbox&quot;:
+        //             values[name] = self._checkboxValue($field);
+        //             break;
+        //         default:
+        //             values[name] = self._genericValue($field);
+        //             break;
+        //     }
+            
+        //     return;
+        // },
         
-            $field.and(
-                &quot;&lt;input value=\&quot;&quot; + (option.value || option.text) +
-                &quot;\&quot; name=\&quot;&quot; + cfg.name + &quot;\&quot; type=\&quot;checkbox\&quot; /&gt;&quot; +
-                &quot;&lt;label&gt;&quot; + (option.text || option.value) + &quot;&lt;/label&gt;&quot;);
+<span id='jspyder-form-method-_genericValue'>        /**
+</span>         * @method
+         * @private
+         * 
+         * Uses a generic value-retrieval method; this should be sufficient for
+         * most single-value controls (e.g. not checkboxes)
+         * 
+         * @param {Object} $input
+         *      JS-DOM object to retrieve a value from.
+         * 
+         * @return {String}
+         *      The value of the element.
+         */
+        _genericValue: function ($input) {
+            var value = &quot;&quot;;
+            
+            if ($input) {
+                $input.element(0, function () {
+                    value = this.value;
+                    if (typeof value === &quot;undefined&quot; || value === null) {
+                        value = &quot;&quot;;
+                    }
+                });
+            }
+            
+            return value;
+        },
+
+<span id='jspyder-form-method-_checkboxValue'>        /**
+</span>         * @method
+         * @private
+         * 
+         * Specialized value retrieval for checkbox elements.
+         */
+        _checkboxValue: function ($checkboxes) {
+            var value = [];
+                
+            if ($checkboxes) {
+                $checkboxes.each(function (checkbox) {
+                    if ((checkbox instanceof HTMLInputElement)
+                        &amp;&amp; (checkbox.getAttribute(&quot;type&quot;) === &quot;checkbox&quot;)
+                        &amp;&amp; (checkbox.checked)) {
+                        value.push(checkbox.value);
+                    }
+                });
+            }
+            
+            return value;
         },
         
         fieldTemplate: {
@@ -313,25 +496,43 @@
             return this;
         },
         
-<span id='jspyder-form-method-export'>        /**
+<span id='jspyder-form-method-attach'>        /**
 </span>         * @method
-         * Exports the jspyder.dom element.
+         * Attaches the form to the specified dom node
          * 
          * @param {Function} [fn]
          *      Optional callback function to execute, using the form js.dom
          *      element as the context and the js.form object as the first
          *      parameter.
          * 
+         * @param {Object} [fn.dom] 
+         *      DOM node created and attached to the document.
+         * 
+         * @param {Mixed} [fn.data]
+         *      Data parameter passed into the function.
+         * 
          * @param {Mixed} [data]
          *      Optional parameter to pass in as a second parameter for [fn].
          * 
          * @return {Object} js.dom object.
          */
-        export: function(fn, data) {
-            if(typeof fn === &quot;function&quot;) {
-                fn.apply(this._dom, [this, data]);
+        attach: function (fn, data) {
+            var dom = this._dom,
+                fields = this._fields,
+                name, group, section;
+                
+            for (name in fields) {
+                group = fields[name];
+                // group{ type, field, section }
             }
-            return this._dom; 
+            
+            // cycle through fields
+            
+            if(typeof fn === &quot;function&quot;) {
+                fn.apply(dom, [this, dom, data]);
+            }
+            
+            return this; 
         },
     };
     

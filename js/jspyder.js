@@ -350,7 +350,6 @@
                     _break = false;
 
                 if (obj && typeof obj === "object") {
-                    var newVal;
                     for (var i in obj) {
                         fn.apply(ctl, [obj[i], i, obj, data]);
                         if (_break) {

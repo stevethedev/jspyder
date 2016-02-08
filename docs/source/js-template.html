@@ -105,8 +105,8 @@ jspyder.extend.fn(&quot;template&quot;, function () {
         resFuncArgs = &quot;\\s*(&quot; + resCommandLiteral + &quot;|&quot; + resString + &quot;|&quot; + resNumber + &quot;|&quot; + resVariable + &quot;)&quot; + resFuncSep,
         resFunction = [resFuncName, &quot;\\((?:&quot;,
             resFuncArgs,
-            &quot;)*\\)&quot;].join(&#39;&#39;),
-        resSymbol = &#39;(&#39; + resFunction + &#39;|&#39; + resVariable + &#39;)&#39;,
+            &quot;)*\\)&quot;].join(''),
+        resSymbol = '(' + resFunction + '|' + resVariable + ')',
 
         reIdentifier = new RegExp(resIdentifier, &quot;i&quot;),
         reFuncArgs = new RegExp(resFuncArgs, &quot;i&quot;),
@@ -338,7 +338,7 @@ jspyder.extend.fn(&quot;template&quot;, function () {
          * Registers a set of functions through js.template.register()
          * 
          * @param {Object} o
-         *      Registers o&#39;s keys as function names, and o&#39;s values as
+         *      Registers o's keys as function names, and o's values as
          *      the functions to execute when @key() is invoked within a
          *      template.
          *********************************************************************/
@@ -389,7 +389,7 @@ jspyder.extend.fn(&quot;template&quot;, function () {
         
         // branching logic.  If [test] is true, then inserts [pass],
         // else inserts [fail].
-        // TODO: Make this native support, so that it won&#39;t have
+        // TODO: Make this native support, so that it won't have
         // to parse both paths ad infinitum before executing the
         // function.
         iif: function (test, pass, fail) {
