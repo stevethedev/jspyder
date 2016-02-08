@@ -92,7 +92,6 @@ jspyder.extend.fn("form", function () {
     }
 
     js_form.fn = {
-        // private:
         /**
          * @private
          * @method
@@ -150,17 +149,17 @@ jspyder.extend.fn("form", function () {
         
         /**
          * @method
-         * Adds a group of fields using jspyder.form.addField
+         * Adds a group of fields using jspyder.form.addField where keys
+         * correspond to field names and values correspond to field templates.
+         * 
+         * @param {Object} fields
          */
         
         addFields: function(fields) {
-            js.alg.each(fields, this._addFields, { self: this });
+            for (var name in fields) {
+                this.addField(name, fields[name])
+            }
             return this;
-        },
-        
-        _addFields: function(field, name, fields, context) {
-            context.self.addField(name, field);
-            return;
         },
         
         /**
@@ -201,18 +200,33 @@ jspyder.extend.fn("form", function () {
          * @param {String} [config.values.value]
          *      The value for this particular option.  If this is omitted, and
          *      a label is provided, then this will default to the label.
+         * 
+         * @param {String} [config.section]
+         *      The name of a section to add this particular field to.  If
+         *      blank, then this field is not added directly to the list.
          */
         addField: function (name, config) {
             var $field = js.dom(),
-                cfg = Object.create(js_form.fn.fieldTemplate);
+                cfg = Object.create(js_form.fn.fieldTemplate),
+                option, i;
             
             // copy all of the config options over, if they exist.    
             js.alg.mergeObj(cfg, config);
             if (config.values) { cfg.values = js.alg.sliceArray(config.values); }
 
             switch (cfg.type) {
+                // case "section":
+                //     break;
+                    
                 case "checkbox":
-                    js.alg.each(cfg.values, this._createCheckboxes, { $field: $field, cfg: cfg, name: name });
+                    // js.alg.each(cfg.values, this._createCheckboxes, { $field: $field, cfg: cfg, name: name });
+                    for (i = 0; i < config.values.length; i++) {
+                        option = config.values[i];
+                        $field.and(
+                            "<input value=\"" + (option.value || option.text) +
+                            "\" name=\"" + name + "\" type=\"checkbox\" />" +
+                            "<label>" + (option.text || option.value) + "</label>");
+                    }
                     break;
 
                 case "textarea":
@@ -243,7 +257,7 @@ jspyder.extend.fn("form", function () {
             if (!this._fields) {
                 this._fields = {};
             }
-            this._fields[name] = { type: cfg.type, field: $field };
+            this._fields[name] = { type: cfg.type, field: $field, section: config.section || null };
 
             return this;
         },
@@ -264,15 +278,15 @@ jspyder.extend.fn("form", function () {
          * @param {String} context.name The name these fields will be stored under.
          * @param {Object} context.$field JSpyder DOM the checkboxes are being added to.
          */
-        _createCheckboxes: function (option, index, options, context) {
-            var $field = context.$field,
-                name = context.name;
+        // _createCheckboxes: function (option, index, options, context) {
+        //     var $field = context.$field,
+        //         name = context.name;
 
-            $field.and(
-                "<input value=\"" + (option.value || option.text) +
-                "\" name=\"" + name + "\" type=\"checkbox\" />" +
-                "<label>" + (option.text || option.value) + "</label>");
-        },
+        //     $field.and(
+        //         "<input value=\"" + (option.value || option.text) +
+        //         "\" name=\"" + name + "\" type=\"checkbox\" />" +
+        //         "<label>" + (option.text || option.value) + "</label>");
+        // },
 
         /**
          * @method
@@ -288,7 +302,24 @@ jspyder.extend.fn("form", function () {
          */
         values: function (fn) {
             var values = {};
-            js.alg.each(this._fields, this._values, { self: this, values: values });
+            // js.alg.each(this._fields, this._values, { self: this, values: values });
+            
+            var $field, $type, name;
+            for (name in this._fields) {
+                $field = this._fields[name].field;
+                $type = this._fields[name].type;
+                values[name] = null;
+
+                switch ($type) {
+                    case "checkbox":
+                        values[name] = self._checkboxValue($field);
+                        break;
+                    default:
+                        values[name] = self._genericValue($field);
+                        break;
+                }
+            }
+                
             fn.apply(this, [values]);
             return this;
         },
@@ -323,25 +354,25 @@ jspyder.extend.fn("form", function () {
          * @param {Object} context.self
          *      JS-Form
          */
-        _values: function (fieldSet, name, fields, context) {
-            var self = context.self,
-                values = context.values,
-                $field = fieldSet.field,
-                $type = fieldSet.type;
+        // _values: function (fieldSet, name, fields, context) {
+        //     var self = context.self,
+        //         values = context.values,
+        //         $field = fieldSet.field,
+        //         $type = fieldSet.type;
                 
-            values[name] = null;
+        //     values[name] = null;
                 
-            switch ($type) {
-                case "checkbox":
-                    values[name] = self._checkboxValue($field);
-                    break;
-                default:
-                    values[name] = self._genericValue($field);
-                    break;
-            }
+        //     switch ($type) {
+        //         case "checkbox":
+        //             values[name] = self._checkboxValue($field);
+        //             break;
+        //         default:
+        //             values[name] = self._genericValue($field);
+        //             break;
+        //     }
             
-            return;
-        },
+        //     return;
+        // },
         
         /**
          * @method
@@ -450,23 +481,41 @@ jspyder.extend.fn("form", function () {
         
         /**
          * @method
-         * Exports the jspyder.dom element.
+         * Attaches the form to the specified dom node
          * 
          * @param {Function} [fn]
          *      Optional callback function to execute, using the form js.dom
          *      element as the context and the js.form object as the first
          *      parameter.
          * 
+         * @param {Object} [fn.dom] 
+         *      DOM node created and attached to the document.
+         * 
+         * @param {Mixed} [fn.data]
+         *      Data parameter passed into the function.
+         * 
          * @param {Mixed} [data]
          *      Optional parameter to pass in as a second parameter for [fn].
          * 
          * @return {Object} js.dom object.
          */
-        export: function(fn, data) {
-            if(typeof fn === "function") {
-                fn.apply(this._dom, [this, data]);
+        attach: function (fn, data) {
+            var dom = this._dom,
+                fields = this._fields,
+                name, group, section;
+                
+            for (name in fields) {
+                group = fields[name];
+                // group{ type, field, section }
             }
-            return this._dom; 
+            
+            // cycle through fields
+            
+            if(typeof fn === "function") {
+                fn.apply(dom, [this, dom, data]);
+            }
+            
+            return this; 
         },
     };
     
