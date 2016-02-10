@@ -497,12 +497,12 @@ jspyder.extend.fn("form", function () {
          * @param {Mixed} [data]
          *      Optional parameter to pass in as a second parameter for [fn].
          * 
-         * @return {Object} js.dom object.
+         * @return {Object} jspyder.dom object.
          */
         attach: function (fn, data) {
             var dom = this._dom,
                 fields = this._fields,
-                name, group, section;
+                name, group;
                 
             for (name in fields) {
                 group = fields[name];

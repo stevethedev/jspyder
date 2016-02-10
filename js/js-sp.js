@@ -393,7 +393,7 @@ js.extend.fn("sp", function () {
                 colData.rowIDs[rowID] = colValue;
 
                 if (!colData.values[colValue]) {
-                colData.values[colValue] = [];
+                    colData.values[colValue] = [];
                 }
                 colData.values[colValue].push(rowID);
             }
@@ -426,6 +426,10 @@ js.extend.fn("sp", function () {
             case "bitflag":
             case "number" :
                 value = js.alg.number(value);
+                break;
+            case "string" :
+            case "text" :
+                value = js.alg.string(value);
                 break;
             default:
                 break;
@@ -541,6 +545,11 @@ js.extend.fn("sp", function () {
          *********************************************************************/
         data: function(fn) {
             js.alg.use(this, fn, [this._rows]);
+            return this;
+        },
+        
+        each: function(fn) {
+            js.alg.each(this._rows, fn, this);
             return this;
         },
         

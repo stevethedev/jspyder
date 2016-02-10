@@ -148,6 +148,7 @@ i, .icon {
 @include make-icon(".border-style", "e231");
 @include make-icon(".border-top", "e232");
 @include make-icon(".border-vertical", "e233");
+@include make-icon(".branding-watermark", "e06b");
 @include make-icon(".brightness-1", "e3a6");
 @include make-icon(".brightness-2", "e3a7");
 @include make-icon(".brightness-3", "e3a8");
@@ -161,8 +162,10 @@ i, .icon {
 @include make-icon(".brightness-medium", "e1ae");
 @include make-icon(".broken-image", "e3ad");
 @include make-icon(".brush", "e3ae");
+@include make-icon(".bubble-chart", "e6dd");
 @include make-icon(".bug-report", "e868");
 @include make-icon(".build", "e869");
+@include make-icon(".burst-mode", "e43c");
 @include make-icon(".business", "e0af");
 @include make-icon(".business-center", "eb3f");
 @include make-icon(".cached", "e86a");
@@ -175,6 +178,7 @@ i, .icon {
 @include make-icon(".call-missed-outgoing", "e0e4");
 @include make-icon(".call-received", "e0b5");
 @include make-icon(".call-split", "e0b6");
+@include make-icon(".call-to-action", "e06c");
 @include make-icon(".camera", "e3af");
 @include make-icon(".camera-alt", "e3b0");
 @include make-icon(".camera-enhance", "e8fc");
@@ -254,6 +258,8 @@ i, .icon {
 @include make-icon(".date-range", "e916");
 @include make-icon(".dehaze", "e3c7");
 @include make-icon(".delete", "e872");
+@include make-icon(".delete-forever", "e92b");
+@include make-icon(".delete-sweep", "e16c");
 @include make-icon(".description", "e873");
 @include make-icon(".desktop-mac", "e30b");
 @include make-icon(".desktop-windows", "e30c");
@@ -279,6 +285,8 @@ i, .icon {
 @include make-icon(".dns", "e875");
 @include make-icon(".do-not-disturb", "e612");
 @include make-icon(".do-not-disturb-alt", "e611");
+@include make-icon(".do-not-disturb-off", "e643");
+@include make-icon(".do-not-disturb-on", "e644");
 @include make-icon(".dock", "e30e");
 @include make-icon(".domain", "e7ee");
 @include make-icon(".done", "e876");
@@ -297,6 +305,8 @@ i, .icon {
 @include make-icon(".equalizer", "e01d");
 @include make-icon(".error", "e000");
 @include make-icon(".error-outline", "e001");
+@include make-icon(".euro-symbol", "e926");
+@include make-icon(".ev-station", "e56d");
 @include make-icon(".event", "e878");
 @include make-icon(".event-available", "e614");
 @include make-icon(".event-busy", "e615");
@@ -319,6 +329,8 @@ i, .icon {
 @include make-icon(".fast-rewind", "e020");
 @include make-icon(".favorite", "e87d");
 @include make-icon(".favorite-border", "e87e");
+@include make-icon(".featured-play-list", "e06d");
+@include make-icon(".featured-video", "e06e");
 @include make-icon(".feedback", "e87f");
 @include make-icon(".fiber-dvr", "e05d");
 @include make-icon(".fiber-manual-record", "e061");
@@ -350,6 +362,7 @@ i, .icon {
 @include make-icon(".find-in-page", "e880");
 @include make-icon(".find-replace", "e881");
 @include make-icon(".fingerprint", "e90d");
+@include make-icon(".first-page", "e5dc");
 @include make-icon(".fitness-center", "eb43");
 @include make-icon(".flag", "e153");
 @include make-icon(".flare", "e3e4");
@@ -399,6 +412,7 @@ i, .icon {
 @include make-icon(".fullscreen", "e5d0");
 @include make-icon(".fullscreen-exit", "e5d1");
 @include make-icon(".functions", "e24a");
+@include make-icon(".g-translate", "e927");
 @include make-icon(".gamepad", "e30f");
 @include make-icon(".games", "e021");
 @include make-icon(".gavel", "e90e");
@@ -480,6 +494,7 @@ i, .icon {
 @include make-icon(".laptop-chromebook", "e31f");
 @include make-icon(".laptop-mac", "e320");
 @include make-icon(".laptop-windows", "e321");
+@include make-icon(".last-page", "e5dd");
 @include make-icon(".launch", "e895");
 @include make-icon(".layers", "e53b");
 @include make-icon(".layers-clear", "e53c");
@@ -544,6 +559,7 @@ i, .icon {
 @include make-icon(".looks-two", "e401");
 @include make-icon(".loop", "e028");
 @include make-icon(".loupe", "e402");
+@include make-icon(".low-priority", "e16d");
 @include make-icon(".loyalty", "e89a");
 @include make-icon(".mail", "e158");
 @include make-icon(".mail-outline", "e0e1");
@@ -560,6 +576,7 @@ i, .icon {
 @include make-icon(".mms", "e618");
 @include make-icon(".mode-comment", "e253");
 @include make-icon(".mode-edit", "e254");
+@include make-icon(".monetization-on", "e263");
 @include make-icon(".money-off", "e25c");
 @include make-icon(".monochrome-photos", "e403");
 @include make-icon(".mood", "e7f2");
@@ -573,6 +590,7 @@ i, .icon {
 @include make-icon(".movie", "e02c");
 @include make-icon(".movie-creation", "e404");
 @include make-icon(".movie-filter", "e43a");
+@include make-icon(".multiline-chart", "e6df");
 @include make-icon(".music-note", "e405");
 @include make-icon(".music-video", "e063");
 @include make-icon(".my-location", "e55c");
@@ -592,6 +610,7 @@ i, .icon {
 @include make-icon(".no-encryption", "e641");
 @include make-icon(".no-sim", "e0cc");
 @include make-icon(".not-interested", "e033");
+@include make-icon(".note", "e06f");
 @include make-icon(".note-add", "e89c");
 @include make-icon(".notifications", "e7f4");
 @include make-icon(".notifications-active", "e7f7");
@@ -661,6 +680,8 @@ i, .icon {
 @include make-icon(".picture-as-pdf", "e415");
 @include make-icon(".picture-in-picture", "e8aa");
 @include make-icon(".picture-in-picture-alt", "e911");
+@include make-icon(".pie-chart", "e6c4");
+@include make-icon(".pie-chart-outlined", "e6c5");
 @include make-icon(".pin-drop", "e55e");
 @include make-icon(".place", "e55f");
 @include make-icon(".play-arrow", "e037");
@@ -682,6 +703,7 @@ i, .icon {
 @include make-icon(".pregnant-woman", "e91e");
 @include make-icon(".present-to-all", "e0df");
 @include make-icon(".print", "e8ad");
+@include make-icon(".priority-high", "e645");
 @include make-icon(".public", "e80b");
 @include make-icon(".publish", "e255");
 @include make-icon(".query-builder", "e8ae");
@@ -704,6 +726,7 @@ i, .icon {
 @include make-icon(".remove-circle-outline", "e15d");
 @include make-icon(".remove-from-queue", "e067");
 @include make-icon(".remove-red-eye", "e417");
+@include make-icon(".remove-shopping-cart", "e928");
 @include make-icon(".reorder", "e8fe");
 @include make-icon(".repeat", "e040");
 @include make-icon(".repeat-one", "e041");
@@ -715,8 +738,10 @@ i, .icon {
 @include make-icon(".reply-all", "e15f");
 @include make-icon(".report", "e160");
 @include make-icon(".report-problem", "e8b2");
+@include make-icon(".restaurant", "e56c");
 @include make-icon(".restaurant-menu", "e561");
 @include make-icon(".restore", "e8b3");
+@include make-icon(".restore-page", "e929");
 @include make-icon(".ring-volume", "e0d1");
 @include make-icon(".room", "e8b4");
 @include make-icon(".room-service", "eb49");
@@ -726,6 +751,7 @@ i, .icon {
 @include make-icon(".rounded-corner", "e920");
 @include make-icon(".router", "e328");
 @include make-icon(".rowing", "e921");
+@include make-icon(".rss-feed", "e0e5");
 @include make-icon(".rv-hookup", "e642");
 @include make-icon(".satellite", "e562");
 @include make-icon(".save", "e161");
@@ -743,6 +769,11 @@ i, .icon {
 @include make-icon(".security", "e32a");
 @include make-icon(".select-all", "e162");
 @include make-icon(".send", "e163");
+@include make-icon(".sentiment-dissatisfied", "e811");
+@include make-icon(".sentiment-neutral", "e812");
+@include make-icon(".sentiment-satisfied", "e813");
+@include make-icon(".sentiment-very-dissatisfied", "e814");
+@include make-icon(".sentiment-very-satisfied", "e815");
 @include make-icon(".settings", "e8b8");
 @include make-icon(".settings-applications", "e8b9");
 @include make-icon(".settings-backup-restore", "e8ba");
@@ -767,6 +798,7 @@ i, .icon {
 @include make-icon(".shopping-basket", "e8cb");
 @include make-icon(".shopping-cart", "e8cc");
 @include make-icon(".short-text", "e261");
+@include make-icon(".show-chart", "e6e1");
 @include make-icon(".shuffle", "e043");
 @include make-icon(".signal-cellular-4-bar", "e1c8");
 @include make-icon(".signal-cellular-connected-no-internet-4-bar", "e1cd");
@@ -795,6 +827,7 @@ i, .icon {
 @include make-icon(".speaker", "e32d");
 @include make-icon(".speaker-group", "e32e");
 @include make-icon(".speaker-notes", "e8cd");
+@include make-icon(".speaker-notes-off", "e92a");
 @include make-icon(".speaker-phone", "e0d2");
 @include make-icon(".spellcheck", "e8ce");
 @include make-icon(".star", "e838");
@@ -811,6 +844,7 @@ i, .icon {
 @include make-icon(".store", "e8d1");
 @include make-icon(".store-mall-directory", "e563");
 @include make-icon(".straighten", "e41c");
+@include make-icon(".streetview", "e56e");
 @include make-icon(".strikethrough-s", "e257");
 @include make-icon(".style", "e41d");
 @include make-icon(".subdirectory-arrow-left", "e5d9");
@@ -818,6 +852,7 @@ i, .icon {
 @include make-icon(".subject", "e8d2");
 @include make-icon(".subscriptions", "e064");
 @include make-icon(".subtitles", "e048");
+@include make-icon(".subway", "e56f");
 @include make-icon(".supervisor-account", "e8d3");
 @include make-icon(".surround-sound", "e049");
 @include make-icon(".swap-calls", "e0d7");
@@ -854,6 +889,7 @@ i, .icon {
 @include make-icon(".timer-10", "e423");
 @include make-icon(".timer-3", "e424");
 @include make-icon(".timer-off", "e426");
+@include make-icon(".title", "e264");
 @include make-icon(".toc", "e8de");
 @include make-icon(".today", "e8df");
 @include make-icon(".toll", "e8e0");
@@ -862,6 +898,9 @@ i, .icon {
 @include make-icon(".toys", "e332");
 @include make-icon(".track-changes", "e8e1");
 @include make-icon(".traffic", "e565");
+@include make-icon(".train", "e570");
+@include make-icon(".tram", "e571");
+@include make-icon(".transfer-within-a-station", "e572");
 @include make-icon(".transform", "e428");
 @include make-icon(".translate", "e8e2");
 @include make-icon(".trending-down", "e8e3");
@@ -882,6 +921,8 @@ i, .icon {
 @include make-icon(".vertical-align-center", "e259");
 @include make-icon(".vertical-align-top", "e25a");
 @include make-icon(".vibration", "e62d");
+@include make-icon(".video-call", "e070");
+@include make-icon(".video-label", "e071");
 @include make-icon(".video-library", "e04a");
 @include make-icon(".videocam", "e04b");
 @include make-icon(".videocam-off", "e04c");
@@ -934,4 +975,5 @@ i, .icon {
 @include make-icon(".zoom-in", "e8ff");
 @include make-icon(".zoom-out", "e900");
 @include make-icon(".zoom-out-map", "e56b");
+
 }

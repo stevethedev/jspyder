@@ -403,6 +403,13 @@
             },
             
             /**
+             * coerces any value to a string
+             */
+            "string": function(s) {
+                return s || "";
+            },
+            
+            /**
              * Coerces any value to a INT8 value
              */
             byte: function (u) {
@@ -1285,7 +1292,8 @@
                     _found = $found._element;
                     
                 this.each(function(element) {
-                    js.alg.joinArray(_found, element.querySelectorAll(cssSelector));
+                    var children = element.querySelectorAll(cssSelector);
+                    js.alg.joinArray(_found, js.dom(children)._element);
                 });
                 
                 return $found;
