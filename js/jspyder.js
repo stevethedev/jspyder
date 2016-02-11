@@ -397,16 +397,17 @@
             /**
              * Coerces any value to a Javascript Number object
              */
-            "number": function (n) {
+            "number": function (n, d) {
                 var _n = +n;
-                return ((_n == n || _n === _n) ? _n : 0);
+                return ((_n == n || _n === _n) ? _n : d || 0);
             },
             
             /**
              * coerces any value to a string
              */
-            "string": function(s) {
-                return s || "";
+            "string": function(s, d) {
+                return (typeof s === "string" ? s :
+                    s ? "" + s : d || "");
             },
             
             /**
@@ -753,9 +754,8 @@
          * Returns TRUE if the node is a DOM Element
          */
         function __isElement(o) {
-            return js.alg.bool(typeof HTMLElement === "object"
-                ? o instanceof HTMLElement
-                : o && typeof o === "object" && o.nodeType === 1 && typeof o.nodeName === "string");
+            return js.alg.bool( (typeof HTMLElement === "object" && o instanceof HTMLElement) || 
+                (o && typeof o === "object" && o.nodeType === 1 && typeof o.nodeName === "string"));
         }
         
         /**
@@ -1028,9 +1028,14 @@
              */
             children: function (fn) {
                 this.each(function (element, i, elements) {
-                    for (var j = 0; j < element.children.length; j++) {
-                        js_dom(element.children[j], fn, [element.children[j]]);
+                    var child = element.firstElementChild;
+                    while(child) {
+                        js_dom(child, fn, [child]);
+                        child = child.nextElementSibling;
                     }
+                    // for (var j = 0; j < element.children.length; j++) {
+                    //     js_dom(element.children[j], fn, [element.children[j]]);
+                    // }
                 });
                 return this;
             },
@@ -1224,14 +1229,14 @@
             trigger: function (event) {
                 event = (event || "").toString().split(/\s+/);
 
-                var e
+                var e;
                 for (var i = 0; i < event.length; i++) {
                     try {
-                        e = new Event("mousedown", { "bubbles": true, "cancelable": false });
+                        e = new Event(event[i], { "bubbles": true, "cancelable": false });
                     }
                     catch (_) {
                         e = document.createEvent("Event");
-                        e.initEvent("mousedown", true, true);
+                        e.initEvent(event[i], true, true);
                     }
                     this.each(function (el) {
                         el.dispatchEvent(e);

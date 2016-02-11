@@ -117,6 +117,9 @@ js.extend.fn("sp", function () {
         _caml: __caml,
         _columns: {},
         _rows: [],
+        get length() {
+            return this._rows.length;
+        },
         
         /**********************************************************************
          * Adds a single column to the SP List proxy
@@ -477,6 +480,14 @@ js.extend.fn("sp", function () {
         /** @private Overwritten at creation and reset. */
         _rows: null,
         
+        get length() {
+            return this._rows.length;
+        },
+        
+        row: function(n) {
+            return this._rows[js.alg.number(n)];
+        },
+        
         /**********************************************************************
          * Resets the query object to include all of the available rows in the
          * associated list's cache.
@@ -632,7 +643,7 @@ js.extend.fn("sp", function () {
      *      Collection of filters.  See jspyder.sp.query.filter
      *********************************************************************/
     function __parseRows(row, id, _rows, filterData) {
-        if(!row) { // catch null values
+        if(!row || !filterData || !filterData.length) { // catch null values
             return;
         }
         

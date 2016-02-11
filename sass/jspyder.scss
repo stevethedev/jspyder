@@ -125,6 +125,7 @@ label {
     &.inline-block { display: inline-block; }
     &.block { display: block; }
 }
+.display-none { display: none; }
 
 .position {
     &.relative { position: relative; }

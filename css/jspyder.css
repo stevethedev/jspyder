@@ -167,6 +167,9 @@ label {
 .display.block {
   display: block; }
 
+.display-none {
+  display: none; }
+
 .position.relative {
   position: relative; }
 .position.absolute {
