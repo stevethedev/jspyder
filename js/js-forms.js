@@ -206,6 +206,9 @@ jspyder.extend.fn("form", function () {
          *      blank, then this field is not added directly to the list.
          */
         addField: function (name, config) {
+            name = js.alg.string(name, "");
+            config = js.alg.object(config, {});
+            
             var $field = js.dom(),
                 cfg = Object.create(js_form.fn.fieldTemplate),
                 option, i;
@@ -215,9 +218,6 @@ jspyder.extend.fn("form", function () {
             if (config.values) { cfg.values = js.alg.sliceArray(config.values); }
 
             switch (cfg.type) {
-                // case "section":
-                //     break;
-                    
                 case "checkbox":
                     // js.alg.each(cfg.values, this._createCheckboxes, { $field: $field, cfg: cfg, name: name });
                     for (i = 0; i < config.values.length; i++) {
@@ -263,32 +263,6 @@ jspyder.extend.fn("form", function () {
         },
 
         /**
-         * @private
-         * @method
-         * 
-         * Constructor for creating a series of checkbox elements.  These are
-         * added sequentially.
-         * 
-         * @param {Object} option
-         * @param {String} [option.text] Label for checkbox element
-         * @param {String} [option.value] Value to set for the checkbox element
-         * @param {Number} index The ID number for the current option
-         * @param {Object[]} options Array of options being iterated
-         * @param {Object} context
-         * @param {String} context.name The name these fields will be stored under.
-         * @param {Object} context.$field JSpyder DOM the checkboxes are being added to.
-         */
-        // _createCheckboxes: function (option, index, options, context) {
-        //     var $field = context.$field,
-        //         name = context.name;
-
-        //     $field.and(
-        //         "<input value=\"" + (option.value || option.text) +
-        //         "\" name=\"" + name + "\" type=\"checkbox\" />" +
-        //         "<label>" + (option.text || option.value) + "</label>");
-        // },
-
-        /**
          * @method
          * 
          * Retrieves the values of all of the elements in the JS-Form.
@@ -323,56 +297,6 @@ jspyder.extend.fn("form", function () {
             fn.apply(this, [values]);
             return this;
         },
-        
-        /**
-         * @private
-         * @method
-         * 
-         * Logical loop for jspyder.form.values; separated from the main
-         * function for efficient memory-management.
-         * 
-         * @param {Object} fieldSet
-         *      A pair of values being pushed in from jspyder.form._fields
-         * 
-         * @param {String} fieldSet.type
-         *      The type of element being created.
-         * 
-         * @param {Object} fieldSet.field
-         *      A reference to the JS-DOM object containing the form fields.
-         * 
-         * @param {String} name
-         *      The name of the current field in the iterator.
-         * 
-         * @param {Object} fields
-         *      Reference to jspyder.form._fields
-         * 
-         * @param {Object} context
-         * @param {Object} context.values
-         *      Reference to the field values which are being returned by
-         *      jspyder.form.values
-         * 
-         * @param {Object} context.self
-         *      JS-Form
-         */
-        // _values: function (fieldSet, name, fields, context) {
-        //     var self = context.self,
-        //         values = context.values,
-        //         $field = fieldSet.field,
-        //         $type = fieldSet.type;
-                
-        //     values[name] = null;
-                
-        //     switch ($type) {
-        //         case "checkbox":
-        //             values[name] = self._checkboxValue($field);
-        //             break;
-        //         default:
-        //             values[name] = self._genericValue($field);
-        //             break;
-        //     }
-            
-        //     return;
-        // },
         
         /**
          * @method
@@ -517,6 +441,33 @@ jspyder.extend.fn("form", function () {
             
             return this; 
         },
+        
+        compile: function(templateId, data, fn) {
+            return this._compiler(templateId, data, fn, "compile");
+        },
+        
+        compileExplicit: function(template, data, fn) {
+            return this._compiler(template, data, fn, "compileExplicit");
+        },
+        
+        _compiler: function(template, data, fn, compile) {
+            var dom = null;
+            
+            js.template(data)
+                [compile](template, null, function(text) {
+                    dom = js.dom(text);
+                });
+                
+            var fields = {};
+            js.alg.each(this._fields, function(fieldSet, name) {
+                fields[name] = fieldSet.field;
+            });
+            
+            dom.template(fields || {});
+            fn.apply(this, [dom]);
+                
+            return dom;
+        }
     };
     
     

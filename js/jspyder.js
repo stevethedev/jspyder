@@ -204,18 +204,14 @@
             }
             else if (Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0) {
                 BROWSER_NAME = "Safari";
-                BROWSER_VERSION = 1;
+                if (window.CSS.supports) { BROWSER_VERSION = 9; }
+                else if (!window.CSS.supports) { BROWSER_VERSION = 8; }
             }
             else if (window.MSInputMethodContext) {
                 BROWSER_NAME = "Edge";
                 if (JSON.stringify({ foo: Symbol() }) === "{}") { BROWSER_VERSION = 13; }
                 else if (!window.RTCIceGatherOptions) { BROWSER_VERSION = 12; }
                 else { BROWSER_VERSION = 11; }
-            }
-            else if (false) {
-                BROWSER_NAME = "Safari"; 9.1;
-                if (window.CSS.supports) { BROWSER_VERSION = 9; }
-                else if (!window.CSS.supports) { BROWSER_VERSION = 8; }
             }
             else if (false) {
                 BROWSER_NAME = "iOS Safari";
@@ -408,6 +404,10 @@
             "string": function(s, d) {
                 return (typeof s === "string" ? s :
                     s ? "" + s : d || "");
+            },
+            
+            "object": function(o, d) {
+                return (o && typeof o === "object" ? o : d || {});
             },
             
             /**
@@ -1226,6 +1226,13 @@
             },
 
             /// triggers the event(s) provided
+            /**
+             * Dispatches the event(s) identified for all of the wrapped DOM
+             * elements.
+             * 
+             * @param {String} event
+             *      All of the events to trigger for the wrapped DOM elements.
+             */
             trigger: function (event) {
                 event = (event || "").toString().split(/\s+/);
 
@@ -1246,7 +1253,13 @@
                 return this;
             },
 
-            /// Sets the inner html value
+            /**
+             * Sets the innerHTML For each of the wrapped elements with the
+             * identified value.
+             * 
+             * @param {String} html
+             *      New HTML to push into the wrapped elements.
+             */
             setHtml: function (html) {
                 this.each(function (element) {
                     element.innerHTML = html || "";
@@ -1322,17 +1335,17 @@
              * Cycles through the wrapped elements to input the identified 
              * objects 
              */
-            template: function(data) {
-                this.each(this._template, { self: this, data: data });
+            template: function(fields) {
+                this.each(this._template, { 
+                    self: this,  
+                    fields: fields
+                });
                 return this;
             },
             
             /** @private */
             _template: function(element, i, elements, o) {
-                var self = o.self, 
-                    data = o.data;
-                
-                self._template_parse(element, data);
+                o.self._template_parse(element, o.fields);
                 return;
             },
             /** @private */
@@ -1375,7 +1388,11 @@
                 
                 next = node.splitText(index);
                 next.data = next.data.substr(text.length);
-                parent.insertBefore(element, next);
+                js.dom(element)
+                    .each(function(element) {
+                        parent.insertBefore(element, next);
+                    });
+                // parent.insertBefore(element, next);
                 return true;
             }
         };
