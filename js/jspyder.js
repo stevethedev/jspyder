@@ -1316,6 +1316,67 @@
             /** @private */
             _and: function(_elements) {
                 js.alg.joinArray(_elements, this._element);
+            },
+            
+            /**
+             * Cycles through the wrapped elements to input the identified 
+             * objects 
+             */
+            template: function(data) {
+                this.each(this._template, { self: this, data: data });
+                return this;
+            },
+            
+            /** @private */
+            _template: function(element, i, elements, o) {
+                var self = o.self, 
+                    data = o.data;
+                
+                self._template_parse(element, data);
+                return;
+            },
+            /** @private */
+            _template_parse: function(tDOM, fields) {
+                var names = Object.keys(fields),
+                    n, name, field;
+
+                for (n = 0; n < names.length; n++) {
+                    name = names[n];
+                    field = fields[name];
+
+                    this._template_insert(tDOM, '${' + name + '}', field);
+                }
+                return tDOM;
+            },
+            /** @private */
+            _template_insert: function(tDOM, text, element) {
+                var children = tDOM.childNodes,
+                    child, c;
+
+                for (c = 0; c < children.length; c++) {
+                    child = children[c];
+                    if (child.nodeType === 3) {
+                        this._template_replace(child, text, element);
+                    }
+                    else {
+                        this._template_insert(child, text, element);
+                    }
+                }
+
+                return true;
+            },
+            /** @private */
+            _template_replace: function(node, text, element) {
+                var index = node.data.indexOf(text),
+                    parent = node.parentNode,
+                    next;
+
+                if (index === -1) { return false; }
+                
+                next = node.splitText(index);
+                next.data = next.data.substr(text.length);
+                parent.insertBefore(element, next);
+                return true;
             }
         };
 

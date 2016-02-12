@@ -21,6 +21,8 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  *****************************************************************************/
+$color-secondary: #727272;
+$color-divider: #b6b6b6;
 
 html {
     box-sizing: border-box;
@@ -141,4 +143,30 @@ sup {
     position:relative;
 	top:-0.2em;
 	vertical-align:top;
+}
+
+fieldset {
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    margin: 0 (5em/4) .5em;
+    vertical-align: top;
+    display: inline;
+    text-align: left;
+    
+    legend {
+        display: block;
+        width: 100%;
+        padding: 0;
+        margin: (5em/8) 0;
+        font-size: (21em/16);
+        line-height: inherit;
+        color: $color-secondary;
+        border-width: 0 0 (1em/16);
+        border-style: none none solid;
+        border-color: $color-divider;
+        text-align: left;
+    }
+    
+    & > div { margin-bottom: .5em; }
 }

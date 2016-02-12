@@ -654,6 +654,8 @@ js.extend.fn("sp", function () {
             // make sure we have a column identified.
             if(!filter) { continue; } 
             if(!filter.column) { continue; }
+            if(typeof row[filter.column] === "undefined") { continue; }
+            
             value = row[filter.column].value;
             drop = false;
             
