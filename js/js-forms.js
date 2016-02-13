@@ -458,6 +458,8 @@ jspyder.extend.fn("form", function () {
                     dom = js.dom(text);
                 });
                 
+            this._dom = dom;
+            
             var fields = {};
             js.alg.each(this._fields, function(fieldSet, name) {
                 fields[name] = fieldSet.field;
