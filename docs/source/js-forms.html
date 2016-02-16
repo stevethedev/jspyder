@@ -78,6 +78,11 @@ jspyder.extend.fn(&quot;form&quot;, function () {
      *     Function to trigger on form rest.  This can be overridden, 
      *     later.
      * 
+     * @param {Object} [config.fields]
+     *      An object of fields to insert into the document, where
+     *      the keys correspond to field names and the value scorrespond
+     *      to field definitions.
+     * 
      * @return {Object}
      *      JSpyder Function object.
      */
@@ -95,9 +100,9 @@ jspyder.extend.fn(&quot;form&quot;, function () {
             if (config.failure) { form._failure = config.failure; }
             // reset function
             if (config.reset) { form._reset = config.reset; }
-            // form elements
-            if (config.elements) {
-                form.addFields(config.elements);
+            // form fields
+            if (config.fields) {
+                form.addFields(config.fields);
             }
         }
 
@@ -223,8 +228,13 @@ jspyder.extend.fn(&quot;form&quot;, function () {
          *      blank, then this field is not added directly to the list.
          */
         addField: function (name, config) {
+            name = js.alg.string(name, &quot;&quot;);
+            config = js.alg.object(config, {});
+            
             var $field = js.dom(),
                 cfg = Object.create(js_form.fn.fieldTemplate),
+                dval = js.alg.string(cfg.default, &quot;&quot;),
+                val = js.alg.string(cfg.value, dval),
                 option, i;
             
             // copy all of the config options over, if they exist.    
@@ -232,29 +242,75 @@ jspyder.extend.fn(&quot;form&quot;, function () {
             if (config.values) { cfg.values = js.alg.sliceArray(config.values); }
 
             switch (cfg.type) {
-                // case &quot;section&quot;:
-                //     break;
-                    
                 case &quot;checkbox&quot;:
                     // js.alg.each(cfg.values, this._createCheckboxes, { $field: $field, cfg: cfg, name: name });
+                    cfg.text &amp;&amp; $field.and(&quot;&lt;label for=\&quot;&quot; + name + &quot;\&quot;&gt;&quot; + cfg.text + &quot;&lt;/label&gt;&quot;);
                     for (i = 0; i &lt; config.values.length; i++) {
                         option = config.values[i];
                         $field.and(
-                            &quot;&lt;input value=\&quot;&quot; + (option.value || option.text) +
-                            &quot;\&quot; name=\&quot;&quot; + name + &quot;\&quot; type=\&quot;checkbox\&quot; /&gt;&quot; +
-                            &quot;&lt;label&gt;&quot; + (option.text || option.value) + &quot;&lt;/label&gt;&quot;);
+                            &quot;&lt;div&gt;&lt;input value=\&quot;&quot; + (option.value || option.text) +
+                            &quot;\&quot; name=\&quot;&quot; + name + &quot;\&quot; type=\&quot;checkbox\&quot;&quot; +
+                            &quot; class=\&quot;&quot; + js.alg.string(cfg.class, &quot;&quot;) + &quot;\&quot;&gt;&lt;/input&gt;&quot; +
+                            this._labelHtml(name, js.alg.string(option.text, option.value)),
+                            &quot;&lt;/div&gt;&quot;);
+                    }
+                    break;
+                    
+                case &quot;radio&quot;:
+                    // js.alg.each(cfg.values, this._createCheckboxes, { $field: $field, cfg: cfg, name: name });
+                    cfg.text &amp;&amp; $field.and(&quot;&lt;label for=\&quot;&quot; + name + &quot;\&quot;&gt;&quot; + cfg.text + &quot;&lt;/label&gt;&quot;);
+                    for (i = 0; i &lt; config.values.length; i++) {
+                        option = config.values[i];
+                        $field.and(
+                            &quot;&lt;div&gt;&lt;input value=\&quot;&quot; + (option.value || option.text) +
+                            &quot;\&quot; name=\&quot;&quot; + name + &quot;\&quot; type=\&quot;radio\&quot;&quot; +
+                            &quot; class=\&quot;&quot; + js.alg.string(cfg.class, &quot;&quot;) + &quot;\&quot;&gt;&lt;/input&gt;&quot; +
+                            this._labelHtml(name, js.alg.string(option.text, option.value)),
+                            &quot;&lt;/div&gt;&quot;);
                     }
                     break;
 
                 case &quot;textarea&quot;:
-                    $field.and(&quot;&lt;textarea name=\&quot;&quot; + name + &quot;\&quot; &gt;&quot;);
+                    $field.and([
+                            this._labelHtml(name, js.alg.string(cfg.text)),
+                            &quot;&lt;textarea name=\&quot;&quot; + name + &quot;\&quot; class=\&quot;&quot; + js.alg.string(cfg.class, &quot;&quot;) + &quot;\&quot;&gt;&quot;
+                        ].join(''))
+                        .setValue(val);
+                    break;
+
+                case &quot;button&quot;:
+                    $field.and([
+                            &quot;&lt;div class=\&quot;js-control button &quot;, 
+                                js.alg.string(cfg.class,&quot;&quot;), 
+                                &quot;\&quot; name=\&quot;&quot;, name, &quot;\&quot;&gt;&quot;,
+                            (cfg.icon ? &quot;&lt;i class=\&quot;&quot; + cfg.icon + &quot;\&quot;&gt;&lt;/i&gt;&quot; : &quot;&quot;),
+                            &quot;&lt;span class=\&quot;button-text\&quot;&gt;&quot;, cfg.text, &quot;&lt;/span&gt;&quot;,
+                            &quot;&lt;/div&gt;&quot;
+                        ].join(''))
+                        .setValue(val);
                     break;
 
                 case &quot;dropdown&quot;:
+                    $field
+                        .and(this._labelHtml(name, js.alg.string(cfg.text)))
+                        .and(js.dom([
+                                &quot;&lt;div name=\&quot;&quot;, name, &quot;\&quot; class=\&quot;input js-control dropdown\&quot;&quot;, 
+                                    js.alg.string(cfg.class, &quot;&quot;), &quot;&gt;&quot;,
+                                    &quot;&lt;i class=\&quot;dropdown-arrow arrow-drop-down\&quot;&gt;&lt;/i&gt;&quot;,
+                                    &quot;&lt;span class=\&quot;dropdown-text\&quot;&gt;&quot;, &quot;&amp;nbsp;&quot;, &quot;&lt;/span&gt;&quot;,
+                                &quot;&lt;/div&gt;&quot;
+                            ].join(''))
+                            .on(&quot;click&quot;, this._boostrapDropdown_click(config.values))
+                        );
+                    break;
+                    
                 case &quot;hidden&quot;:
                 case &quot;input&quot;:
                 default:
-                    $field.and(&quot;&lt;input name=\&quot;&quot; + name + &quot;\&quot;&gt;&lt;/input&gt;&quot;);
+                    $field.and([
+                        this._labelHtml(name, js.alg.string(cfg.text)),
+                        &quot;&lt;input name=\&quot;&quot; + name + &quot;\&quot; class=\&quot;&quot; + js.alg.string(cfg.class, &quot;&quot;) + &quot;\&quot;&gt;&lt;/input&gt;&quot;
+                    ].join(''));
 
                     if (cfg.type === &quot;hidden&quot;) {
                         $field.setCss({ &quot;display&quot;: &quot;none !important&quot; });
@@ -267,6 +323,8 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                     if (cfg.type === &quot;autocomplete&quot;) {
                         // do autocomplete stuff (similar to dropdown)
                     }
+                    
+                    $field.setValue(val);
 
                     break;
             }
@@ -278,32 +336,66 @@ jspyder.extend.fn(&quot;form&quot;, function () {
 
             return this;
         },
-
-<span id='jspyder-form-method-'>        /**
-</span>         * @private
-         * @method
-         * 
-         * Constructor for creating a series of checkbox elements.  These are
-         * added sequentially.
-         * 
-         * @param {Object} option
-         * @param {String} [option.text] Label for checkbox element
-         * @param {String} [option.value] Value to set for the checkbox element
-         * @param {Number} index The ID number for the current option
-         * @param {Object[]} options Array of options being iterated
-         * @param {Object} context
-         * @param {String} context.name The name these fields will be stored under.
-         * @param {Object} context.$field JSpyder DOM the checkboxes are being added to.
-         */
-        // _createCheckboxes: function (option, index, options, context) {
-        //     var $field = context.$field,
-        //         name = context.name;
-
-        //     $field.and(
-        //         &quot;&lt;input value=\&quot;&quot; + (option.value || option.text) +
-        //         &quot;\&quot; name=\&quot;&quot; + name + &quot;\&quot; type=\&quot;checkbox\&quot; /&gt;&quot; +
-        //         &quot;&lt;label&gt;&quot; + (option.text || option.value) + &quot;&lt;/label&gt;&quot;);
-        // },
+        
+        _labelHtml: function(fieldName, labelText) {
+            return (fieldName &amp;&amp; labelText
+                ? &quot;&lt;label for=\&quot;&quot; + fieldName + &quot;\&quot;&gt;&quot; + labelText + &quot;&lt;/label&gt;&quot;
+                : &quot;&quot;);
+        },
+        _boostrapDropdown_click: function(options) {
+            var $doc = js.dom(document.documentElement);
+            
+            return function (event) {
+                var $self = js.dom(this),
+                    position = this.getBoundingClientRect(),
+                    $popout = js.dom(&quot;&lt;ul&gt;&lt;/ul&gt;&quot;, function() {
+                        var $popout = this,
+                            option = null,
+                            value = &quot;&quot;,
+                            text = &quot;&quot;;
+                    
+                        for(var i = 0; i &lt; options.length; i++) {
+                            option = options[i];
+                            text = js.alg.string(option.text, option.value);
+                            value = js.alg.string(option.value, option.text);
+                                
+                            $popout.append([
+                                &quot;&lt;li class=\&quot;item\&quot; value=\&quot;&quot;, value,
+                                &quot;\&quot;&gt;&quot;, text, &quot;&lt;/li&gt;&quot;].join(''));
+                        }
+                    })
+                    .setCss({
+                        &quot;width&quot;: position.width + &quot;px&quot;
+                    })
+                    .setClasses({ &quot;dropdown-selection&quot;: true })
+                    .on(&quot;click&quot;, function(event) {
+                        js.dom(event.target)
+                            .getValue(function(value) {
+                                $self.setValue(value);
+                                return;
+                            })
+                            .getHtml(function(html) {
+                                $self
+                                    .find(&quot;.dropdown-text&quot;)
+                                    .setHtml(html);
+                            });
+                            
+                        $doc.trigger(&quot;click&quot;);
+                        event.stopPropagation &amp;&amp; event.stopPropagation();
+                        event.stopImmediatePropagation &amp;&amp; event.stopImmediatePropagation();
+                    })
+                    .attach(this);
+                    
+                event.stopPropagation &amp;&amp; event.stopPropagation();
+                event.stopImmediatePropagation &amp;&amp; event.stopImmediatePropagation();
+                
+                $doc.on(&quot;click&quot;, function click(event) {
+                    $popout.remove();
+                    $popout = null;
+                    $doc.off(&quot;click&quot;, click);
+                });
+            };
+        },
 
 <span id='jspyder-form-method-values'>        /**
 </span>         * @method
@@ -340,56 +432,6 @@ jspyder.extend.fn(&quot;form&quot;, function () {
             fn.apply(this, [values]);
             return this;
         },
-        
-<span id='jspyder-form-method-'>        /**
-</span>         * @private
-         * @method
-         * 
-         * Logical loop for jspyder.form.values; separated from the main
-         * function for efficient memory-management.
-         * 
-         * @param {Object} fieldSet
-         *      A pair of values being pushed in from jspyder.form._fields
-         * 
-         * @param {String} fieldSet.type
-         *      The type of element being created.
-         * 
-         * @param {Object} fieldSet.field
-         *      A reference to the JS-DOM object containing the form fields.
-         * 
-         * @param {String} name
-         *      The name of the current field in the iterator.
-         * 
-         * @param {Object} fields
-         *      Reference to jspyder.form._fields
-         * 
-         * @param {Object} context
-         * @param {Object} context.values
-         *      Reference to the field values which are being returned by
-         *      jspyder.form.values
-         * 
-         * @param {Object} context.self
-         *      JS-Form
-         */
-        // _values: function (fieldSet, name, fields, context) {
-        //     var self = context.self,
-        //         values = context.values,
-        //         $field = fieldSet.field,
-        //         $type = fieldSet.type;
-                
-        //     values[name] = null;
-                
-        //     switch ($type) {
-        //         case &quot;checkbox&quot;:
-        //             values[name] = self._checkboxValue($field);
-        //             break;
-        //         default:
-        //             values[name] = self._genericValue($field);
-        //             break;
-        //     }
-            
-        //     return;
-        // },
         
 <span id='jspyder-form-method-_genericValue'>        /**
 </span>         * @method
@@ -514,12 +556,12 @@ jspyder.extend.fn(&quot;form&quot;, function () {
          * @param {Mixed} [data]
          *      Optional parameter to pass in as a second parameter for [fn].
          * 
-         * @return {Object} js.dom object.
+         * @return {Object} jspyder.dom object.
          */
         attach: function (fn, data) {
             var dom = this._dom,
                 fields = this._fields,
-                name, group, section;
+                name, group;
                 
             for (name in fields) {
                 group = fields[name];
@@ -534,6 +576,35 @@ jspyder.extend.fn(&quot;form&quot;, function () {
             
             return this; 
         },
+        
+        compile: function(templateId, data, fn) {
+            return this._compiler(templateId, data, fn, &quot;compile&quot;);
+        },
+        
+        compileExplicit: function(template, data, fn) {
+            return this._compiler(template, data, fn, &quot;compileExplicit&quot;);
+        },
+        
+        _compiler: function(template, data, fn, compile) {
+            var dom = null;
+            
+            js.template(data)
+                [compile](template, null, function(text) {
+                    dom = js.dom(text);
+                });
+                
+            this._dom = dom;
+            
+            var fields = {};
+            js.alg.each(this._fields, function(fieldSet, name) {
+                fields[name] = fieldSet.field;
+            });
+            
+            dom.template(fields || {});
+            (typeof fn === &quot;function&quot;) &amp;&amp; fn.apply(this, [dom]);
+                
+            return dom;
+        }
     };
     
     

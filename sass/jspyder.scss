@@ -21,8 +21,25 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  *****************************************************************************/
+$color-primary: #303F9F;
 $color-secondary: #727272;
 $color-divider: #b6b6b6;
+$color-background: lighten($color-primary, 10);
+$color-inverted: #FFF;
+$color-success: #4CAE4C;
+$color-success-background: lighten($color-success, 20);
+$color-success-text: darken($color-success, 30);
+$color-info: #46B8DA;
+$color-info-background: lighten($color-info, 20);
+$color-info-text: darken($color-info, 30);
+$color-warning: #EEA236;
+$color-warning-background: lighten($color-warning, 20);
+$color-warning-text: darken($color-warning, 30);
+$color-danger: #D43F3A;
+$color-danger-background: lighten($color-danger, 20);
+$color-danger-text: darken($color-danger, 30);
+$color-black: #212121;
+$color-white: #FFF;
 
 html {
     box-sizing: border-box;
@@ -34,54 +51,173 @@ html {
 /** SIZING CLASSES ***********************************************************/
 /* .spread-[max columns]-[span columns] */
 .spread-12-1
-{ width: calc( 100% / 12 ); }
+{ float: left; width: calc( 100% / 12 ); }
 
 .spread-12-2, .spread-6-1
-{ width: calc( 100% / 6); }
+{ float: left; width: calc( 100% / 6); }
 
 .spread-12-3, .spread-4-1
-{ width: 75%; }
+{ float: left; width: 25%; }
 
 .spread-12-4, .spread-6-2, .spread-3-1
-{ width: calc( 100% / 3 ); }
+{ float: left; width: calc( 100% / 3 ); }
 
 .spread-12-5
-{ width: calc( 500% / 12 ); }
+{ float: left; width: calc( 500% / 12 ); }
 
-.spread-12-6, .spread-6-3, .spread-2-1
-{ width: calc( 100% / 3 ); }
+.spread-12-6, .spread-6-3
+{ float: left; width: 50%; }
+
+.spread-2-1 
+{ float: left; width: 50%; }
 
 .spread-12-7
-{ width: calc( 700% / 12 ); }
+{ float: left; width: calc( 700% / 12 ); }
 
 .spread-12-8, .spread-6-4, .spread-3-2
-{ width: calc( 200% / 3 ); }
+{ float: left; width: calc( 200% / 3 ); }
 
 .spread-12-9, .spread-4-3 
-{ width: 75%; }
+{ float: left; width: 75%; }
 
 .spread-12-10, .spread-6-5
-{ width: calc( 500% / 6 ); }
+{ float: left; width: calc( 500% / 6 ); }
 
 .spread-12-11
-{ width: calc( 1100% / 12 ); }
+{ float: left; width: calc( 1100% / 12 ); }
 
-.spread-12-12, .spread-6-6, .spread-4-4, .spread-3-3, .spread-2-1, .spread-1-1
-{ width: 100%; }
+.spread-12-12, .spread-6-6, .spread-4-4, .spread-3-3, .spread-2-2, .spread-1-1
+{ float: left; width: 100%; }
 
 /** FORM ELEMENTS ************************************************************/
 
-input {
-    border: .1em solid rgba(0, 0, 0, 0.5);
-    padding: .4em;
-    border-radius: .2em;
-    box-shadow: 0px 0px .05em rgba(0, 0, 0, 0.2) inset;
-    margin: .1em;
+label {
     display: block;
 }
 
-label {
+.js-control {
+    &.button {
+        padding: .3em .5em;
+        display: inline-block;
+        border-radius: .18em;
+        border: (1em / 16) solid $color-black;
+        background-color: lighten($color-divider, 20);
+        box-shadow: 0 0 (1em / 16) rgba($color-secondary, .6) inset;
+        cursor: pointer;
+        
+        .button-text {
+            color: $color-black;
+            vertical-align: middle;
+            text-align: left;
+        }
+        
+        &>i {
+            margin: -.1em .1em -.1em -.15em;
+        }
+        
+        &:hover {
+            background-color: lighten($color-divider, 40);
+            box-shadow: 0 0 .4em rgba($color-secondary, .4);
+        }
+    }
+    
+    &.dropdown {
+        cursor: pointer;
+        
+        .dropdown-text {
+            color: $color-black;
+            vertical-align: middle;
+            text-align: left;
+            font-size: 1em;
+            display: inline-block;
+            line-height: 23em / 16;
+        }
+        
+        i.dropdown-arrow {
+            vertical-align: middle;
+            float: right;
+            margin: -.08em -.22em;
+        }
+        
+        &:hover {
+            i.dropdown-arrow {
+                display: initial;
+                color: $color-info-background;
+            }
+        }
+        
+        .dropdown-selection {
+            margin: 0;
+            padding: 0;
+            text-decoration: none;
+            list-style: outside none none;
+            border: (1em / 16) solid $color-divider;
+            border-top: (1em / 16) solid transparent;
+            border-radius: 0 0 .15em .15em;
+            position: absolute;
+            margin-left: -(1em / 16) - .4em;
+            padding-top: .2em;
+            overflow: hidden;
+            
+            &:hover {
+                border-color: $color-info-background;
+                box-shadow: 0 (1em / 16) .16em $color-info-background;
+                border-top-color: transparent;
+            }
+            
+            li.item {
+                padding: .1em .3em;
+                
+                &:before {
+                    content: "";
+                    display: inline-block;
+                    background-color: $color-divider;
+                    position: absolute;
+                    left: 0;
+                    width: .2em;
+                    height: 1.5em;
+                    margin-top: -.14em;
+                }
+                
+                &:hover:before {
+                    background-color: $color-info-background;
+                }
+            }
+        }
+    }
+}
+
+input, textarea, .input {
+    border: (1em / 16) solid $color-divider;
+    padding: .2em .4em;
+    border-radius: .2em;
+    box-shadow: 0 0 .05em rgba($color-black, .15) inset;
     display: block;
+    width: 100%;
+    font-size: 1em;
+    
+    &:hover {
+        border-color: $color-info-background;
+        box-shadow: 0 0 .16em $color-info-background inset;
+    }
+    
+    &:active, &:focus {
+        border-color:  $color-info-background;
+        box-shadow: 0 0 .16em $color-info-background;
+    }
+}
+
+input[type="checkbox"], input[type="radio"] {
+    vertical-align: middle;
+    width: 0;
+    text-align: left;
+    display: inline-block;
+    
+    &+label {
+        display: inline-block;
+        vertical-align: middle;
+        margin-left: .2em;
+    }
 }
 
 /* XS */
@@ -128,12 +264,20 @@ label {
     &.block { display: block; }
 }
 .display-none { display: none; }
+.display-inline { display: inline; }
+.display-inline-block { display: inline-block; }
 
 .position {
-    &.relative { position: relative; }
-    &.absolute { position: absolute; }
-    &.static { position: static; }
+    &.relative, &.absolute, &.static {
+        font-size: 300%;
+        color: #F00;
+    }
 }
+.position-relative { position: relative; }
+.position-absolute { position: absolute; }
+.position-static { position: static; }
+
+.align-center { text-align: center; }
 
 .cursor-help { cursor: help; }
 .cursor-wait { cursor: wait; }
@@ -154,7 +298,7 @@ fieldset {
     display: inline;
     text-align: left;
     
-    legend {
+    & > legend {
         display: block;
         width: 100%;
         padding: 0;
@@ -169,4 +313,56 @@ fieldset {
     }
     
     & > div { margin-bottom: .5em; }
+}
+
+.float-left { float: left; }
+.float-right { float: right; }
+.stick-left { position: absolute; left: 0; }
+.stick-right { position: absolute; right: 0; }
+
+
+@mixin color-X($border-color, $bg-color, $text-color) {
+    border-color: $border-color !important;
+    background-color: $bg-color !important;
+    color: $text-color !important;
+    
+    &:hover {
+        border-color: lighten($border-color, 10) !important;
+        background-color: lighten($bg-color, 10) !important;
+    }
+}
+
+.color-primary {
+    @include color-X(
+        $color-primary,
+        $color-background,
+        $color-inverted);
+}
+
+.color-success {
+    @include color-X(
+        $color-success, 
+        $color-success-background, 
+        $color-success-text);
+}
+
+.color-info {
+    @include color-X(
+        $color-info, 
+        $color-info-background, 
+        $color-info-text);
+}
+
+.color-warning {
+    @include color-X(
+        $color-warning, 
+        $color-warning-background, 
+        $color-warning-text);
+}
+
+.color-danger {
+    @include color-X(
+        $color-danger, 
+        $color-danger-background, 
+        $color-danger-text);
 }

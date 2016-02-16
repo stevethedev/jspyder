@@ -221,18 +221,14 @@
             }
             else if (Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') &gt; 0) {
                 BROWSER_NAME = &quot;Safari&quot;;
-                BROWSER_VERSION = 1;
+                if (window.CSS.supports) { BROWSER_VERSION = 9; }
+                else if (!window.CSS.supports) { BROWSER_VERSION = 8; }
             }
             else if (window.MSInputMethodContext) {
                 BROWSER_NAME = &quot;Edge&quot;;
                 if (JSON.stringify({ foo: Symbol() }) === &quot;{}&quot;) { BROWSER_VERSION = 13; }
                 else if (!window.RTCIceGatherOptions) { BROWSER_VERSION = 12; }
                 else { BROWSER_VERSION = 11; }
-            }
-            else if (false) {
-                BROWSER_NAME = &quot;Safari&quot;; 9.1;
-                if (window.CSS.supports) { BROWSER_VERSION = 9; }
-                else if (!window.CSS.supports) { BROWSER_VERSION = 8; }
             }
             else if (false) {
                 BROWSER_NAME = &quot;iOS Safari&quot;;
@@ -414,9 +410,21 @@
 <span id='jspyder-alg-method-number'>            /**
 </span>             * Coerces any value to a Javascript Number object
              */
-            &quot;number&quot;: function (n) {
+            &quot;number&quot;: function (n, d) {
                 var _n = +n;
-                return ((_n == n || _n === _n) ? _n : 0);
+                return ((_n == n || _n === _n) ? _n : d || 0);
+            },
+            
+<span id='jspyder-alg-method-string'>            /**
+</span>             * coerces any value to a string
+             */
+            &quot;string&quot;: function(s, d) {
+                return (typeof s === &quot;string&quot; ? s :
+                    (s || s === 0) ? &quot;&quot; + s : d || &quot;&quot;);
+            },
+            
+            &quot;object&quot;: function(o, d) {
+                return (o &amp;&amp; typeof o === &quot;object&quot; ? o : d || {});
             },
             
 <span id='jspyder-alg-method-byte'>            /**
@@ -714,7 +722,7 @@
             element = element || [];
             var s = element, el;
 
-            if (!(element instanceof js.dom)) {
+            if (!(js.dom.fn.isPrototypeOf(element))) {
 
                 if (typeof s === &quot;string&quot;) {
                     try {
@@ -763,9 +771,8 @@
          * Returns TRUE if the node is a DOM Element
          */
         function __isElement(o) {
-            return js.alg.bool(typeof HTMLElement === &quot;object&quot;
-                ? o instanceof HTMLElement
-                : o &amp;&amp; typeof o === &quot;object&quot; &amp;&amp; o.nodeType === 1 &amp;&amp; typeof o.nodeName === &quot;string&quot;);
+            return js.alg.bool( (typeof HTMLElement === &quot;object&quot; &amp;&amp; o instanceof HTMLElement) || 
+                (o &amp;&amp; typeof o === &quot;object&quot; &amp;&amp; o.nodeType === 1 &amp;&amp; typeof o.nodeName === &quot;string&quot;));
         }
         
 <span id='jspyder-dom-method-__getDomClasses'>        /**
@@ -1038,9 +1045,14 @@
              */
             children: function (fn) {
                 this.each(function (element, i, elements) {
-                    for (var j = 0; j &lt; element.children.length; j++) {
-                        js_dom(element.children[j], fn, [element.children[j]]);
+                    var child = element.firstElementChild;
+                    while(child) {
+                        js_dom(child, fn, [child]);
+                        child = child.nextElementSibling;
                     }
+                    // for (var j = 0; j &lt; element.children.length; j++) {
+                    //     js_dom(element.children[j], fn, [element.children[j]]);
+                    // }
                 });
                 return this;
             },
@@ -1229,19 +1241,45 @@
 
                 return this;
             },
+            
+            off: function(events, handler) {
+                events = (events || &quot;&quot;).split(/\s+/);
+                var self = this;
+
+                js.alg.each(events, function(event) {
+                    js.alg.each(self._element, function(element) {
+                        var elist = element.__jspyder.fetch(&quot;js-events-&quot; + event),
+                            index = -1; 
+                        element.removeEventListener(event, handler);
+                        if(elist) {
+                            while((index = elist.indexOf(handler)) &gt;= 0) {
+                                elist[index] = null;
+                            }
+                            elist.sort().splice(0,elist.indexOf(null));
+                        }
+                    });
+                });
+            },
 
             /// triggers the event(s) provided
+<span id='jspyder-dom-method-trigger'>            /**
+</span>             * Dispatches the event(s) identified for all of the wrapped DOM
+             * elements.
+             * 
+             * @param {String} event
+             *      All of the events to trigger for the wrapped DOM elements.
+             */
             trigger: function (event) {
                 event = (event || &quot;&quot;).toString().split(/\s+/);
 
-                var e
+                var e;
                 for (var i = 0; i &lt; event.length; i++) {
                     try {
-                        e = new Event(&quot;mousedown&quot;, { &quot;bubbles&quot;: true, &quot;cancelable&quot;: false });
+                        e = new Event(event[i], { &quot;bubbles&quot;: true, &quot;cancelable&quot;: false });
                     }
                     catch (_) {
                         e = document.createEvent(&quot;Event&quot;);
-                        e.initEvent(&quot;mousedown&quot;, true, true);
+                        e.initEvent(event[i], true, true);
                     }
                     this.each(function (el) {
                         el.dispatchEvent(e);
@@ -1251,7 +1289,13 @@
                 return this;
             },
 
-            /// Sets the inner html value
+<span id='jspyder-dom-method-setHtml'>            /**
+</span>             * Sets the innerHTML For each of the wrapped elements with the
+             * identified value.
+             * 
+             * @param {String} html
+             *      New HTML to push into the wrapped elements.
+             */
             setHtml: function (html) {
                 this.each(function (element) {
                     element.innerHTML = html || &quot;&quot;;
@@ -1302,7 +1346,8 @@
                     _found = $found._element;
                     
                 this.each(function(element) {
-                    js.alg.joinArray(_found, element.querySelectorAll(cssSelector));
+                    var children = element.querySelectorAll(cssSelector);
+                    js.alg.joinArray(_found, js.dom(children)._element);
                 });
                 
                 return $found;
@@ -1320,6 +1365,105 @@
 <span id='jspyder-dom-method-_and'>            /** @private */
 </span>            _and: function(_elements) {
                 js.alg.joinArray(_elements, this._element);
+            },
+            
+<span id='jspyder-dom-method-template'>            /**
+</span>             * Cycles through the wrapped elements to input the identified 
+             * objects 
+             */
+            template: function(fields) {
+                this.each(this._template, { 
+                    self: this,  
+                    fields: fields
+                });
+                return this;
+            },
+            
+<span id='jspyder-dom-method-_template'>            /** @private */
+</span>            _template: function(element, i, elements, o) {
+                o.self._template_parse(element, o.fields);
+                return;
+            },
+<span id='jspyder-dom-method-_template_parse'>            /** @private */
+</span>            _template_parse: function(tDOM, fields) {
+                var names = Object.keys(fields),
+                    n, name, field;
+
+                for (n = 0; n &lt; names.length; n++) {
+                    name = names[n];
+                    field = fields[name];
+
+                    this._template_insert(tDOM, '${' + name + '}', field);
+                }
+                return tDOM;
+            },
+<span id='jspyder-dom-method-_template_insert'>            /** @private */
+</span>            _template_insert: function(tDOM, text, element) {
+                var children = tDOM.childNodes,
+                    child, c;
+
+                for (c = 0; c &lt; children.length; c++) {
+                    child = children[c];
+                    if (child.nodeType === 3) {
+                        this._template_replace(child, text, element);
+                    }
+                    else {
+                        this._template_insert(child, text, element);
+                    }
+                }
+
+                return true;
+            },
+<span id='jspyder-dom-method-_template_replace'>            /** @private */
+</span>            _template_replace: function(node, text, element) {
+                var index = node.data.indexOf(text),
+                    parent = node.parentNode,
+                    next;
+
+                if (index === -1) { return false; }
+                
+                next = node.splitText(index);
+                next.data = next.data.substr(text.length);
+                js.dom(element)
+                    .each(function(element) {
+                        parent.insertBefore(element, next);
+                    });
+                // parent.insertBefore(element, next);
+                return true;
+            },
+            
+<span id='jspyder-dom-method-setValue'>            /**
+</span>             * Sets the value of the selected elements
+             */
+            setValue: function(val, fn) {
+                return this.each(function(element) {
+                    if(typeof element.value !== &quot;undefined&quot; &amp;&amp; element.tagName !== &quot;LI&quot;) {
+                        element.value = val;
+                    }
+                    else {
+                        element.setAttribute(&quot;value&quot;, val);
+                    }
+                }).use(fn);
+            },
+            
+<span id='jspyder-dom-method-getValue'>            /**
+</span>             * Gets the value of the wrapped elements
+             */
+            getValue: function(fn) {
+                var self = this;
+                return self.each(function(element) {
+                    var value = (typeof element.value !== &quot;undefined&quot;
+                        ? element.value : element.getAttribute(&quot;value&quot;));
+                        
+                    if(element.tagName === &quot;LI&quot;) {
+                        value = element.getAttribute(&quot;value&quot;);
+                    }
+                         
+                    if(value !== &quot;undefined&quot;) {
+                        // get value types
+                        self.use(fn, [value]);
+                    }
+                });
             }
         };
 

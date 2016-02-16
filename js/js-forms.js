@@ -61,6 +61,11 @@ jspyder.extend.fn("form", function () {
      *     Function to trigger on form rest.  This can be overridden, 
      *     later.
      * 
+     * @param {Object} [config.fields]
+     *      An object of fields to insert into the document, where
+     *      the keys correspond to field names and the value scorrespond
+     *      to field definitions.
+     * 
      * @return {Object}
      *      JSpyder Function object.
      */
@@ -78,9 +83,9 @@ jspyder.extend.fn("form", function () {
             if (config.failure) { form._failure = config.failure; }
             // reset function
             if (config.reset) { form._reset = config.reset; }
-            // form elements
-            if (config.elements) {
-                form.addFields(config.elements);
+            // form fields
+            if (config.fields) {
+                form.addFields(config.fields);
             }
         }
 
@@ -211,6 +216,8 @@ jspyder.extend.fn("form", function () {
             
             var $field = js.dom(),
                 cfg = Object.create(js_form.fn.fieldTemplate),
+                dval = js.alg.string(cfg.default, ""),
+                val = js.alg.string(cfg.value, dval),
                 option, i;
             
             // copy all of the config options over, if they exist.    
@@ -220,24 +227,73 @@ jspyder.extend.fn("form", function () {
             switch (cfg.type) {
                 case "checkbox":
                     // js.alg.each(cfg.values, this._createCheckboxes, { $field: $field, cfg: cfg, name: name });
+                    cfg.text && $field.and("<label for=\"" + name + "\">" + cfg.text + "</label>");
                     for (i = 0; i < config.values.length; i++) {
                         option = config.values[i];
                         $field.and(
-                            "<input value=\"" + (option.value || option.text) +
-                            "\" name=\"" + name + "\" type=\"checkbox\" />" +
-                            "<label>" + (option.text || option.value) + "</label>");
+                            "<div><input value=\"" + (option.value || option.text) +
+                            "\" name=\"" + name + "\" type=\"checkbox\"" +
+                            " class=\"" + js.alg.string(cfg.class, "") + "\"></input>" +
+                            this._labelHtml(name, js.alg.string(option.text, option.value)),
+                            "</div>");
+                    }
+                    break;
+                    
+                case "radio":
+                    // js.alg.each(cfg.values, this._createCheckboxes, { $field: $field, cfg: cfg, name: name });
+                    cfg.text && $field.and("<label for=\"" + name + "\">" + cfg.text + "</label>");
+                    for (i = 0; i < config.values.length; i++) {
+                        option = config.values[i];
+                        $field.and(
+                            "<div><input value=\"" + (option.value || option.text) +
+                            "\" name=\"" + name + "\" type=\"radio\"" +
+                            " class=\"" + js.alg.string(cfg.class, "") + "\"></input>" +
+                            this._labelHtml(name, js.alg.string(option.text, option.value)),
+                            "</div>");
                     }
                     break;
 
                 case "textarea":
-                    $field.and("<textarea name=\"" + name + "\" >");
+                    $field.and([
+                            this._labelHtml(name, js.alg.string(cfg.text)),
+                            "<textarea name=\"" + name + "\" class=\"" + js.alg.string(cfg.class, "") + "\">"
+                        ].join(''))
+                        .setValue(val);
+                    break;
+
+                case "button":
+                    $field.and([
+                            "<div class=\"js-control button ", 
+                                js.alg.string(cfg.class,""), 
+                                "\" name=\"", name, "\">",
+                            (cfg.icon ? "<i class=\"" + cfg.icon + "\"></i>" : ""),
+                            "<span class=\"button-text\">", cfg.text, "</span>",
+                            "</div>"
+                        ].join(''))
+                        .setValue(val);
                     break;
 
                 case "dropdown":
+                    $field
+                        .and(this._labelHtml(name, js.alg.string(cfg.text)))
+                        .and(js.dom([
+                                "<div name=\"", name, "\" class=\"input js-control dropdown\"", 
+                                    js.alg.string(cfg.class, ""), ">",
+                                    "<i class=\"dropdown-arrow arrow-drop-down\"></i>",
+                                    "<span class=\"dropdown-text\">", "&nbsp;", "</span>",
+                                "</div>"
+                            ].join(''))
+                            .on("click", this._boostrapDropdown_click(config.values))
+                        );
+                    break;
+                    
                 case "hidden":
                 case "input":
                 default:
-                    $field.and("<input name=\"" + name + "\"></input>");
+                    $field.and([
+                        this._labelHtml(name, js.alg.string(cfg.text)),
+                        "<input name=\"" + name + "\" class=\"" + js.alg.string(cfg.class, "") + "\"></input>"
+                    ].join(''));
 
                     if (cfg.type === "hidden") {
                         $field.setCss({ "display": "none !important" });
@@ -250,6 +306,8 @@ jspyder.extend.fn("form", function () {
                     if (cfg.type === "autocomplete") {
                         // do autocomplete stuff (similar to dropdown)
                     }
+                    
+                    $field.setValue(val);
 
                     break;
             }
@@ -260,6 +318,66 @@ jspyder.extend.fn("form", function () {
             this._fields[name] = { type: cfg.type, field: $field, section: config.section || null };
 
             return this;
+        },
+        
+        _labelHtml: function(fieldName, labelText) {
+            return (fieldName && labelText
+                ? "<label for=\"" + fieldName + "\">" + labelText + "</label>"
+                : "");
+        },
+        _boostrapDropdown_click: function(options) {
+            var $doc = js.dom(document.documentElement);
+            
+            return function (event) {
+                var $self = js.dom(this),
+                    position = this.getBoundingClientRect(),
+                    $popout = js.dom("<ul></ul>", function() {
+                        var $popout = this,
+                            option = null,
+                            value = "",
+                            text = "";
+                    
+                        for(var i = 0; i < options.length; i++) {
+                            option = options[i];
+                            text = js.alg.string(option.text, option.value);
+                            value = js.alg.string(option.value, option.text);
+                                
+                            $popout.append([
+                                "<li class=\"item\" value=\"", value,
+                                "\">", text, "</li>"].join(''));
+                        }
+                    })
+                    .setCss({
+                        "width": position.width + "px"
+                    })
+                    .setClasses({ "dropdown-selection": true })
+                    .on("click", function(event) {
+                        js.dom(event.target)
+                            .getValue(function(value) {
+                                $self.setValue(value);
+                                return;
+                            })
+                            .getHtml(function(html) {
+                                $self
+                                    .find(".dropdown-text")
+                                    .setHtml(html);
+                            });
+                            
+                        $doc.trigger("click");
+                        event.stopPropagation && event.stopPropagation();
+                        event.stopImmediatePropagation && event.stopImmediatePropagation();
+                    })
+                    .attach(this);
+                    
+                event.stopPropagation && event.stopPropagation();
+                event.stopImmediatePropagation && event.stopImmediatePropagation();
+                
+                $doc.on("click", function click(event) {
+                    $popout.remove();
+                    $popout = null;
+                    $doc.off("click", click);
+                });
+            };
         },
 
         /**
@@ -466,7 +584,7 @@ jspyder.extend.fn("form", function () {
             });
             
             dom.template(fields || {});
-            fn.apply(this, [dom]);
+            (typeof fn === "function") && fn.apply(this, [dom]);
                 
             return dom;
         }

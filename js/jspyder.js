@@ -403,7 +403,7 @@
              */
             "string": function(s, d) {
                 return (typeof s === "string" ? s :
-                    s ? "" + s : d || "");
+                    (s || s === 0) ? "" + s : d || "");
             },
             
             "object": function(o, d) {
@@ -705,7 +705,7 @@
             element = element || [];
             var s = element, el;
 
-            if (!(element instanceof js.dom)) {
+            if (!(js.dom.fn.isPrototypeOf(element))) {
 
                 if (typeof s === "string") {
                     try {
@@ -1224,6 +1224,25 @@
 
                 return this;
             },
+            
+            off: function(events, handler) {
+                events = (events || "").split(/\s+/);
+                var self = this;
+
+                js.alg.each(events, function(event) {
+                    js.alg.each(self._element, function(element) {
+                        var elist = element.__jspyder.fetch("js-events-" + event),
+                            index = -1; 
+                        element.removeEventListener(event, handler);
+                        if(elist) {
+                            while((index = elist.indexOf(handler)) >= 0) {
+                                elist[index] = null;
+                            }
+                            elist.sort().splice(0,elist.indexOf(null));
+                        }
+                    });
+                });
+            },
 
             /// triggers the event(s) provided
             /**
@@ -1394,6 +1413,40 @@
                     });
                 // parent.insertBefore(element, next);
                 return true;
+            },
+            
+            /**
+             * Sets the value of the selected elements
+             */
+            setValue: function(val, fn) {
+                return this.each(function(element) {
+                    if(typeof element.value !== "undefined" && element.tagName !== "LI") {
+                        element.value = val;
+                    }
+                    else {
+                        element.setAttribute("value", val);
+                    }
+                }).use(fn);
+            },
+            
+            /**
+             * Gets the value of the wrapped elements
+             */
+            getValue: function(fn) {
+                var self = this;
+                return self.each(function(element) {
+                    var value = (typeof element.value !== "undefined"
+                        ? element.value : element.getAttribute("value"));
+                        
+                    if(element.tagName === "LI") {
+                        value = element.getAttribute("value");
+                    }
+                         
+                    if(value !== "undefined") {
+                        // get value types
+                        self.use(fn, [value]);
+                    }
+                });
             }
         };
 

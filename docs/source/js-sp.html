@@ -134,6 +134,9 @@ js.extend.fn(&quot;sp&quot;, function () {
         _caml: __caml,
         _columns: {},
         _rows: [],
+        get length() {
+            return this._rows.length;
+        },
         
 <span id='jspyder-sp-list-method-addColumn'>        /**********************************************************************
 </span>         * Adds a single column to the SP List proxy
@@ -410,7 +413,7 @@ js.extend.fn(&quot;sp&quot;, function () {
                 colData.rowIDs[rowID] = colValue;
 
                 if (!colData.values[colValue]) {
-                colData.values[colValue] = [];
+                    colData.values[colValue] = [];
                 }
                 colData.values[colValue].push(rowID);
             }
@@ -443,6 +446,10 @@ js.extend.fn(&quot;sp&quot;, function () {
             case &quot;bitflag&quot;:
             case &quot;number&quot; :
                 value = js.alg.number(value);
+                break;
+            case &quot;string&quot; :
+            case &quot;text&quot; :
+                value = js.alg.string(value);
                 break;
             default:
                 break;
@@ -489,6 +496,14 @@ js.extend.fn(&quot;sp&quot;, function () {
 </span>        _list: null,
 <span id='jspyder-sp-query-property-_rows'>        /** @private Overwritten at creation and reset. */
 </span>        _rows: null,
+        
+        get length() {
+            return this._rows.length;
+        },
+        
+        row: function(n) {
+            return this._rows[js.alg.number(n)];
+        },
         
 <span id='jspyder-sp-query-method-reset'>        /**********************************************************************
 </span>         * Resets the query object to include all of the available rows in the
@@ -558,6 +573,11 @@ js.extend.fn(&quot;sp&quot;, function () {
          *********************************************************************/
         data: function(fn) {
             js.alg.use(this, fn, [this._rows]);
+            return this;
+        },
+        
+        each: function(fn) {
+            js.alg.each(this._rows, fn, this);
             return this;
         },
         
@@ -640,7 +660,7 @@ js.extend.fn(&quot;sp&quot;, function () {
      *      Collection of filters.  See jspyder.sp.query.filter
      *********************************************************************/
     function __parseRows(row, id, _rows, filterData) {
-        if(!row) { // catch null values
+        if(!row || !filterData || !filterData.length) { // catch null values
             return;
         }
         
@@ -651,6 +671,8 @@ js.extend.fn(&quot;sp&quot;, function () {
             // make sure we have a column identified.
             if(!filter) { continue; } 
             if(!filter.column) { continue; }
+            if(typeof row[filter.column] === &quot;undefined&quot;) { continue; }
+            
             value = row[filter.column].value;
             drop = false;
             

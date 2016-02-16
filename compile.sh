@@ -50,7 +50,8 @@ DO_CSS=0
 while test $# -gt 0; do
     case "$1" in
         -h|--help)
-            help
+            shift
+	    help
             ;;
              
         -a|-d|--docs)
@@ -67,6 +68,10 @@ while test $# -gt 0; do
             shift
             DO_CSS=1
             ;;
+
+	*)
+	    shift
+	    ;;
     esac
 done
 
