@@ -102,11 +102,16 @@ label {
   .js-control.button:hover {
     background-color: white;
     box-shadow: 0 0 0.4em rgba(114, 114, 114, 0.4); }
+.js-control.currency-prefix {
+  position: absolute;
+  margin: .22em; }
+  .js-control.currency-prefix:after {
+    content: "$"; }
 .js-control.dropdown {
-  cursor: pointer; }
+  cursor: pointer;
+  position: relative; }
   .js-control.dropdown .dropdown-text {
     color: #212121;
-    vertical-align: middle;
     text-align: left;
     font-size: 1em;
     display: inline-block;
@@ -118,7 +123,12 @@ label {
   .js-control.dropdown:hover i.dropdown-arrow {
     display: initial;
     color: #9bd9eb; }
+  .js-control.dropdown:active, .js-control.dropdown:focus {
+    -ms-transform: none;
+    -webkit-transform: none;
+    transform: none; }
   .js-control.dropdown .dropdown-selection {
+    width: 100%;
     margin: 0;
     padding: 0;
     text-decoration: none;
@@ -129,13 +139,17 @@ label {
     position: absolute;
     margin-left: -0.4625em;
     padding-top: .2em;
-    overflow: hidden; }
+    overflow: hidden;
+    z-index: 2; }
     .js-control.dropdown .dropdown-selection:hover {
       border-color: #9bd9eb;
       box-shadow: 0 0.0625em 0.16em #9bd9eb;
       border-top-color: transparent; }
     .js-control.dropdown .dropdown-selection li.item {
-      padding: .1em .3em; }
+      padding: .08em .3em;
+      background-color: #FFF;
+      border-top: 0.0625em solid transparent;
+      border-bottom: 0.0625em solid transparent; }
       .js-control.dropdown .dropdown-selection li.item:before {
         content: "";
         display: inline-block;
@@ -145,8 +159,11 @@ label {
         width: .2em;
         height: 1.5em;
         margin-top: -.14em; }
-      .js-control.dropdown .dropdown-selection li.item:hover:before {
-        background-color: #9bd9eb; }
+      .js-control.dropdown .dropdown-selection li.item:hover {
+        border-top: 0.0625em solid #b6b6b6;
+        border-bottom: 0.0625em solid #b6b6b6; }
+        .js-control.dropdown .dropdown-selection li.item:hover:before {
+          background-color: #9bd9eb; }
 
 input, textarea, .input {
   border: 0.0625em solid #b6b6b6;
@@ -155,13 +172,22 @@ input, textarea, .input {
   box-shadow: 0 0 0.05em rgba(33, 33, 33, 0.15) inset;
   display: block;
   width: 100%;
-  font-size: 1em; }
+  font-size: 1em;
+  background-color: #FFF;
+  transition: -ms-transform 0.2s,  -webkit-transform 0.2s,  transform 0.2s; }
   input:hover, textarea:hover, .input:hover {
     border-color: #9bd9eb;
     box-shadow: 0 0 0.16em #9bd9eb inset; }
   input:active, input:focus, textarea:active, textarea:focus, .input:active, .input:focus {
     border-color: #9bd9eb;
-    box-shadow: 0 0 0.16em #9bd9eb; }
+    box-shadow: 0 0 0.16em #9bd9eb;
+    z-index: 2;
+    -ms-transform: scale(1.02, 1.02);
+    -webkit-transform: scale(1.02, 1.02);
+    transform: scale(1.02, 1.02); }
+  input.data-currency, textarea.data-currency, .input.data-currency {
+    text-align: right;
+    padding-left: .84em; }
 
 input[type="checkbox"], input[type="radio"] {
   vertical-align: middle;

@@ -41,6 +41,17 @@ $color-danger-text: darken($color-danger, 30);
 $color-black: #212121;
 $color-white: #FFF;
 
+@mixin transform($transform) {
+    -ms-transform: $transform;
+    -webkit-transform: $transform;
+    transform: $transform;
+}
+
+@mixin transition($transition) {
+    -webkit-transition: $transition;
+    transition: $transition;
+}
+
 html {
     box-sizing: border-box;
 }
@@ -121,12 +132,21 @@ label {
         }
     }
     
+    &.currency-prefix {
+        position: absolute;
+        margin: .22em;
+        
+        &:after {
+            content: "$";
+        }
+    }
+    
     &.dropdown {
         cursor: pointer;
+        position: relative;
         
         .dropdown-text {
             color: $color-black;
-            vertical-align: middle;
             text-align: left;
             font-size: 1em;
             display: inline-block;
@@ -146,7 +166,12 @@ label {
             }
         }
         
+        &:active, &:focus {
+            @include transform(none);
+        }
+        
         .dropdown-selection {
+            width: 100%;
             margin: 0;
             padding: 0;
             text-decoration: none;
@@ -158,6 +183,7 @@ label {
             margin-left: -(1em / 16) - .4em;
             padding-top: .2em;
             overflow: hidden;
+            z-index: 2;
             
             &:hover {
                 border-color: $color-info-background;
@@ -166,7 +192,10 @@ label {
             }
             
             li.item {
-                padding: .1em .3em;
+                padding: .08em .3em;
+                background-color: $color-white;
+                border-top: (1em/16) solid transparent;
+                border-bottom: (1em/16) solid transparent;
                 
                 &:before {
                     content: "";
@@ -179,8 +208,12 @@ label {
                     margin-top: -.14em;
                 }
                 
-                &:hover:before {
-                    background-color: $color-info-background;
+                &:hover {
+                    &:before {
+                        background-color: $color-info-background;
+                    }
+                    border-top: (1em/16) solid $color-divider;
+                    border-bottom: (1em/16) solid $color-divider;
                 }
             }
         }
@@ -195,6 +228,10 @@ input, textarea, .input {
     display: block;
     width: 100%;
     font-size: 1em;
+    background-color: $color-white;
+    transition: -ms-transform 0.2s, 
+                -webkit-transform 0.2s, 
+                transform 0.2s;
     
     &:hover {
         border-color: $color-info-background;
@@ -204,6 +241,13 @@ input, textarea, .input {
     &:active, &:focus {
         border-color:  $color-info-background;
         box-shadow: 0 0 .16em $color-info-background;
+        z-index: 2;
+        @include transform(scale(1.02, 1.02));
+    }
+    
+    &.data-currency {
+        text-align: right;
+        padding-left: .84em;
     }
 }
 

@@ -77,6 +77,13 @@
         // JSpyder Algorithms
         _bootstrapAlg(js);
         _bootstrapDom(js);
+        
+        js.loadScript = function(url) {
+            js.ajax(url)
+                .get(function(data) {
+                    (new Function(data.responseText))();
+                });
+        }
 
         return js;
     }

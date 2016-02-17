@@ -287,20 +287,22 @@ jspyder.extend.fn("form", function () {
                         );
                     break;
                     
+                case "date":
                 case "hidden":
                 case "input":
+                case "currency":
                 default:
-                    $field.and([
-                        this._labelHtml(name, js.alg.string(cfg.text)),
-                        "<input name=\"" + name + "\" class=\"" + js.alg.string(cfg.class, "") + "\"></input>"
-                    ].join(''));
+                    var textline = js.dom(this._textlineHtml(name, cfg.class, cfg.type)); 
+                    $field
+                        .and(this._labelHtml(name, js.alg.string(cfg.text)))
+                        .and(textline);
+                    
+                    if (cfg.type === "date") {
+                        textline.on("click", this._bootstrapDatepicker_click(config));
+                    }
 
                     if (cfg.type === "hidden") {
                         $field.setCss({ "display": "none !important" });
-                    }
-
-                    if (cfg.type === "dropdown") {
-                        // do dropdown stuff
                     }
 
                     if (cfg.type === "autocomplete") {
@@ -325,12 +327,30 @@ jspyder.extend.fn("form", function () {
                 ? "<label for=\"" + fieldName + "\">" + labelText + "</label>"
                 : "");
         },
+        _textlineHtml: function(fieldName, fieldClass, fieldType) {
+            fieldName = js.alg.string(fieldName);
+            fieldClass = js.alg.string(fieldClass);
+            fieldType = js.alg.string(fieldType, "text");
+            
+            var html = "";
+            switch(fieldType) {
+                case "currency":
+                    html += "<div class=\"js-control currency-prefix\"></div>";
+                    fieldClass += " data-currency";
+                    break;
+            }
+            
+            html += "<input class=\"" + fieldClass + "\"" + 
+                    " name=\"" + fieldName + "\"" +
+                    " data-type=\"" + fieldType + "\"></input>";
+                    
+            return html;
+        },
         _boostrapDropdown_click: function(options) {
             var $doc = js.dom(document.documentElement);
             
             return function (event) {
                 var $self = js.dom(this),
-                    position = this.getBoundingClientRect(),
                     $popout = js.dom("<ul></ul>", function() {
                         var $popout = this,
                             option = null,
@@ -346,9 +366,6 @@ jspyder.extend.fn("form", function () {
                                 "<li class=\"item\" value=\"", value,
                                 "\">", text, "</li>"].join(''));
                         }
-                    })
-                    .setCss({
-                        "width": position.width + "px"
                     })
                     .setClasses({ "dropdown-selection": true })
                     .on("click", function(event) {
@@ -368,15 +385,61 @@ jspyder.extend.fn("form", function () {
                         event.stopImmediatePropagation && event.stopImmediatePropagation();
                     })
                     .attach(this);
-                    
-                event.stopPropagation && event.stopPropagation();
-                event.stopImmediatePropagation && event.stopImmediatePropagation();
+                
+                var pause = true;
                 
                 $doc.on("click", function click(event) {
+                    if(pause) { return (pause = false); }
                     $popout.remove();
                     $popout = null;
                     $doc.off("click", click);
                 });
+            };
+        },
+        
+        _bootstrapDatepicker_click: function(config) {
+            var $doc = js.dom(document.documentElement),
+                
+                calendar = [
+                    "<div class=\"js-control date-picker\">",
+                        "<div>",
+                            "<i class=\"chevron-left\"></i>",
+                            "<h4>${YEAR}</h4>",
+                            "<i class=\"chevron-right\"></i>",
+                        "</div>",
+                        "<div class=\"calendar-tiles\"></div>",
+                    "</div>"
+                ].join(''),
+                
+                // list of months
+                months = config.months || [
+                    "Jan", "Feb", "Mar", "Apr",
+                    "May", "Jun", "Jul", "Aug",
+                    "Sep", "Oct", "Nov", "Dec"],
+                moCalendar = "";
+                
+            js.alg.each(months, function(month, i) {
+                moCalendar += "<div class=\"month\" value=\"" + i + "\">" + month + "</div>";
+            });
+            
+            return function(event) {
+                var $calendar = js.dom(calendar, function() {
+                    this.find(".calendar-tiles")
+                        .append(moCalendar);
+                });
+                
+                js.dom(this.parentNode).append($calendar);
+                
+                var pause = true;
+                
+                $doc.on("click", function click(event) {
+                    if(pause) { return (pause = false); }
+                    $calendar.remove();
+                    $calendar = null;
+                    $doc.off("click", click);
+                });
+                    
+                return;
             };
         },
 

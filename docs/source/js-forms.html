@@ -304,20 +304,22 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                         );
                     break;
                     
+                case &quot;date&quot;:
                 case &quot;hidden&quot;:
                 case &quot;input&quot;:
+                case &quot;currency&quot;:
                 default:
-                    $field.and([
-                        this._labelHtml(name, js.alg.string(cfg.text)),
-                        &quot;&lt;input name=\&quot;&quot; + name + &quot;\&quot; class=\&quot;&quot; + js.alg.string(cfg.class, &quot;&quot;) + &quot;\&quot;&gt;&lt;/input&gt;&quot;
-                    ].join(''));
+                    var textline = js.dom(this._textlineHtml(name, cfg.class, cfg.type)); 
+                    $field
+                        .and(this._labelHtml(name, js.alg.string(cfg.text)))
+                        .and(textline);
+                    
+                    if (cfg.type === &quot;date&quot;) {
+                        textline.on(&quot;click&quot;, this._bootstrapDatepicker_click(config));
+                    }
 
                     if (cfg.type === &quot;hidden&quot;) {
                         $field.setCss({ &quot;display&quot;: &quot;none !important&quot; });
-                    }
-
-                    if (cfg.type === &quot;dropdown&quot;) {
-                        // do dropdown stuff
                     }
 
                     if (cfg.type === &quot;autocomplete&quot;) {
@@ -342,12 +344,30 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                 ? &quot;&lt;label for=\&quot;&quot; + fieldName + &quot;\&quot;&gt;&quot; + labelText + &quot;&lt;/label&gt;&quot;
                 : &quot;&quot;);
         },
+        _textlineHtml: function(fieldName, fieldClass, fieldType) {
+            fieldName = js.alg.string(fieldName);
+            fieldClass = js.alg.string(fieldClass);
+            fieldType = js.alg.string(fieldType, &quot;text&quot;);
+            
+            var html = &quot;&quot;;
+            switch(fieldType) {
+                case &quot;currency&quot;:
+                    html += &quot;&lt;div class=\&quot;js-control currency-prefix\&quot;&gt;&lt;/div&gt;&quot;;
+                    fieldClass += &quot; data-currency&quot;;
+                    break;
+            }
+            
+            html += &quot;&lt;input class=\&quot;&quot; + fieldClass + &quot;\&quot;&quot; + 
+                    &quot; name=\&quot;&quot; + fieldName + &quot;\&quot;&quot; +
+                    &quot; data-type=\&quot;&quot; + fieldType + &quot;\&quot;&gt;&lt;/input&gt;&quot;;
+                    
+            return html;
+        },
         _boostrapDropdown_click: function(options) {
             var $doc = js.dom(document.documentElement);
             
             return function (event) {
                 var $self = js.dom(this),
-                    position = this.getBoundingClientRect(),
                     $popout = js.dom(&quot;&lt;ul&gt;&lt;/ul&gt;&quot;, function() {
                         var $popout = this,
                             option = null,
@@ -363,9 +383,6 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                                 &quot;&lt;li class=\&quot;item\&quot; value=\&quot;&quot;, value,
                                 &quot;\&quot;&gt;&quot;, text, &quot;&lt;/li&gt;&quot;].join(''));
                         }
-                    })
-                    .setCss({
-                        &quot;width&quot;: position.width + &quot;px&quot;
                     })
                     .setClasses({ &quot;dropdown-selection&quot;: true })
                     .on(&quot;click&quot;, function(event) {
@@ -385,15 +402,61 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                         event.stopImmediatePropagation &amp;&amp; event.stopImmediatePropagation();
                     })
                     .attach(this);
-                    
-                event.stopPropagation &amp;&amp; event.stopPropagation();
-                event.stopImmediatePropagation &amp;&amp; event.stopImmediatePropagation();
+                
+                var pause = true;
                 
                 $doc.on(&quot;click&quot;, function click(event) {
+                    if(pause) { return (pause = false); }
                     $popout.remove();
                     $popout = null;
                     $doc.off(&quot;click&quot;, click);
                 });
+            };
+        },
+        
+        _bootstrapDatepicker_click: function(config) {
+            var $doc = js.dom(document.documentElement),
+                
+                calendar = [
+                    &quot;&lt;div class=\&quot;js-control date-picker\&quot;&gt;&quot;,
+                        &quot;&lt;div&gt;&quot;,
+                            &quot;&lt;i class=\&quot;chevron-left\&quot;&gt;&lt;/i&gt;&quot;,
+                            &quot;&lt;h4&gt;${YEAR}&lt;/h4&gt;&quot;,
+                            &quot;&lt;i class=\&quot;chevron-right\&quot;&gt;&lt;/i&gt;&quot;,
+                        &quot;&lt;/div&gt;&quot;,
+                        &quot;&lt;div class=\&quot;calendar-tiles\&quot;&gt;&lt;/div&gt;&quot;,
+                    &quot;&lt;/div&gt;&quot;
+                ].join(''),
+                
+                // list of months
+                months = config.months || [
+                    &quot;Jan&quot;, &quot;Feb&quot;, &quot;Mar&quot;, &quot;Apr&quot;,
+                    &quot;May&quot;, &quot;Jun&quot;, &quot;Jul&quot;, &quot;Aug&quot;,
+                    &quot;Sep&quot;, &quot;Oct&quot;, &quot;Nov&quot;, &quot;Dec&quot;],
+                moCalendar = &quot;&quot;;
+                
+            js.alg.each(months, function(month, i) {
+                moCalendar += &quot;&lt;div class=\&quot;month\&quot; value=\&quot;&quot; + i + &quot;\&quot;&gt;&quot; + month + &quot;&lt;/div&gt;&quot;;
+            });
+            
+            return function(event) {
+                var $calendar = js.dom(calendar, function() {
+                    this.find(&quot;.calendar-tiles&quot;)
+                        .append(moCalendar);
+                });
+                
+                js.dom(this.parentNode).append($calendar);
+                
+                var pause = true;
+                
+                $doc.on(&quot;click&quot;, function click(event) {
+                    if(pause) { return (pause = false); }
+                    $calendar.remove();
+                    $calendar = null;
+                    $doc.off(&quot;click&quot;, click);
+                });
+                    
+                return;
             };
         },
 
