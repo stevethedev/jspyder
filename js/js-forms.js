@@ -402,10 +402,10 @@ jspyder.extend.fn("form", function () {
                 
                 calendar = [
                     "<div class=\"js-control date-picker\">",
-                        "<div>",
-                            "<i class=\"chevron-left\"></i>",
-                            "<h4>${YEAR}</h4>",
-                            "<i class=\"chevron-right\"></i>",
+                        "<div class=\"date-picker-header\">",
+                            "<i class=\"chevron-left date-picker-prev\"></i>",
+                            "<h4 class=\"date-picker-title\">${YEAR}</h4>",
+                            "<i class=\"chevron-right date-picker-next\"></i>",
                         "</div>",
                         "<div class=\"calendar-tiles\"></div>",
                     "</div>"
@@ -424,8 +424,30 @@ jspyder.extend.fn("form", function () {
             
             return function(event) {
                 var $calendar = js.dom(calendar, function() {
+                    
+                    this.on("click", function(event) {
+                        pause = true;
+                    });
+                    
                     this.find(".calendar-tiles")
-                        .append(moCalendar);
+                        .append(moCalendar)
+                        .find(".month")
+                            .on("click", function(event) {
+                                js.dom(this)
+                                    .getValue(function(v) {
+                                        console.log("Month: "+v);
+                                    });
+                            });
+                    
+                    this.find(".date-picker-prev")
+                        .on("click", function(event) {
+                            
+                        });
+                    
+                    this.find(".date-picker-next")
+                        .on("click", function(event) {
+                            pause = true;
+                        });
                 });
                 
                 js.dom(this.parentNode).append($calendar);

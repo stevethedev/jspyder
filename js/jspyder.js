@@ -417,6 +417,12 @@
                 return (o && typeof o === "object" ? o : d || {});
             },
             
+            "date": function(v, d) {
+                return ((input instanceof Date || Object.prototype.toString.call(input) === '[object Date]')
+                    ? v
+                    : new Date());
+            },
+            
             /**
              * Coerces any value to a INT8 value
              */

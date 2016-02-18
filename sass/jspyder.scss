@@ -41,6 +41,12 @@ $color-danger-text: darken($color-danger, 30);
 $color-black: #212121;
 $color-white: #FFF;
 
+$transition-transform-scale: -ms-transform 0.2s, 
+                             -webkit-transform 0.2s, 
+                             transform 0.2s;
+                             
+$shadow-size-color: .16em rgba($color-black, .5);
+
 @mixin transform($transform) {
     -ms-transform: $transform;
     -webkit-transform: $transform;
@@ -218,6 +224,75 @@ label {
             }
         }
     }
+    
+    &.date-picker {
+        display: block;
+        width: 12.5em;
+        border: (1em/16) solid $color-black;
+        position: absolute;
+        box-shadow: 0 0 $shadow-size-color;
+        z-index: 1000;
+        background-color: $color-white;
+        border-radius: .2em;
+        
+        .date-picker-header {
+            position: relative;
+            border-bottom: (1em/16) solid $color-black;
+            
+            .date-picker-prev, .date-picker-next {
+                position: absolute;
+                top: 0;
+                transition: color .2s;
+                cursor: pointer;
+                
+                &:hover {
+                    color: $color-primary;
+                }
+            }
+            
+            .date-picker-prev { left: 0;  }
+            .date-picker-next { right: 0; }
+            
+            .date-picker-title {
+                display: inline-block;
+                width: 100%;
+                text-align: center;
+                vertical-align: middle;
+                line-height: 1.5em;
+            }
+        }
+        
+        .calendar-tiles {
+            display: block;
+            width: 100%;
+            
+            .month {
+                width: 25%;
+                padding: .6em;
+            }
+            
+            .date {
+                width: 100%/7;
+            }
+            
+            .month, .date {
+                border: (1em/16) solid transparent;
+                transition: border-color .2s, color .2s;
+                display: inline-block;
+                text-align: center;
+                cursor: pointer;
+                
+                &:hover {
+                    border-color: $color-primary;
+                    color: $color-primary;
+                }
+            }
+            
+            .active {
+                background-color: $color-info-background;
+            }
+        }
+    }
 }
 
 input, textarea, .input {
@@ -229,9 +304,7 @@ input, textarea, .input {
     width: 100%;
     font-size: 1em;
     background-color: $color-white;
-    transition: -ms-transform 0.2s, 
-                -webkit-transform 0.2s, 
-                transform 0.2s;
+    transition: $transition-transform-scale;
     
     &:hover {
         border-color: $color-info-background;

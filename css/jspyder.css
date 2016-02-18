@@ -164,6 +164,54 @@ label {
         border-bottom: 0.0625em solid #b6b6b6; }
         .js-control.dropdown .dropdown-selection li.item:hover:before {
           background-color: #9bd9eb; }
+.js-control.date-picker {
+  display: block;
+  width: 12.5em;
+  border: 0.0625em solid #212121;
+  position: absolute;
+  box-shadow: 0 0 0.16em rgba(33, 33, 33, 0.5);
+  z-index: 1000;
+  background-color: #FFF;
+  border-radius: .2em; }
+  .js-control.date-picker .date-picker-header {
+    position: relative;
+    border-bottom: 0.0625em solid #212121; }
+    .js-control.date-picker .date-picker-header .date-picker-prev, .js-control.date-picker .date-picker-header .date-picker-next {
+      position: absolute;
+      top: 0;
+      transition: color .2s;
+      cursor: pointer; }
+      .js-control.date-picker .date-picker-header .date-picker-prev:hover, .js-control.date-picker .date-picker-header .date-picker-next:hover {
+        color: #303F9F; }
+    .js-control.date-picker .date-picker-header .date-picker-prev {
+      left: 0; }
+    .js-control.date-picker .date-picker-header .date-picker-next {
+      right: 0; }
+    .js-control.date-picker .date-picker-header .date-picker-title {
+      display: inline-block;
+      width: 100%;
+      text-align: center;
+      vertical-align: middle;
+      line-height: 1.5em; }
+  .js-control.date-picker .calendar-tiles {
+    display: block;
+    width: 100%; }
+    .js-control.date-picker .calendar-tiles .month {
+      width: 25%;
+      padding: .6em; }
+    .js-control.date-picker .calendar-tiles .date {
+      width: 100%/7; }
+    .js-control.date-picker .calendar-tiles .month, .js-control.date-picker .calendar-tiles .date {
+      border: 0.0625em solid transparent;
+      transition: border-color .2s, color .2s;
+      display: inline-block;
+      text-align: center;
+      cursor: pointer; }
+      .js-control.date-picker .calendar-tiles .month:hover, .js-control.date-picker .calendar-tiles .date:hover {
+        border-color: #303F9F;
+        color: #303F9F; }
+    .js-control.date-picker .calendar-tiles .active {
+      background-color: #9bd9eb; }
 
 input, textarea, .input {
   border: 0.0625em solid #b6b6b6;
@@ -174,7 +222,7 @@ input, textarea, .input {
   width: 100%;
   font-size: 1em;
   background-color: #FFF;
-  transition: -ms-transform 0.2s,  -webkit-transform 0.2s,  transform 0.2s; }
+  transition: -ms-transform 0.2s, -webkit-transform 0.2s, transform 0.2s; }
   input:hover, textarea:hover, .input:hover {
     border-color: #9bd9eb;
     box-shadow: 0 0 0.16em #9bd9eb inset; }

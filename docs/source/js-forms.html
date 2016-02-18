@@ -419,10 +419,10 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                 
                 calendar = [
                     &quot;&lt;div class=\&quot;js-control date-picker\&quot;&gt;&quot;,
-                        &quot;&lt;div&gt;&quot;,
-                            &quot;&lt;i class=\&quot;chevron-left\&quot;&gt;&lt;/i&gt;&quot;,
-                            &quot;&lt;h4&gt;${YEAR}&lt;/h4&gt;&quot;,
-                            &quot;&lt;i class=\&quot;chevron-right\&quot;&gt;&lt;/i&gt;&quot;,
+                        &quot;&lt;div class=\&quot;date-picker-header\&quot;&gt;&quot;,
+                            &quot;&lt;i class=\&quot;chevron-left date-picker-prev\&quot;&gt;&lt;/i&gt;&quot;,
+                            &quot;&lt;h4 class=\&quot;date-picker-title\&quot;&gt;${YEAR}&lt;/h4&gt;&quot;,
+                            &quot;&lt;i class=\&quot;chevron-right date-picker-next\&quot;&gt;&lt;/i&gt;&quot;,
                         &quot;&lt;/div&gt;&quot;,
                         &quot;&lt;div class=\&quot;calendar-tiles\&quot;&gt;&lt;/div&gt;&quot;,
                     &quot;&lt;/div&gt;&quot;
@@ -441,8 +441,30 @@ jspyder.extend.fn(&quot;form&quot;, function () {
             
             return function(event) {
                 var $calendar = js.dom(calendar, function() {
+                    
+                    this.on(&quot;click&quot;, function(event) {
+                        pause = true;
+                    });
+                    
                     this.find(&quot;.calendar-tiles&quot;)
-                        .append(moCalendar);
+                        .append(moCalendar)
+                        .find(&quot;.month&quot;)
+                            .on(&quot;click&quot;, function(event) {
+                                js.dom(this)
+                                    .getValue(function(v) {
+                                        console.log(&quot;Month: &quot;+v);
+                                    });
+                            });
+                    
+                    this.find(&quot;.date-picker-prev&quot;)
+                        .on(&quot;click&quot;, function(event) {
+                            
+                        });
+                    
+                    this.find(&quot;.date-picker-next&quot;)
+                        .on(&quot;click&quot;, function(event) {
+                            pause = true;
+                        });
                 });
                 
                 js.dom(this.parentNode).append($calendar);

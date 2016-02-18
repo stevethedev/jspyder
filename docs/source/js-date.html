@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">/* ****************************************************************************
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2015 Steven Jimenez
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the &quot;Software&quot;), to 
+ * deal in the Software without restriction, including without limitation the 
+ * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or 
+ * sell copies of the Software, and to permit persons to whom the Software is 
+ * furnished to do so, subject to the following conditions:
+ *  
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+ * IN THE SOFTWARE.
+ * ***************************************************************************/
+
+jspyder.extend.fn(&quot;date&quot;, function () {
+<span id='jspyder-date'>    /**
+</span>     * @class jspyder.date
+     * @member jspyder
+     * 
+     * Abstracts the Date object for simpler access.
+     * 
+     * @param {Date|String} [value=new Date()]
+     *      A Date Object or string to parse as the wrapped date.
+     * 
+     * @param {String} [format]
+     *      A string to use with a String value parameter in order to 
+     *      understand the date value; and to use when formatting strings 
+     *      from the date value.
+     * 
+     * @param {Boolean} [utc=false]
+     *      Whether to default to using UTC when getting formatted values.
+     * 
+     * @return {Object}
+     *      jspyder.date.fn Object 
+     */
+    function js_date(value, format, utc) {
+        var ret = Object.create(js_date.fn);
+        ret._format = format;
+        ret._useUTC = utc;
+        
+        return ret.setDate(value, format);
+    }
+    
+    js_date.fn = js_date.prototype = {
+        // private values
+<span id='jspyder-date-property-_value'>        /** 
+</span>         * @private
+         * Date value
+         */
+        _value: null,
+<span id='jspyder-date-property-_format'>        /**
+</span>         * @private
+         * Formatting string
+         */
+        _format: &quot;&quot;,
+<span id='jspyder-date-property-_useUTC'>        /**
+</span>         * @private
+         * Whether to default to using UTC on formatting, etc.
+         */
+        _useUTC: false,
+        
+<span id='jspyder-date-method-useUTC'>        /**
+</span>         * @method
+         * 
+         * Sets whether to use the UTC time zone when generating the date
+         * string.
+         * 
+         * @param {Boolean} [utc=true]
+         */
+        useUTC: function(utc) { 
+            this._useUTC = !js.alg.bool(utc); 
+            return this; 
+        },
+<span id='jspyder-date-method-useLocal'>        /**
+</span>         * @method
+         * 
+         * Sets whether to use the Local time zone when generating the date
+         * string.
+         * 
+         * @param {Boolean} [local=true]
+         */
+        useLocal: function(local) { 
+            this._useUTC = js.alg.bool(local); 
+            return this; 
+        },
+        
+<span id='jspyder-date-method-setDate'>        /**
+</span>         * @method
+         * 
+         * Overrides the current date value, as if the constructor (jspyder.date)
+         * had been run.
+         */
+        setDate: function(v, f) {
+            if(typeof value === &quot;undefined&quot;) {
+                date = new Date();
+            }
+            else if (__isJsDate(value)) {
+                date = value._value;
+            }
+            else if (__isDate(value)) {
+                date = new Date(value);
+            }
+            else if (typeof value === &quot;string&quot;) {
+                // config from string and format
+                date = __parseString(value, format);
+            }
+            else if (typeof value === &quot;number&quot;) {
+                date = new Date(value);
+            }
+            else {
+                date = new Date(NaN);
+            }
+            
+            this._value = date;
+            
+            return this;
+        },
+        
+<span id='jspyder-date-method-asDate'>        /**
+</span>         * @method
+         * 
+         * Gets the currently stored date value as a Date object.
+         */
+        asDate: function() { return this._value; },
+<span id='jspyder-date-method-asString'>        /**
+</span>         * @method
+         * 
+         * Gets the currently stored date value as a string.
+         * 
+         * @param {String} [format=this._format]
+         *      The format to use when generating the string.
+         * 
+         * @param {Boolean} [useUtc=this._useUtc]
+         */
+        asString: function(format, useUtc) {
+            format = js.alg.string(format, this._format || __defaultFormat);
+            useUtc = js.alg.bool(useUtc, this._useUtc || __defaultUtc);
+            return __formatDate(this._value, format, useUtc);
+        },
+        
+<span id='jspyder-date-method-addDays'>        /**
+</span>         * @method
+         * 
+         * Adds the specified number of days to the wrapped date value.
+         */
+        addDays: function(days) {
+            this._value.setDate( this._value.getDate() + js.alg.number(days) );
+            return this;
+        },
+        
+<span id='jspyder-date-method-addMonths'>        /**
+</span>         * @method
+         * 
+         * Adds the specified number of months to the wrapped date value.
+         */
+        addMonths: function(months) {
+            this._value.setMonth( this._value.getMonth() + js.alg.number(months) );
+            return this;
+        },
+        
+<span id='jspyder-date-method-addYears'>        /**
+</span>         * @method
+         * 
+         * Adds the specified number of years to the wrapped date value.
+         */
+        addYears: function(years) {
+            this._value.setFullYear( this._value.getFullYear() + js.alg.number(years) );
+            return this;
+        },
+        
+<span id='jspyder-date-method-addSeconds'>        /**
+</span>         * @method
+         * 
+         * Adds the specified number of seconds to the wrapped date value.
+         */
+        addSeconds: function(seconds) {
+            this._value.setSeconds( this._value.getSeconds() + js.alg.number(seconds) );
+            return this;
+        },
+<span id='jspyder-date-method-addMinutes'>        /**
+</span>         * @method
+         * 
+         * Adds the specified number of minutes to the wrapped date value.
+         */
+        addMinutes: function(minutes) {
+            this._value.setMinutes( this._value.getMinutes() + js.alg.number(minutes) );
+            return this;
+        },
+<span id='jspyder-date-method-addHours'>        /**
+</span>         * @method
+         * 
+         * Adds the specified number of hours to the wrapped date value.
+         */
+        addHours: function(hours) {
+            this._value.setHours( this._value.getHours() + js.alg.number(hours) );
+            return this;
+        }
+    }
+    
+<span id='jspyder-date-property-'>        /**
+</span>         * @private
+         */
+    var __reSearchStrings = [
+            &quot;YYYY&quot;, &quot;YY&quot;, 
+            &quot;yyyy&quot;, &quot;yy&quot;,
+            &quot;MMMM&quot;, &quot;MMM&quot;, &quot;MM&quot;, &quot;M&quot;, 
+            &quot;mmmm&quot;, &quot;mmm&quot;, &quot;mm&quot;, &quot;m&quot;,
+            &quot;dddd&quot;, &quot;ddd&quot;, &quot;dd&quot;, &quot;d&quot;,
+            &quot;DDDD&quot;, &quot;DDD&quot;, &quot;DD&quot;, &quot;D&quot;,
+            &quot;AM&quot;, &quot;am&quot;, 
+            &quot;HH&quot;, &quot;H&quot;, &quot;hh&quot;, &quot;h&quot;, 
+            &quot;NN&quot;, &quot;N&quot;, &quot;nn&quot;, &quot;n&quot;, 
+            &quot;SS&quot;, &quot;S&quot;, &quot;ss&quot;, &quot;s&quot;
+        ],
+<span id='jspyder-date-property-'>        /**
+</span>         * @private
+         */
+        __reSearch = new RegExp(&quot;(&quot; + __reSearchStrings.join(&quot;|&quot;) + &quot;)&quot;, &quot;g&quot;),
+<span id='jspyder-date-property-'>        /**
+</span>         * @private
+         */
+        __defaultFormat = &quot;ddd mmm d yyyy hh:mm:ss&quot;,
+<span id='jspyder-date-property-'>        /**
+</span>         * @private
+         */
+        __defaultUtc = false,
+<span id='jspyder-date-property-'>        /**
+</span>         * @private
+         */
+        __years = [
+            { YY: &quot;\\d{2}&quot;, YYYY: &quot;\\d{4}&quot;, yy: &quot;\\d{2}&quot;, yyyy: &quot;\\d{4}&quot; }
+        ],
+<span id='jspyder-date-property-'>        /**
+</span>         * @private
+         */
+        __months = [
+            { m:  &quot;1&quot;, mm: &quot;01&quot;, mmm: &quot;Jan&quot;, mmmm: &quot;January&quot;,   M:  &quot;1&quot;, MM: &quot;01&quot;, MMM: &quot;JAN&quot;, MMMM: &quot;JANUARY&quot;   },
+            { m:  &quot;2&quot;, mm: &quot;02&quot;, mmm: &quot;Feb&quot;, mmmm: &quot;February&quot;,  M:  &quot;2&quot;, MM: &quot;02&quot;, MMM: &quot;FEB&quot;, MMMM: &quot;FEBRUARY&quot;  },
+            { m:  &quot;3&quot;, mm: &quot;03&quot;, mmm: &quot;Mar&quot;, mmmm: &quot;March&quot;,     M:  &quot;3&quot;, MM: &quot;03&quot;, MMM: &quot;MAR&quot;, MMMM: &quot;MARCH&quot;     },
+            { m:  &quot;4&quot;, mm: &quot;04&quot;, mmm: &quot;Apr&quot;, mmmm: &quot;April&quot;,     M:  &quot;4&quot;, MM: &quot;04&quot;, MMM: &quot;APR&quot;, MMMM: &quot;APRIL&quot;     },
+            { m:  &quot;5&quot;, mm: &quot;05&quot;, mmm: &quot;May&quot;, mmmm: &quot;May&quot;,       M:  &quot;5&quot;, MM: &quot;05&quot;, MMM: &quot;MAY&quot;, MMMM: &quot;MAY&quot;       },
+            { m:  &quot;6&quot;, mm: &quot;06&quot;, mmm: &quot;Jun&quot;, mmmm: &quot;June&quot;,      M:  &quot;6&quot;, MM: &quot;06&quot;, MMM: &quot;JUN&quot;, MMMM: &quot;JUNE&quot;      },
+            { m:  &quot;7&quot;, mm: &quot;07&quot;, mmm: &quot;Jul&quot;, mmmm: &quot;July&quot;,      M:  &quot;7&quot;, MM: &quot;07&quot;, MMM: &quot;JUL&quot;, MMMM: &quot;JULY&quot;      },
+            { m:  &quot;8&quot;, mm: &quot;08&quot;, mmm: &quot;Aug&quot;, mmmm: &quot;August&quot;,    M:  &quot;8&quot;, MM: &quot;08&quot;, MMM: &quot;AUG&quot;, MMMM: &quot;AUGUST&quot;    },
+            { m:  &quot;9&quot;, mm: &quot;09&quot;, mmm: &quot;Sep&quot;, mmmm: &quot;September&quot;, M:  &quot;9&quot;, MM: &quot;09&quot;, MMM: &quot;SEP&quot;, MMMM: &quot;SEPTEMBER&quot; },
+            { m: &quot;10&quot;, mm: &quot;10&quot;, mmm: &quot;Oct&quot;, mmmm: &quot;October&quot;,   M: &quot;10&quot;, MM: &quot;10&quot;, MMM: &quot;OCT&quot;, MMMM: &quot;OCTOBER&quot;   },
+            { m: &quot;11&quot;, mm: &quot;11&quot;, mmm: &quot;Nov&quot;, mmmm: &quot;November&quot;,  M: &quot;11&quot;, MM: &quot;11&quot;, MMM: &quot;NOV&quot;, MMMM: &quot;NOVEMBER&quot;  },
+            { m: &quot;12&quot;, mm: &quot;12&quot;, mmm: &quot;Dec&quot;, mmmm: &quot;December&quot;,  M: &quot;12&quot;, MM: &quot;12&quot;, MMM: &quot;DEC&quot;, MMMM: &quot;DECEMBER&quot;  },
+        ],
+<span id='jspyder-date-property-'>        /**
+</span>         * @private
+         */
+        __days = [
+            { d:  &quot;1&quot;, dd: &quot;01&quot; }, { d:  &quot;2&quot;, dd: &quot;02&quot; }, { d:  &quot;3&quot;, dd: &quot;03&quot; }, { d:  &quot;4&quot;, dd: &quot;04&quot; },
+            { d:  &quot;5&quot;, dd: &quot;05&quot; }, { d:  &quot;6&quot;, dd: &quot;06&quot; }, { d:  &quot;7&quot;, dd: &quot;07&quot; }, { d:  &quot;8&quot;, dd: &quot;08&quot; },
+            { d:  &quot;9&quot;, dd: &quot;09&quot; }, { d: &quot;10&quot;, dd: &quot;10&quot; }, { d: &quot;11&quot;, dd: &quot;11&quot; }, { d: &quot;12&quot;, dd: &quot;12&quot; },
+            { d: &quot;13&quot;, dd: &quot;13&quot; }, { d: &quot;14&quot;, dd: &quot;14&quot; }, { d: &quot;15&quot;, dd: &quot;15&quot; }, { d: &quot;16&quot;, dd: &quot;16&quot; },
+            { d: &quot;17&quot;, dd: &quot;17&quot; }, { d: &quot;18&quot;, dd: &quot;18&quot; }, { d: &quot;19&quot;, dd: &quot;19&quot; }, { d: &quot;20&quot;, dd: &quot;20&quot; },
+            { d: &quot;21&quot;, dd: &quot;21&quot; }, { d: &quot;22&quot;, dd: &quot;22&quot; }, { d: &quot;23&quot;, dd: &quot;23&quot; }, { d: &quot;24&quot;, dd: &quot;24&quot; },
+            { d: &quot;25&quot;, dd: &quot;25&quot; }, { d: &quot;26&quot;, dd: &quot;26&quot; }, { d: &quot;27&quot;, dd: &quot;27&quot; }, { d: &quot;28&quot;, dd: &quot;28&quot; },
+            { d: &quot;29&quot;, dd: &quot;29&quot; }, { d: &quot;30&quot;, dd: &quot;30&quot; }, { d: &quot;31&quot;, dd: &quot;31&quot; },
+        ],
+<span id='jspyder-date-property-'>        /**
+</span>         * @private
+         */
+        __weekdays = [
+            { D: &quot;S&quot;, DD: &quot;Su&quot;, DDD: &quot;SUN&quot;, DDDD: &quot;SUNDAY&quot;,    ddd: &quot;Sun&quot;, dddd: &quot;Sunday&quot;    },
+            { D: &quot;M&quot;, DD: &quot;Mo&quot;, DDD: &quot;MON&quot;, DDDD: &quot;MONDAY&quot;,    ddd: &quot;Mon&quot;, dddd: &quot;Monday&quot;    },
+            { D: &quot;T&quot;, DD: &quot;Tu&quot;, DDD: &quot;TUE&quot;, DDDD: &quot;TUESDAY&quot;,   ddd: &quot;Tue&quot;, dddd: &quot;Tuesday&quot;   },
+            { D: &quot;W&quot;, DD: &quot;We&quot;, DDD: &quot;WED&quot;, DDDD: &quot;WEDNESDAY&quot;, ddd: &quot;Wed&quot;, dddd: &quot;Wednesday&quot; },
+            { D: &quot;T&quot;, DD: &quot;Th&quot;, DDD: &quot;THU&quot;, DDDD: &quot;THURSDAY&quot;,  ddd: &quot;Thu&quot;, dddd: &quot;Thursday&quot;  },
+            { D: &quot;F&quot;, DD: &quot;Fr&quot;, DDD: &quot;FRI&quot;, DDDD: &quot;FRIDAY&quot;,    ddd: &quot;Fri&quot;, dddd: &quot;Friday&quot;    },
+            { D: &quot;S&quot;, DD: &quot;Sa&quot;, DDD: &quot;SAT&quot;, DDDD: &quot;SATURDAY&quot;,  ddd: &quot;Sat&quot;, dddd: &quot;Saturday&quot;  },
+        ],
+<span id='jspyder-date-property-'>        /**
+</span>         * @private
+         */
+        __hours = [
+            { h: &quot;12&quot;, hh: &quot;12&quot;, H:  &quot;0&quot;, HH: &quot;00&quot;, AM: &quot;AM&quot;, am: &quot;am&quot; },
+            { h:  &quot;1&quot;, hh: &quot;01&quot;, H:  &quot;1&quot;, HH: &quot;01&quot;, AM: &quot;AM&quot;, am: &quot;am&quot; },
+            { h:  &quot;2&quot;, hh: &quot;02&quot;, H:  &quot;2&quot;, HH: &quot;02&quot;, AM: &quot;AM&quot;, am: &quot;am&quot; },
+            { h:  &quot;3&quot;, hh: &quot;03&quot;, H:  &quot;3&quot;, HH: &quot;03&quot;, AM: &quot;AM&quot;, am: &quot;am&quot; },
+            { h:  &quot;4&quot;, hh: &quot;04&quot;, H:  &quot;4&quot;, HH: &quot;04&quot;, AM: &quot;AM&quot;, am: &quot;am&quot; },
+            { h:  &quot;5&quot;, hh: &quot;05&quot;, H:  &quot;5&quot;, HH: &quot;05&quot;, AM: &quot;AM&quot;, am: &quot;am&quot; },
+            { h:  &quot;6&quot;, hh: &quot;06&quot;, H:  &quot;6&quot;, HH: &quot;06&quot;, AM: &quot;AM&quot;, am: &quot;am&quot; },
+            { h:  &quot;7&quot;, hh: &quot;07&quot;, H:  &quot;7&quot;, HH: &quot;07&quot;, AM: &quot;AM&quot;, am: &quot;am&quot; },
+            { h:  &quot;8&quot;, hh: &quot;08&quot;, H:  &quot;8&quot;, HH: &quot;08&quot;, AM: &quot;AM&quot;, am: &quot;am&quot; },
+            { h:  &quot;9&quot;, hh: &quot;09&quot;, H:  &quot;9&quot;, HH: &quot;09&quot;, AM: &quot;AM&quot;, am: &quot;am&quot; },
+            { h: &quot;10&quot;, hh: &quot;10&quot;, H: &quot;10&quot;, HH: &quot;10&quot;, AM: &quot;AM&quot;, am: &quot;am&quot; },
+            { h: &quot;11&quot;, hh: &quot;11&quot;, H: &quot;11&quot;, HH: &quot;11&quot;, AM: &quot;AM&quot;, am: &quot;am&quot; },
+            { h: &quot;12&quot;, hh: &quot;12&quot;, H: &quot;12&quot;, HH: &quot;12&quot;, AM: &quot;PM&quot;, am: &quot;pm&quot; },
+            { h:  &quot;1&quot;, hh: &quot;01&quot;, H: &quot;13&quot;, HH: &quot;13&quot;, AM: &quot;PM&quot;, am: &quot;pm&quot; },
+            { h:  &quot;2&quot;, hh: &quot;02&quot;, H: &quot;14&quot;, HH: &quot;14&quot;, AM: &quot;PM&quot;, am: &quot;pm&quot; },
+            { h:  &quot;3&quot;, hh: &quot;03&quot;, H: &quot;15&quot;, HH: &quot;15&quot;, AM: &quot;PM&quot;, am: &quot;pm&quot; },
+            { h:  &quot;4&quot;, hh: &quot;04&quot;, H: &quot;16&quot;, HH: &quot;16&quot;, AM: &quot;PM&quot;, am: &quot;pm&quot; },
+            { h:  &quot;5&quot;, hh: &quot;05&quot;, H: &quot;17&quot;, HH: &quot;17&quot;, AM: &quot;PM&quot;, am: &quot;pm&quot; },
+            { h:  &quot;6&quot;, hh: &quot;06&quot;, H: &quot;18&quot;, HH: &quot;18&quot;, AM: &quot;PM&quot;, am: &quot;pm&quot; },
+            { h:  &quot;7&quot;, hh: &quot;07&quot;, H: &quot;19&quot;, HH: &quot;19&quot;, AM: &quot;PM&quot;, am: &quot;pm&quot; },
+            { h:  &quot;8&quot;, hh: &quot;08&quot;, H: &quot;20&quot;, HH: &quot;20&quot;, AM: &quot;PM&quot;, am: &quot;pm&quot; },
+            { h:  &quot;9&quot;, hh: &quot;09&quot;, H: &quot;21&quot;, HH: &quot;21&quot;, AM: &quot;PM&quot;, am: &quot;pm&quot; },
+            { h: &quot;10&quot;, hh: &quot;10&quot;, H: &quot;22&quot;, HH: &quot;22&quot;, AM: &quot;PM&quot;, am: &quot;pm&quot; },
+            { h: &quot;11&quot;, hh: &quot;11&quot;, H: &quot;23&quot;, HH: &quot;23&quot;, AM: &quot;PM&quot;, am: &quot;pm&quot; },
+        ],
+<span id='jspyder-date-property-'>        /**
+</span>         * @private
+         */
+        __minutes = [
+            { n:  &quot;0&quot;, nn: &quot;00&quot; }, { n:  &quot;1&quot;, nn: &quot;01&quot; }, { n:  &quot;2&quot;, nn: &quot;02&quot; }, { n:  &quot;3&quot;, nn: &quot;03&quot; },
+            { n:  &quot;4&quot;, nn: &quot;04&quot; }, { n:  &quot;5&quot;, nn: &quot;05&quot; }, { n:  &quot;6&quot;, nn: &quot;06&quot; }, { n:  &quot;7&quot;, nn: &quot;07&quot; }, 
+            { n:  &quot;8&quot;, nn: &quot;08&quot; }, { n:  &quot;9&quot;, nn: &quot;09&quot; }, { n: &quot;10&quot;, nn: &quot;10&quot; }, { n: &quot;11&quot;, nn: &quot;11&quot; }, 
+            { n: &quot;12&quot;, nn: &quot;12&quot; }, { n: &quot;13&quot;, nn: &quot;13&quot; }, { n: &quot;14&quot;, nn: &quot;14&quot; }, { n: &quot;15&quot;, nn: &quot;15&quot; }, 
+            { n: &quot;16&quot;, nn: &quot;16&quot; }, { n: &quot;17&quot;, nn: &quot;17&quot; }, { n: &quot;18&quot;, nn: &quot;18&quot; }, { n: &quot;19&quot;, nn: &quot;19&quot; }, 
+            { n: &quot;20&quot;, nn: &quot;20&quot; }, { n: &quot;21&quot;, nn: &quot;21&quot; }, { n: &quot;22&quot;, nn: &quot;22&quot; }, { n: &quot;23&quot;, nn: &quot;23&quot; }, 
+            { n: &quot;24&quot;, nn: &quot;24&quot; }, { n: &quot;25&quot;, nn: &quot;25&quot; }, { n: &quot;26&quot;, nn: &quot;26&quot; }, { n: &quot;27&quot;, nn: &quot;27&quot; }, 
+            { n: &quot;28&quot;, nn: &quot;28&quot; }, { n: &quot;29&quot;, nn: &quot;29&quot; }, { n: &quot;30&quot;, nn: &quot;30&quot; }, { n: &quot;31&quot;, nn: &quot;31&quot; }, 
+            { n: &quot;32&quot;, nn: &quot;32&quot; }, { n: &quot;33&quot;, nn: &quot;33&quot; }, { n: &quot;34&quot;, nn: &quot;34&quot; }, { n: &quot;35&quot;, nn: &quot;35&quot; }, 
+            { n: &quot;36&quot;, nn: &quot;36&quot; }, { n: &quot;37&quot;, nn: &quot;37&quot; }, { n: &quot;38&quot;, nn: &quot;38&quot; }, { n: &quot;39&quot;, nn: &quot;39&quot; }, 
+            { n: &quot;40&quot;, nn: &quot;40&quot; }, { n: &quot;41&quot;, nn: &quot;41&quot; }, { n: &quot;42&quot;, nn: &quot;42&quot; }, { n: &quot;43&quot;, nn: &quot;43&quot; }, 
+            { n: &quot;44&quot;, nn: &quot;44&quot; }, { n: &quot;45&quot;, nn: &quot;45&quot; }, { n: &quot;46&quot;, nn: &quot;46&quot; }, { n: &quot;47&quot;, nn: &quot;47&quot; }, 
+            { n: &quot;48&quot;, nn: &quot;48&quot; }, { n: &quot;49&quot;, nn: &quot;49&quot; }, { n: &quot;50&quot;, nn: &quot;50&quot; }, { n: &quot;51&quot;, nn: &quot;51&quot; }, 
+            { n: &quot;52&quot;, nn: &quot;52&quot; }, { n: &quot;53&quot;, nn: &quot;53&quot; }, { n: &quot;54&quot;, nn: &quot;54&quot; }, { n: &quot;55&quot;, nn: &quot;55&quot; }, 
+            { n: &quot;56&quot;, nn: &quot;56&quot; }, { n: &quot;57&quot;, nn: &quot;57&quot; }, { n: &quot;58&quot;, nn: &quot;58&quot; }, { n: &quot;59&quot;, nn: &quot;59&quot; }
+        ],
+<span id='jspyder-date-property-'>        /**
+</span>         * @private
+         */
+        __seconds = [
+            { s:  &quot;0&quot;, ss: &quot;00&quot; }, { s:  &quot;1&quot;, ss: &quot;01&quot; }, { s:  &quot;2&quot;, ss: &quot;02&quot; }, { s:  &quot;3&quot;, ss: &quot;03&quot; },
+            { s:  &quot;4&quot;, ss: &quot;04&quot; }, { s:  &quot;5&quot;, ss: &quot;05&quot; }, { s:  &quot;6&quot;, ss: &quot;06&quot; }, { s:  &quot;7&quot;, ss: &quot;07&quot; }, 
+            { s:  &quot;8&quot;, ss: &quot;08&quot; }, { s:  &quot;9&quot;, ss: &quot;09&quot; }, { s: &quot;10&quot;, ss: &quot;10&quot; }, { s: &quot;11&quot;, ss: &quot;11&quot; }, 
+            { s: &quot;12&quot;, ss: &quot;12&quot; }, { s: &quot;13&quot;, ss: &quot;13&quot; }, { s: &quot;14&quot;, ss: &quot;14&quot; }, { s: &quot;15&quot;, ss: &quot;15&quot; }, 
+            { s: &quot;16&quot;, ss: &quot;16&quot; }, { s: &quot;17&quot;, ss: &quot;17&quot; }, { s: &quot;18&quot;, ss: &quot;18&quot; }, { s: &quot;19&quot;, ss: &quot;19&quot; }, 
+            { s: &quot;20&quot;, ss: &quot;20&quot; }, { s: &quot;21&quot;, ss: &quot;21&quot; }, { s: &quot;22&quot;, ss: &quot;22&quot; }, { s: &quot;23&quot;, ss: &quot;23&quot; }, 
+            { s: &quot;24&quot;, ss: &quot;24&quot; }, { s: &quot;25&quot;, ss: &quot;25&quot; }, { s: &quot;26&quot;, ss: &quot;26&quot; }, { s: &quot;27&quot;, ss: &quot;27&quot; }, 
+            { s: &quot;28&quot;, ss: &quot;28&quot; }, { s: &quot;29&quot;, ss: &quot;29&quot; }, { s: &quot;30&quot;, ss: &quot;30&quot; }, { s: &quot;31&quot;, ss: &quot;31&quot; }, 
+            { s: &quot;32&quot;, ss: &quot;32&quot; }, { s: &quot;33&quot;, ss: &quot;33&quot; }, { s: &quot;34&quot;, ss: &quot;34&quot; }, { s: &quot;35&quot;, ss: &quot;35&quot; }, 
+            { s: &quot;36&quot;, ss: &quot;36&quot; }, { s: &quot;37&quot;, ss: &quot;37&quot; }, { s: &quot;38&quot;, ss: &quot;38&quot; }, { s: &quot;39&quot;, ss: &quot;39&quot; }, 
+            { s: &quot;40&quot;, ss: &quot;40&quot; }, { s: &quot;41&quot;, ss: &quot;41&quot; }, { s: &quot;42&quot;, ss: &quot;42&quot; }, { s: &quot;43&quot;, ss: &quot;43&quot; }, 
+            { s: &quot;44&quot;, ss: &quot;44&quot; }, { s: &quot;45&quot;, ss: &quot;45&quot; }, { s: &quot;46&quot;, ss: &quot;46&quot; }, { s: &quot;47&quot;, ss: &quot;47&quot; }, 
+            { s: &quot;48&quot;, ss: &quot;48&quot; }, { s: &quot;49&quot;, ss: &quot;49&quot; }, { s: &quot;50&quot;, ss: &quot;50&quot; }, { s: &quot;51&quot;, ss: &quot;51&quot; }, 
+            { s: &quot;52&quot;, ss: &quot;52&quot; }, { s: &quot;53&quot;, ss: &quot;53&quot; }, { s: &quot;54&quot;, ss: &quot;54&quot; }, { s: &quot;55&quot;, ss: &quot;55&quot; }, 
+            { s: &quot;56&quot;, ss: &quot;56&quot; }, { s: &quot;57&quot;, ss: &quot;57&quot; }, { s: &quot;58&quot;, ss: &quot;58&quot; }, { s: &quot;59&quot;, ss: &quot;59&quot; }
+        ],
+<span id='jspyder-date-property-'>        /**
+</span>         * @private
+         */
+        __timeZones = { },
+        // collected definitions
+<span id='jspyder-date-property-'>        /**
+</span>         * @private
+         */
+        __formatCollection = {
+            // years
+            &quot;yy&quot;:   __buildFormatRegexStringFrom(__years,    &quot;yy&quot;  ),
+            &quot;yyyy&quot;: __buildFormatRegexStringFrom(__years,    &quot;yyyy&quot;),
+            &quot;YY&quot;:   __buildFormatRegexStringFrom(__years,    &quot;YY&quot;  ),
+            &quot;YYYY&quot;: __buildFormatRegexStringFrom(__years,    &quot;YYYY&quot;),
+            
+            // months
+            &quot;m&quot;:    __buildFormatRegexStringFrom(__months,   &quot;m&quot;   ),
+            &quot;mm&quot;:   __buildFormatRegexStringFrom(__months,   &quot;mm&quot;  ),
+            &quot;mmm&quot;:  __buildFormatRegexStringFrom(__months,   &quot;mmm&quot; ),
+            &quot;mmmm&quot;: __buildFormatRegexStringFrom(__months,   &quot;mmmm&quot;),
+            &quot;M&quot;:    __buildFormatRegexStringFrom(__months,   &quot;M&quot;   ),
+            &quot;MM&quot;:   __buildFormatRegexStringFrom(__months,   &quot;MM&quot;  ),
+            &quot;MMM&quot;:  __buildFormatRegexStringFrom(__months,   &quot;MMM&quot; ),
+            &quot;MMMM&quot;: __buildFormatRegexStringFrom(__months,   &quot;MMMM&quot;),
+            
+            // days
+            &quot;d&quot;:    __buildFormatRegexStringFrom(__days,     &quot;d&quot;   ),
+            &quot;dd&quot;:   __buildFormatRegexStringFrom(__days,     &quot;dd&quot;  ),
+            
+            // weekdays
+            &quot;D&quot;:    __buildFormatRegexStringFrom(__weekdays, &quot;D&quot;   ),
+            &quot;DD&quot;:   __buildFormatRegexStringFrom(__weekdays, &quot;DD&quot;  ),
+            &quot;DDD&quot;:  __buildFormatRegexStringFrom(__weekdays, &quot;DDD&quot; ),
+            &quot;DDDD&quot;: __buildFormatRegexStringFrom(__weekdays, &quot;DDDD&quot;),
+            &quot;ddd&quot;:  __buildFormatRegexStringFrom(__weekdays, &quot;ddd&quot; ),
+            &quot;dddd&quot;: __buildFormatRegexStringFrom(__weekdays, &quot;dddd&quot;),
+            
+            // am/pm
+            &quot;am&quot;:   __buildFormatRegexStringFrom(__hours,    &quot;am&quot;  ),
+            &quot;AM&quot;:   __buildFormatRegexStringFrom(__hours,    &quot;AM&quot;  ),
+            
+            // hours
+            &quot;h&quot;:    __buildFormatRegexStringFrom(__hours,    &quot;h&quot;   ),
+            &quot;hh&quot;:   __buildFormatRegexStringFrom(__hours,    &quot;hh&quot;  ),
+            &quot;H&quot;:    __buildFormatRegexStringFrom(__hours,    &quot;H&quot;   ),
+            &quot;HH&quot;:   __buildFormatRegexStringFrom(__hours,    &quot;HH&quot;  ),
+            
+            // minutes
+            &quot;n&quot;:    __buildFormatRegexStringFrom(__minutes, &quot;n&quot;    ),
+            &quot;nn&quot;:   __buildFormatRegexStringFrom(__minutes, &quot;nn&quot;   ),
+            &quot;N&quot;:    __buildFormatRegexStringFrom(__minutes, &quot;N&quot;    ),
+            &quot;NN&quot;:   __buildFormatRegexStringFrom(__minutes, &quot;NN&quot;   ),
+            
+            // seconds
+            &quot;s&quot;:    __buildFormatRegexStringFrom(__seconds, &quot;s&quot;    ),
+            &quot;ss&quot;:   __buildFormatRegexStringFrom(__seconds, &quot;ss&quot;   ),
+            &quot;S&quot;:    __buildFormatRegexStringFrom(__seconds, &quot;S&quot;    ),
+            &quot;SS&quot;:   __buildFormatRegexStringFrom(__seconds, &quot;SS&quot;   )
+        };
+    
+<span id='jspyder-date-method-__buildFormatRegexStringFrom'>    /**
+</span>     * @private
+     * 
+     * Generates a regular expression for the __formatCollection
+     */
+    function __buildFormatRegexStringFrom(from, style) {
+        var reArray = [],
+            str = null,
+            rex = null,
+            val = {},
+            rev = {};
+            
+        js.alg.each(from, function(collection, i) {
+            var cs = collection[style];
+            if (cs) {
+                reArray.push(cs);
+                val[cs] = i;
+                rev[i] = cs; 
+            }
+        });
+        
+        reArray.sort(function(a,b) { return b.length - a.length; });
+        
+        str = (&quot;(&quot; + reArray.join(&quot;|&quot;) + &quot;)&quot;);
+        rex = new RegExp(str, &quot;g&quot;);
+        
+        return {
+            string: str,
+            regexp: rex,
+            values: val,
+            lookup: rev
+        };
+    }
+    function __isDate(v) {
+        return (v instanceof Date || Object.prototype.toString.call(v) === '[object Date]');
+    }
+    function __isJsDate(v) {
+        return js_date.fn.isPrototypeOf(v);
+    }
+    
+    function __timezoneOffset() {
+        var offset = (new Date()).getTimezoneOffset(),
+            hours = offset/60; // offset / minutes-per-hour
+            
+        return hours;
+    }
+    
+    // create a date from a string and an array of format strings
+    function __parseString(v, f) {
+        v = js.alg.string(v, &quot;&quot;);
+        var format = js.alg.string(f),
+            d = { y: 0, m: 0, d: 1, h: 0, n: 0, s: 0, a: 0 };
+        
+        js.alg.each(format.match(__reSearch), function(match) {
+            // get the collection
+            var collection = __formatCollection[match];
+            if(!collection) { return match; }
+            
+            // get the regexp
+            var regexp = collection.regexp,
+                values = collection.values;
+                
+            // get the value
+            var value = (v.match(regexp) || [0])[0],
+                len = value.length,
+                start = v.indexOf(value);
+            
+            v = v.substring(start + len);
+            
+            switch (match) {
+                // year
+                case &quot;yy&quot;:
+                case &quot;YY&quot;:
+                    value = &quot;20&quot; + value;
+                case &quot;yyyy&quot;:
+                case &quot;YYYY&quot;:
+                    d[&quot;y&quot;] = js.alg.number(value);
+                    break;
+                
+                // month
+                case &quot;MMMM&quot;:
+                case &quot;MMM&quot;:
+                case &quot;mmmm&quot;:
+                case &quot;mmm&quot;:
+                    value = values[value];
+                case &quot;MM&quot;:
+                case &quot;mm&quot;:
+                case &quot;M&quot;:
+                case &quot;m&quot;:
+                    d[&quot;m&quot;] = js.alg.number(value);
+                    break;
+                
+                // date
+                case &quot;dd&quot;:
+                case &quot;d&quot;:
+                    d[&quot;d&quot;] = js.alg.number(value) || 1;
+                    break;
+                    
+                case &quot;hh&quot;:
+                case &quot;h&quot;:
+                case &quot;HH&quot;:
+                case &quot;H&quot;:
+                    d[&quot;h&quot;] = js.alg.number(value);
+                    break;
+                    
+                case &quot;am&quot;:
+                case &quot;AM&quot;:
+                    d[&quot;a&quot;] = ((value === &quot;pm&quot; || value === &quot;PM&quot;)
+                        ? 12
+                        : 0);
+                    break;
+            }
+        });
+        return new Date(d.y, d.m, d.d, d.h + d.a, d.n, d.s);
+    }
+    
+    function __formatDate(date, format, useUTC) {
+        var d = {
+            y: useUTC ? date.getUTCFullYear() : date.getFullYear(),
+            m: useUTC ? date.getUTCMonth()    : date.getMonth(),
+            d: useUTC ? date.getUTCDate()     : date.getDate(),
+            h: useUTC ? date.getUTCHours()    : date.getHours(),
+            n: useUTC ? date.getUTCMinutes()  : date.getMinutes(),
+            s: useUTC ? date.getUTCSeconds()  : date.getSeconds(),
+            w: useUTC ? date.getUTCDay()      : date.getDay()
+        };
+        
+        var left = &quot;&quot;, right = format;
+        js.alg.each(format.match(__reSearch), function(match) {
+            // get the collection
+            var collection = __formatCollection[match];
+            if(!collection) { return match; }
+            
+            // get the regexp
+            var regexp = collection.regexp,
+                values = collection.values,
+                len = match.length,
+                start = right.indexOf(match),
+                value = &quot;&quot;;
+                
+            left += right.substring(0, start);
+            right = right.substring(start + len);
+
+            switch(match) {
+                case &quot;YY&quot;:
+                case &quot;yy&quot;:
+                    value = js.alg.string(d.y % 100);
+                    break;
+                    
+                case &quot;YYYY&quot;:
+                case &quot;yyyy&quot;:
+                    value = js.alg.string(d.y);
+                    break;
+                   
+                case &quot;MMMM&quot;:
+                case &quot;mmmm&quot;:
+                case &quot;MMM&quot;:
+                case &quot;mmm&quot;:
+                case &quot;MM&quot;:
+                case &quot;mm&quot;:
+                case &quot;M&quot;:
+                case &quot;m&quot;:
+                    value = collection.lookup[d.m];
+                    break;
+                    
+                case &quot;dd&quot;:
+                case &quot;d&quot;:
+                    value = collection.lookup[d.d - 1];
+                    break;
+                    
+                case &quot;DDDD&quot;:
+                case &quot;dddd&quot;:
+                case &quot;DDD&quot;:
+                case &quot;ddd&quot;:
+                case &quot;DD&quot;:
+                case &quot;D&quot;:
+                    value = collection.lookup[d.w];
+                    break;
+                    
+                case &quot;am&quot;:
+                case &quot;AM&quot;:
+                    value = collection.lookup[d.h];
+                    break;
+                    
+                case &quot;HH&quot;:
+                case &quot;H&quot;:
+                case &quot;hh&quot;:
+                case &quot;h&quot;:
+                    value = collection.lookup[d.h];
+                    break;
+                    
+                case &quot;NN&quot;:
+                case &quot;N&quot;:
+                case &quot;nn&quot;:
+                case &quot;n&quot;:
+                    value = collection.lookup[d.n];
+                    break;
+                    
+                case &quot;SS&quot;:
+                case &quot;S&quot;:
+                case &quot;ss&quot;:
+                case &quot;s&quot;:
+                    value = collection.lookup[d.s];
+                    break;
+                    
+                default:
+                    console.log(collection);
+            }
+            
+            left += value;
+        });
+        
+        return left + right;
+    }
+    
+    return js_date;
+});
+</pre>
+</body>
+</html>

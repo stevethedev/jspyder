@@ -434,6 +434,12 @@
                 return (o &amp;&amp; typeof o === &quot;object&quot; ? o : d || {});
             },
             
+            &quot;date&quot;: function(v, d) {
+                return ((input instanceof Date || Object.prototype.toString.call(input) === '[object Date]')
+                    ? v
+                    : new Date());
+            },
+            
 <span id='jspyder-alg-method-byte'>            /**
 </span>             * Coerces any value to a INT8 value
              */
