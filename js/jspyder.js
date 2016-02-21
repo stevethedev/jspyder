@@ -1038,17 +1038,16 @@
              * Gets the children of the elements in the node
              * 
              * @param {Function} fn
+             * @param {Mixed} [data]
+             *      Information to pass to the parameter [fn].
              */
-            children: function (fn) {
+            children: function (fn, data) {
                 this.each(function (element, i, elements) {
                     var child = element.firstElementChild;
                     while(child) {
                         js_dom(child, fn, [child]);
                         child = child.nextElementSibling;
                     }
-                    // for (var j = 0; j < element.children.length; j++) {
-                    //     js_dom(element.children[j], fn, [element.children[j]]);
-                    // }
                 });
                 return this;
             },

@@ -60,14 +60,14 @@ jspyder.extend.fn("ajax", function () {
      * 
      * Internals for running the AJAX query.
      */
-    function __js_ajax_try(method, url, data, fn) {
+    function __js_ajax_try(method, url, data, fn, context) {
         if (!url) { return this; }
              
         var xhttp = new XMLHttpRequest();
             
         xhttp.onreadystatechange = function xhttp_onreadystatechange() {
             if ((this.readyState === 4) && (typeof fn === "function")){
-                fn.apply(js, [this]);
+                fn.apply(js, [this, context]);
             }
             return null;
         };
@@ -129,9 +129,9 @@ jspyder.extend.fn("ajax", function () {
          * 
          * Executes the Ajax template as a "GET" call 
          */
-        "get": function (fn) {
+        "get": function (fn, context) {
             fn = (typeof fn === "function" ? fn : this.fn);
-            __js_ajax_try("GET", this.url, this.data, fn);
+            __js_ajax_try("GET", this.url, this.data, fn, context);
             return this;
         },
         
@@ -146,9 +146,9 @@ jspyder.extend.fn("ajax", function () {
          * 
          * Executes the Ajax template as a "HEAD" call 
          */
-        "head": function (fn) {
+        "head": function (fn, context) {
             fn = (typeof fn === "function" ? fn : this.fn);
-            __js_ajax_try("HEAD", this.url, this.data, fn);
+            __js_ajax_try("HEAD", this.url, this.data, fn, context);
             return this;
         },
         
@@ -163,9 +163,9 @@ jspyder.extend.fn("ajax", function () {
          * 
          * Executes the Ajax template as a "POST" call 
          */
-        "post": function (fn) {
+        "post": function (fn, context) {
             fn = (typeof fn === "function" ? fn : this.fn);
-            __js_ajax_try("POST", this.url, this.data, fn);
+            __js_ajax_try("POST", this.url, this.data, fn, context);
             return this;
         }
     }

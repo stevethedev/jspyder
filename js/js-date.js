@@ -23,6 +23,8 @@
  * ***************************************************************************/
 
 jspyder.extend.fn("date", function () {
+    var js = this;
+    
     /**
      * @class jspyder.date
      * @member jspyder
@@ -72,14 +74,36 @@ jspyder.extend.fn("date", function () {
         /**
          * @method
          * 
+         * Clones the current object
+         */
+        clone: function () {
+            return js_date(new Date(this._value), this._format, this._useUTC);
+        },
+
+        utcOffset: function () {
+            return this._value.getTimezoneOffset();
+        },
+
+        isDst: function () {
+            var offset = this.utcOffset(),
+                clone = this.clone();
+                
+            return (
+                offset > clone.setMonth(0).utcOffset() ||
+                offset > clone.setMonth(5).utcOffset());
+        },
+        
+        /**
+         * @method
+         * 
          * Sets whether to use the UTC time zone when generating the date
          * string.
          * 
          * @param {Boolean} [utc=true]
          */
-        useUTC: function(utc) { 
-            this._useUTC = !js.alg.bool(utc); 
-            return this; 
+        useUTC: function (utc) {
+            this._useUTC = !js.alg.bool(utc);
+            return this;
         },
         /**
          * @method
@@ -89,9 +113,9 @@ jspyder.extend.fn("date", function () {
          * 
          * @param {Boolean} [local=true]
          */
-        useLocal: function(local) { 
-            this._useUTC = js.alg.bool(local); 
-            return this; 
+        useLocal: function (local) {
+            this._useUTC = js.alg.bool(local);
+            return this;
         },
         
         /**
@@ -100,8 +124,9 @@ jspyder.extend.fn("date", function () {
          * Overrides the current date value, as if the constructor (jspyder.date)
          * had been run.
          */
-        setDate: function(v, f) {
-            if(typeof value === "undefined") {
+        setDate: function (value, format) {
+            var date;
+            if (typeof value === "undefined") {
                 date = new Date();
             }
             else if (__isJsDate(value)) {
@@ -120,9 +145,9 @@ jspyder.extend.fn("date", function () {
             else {
                 date = new Date(NaN);
             }
-            
+
             this._value = date;
-            
+
             return this;
         },
         
@@ -131,7 +156,7 @@ jspyder.extend.fn("date", function () {
          * 
          * Gets the currently stored date value as a Date object.
          */
-        asDate: function() { return this._value; },
+        asDate: function () { return this._value; },
         /**
          * @method
          * 
@@ -142,7 +167,7 @@ jspyder.extend.fn("date", function () {
          * 
          * @param {Boolean} [useUtc=this._useUtc]
          */
-        asString: function(format, useUtc) {
+        asString: function (format, useUtc) {
             format = js.alg.string(format, this._format || __defaultFormat);
             useUtc = js.alg.bool(useUtc, this._useUtc || __defaultUtc);
             return __formatDate(this._value, format, useUtc);
@@ -153,9 +178,16 @@ jspyder.extend.fn("date", function () {
          * 
          * Adds the specified number of days to the wrapped date value.
          */
-        addDays: function(days) {
-            this._value.setDate( this._value.getDate() + js.alg.number(days) );
+        addDays: function (days) {
+            this._value.setDate(this._value.getDate() + js.alg.number(days));
             return this;
+        },
+        setDay: function (days) {
+            this._value.setDate(js.alg.number(days));
+            return this;
+        },
+        getDay: function () {
+            return this._value.getDate();
         },
         
         /**
@@ -163,9 +195,16 @@ jspyder.extend.fn("date", function () {
          * 
          * Adds the specified number of months to the wrapped date value.
          */
-        addMonths: function(months) {
-            this._value.setMonth( this._value.getMonth() + js.alg.number(months) );
+        addMonths: function (months) {
+            this._value.setMonth(this._value.getMonth() + js.alg.number(months));
             return this;
+        },
+        setMonth: function (months) {
+            this._value.setMonth(js.alg.number(months));
+            return this;
+        },
+        getMonth: function () {
+            return this._value.getMonth();
         },
         
         /**
@@ -173,9 +212,16 @@ jspyder.extend.fn("date", function () {
          * 
          * Adds the specified number of years to the wrapped date value.
          */
-        addYears: function(years) {
-            this._value.setFullYear( this._value.getFullYear() + js.alg.number(years) );
+        addYears: function (years) {
+            this._value.setFullYear(this._value.getFullYear() + js.alg.number(years));
             return this;
+        },
+        setYear: function (years) {
+            this._value.setFullYear(js.alg.number(years));
+            return this;
+        },
+        getYear: function() { 
+            return this._value.getFullYear();
         },
         
         /**
@@ -183,27 +229,48 @@ jspyder.extend.fn("date", function () {
          * 
          * Adds the specified number of seconds to the wrapped date value.
          */
-        addSeconds: function(seconds) {
-            this._value.setSeconds( this._value.getSeconds() + js.alg.number(seconds) );
+        addSeconds: function (seconds) {
+            this._value.setSeconds(this._value.getSeconds() + js.alg.number(seconds));
             return this;
+        },
+        setSecond: function (seconds) {
+            this._value.setSeconds(js.alg.number(seconds));
+            return this;
+        },
+        getSecond: function () {
+            return this._value.getSeconds();
         },
         /**
          * @method
          * 
          * Adds the specified number of minutes to the wrapped date value.
          */
-        addMinutes: function(minutes) {
-            this._value.setMinutes( this._value.getMinutes() + js.alg.number(minutes) );
+        addMinutes: function (minutes) {
+            this._value.setMinutes(this._value.getMinutes() + js.alg.number(minutes));
             return this;
+        },
+        setMinute: function (minutes) {
+            this._value.setMinutes(js.alg.number(minutes));
+            return this;
+        },
+        getMinute: function () {
+            return this._value.getMinutes();
         },
         /**
          * @method
          * 
          * Adds the specified number of hours to the wrapped date value.
          */
-        addHours: function(hours) {
-            this._value.setHours( this._value.getHours() + js.alg.number(hours) );
+        addHours: function (hours) {
+            this._value.setHours(this._value.getHours() + js.alg.number(hours));
             return this;
+        },
+        setHour: function (hours) {
+            this._value.setHours(js.alg.number(hours));
+            return this;
+        },
+        getHour: function () {
+            return this._value.getHours();
         }
     }
     
@@ -625,6 +692,603 @@ jspyder.extend.fn("date", function () {
         
         return left + right;
     }
+    
+    
+    function __getTimezoneOffset() {
+        
+    }
+    
+    
+    /**
+     * @private
+     * 
+     * Timezone List, from https://en.wikipedia.org/wiki/List_of_tz_database_time_zones 
+     */
+    var __timezones = {
+        "Africa/Abidjan": { CC: "CI", utcOffset: 0, utcOffsetDst: 0 },
+        "Africa/Accra": { CC: "GH", utcOffset: 0, utcOffsetDst: 0 },
+        "Africa/Addis_Ababa": { CC: "ET", utcOffset: 180, utcOffsetDst: 180 },
+        "Africa/Algiers": { CC: "DZ", utcOffset: 60, utcOffsetDst: 60 },
+        "Africa/Asmara": { CC: "ER", utcOffset: 180, utcOffsetDst: 180 },
+        "Africa/Asmera": { CC: "", utcOffset: 180, utcOffsetDst: 180 },
+        "Africa/Bamako": { CC: "ML", utcOffset: 0, utcOffsetDst: 0 },
+        "Africa/Bangui": { CC: "CF", utcOffset: 60, utcOffsetDst: 60 },
+        "Africa/Banjul": { CC: "GM", utcOffset: 0, utcOffsetDst: 0 },
+        "Africa/Bissau": { CC: "GW", utcOffset: 0, utcOffsetDst: 0 },
+        "Africa/Blantyre": { CC: "MW", utcOffset: 120, utcOffsetDst: 120 },
+        "Africa/Brazzaville": { CC: "CG", utcOffset: 60, utcOffsetDst: 60 },
+        "Africa/Bujumbura": { CC: "BI", utcOffset: 120, utcOffsetDst: 120 },
+        "Africa/Cairo": { CC: "EG", utcOffset: 120, utcOffsetDst: 120 },
+        "Africa/Casablanca": { CC: "MA", utcOffset: 0, utcOffsetDst: 0 },
+        "Africa/Ceuta": { CC: "ES", utcOffset: 60, utcOffsetDst: 60 },
+        "Africa/Conakry": { CC: "GN", utcOffset: 0, utcOffsetDst: 0 },
+        "Africa/Dakar": { CC: "SN", utcOffset: 0, utcOffsetDst: 0 },
+        "Africa/Dar_es_Salaam": { CC: "TZ", utcOffset: 180, utcOffsetDst: 180 },
+        "Africa/Djibouti": { CC: "DJ", utcOffset: 180, utcOffsetDst: 180 },
+        "Africa/Douala": { CC: "CM", utcOffset: 60, utcOffsetDst: 60 },
+        "Africa/El_Aaiun": { CC: "EH", utcOffset: 0, utcOffsetDst: 0 },
+        "Africa/Freetown": { CC: "SL", utcOffset: 0, utcOffsetDst: 0 },
+        "Africa/Gaborone": { CC: "BW", utcOffset: 120, utcOffsetDst: 120 },
+        "Africa/Harare": { CC: "ZW", utcOffset: 120, utcOffsetDst: 120 },
+        "Africa/Johannesburg": { CC: "ZA", utcOffset: 120, utcOffsetDst: 120 },
+        "Africa/Juba": { CC: "SS", utcOffset: 180, utcOffsetDst: 180 },
+        "Africa/Kampala": { CC: "UG", utcOffset: 180, utcOffsetDst: 180 },
+        "Africa/Khartoum": { CC: "SD", utcOffset: 180, utcOffsetDst: 180 },
+        "Africa/Kigali": { CC: "RW", utcOffset: 120, utcOffsetDst: 120 },
+        "Africa/Kinshasa": { CC: "CD", utcOffset: 60, utcOffsetDst: 60 },
+        "Africa/Lagos": { CC: "NG", utcOffset: 60, utcOffsetDst: 60 },
+        "Africa/Libreville": { CC: "GA", utcOffset: 60, utcOffsetDst: 60 },
+        "Africa/Lome": { CC: "TG", utcOffset: 0, utcOffsetDst: 0 },
+        "Africa/Luanda": { CC: "AO", utcOffset: 60, utcOffsetDst: 60 },
+        "Africa/Lubumbashi": { CC: "CD", utcOffset: 120, utcOffsetDst: 120 },
+        "Africa/Lusaka": { CC: "ZM", utcOffset: 120, utcOffsetDst: 120 },
+        "Africa/Malabo": { CC: "GQ", utcOffset: 60, utcOffsetDst: 60 },
+        "Africa/Maputo": { CC: "MZ", utcOffset: 120, utcOffsetDst: 120 },
+        "Africa/Maseru": { CC: "LS", utcOffset: 120, utcOffsetDst: 120 },
+        "Africa/Mbabane": { CC: "SZ", utcOffset: 120, utcOffsetDst: 120 },
+        "Africa/Mogadishu": { CC: "SO", utcOffset: 180, utcOffsetDst: 180 },
+        "Africa/Monrovia": { CC: "LR", utcOffset: 0, utcOffsetDst: 0 },
+        "Africa/Nairobi": { CC: "KE", utcOffset: 180, utcOffsetDst: 180 },
+        "Africa/Ndjamena": { CC: "TD", utcOffset: 60, utcOffsetDst: 60 },
+        "Africa/Niamey": { CC: "NE", utcOffset: 60, utcOffsetDst: 60 },
+        "Africa/Nouakchott": { CC: "MR", utcOffset: 0, utcOffsetDst: 0 },
+        "Africa/Ouagadougou": { CC: "BF", utcOffset: 0, utcOffsetDst: 0 },
+        "Africa/Porto-Novo": { CC: "BJ", utcOffset: 60, utcOffsetDst: 60 },
+        "Africa/Sao_Tome": { CC: "ST", utcOffset: 0, utcOffsetDst: 0 },
+        "Africa/Timbuktu": { CC: "", utcOffset: 0, utcOffsetDst: 0 },
+        "Africa/Tripoli": { CC: "LY", utcOffset: 120, utcOffsetDst: 120 },
+        "Africa/Tunis": { CC: "TN", utcOffset: 60, utcOffsetDst: 60 },
+        "Africa/Windhoek": { CC: "NA", utcOffset: 60, utcOffsetDst: 60 },
+        "America/Adak": { CC: "US", utcOffset: -600, utcOffsetDst: -600 },
+        "America/Anchorage": { CC: "US", utcOffset: -540, utcOffsetDst: -540 },
+        "America/Anguilla": { CC: "AI", utcOffset: -240, utcOffsetDst: -240 },
+        "America/Antigua": { CC: "AG", utcOffset: -240, utcOffsetDst: -240 },
+        "America/Araguaina": { CC: "BR", utcOffset: -180, utcOffsetDst: -180 },
+        "America/Argentina/Buenos_Aires": { CC: "AR", utcOffset: -180, utcOffsetDst: -180 },
+        "America/Argentina/Catamarca": { CC: "AR", utcOffset: -180, utcOffsetDst: -180 },
+        "America/Argentina/ComodRivadavia": { CC: "", utcOffset: -180, utcOffsetDst: -180 },
+        "America/Argentina/Cordoba": { CC: "AR", utcOffset: -180, utcOffsetDst: -180 },
+        "America/Argentina/Jujuy": { CC: "AR", utcOffset: -180, utcOffsetDst: -180 },
+        "America/Argentina/La_Rioja": { CC: "AR", utcOffset: -180, utcOffsetDst: -180 },
+        "America/Argentina/Mendoza": { CC: "AR", utcOffset: -180, utcOffsetDst: -180 },
+        "America/Argentina/Rio_Gallegos": { CC: "AR", utcOffset: -180, utcOffsetDst: -180 },
+        "America/Argentina/Salta": { CC: "AR", utcOffset: -180, utcOffsetDst: -180 },
+        "America/Argentina/San_Juan": { CC: "AR", utcOffset: -180, utcOffsetDst: -180 },
+        "America/Argentina/San_Luis": { CC: "AR", utcOffset: -180, utcOffsetDst: -180 },
+        "America/Argentina/Tucuman": { CC: "AR", utcOffset: -180, utcOffsetDst: -180 },
+        "America/Argentina/Ushuaia": { CC: "AR", utcOffset: -180, utcOffsetDst: -180 },
+        "America/Aruba": { CC: "AW", utcOffset: -240, utcOffsetDst: -240 },
+        "America/Asuncion": { CC: "PY", utcOffset: -240, utcOffsetDst: -240 },
+        "America/Atikokan": { CC: "CA", utcOffset: -300, utcOffsetDst: -300 },
+        "America/Atka": { CC: "", utcOffset: -600, utcOffsetDst: -600 },
+        "America/Bahia": { CC: "BR", utcOffset: -180, utcOffsetDst: -180 },
+        "America/Bahia_Banderas": { CC: "MX", utcOffset: -360, utcOffsetDst: -360 },
+        "America/Barbados": { CC: "BB", utcOffset: -240, utcOffsetDst: -240 },
+        "America/Belem": { CC: "BR", utcOffset: -180, utcOffsetDst: -180 },
+        "America/Belize": { CC: "BZ", utcOffset: -360, utcOffsetDst: -360 },
+        "America/Blanc-Sablon": { CC: "CA", utcOffset: -240, utcOffsetDst: -240 },
+        "America/Boa_Vista": { CC: "BR", utcOffset: -240, utcOffsetDst: -240 },
+        "America/Bogota": { CC: "CO", utcOffset: -300, utcOffsetDst: -300 },
+        "America/Boise": { CC: "US", utcOffset: -420, utcOffsetDst: -420 },
+        "America/Buenos_Aires": { CC: "", utcOffset: -180, utcOffsetDst: -180 },
+        "America/Cambridge_Bay": { CC: "CA", utcOffset: -420, utcOffsetDst: -420 },
+        "America/Campo_Grande": { CC: "BR", utcOffset: -240, utcOffsetDst: -240 },
+        "America/Cancun": { CC: "MX", utcOffset: -300, utcOffsetDst: -300 },
+        "America/Caracas": { CC: "VE", utcOffset: -270, utcOffsetDst: -270 },
+        "America/Catamarca": { CC: "", utcOffset: -180, utcOffsetDst: -180 },
+        "America/Cayenne": { CC: "GF", utcOffset: -180, utcOffsetDst: -180 },
+        "America/Cayman": { CC: "KY", utcOffset: -300, utcOffsetDst: -300 },
+        "America/Chicago": { CC: "US", utcOffset: -360, utcOffsetDst: -360 },
+        "America/Chihuahua": { CC: "MX", utcOffset: -420, utcOffsetDst: -420 },
+        "America/Coral_Harbour": { CC: "", utcOffset: -300, utcOffsetDst: -300 },
+        "America/Cordoba": { CC: "", utcOffset: -180, utcOffsetDst: -180 },
+        "America/Costa_Rica": { CC: "CR", utcOffset: -360, utcOffsetDst: -360 },
+        "America/Creston": { CC: "CA", utcOffset: -420, utcOffsetDst: -420 },
+        "America/Cuiaba": { CC: "BR", utcOffset: -240, utcOffsetDst: -240 },
+        "America/Curacao": { CC: "CW", utcOffset: -240, utcOffsetDst: -240 },
+        "America/Danmarkshavn": { CC: "GL", utcOffset: 0, utcOffsetDst: 0 },
+        "America/Dawson": { CC: "CA", utcOffset: -480, utcOffsetDst: -480 },
+        "America/Dawson_Creek": { CC: "CA", utcOffset: -420, utcOffsetDst: -420 },
+        "America/Denver": { CC: "US", utcOffset: -420, utcOffsetDst: -420 },
+        "America/Detroit": { CC: "US", utcOffset: -300, utcOffsetDst: -300 },
+        "America/Dominica": { CC: "DM", utcOffset: -240, utcOffsetDst: -240 },
+        "America/Edmonton": { CC: "CA", utcOffset: -420, utcOffsetDst: -420 },
+        "America/Eirunepe": { CC: "BR", utcOffset: -300, utcOffsetDst: -300 },
+        "America/El_Salvador": { CC: "SV", utcOffset: -360, utcOffsetDst: -360 },
+        "America/Ensenada": { CC: "", utcOffset: -480, utcOffsetDst: -480 },
+        "America/Fort_Nelson": { CC: "CA", utcOffset: -420, utcOffsetDst: -420 },
+        "America/Fort_Wayne": { CC: "", utcOffset: -300, utcOffsetDst: -300 },
+        "America/Fortaleza": { CC: "BR", utcOffset: -180, utcOffsetDst: -180 },
+        "America/Glace_Bay": { CC: "CA", utcOffset: -240, utcOffsetDst: -240 },
+        "America/Godthab": { CC: "GL", utcOffset: -180, utcOffsetDst: -180 },
+        "America/Goose_Bay": { CC: "CA", utcOffset: -240, utcOffsetDst: -240 },
+        "America/Grand_Turk": { CC: "TC", utcOffset: -240, utcOffsetDst: -240 },
+        "America/Grenada": { CC: "GD", utcOffset: -240, utcOffsetDst: -240 },
+        "America/Guadeloupe": { CC: "GP", utcOffset: -240, utcOffsetDst: -240 },
+        "America/Guatemala": { CC: "GT", utcOffset: -360, utcOffsetDst: -360 },
+        "America/Guayaquil": { CC: "EC", utcOffset: -300, utcOffsetDst: -300 },
+        "America/Guyana": { CC: "GY", utcOffset: -240, utcOffsetDst: -240 },
+        "America/Halifax": { CC: "CA", utcOffset: -240, utcOffsetDst: -240 },
+        "America/Havana": { CC: "CU", utcOffset: -300, utcOffsetDst: -300 },
+        "America/Hermosillo": { CC: "MX", utcOffset: -420, utcOffsetDst: -420 },
+        "America/Indiana/Indianapolis": { CC: "US", utcOffset: -300, utcOffsetDst: -300 },
+        "America/Indiana/Knox": { CC: "US", utcOffset: -360, utcOffsetDst: -360 },
+        "America/Indiana/Marengo": { CC: "US", utcOffset: -300, utcOffsetDst: -300 },
+        "America/Indiana/Petersburg": { CC: "US", utcOffset: -300, utcOffsetDst: -300 },
+        "America/Indiana/Tell_City": { CC: "US", utcOffset: -360, utcOffsetDst: -360 },
+        "America/Indiana/Vevay": { CC: "US", utcOffset: -300, utcOffsetDst: -300 },
+        "America/Indiana/Vincennes": { CC: "US", utcOffset: -300, utcOffsetDst: -300 },
+        "America/Indiana/Winamac": { CC: "US", utcOffset: -300, utcOffsetDst: -300 },
+        "America/Indianapolis": { CC: "", utcOffset: -300, utcOffsetDst: -300 },
+        "America/Inuvik": { CC: "CA", utcOffset: -420, utcOffsetDst: -420 },
+        "America/Iqaluit": { CC: "CA", utcOffset: -300, utcOffsetDst: -300 },
+        "America/Jamaica": { CC: "JM", utcOffset: -300, utcOffsetDst: -300 },
+        "America/Jujuy": { CC: "", utcOffset: -180, utcOffsetDst: -180 },
+        "America/Juneau": { CC: "US", utcOffset: -540, utcOffsetDst: -540 },
+        "America/Kentucky/Louisville": { CC: "US", utcOffset: -300, utcOffsetDst: -300 },
+        "America/Kentucky/Monticello": { CC: "US", utcOffset: -300, utcOffsetDst: -300 },
+        "America/Knox_IN": { CC: "", utcOffset: -360, utcOffsetDst: -360 },
+        "America/Kralendijk": { CC: "BQ", utcOffset: -240, utcOffsetDst: -240 },
+        "America/La_Paz": { CC: "BO", utcOffset: -240, utcOffsetDst: -240 },
+        "America/Lima": { CC: "PE", utcOffset: -300, utcOffsetDst: -300 },
+        "America/Los_Angeles": { CC: "US", utcOffset: -480, utcOffsetDst: -480 },
+        "America/Louisville": { CC: "", utcOffset: -300, utcOffsetDst: -300 },
+        "America/Lower_Princes": { CC: "SX", utcOffset: -240, utcOffsetDst: -240 },
+        "America/Maceio": { CC: "BR", utcOffset: -180, utcOffsetDst: -180 },
+        "America/Managua": { CC: "NI", utcOffset: -360, utcOffsetDst: -360 },
+        "America/Manaus": { CC: "BR", utcOffset: -240, utcOffsetDst: -240 },
+        "America/Marigot": { CC: "MF", utcOffset: -240, utcOffsetDst: -240 },
+        "America/Martinique": { CC: "MQ", utcOffset: -240, utcOffsetDst: -240 },
+        "America/Matamoros": { CC: "MX", utcOffset: -360, utcOffsetDst: -360 },
+        "America/Mazatlan": { CC: "MX", utcOffset: -420, utcOffsetDst: -420 },
+        "America/Mendoza": { CC: "", utcOffset: -180, utcOffsetDst: -180 },
+        "America/Menominee": { CC: "US", utcOffset: -360, utcOffsetDst: -360 },
+        "America/Merida": { CC: "MX", utcOffset: -360, utcOffsetDst: -360 },
+        "America/Metlakatla": { CC: "US", utcOffset: -480, utcOffsetDst: -480 },
+        "America/Mexico_City": { CC: "MX", utcOffset: -360, utcOffsetDst: -360 },
+        "America/Miquelon": { CC: "PM", utcOffset: -180, utcOffsetDst: -180 },
+        "America/Moncton": { CC: "CA", utcOffset: -240, utcOffsetDst: -240 },
+        "America/Monterrey": { CC: "MX", utcOffset: -360, utcOffsetDst: -360 },
+        "America/Montevideo": { CC: "UY", utcOffset: -180, utcOffsetDst: -180 },
+        "America/Montreal": { CC: "", utcOffset: -300, utcOffsetDst: -300 },
+        "America/Montserrat": { CC: "MS", utcOffset: -240, utcOffsetDst: -240 },
+        "America/Nassau": { CC: "BS", utcOffset: -300, utcOffsetDst: -300 },
+        "America/New_York": { CC: "US", utcOffset: -300, utcOffsetDst: -300 },
+        "America/Nipigon": { CC: "CA", utcOffset: -300, utcOffsetDst: -300 },
+        "America/Nome": { CC: "US", utcOffset: -540, utcOffsetDst: -540 },
+        "America/Noronha": { CC: "BR", utcOffset: -120, utcOffsetDst: -120 },
+        "America/North_Dakota/Beulah": { CC: "US", utcOffset: -360, utcOffsetDst: -360 },
+        "America/North_Dakota/Center": { CC: "US", utcOffset: -360, utcOffsetDst: -360 },
+        "America/North_Dakota/New_Salem": { CC: "US", utcOffset: -360, utcOffsetDst: -360 },
+        "America/Ojinaga": { CC: "MX", utcOffset: -420, utcOffsetDst: -420 },
+        "America/Panama": { CC: "PA", utcOffset: -300, utcOffsetDst: -300 },
+        "America/Pangnirtung": { CC: "CA", utcOffset: -300, utcOffsetDst: -300 },
+        "America/Paramaribo": { CC: "SR", utcOffset: -180, utcOffsetDst: -180 },
+        "America/Phoenix": { CC: "US", utcOffset: -420, utcOffsetDst: -420 },
+        "America/Port_of_Spain": { CC: "TT", utcOffset: -240, utcOffsetDst: -240 },
+        "America/Port-au-Prince": { CC: "HT", utcOffset: -300, utcOffsetDst: -300 },
+        "America/Porto_Acre": { CC: "", utcOffset: -300, utcOffsetDst: -300 },
+        "America/Porto_Velho": { CC: "BR", utcOffset: -240, utcOffsetDst: -240 },
+        "America/Puerto_Rico": { CC: "PR", utcOffset: -240, utcOffsetDst: -240 },
+        "America/Rainy_River": { CC: "CA", utcOffset: -360, utcOffsetDst: -360 },
+        "America/Rankin_Inlet": { CC: "CA", utcOffset: -360, utcOffsetDst: -360 },
+        "America/Recife": { CC: "BR", utcOffset: -180, utcOffsetDst: -180 },
+        "America/Regina": { CC: "CA", utcOffset: -360, utcOffsetDst: -360 },
+        "America/Resolute": { CC: "CA", utcOffset: -360, utcOffsetDst: -360 },
+        "America/Rio_Branco": { CC: "BR", utcOffset: -300, utcOffsetDst: -300 },
+        "America/Rosario": { CC: "", utcOffset: -180, utcOffsetDst: -180 },
+        "America/Santa_Isabel": { CC: "MX", utcOffset: -480, utcOffsetDst: -480 },
+        "America/Santarem": { CC: "BR", utcOffset: -180, utcOffsetDst: -180 },
+        "America/Santiago": { CC: "CL", utcOffset: -180, utcOffsetDst: -180 },
+        "America/Santo_Domingo": { CC: "DO", utcOffset: -240, utcOffsetDst: -240 },
+        "America/Sao_Paulo": { CC: "BR", utcOffset: -180, utcOffsetDst: -180 },
+        "America/Scoresbysund": { CC: "GL", utcOffset: -60, utcOffsetDst: 60 },
+        "America/Shiprock": { CC: "", utcOffset: -420, utcOffsetDst: -420 },
+        "America/Sitka": { CC: "US", utcOffset: -540, utcOffsetDst: -540 },
+        "America/St_Barthelemy": { CC: "BL", utcOffset: -240, utcOffsetDst: -240 },
+        "America/St_Johns": { CC: "CA", utcOffset: -210, utcOffsetDst: -210 },
+        "America/St_Kitts": { CC: "KN", utcOffset: -240, utcOffsetDst: -240 },
+        "America/St_Lucia": { CC: "LC", utcOffset: -240, utcOffsetDst: -240 },
+        "America/St_Thomas": { CC: "VI", utcOffset: -240, utcOffsetDst: -240 },
+        "America/St_Vincent": { CC: "VC", utcOffset: -240, utcOffsetDst: -240 },
+        "America/Swift_Current": { CC: "CA", utcOffset: -360, utcOffsetDst: -360 },
+        "America/Tegucigalpa": { CC: "HN", utcOffset: -360, utcOffsetDst: -360 },
+        "America/Thule": { CC: "GL", utcOffset: -240, utcOffsetDst: -240 },
+        "America/Thunder_Bay": { CC: "CA", utcOffset: -300, utcOffsetDst: -300 },
+        "America/Tijuana": { CC: "MX", utcOffset: -480, utcOffsetDst: -480 },
+        "America/Toronto": { CC: "CA", utcOffset: -300, utcOffsetDst: -300 },
+        "America/Tortola": { CC: "VG", utcOffset: -240, utcOffsetDst: -240 },
+        "America/Vancouver": { CC: "CA", utcOffset: -480, utcOffsetDst: -480 },
+        "America/Virgin": { CC: "", utcOffset: -240, utcOffsetDst: -240 },
+        "America/Whitehorse": { CC: "CA", utcOffset: -480, utcOffsetDst: -480 },
+        "America/Winnipeg": { CC: "CA", utcOffset: -360, utcOffsetDst: -360 },
+        "America/Yakutat": { CC: "US", utcOffset: -540, utcOffsetDst: -540 },
+        "America/Yellowknife": { CC: "CA", utcOffset: -420, utcOffsetDst: -420 },
+        "Antarctica/Casey": { CC: "AQ", utcOffset: 480, utcOffsetDst: 480 },
+        "Antarctica/Davis": { CC: "AQ", utcOffset: 420, utcOffsetDst: 420 },
+        "Antarctica/DumontDUrville": { CC: "AQ", utcOffset: 600, utcOffsetDst: 600 },
+        "Antarctica/Macquarie": { CC: "AU", utcOffset: 660, utcOffsetDst: 660 },
+        "Antarctica/Mawson": { CC: "AQ", utcOffset: 300, utcOffsetDst: 300 },
+        "Antarctica/McMurdo": { CC: "AQ", utcOffset: 720, utcOffsetDst: 720 },
+        "Antarctica/Palmer": { CC: "AQ", utcOffset: -180, utcOffsetDst: -180 },
+        "Antarctica/Rothera": { CC: "AQ", utcOffset: -180, utcOffsetDst: -180 },
+        "Antarctica/South_Pole": { CC: "", utcOffset: 720, utcOffsetDst: 720 },
+        "Antarctica/Syowa": { CC: "AQ", utcOffset: 180, utcOffsetDst: 180 },
+        "Antarctica/Troll": { CC: "AQ", utcOffset: 0, utcOffsetDst: 0 },
+        "Antarctica/Vostok": { CC: "AQ", utcOffset: 360, utcOffsetDst: 360 },
+        "Arctic/Longyearbyen": { CC: "SJ", utcOffset: 60, utcOffsetDst: 60 },
+        "Asia/Aden": { CC: "YE", utcOffset: 180, utcOffsetDst: 180 },
+        "Asia/Almaty": { CC: "KZ", utcOffset: 360, utcOffsetDst: 360 },
+        "Asia/Amman": { CC: "JO", utcOffset: 120, utcOffsetDst: 120 },
+        "Asia/Anadyr": { CC: "RU", utcOffset: 720, utcOffsetDst: 720 },
+        "Asia/Aqtau": { CC: "KZ", utcOffset: 300, utcOffsetDst: 300 },
+        "Asia/Aqtobe": { CC: "KZ", utcOffset: 300, utcOffsetDst: 300 },
+        "Asia/Ashgabat": { CC: "TM", utcOffset: 300, utcOffsetDst: 300 },
+        "Asia/Ashkhabad": { CC: "", utcOffset: 300, utcOffsetDst: 300 },
+        "Asia/Baghdad": { CC: "IQ", utcOffset: 180, utcOffsetDst: 180 },
+        "Asia/Bahrain": { CC: "BH", utcOffset: 180, utcOffsetDst: 180 },
+        "Asia/Baku": { CC: "AZ", utcOffset: 240, utcOffsetDst: 240 },
+        "Asia/Bangkok": { CC: "TH", utcOffset: 420, utcOffsetDst: 420 },
+        "Asia/Beirut": { CC: "LB", utcOffset: 120, utcOffsetDst: 120 },
+        "Asia/Bishkek": { CC: "KG", utcOffset: 360, utcOffsetDst: 360 },
+        "Asia/Brunei": { CC: "BN", utcOffset: 480, utcOffsetDst: 480 },
+        "Asia/Calcutta": { CC: "", utcOffset: 330, utcOffsetDst: 330 },
+        "Asia/Chita": { CC: "RU", utcOffset: 480, utcOffsetDst: 480 },
+        "Asia/Choibalsan": { CC: "MN", utcOffset: 480, utcOffsetDst: 480 },
+        "Asia/Chongqing": { CC: "", utcOffset: 480, utcOffsetDst: 480 },
+        "Asia/Chungking": { CC: "", utcOffset: 480, utcOffsetDst: 480 },
+        "Asia/Colombo": { CC: "LK", utcOffset: 330, utcOffsetDst: 330 },
+        "Asia/Dacca": { CC: "", utcOffset: 360, utcOffsetDst: 360 },
+        "Asia/Damascus": { CC: "SY", utcOffset: 120, utcOffsetDst: 120 },
+        "Asia/Dhaka": { CC: "BD", utcOffset: 360, utcOffsetDst: 360 },
+        "Asia/Dili": { CC: "TL", utcOffset: 540, utcOffsetDst: 540 },
+        "Asia/Dubai": { CC: "AE", utcOffset: 240, utcOffsetDst: 240 },
+        "Asia/Dushanbe": { CC: "TJ", utcOffset: 300, utcOffsetDst: 300 },
+        "Asia/Gaza": { CC: "PS", utcOffset: 120, utcOffsetDst: 120 },
+        "Asia/Harbin": { CC: "", utcOffset: 480, utcOffsetDst: 480 },
+        "Asia/Hebron": { CC: "PS", utcOffset: 120, utcOffsetDst: 120 },
+        "Asia/Ho_Chi_Minh": { CC: "VN", utcOffset: 420, utcOffsetDst: 420 },
+        "Asia/Hong_Kong": { CC: "HK", utcOffset: 480, utcOffsetDst: 480 },
+        "Asia/Hovd": { CC: "MN", utcOffset: 420, utcOffsetDst: 420 },
+        "Asia/Irkutsk": { CC: "RU", utcOffset: 480, utcOffsetDst: 480 },
+        "Asia/Istanbul": { CC: "", utcOffset: 120, utcOffsetDst: 120 },
+        "Asia/Jakarta": { CC: "ID", utcOffset: 420, utcOffsetDst: 420 },
+        "Asia/Jayapura": { CC: "ID", utcOffset: 540, utcOffsetDst: 540 },
+        "Asia/Jerusalem": { CC: "IL", utcOffset: 120, utcOffsetDst: 120 },
+        "Asia/Kabul": { CC: "AF", utcOffset: 270, utcOffsetDst: 270 },
+        "Asia/Kamchatka": { CC: "RU", utcOffset: 720, utcOffsetDst: 720 },
+        "Asia/Karachi": { CC: "PK", utcOffset: 300, utcOffsetDst: 300 },
+        "Asia/Kashgar": { CC: "", utcOffset: 360, utcOffsetDst: 360 },
+        "Asia/Kathmandu": { CC: "NP", utcOffset: 345, utcOffsetDst: 345 },
+        "Asia/Katmandu": { CC: "", utcOffset: 345, utcOffsetDst: 345 },
+        "Asia/Khandyga": { CC: "RU", utcOffset: 540, utcOffsetDst: 540 },
+        "Asia/Kolkata": { CC: "IN", utcOffset: 330, utcOffsetDst: 330 },
+        "Asia/Krasnoyarsk": { CC: "RU", utcOffset: 420, utcOffsetDst: 420 },
+        "Asia/Kuala_Lumpur": { CC: "MY", utcOffset: 480, utcOffsetDst: 480 },
+        "Asia/Kuching": { CC: "MY", utcOffset: 480, utcOffsetDst: 480 },
+        "Asia/Kuwait": { CC: "KW", utcOffset: 180, utcOffsetDst: 180 },
+        "Asia/Macao": { CC: "", utcOffset: 480, utcOffsetDst: 480 },
+        "Asia/Macau": { CC: "MO", utcOffset: 480, utcOffsetDst: 480 },
+        "Asia/Magadan": { CC: "RU", utcOffset: 600, utcOffsetDst: 600 },
+        "Asia/Makassar": { CC: "ID", utcOffset: 480, utcOffsetDst: 480 },
+        "Asia/Manila": { CC: "PH", utcOffset: 480, utcOffsetDst: 480 },
+        "Asia/Muscat": { CC: "OM", utcOffset: 240, utcOffsetDst: 240 },
+        "Asia/Nicosia": { CC: "CY", utcOffset: 120, utcOffsetDst: 120 },
+        "Asia/Novokuznetsk": { CC: "RU", utcOffset: 420, utcOffsetDst: 420 },
+        "Asia/Novosibirsk": { CC: "RU", utcOffset: 360, utcOffsetDst: 360 },
+        "Asia/Omsk": { CC: "RU", utcOffset: 360, utcOffsetDst: 360 },
+        "Asia/Oral": { CC: "KZ", utcOffset: 300, utcOffsetDst: 300 },
+        "Asia/Phnom_Penh": { CC: "KH", utcOffset: 420, utcOffsetDst: 420 },
+        "Asia/Pontianak": { CC: "ID", utcOffset: 420, utcOffsetDst: 420 },
+        "Asia/Pyongyang": { CC: "KP", utcOffset: 510, utcOffsetDst: 510 },
+        "Asia/Qatar": { CC: "QA", utcOffset: 180, utcOffsetDst: 180 },
+        "Asia/Qyzylorda": { CC: "KZ", utcOffset: 360, utcOffsetDst: 360 },
+        "Asia/Rangoon": { CC: "MM", utcOffset: 390, utcOffsetDst: 390 },
+        "Asia/Riyadh": { CC: "SA", utcOffset: 180, utcOffsetDst: 180 },
+        "Asia/Saigon": { CC: "", utcOffset: 420, utcOffsetDst: 420 },
+        "Asia/Sakhalin": { CC: "RU", utcOffset: 600, utcOffsetDst: 600 },
+        "Asia/Samarkand": { CC: "UZ", utcOffset: 300, utcOffsetDst: 300 },
+        "Asia/Seoul": { CC: "KR", utcOffset: 540, utcOffsetDst: 540 },
+        "Asia/Shanghai": { CC: "CN", utcOffset: 480, utcOffsetDst: 480 },
+        "Asia/Singapore": { CC: "SG", utcOffset: 480, utcOffsetDst: 480 },
+        "Asia/Srednekolymsk": { CC: "RU", utcOffset: 660, utcOffsetDst: 660 },
+        "Asia/Taipei": { CC: "TW", utcOffset: 480, utcOffsetDst: 480 },
+        "Asia/Tashkent": { CC: "UZ", utcOffset: 300, utcOffsetDst: 300 },
+        "Asia/Tbilisi": { CC: "GE", utcOffset: 240, utcOffsetDst: 240 },
+        "Asia/Tehran": { CC: "IR", utcOffset: 210, utcOffsetDst: 210 },
+        "Asia/Tel_Aviv": { CC: "", utcOffset: 120, utcOffsetDst: 120 },
+        "Asia/Thimbu": { CC: "", utcOffset: 360, utcOffsetDst: 360 },
+        "Asia/Thimphu": { CC: "BT", utcOffset: 360, utcOffsetDst: 360 },
+        "Asia/Tokyo": { CC: "JP", utcOffset: 540, utcOffsetDst: 540 },
+        "Asia/Ujung_Pandang": { CC: "", utcOffset: 480, utcOffsetDst: 480 },
+        "Asia/Ulaanbaatar": { CC: "MN", utcOffset: 480, utcOffsetDst: 480 },
+        "Asia/Ulan_Bator": { CC: "", utcOffset: 480, utcOffsetDst: 480 },
+        "Asia/Urumqi": { CC: "CN", utcOffset: 360, utcOffsetDst: 360 },
+        "Asia/Ust-Nera": { CC: "RU", utcOffset: 600, utcOffsetDst: 600 },
+        "Asia/Vientiane": { CC: "LA", utcOffset: 420, utcOffsetDst: 420 },
+        "Asia/Vladivostok": { CC: "RU", utcOffset: 600, utcOffsetDst: 600 },
+        "Asia/Yakutsk": { CC: "RU", utcOffset: 540, utcOffsetDst: 540 },
+        "Asia/Yekaterinburg": { CC: "RU", utcOffset: 300, utcOffsetDst: 300 },
+        "Asia/Yerevan": { CC: "AM", utcOffset: 240, utcOffsetDst: 240 },
+        "Atlantic/Azores": { CC: "PT", utcOffset: -60, utcOffsetDst: 60 },
+        "Atlantic/Bermuda": { CC: "BM", utcOffset: -240, utcOffsetDst: -240 },
+        "Atlantic/Canary": { CC: "ES", utcOffset: 0, utcOffsetDst: 0 },
+        "Atlantic/Cape_Verde": { CC: "CV", utcOffset: -60, utcOffsetDst: -60 },
+        "Atlantic/Faeroe": { CC: "", utcOffset: 0, utcOffsetDst: 0 },
+        "Atlantic/Faroe": { CC: "FO", utcOffset: 0, utcOffsetDst: 0 },
+        "Atlantic/Jan_Mayen": { CC: "", utcOffset: 60, utcOffsetDst: 60 },
+        "Atlantic/Madeira": { CC: "PT", utcOffset: 0, utcOffsetDst: 0 },
+        "Atlantic/Reykjavik": { CC: "IS", utcOffset: 0, utcOffsetDst: 0 },
+        "Atlantic/South_Georgia": { CC: "GS", utcOffset: -120, utcOffsetDst: -120 },
+        "Atlantic/St_Helena": { CC: "SH", utcOffset: 0, utcOffsetDst: 0 },
+        "Atlantic/Stanley": { CC: "FK", utcOffset: -180, utcOffsetDst: -180 },
+        "Australia/ACT": { CC: "", utcOffset: 600, utcOffsetDst: 600 },
+        "Australia/Adelaide": { CC: "AU", utcOffset: 570, utcOffsetDst: 570 },
+        "Australia/Brisbane": { CC: "AU", utcOffset: 600, utcOffsetDst: 600 },
+        "Australia/Broken_Hill": { CC: "AU", utcOffset: 570, utcOffsetDst: 570 },
+        "Australia/Canberra": { CC: "", utcOffset: 600, utcOffsetDst: 600 },
+        "Australia/Currie": { CC: "AU", utcOffset: 600, utcOffsetDst: 600 },
+        "Australia/Darwin": { CC: "AU", utcOffset: 570, utcOffsetDst: 570 },
+        "Australia/Eucla": { CC: "AU", utcOffset: 525, utcOffsetDst: 525 },
+        "Australia/Hobart": { CC: "AU", utcOffset: 600, utcOffsetDst: 600 },
+        "Australia/LHI": { CC: "", utcOffset: 630, utcOffsetDst: 600 },
+        "Australia/Lindeman": { CC: "AU", utcOffset: 600, utcOffsetDst: 600 },
+        "Australia/Lord_Howe": { CC: "AU", utcOffset: 630, utcOffsetDst: 600 },
+        "Australia/Melbourne": { CC: "AU", utcOffset: 600, utcOffsetDst: 600 },
+        "Australia/North": { CC: "", utcOffset: 570, utcOffsetDst: 570 },
+        "Australia/NSW": { CC: "", utcOffset: 600, utcOffsetDst: 600 },
+        "Australia/Perth": { CC: "AU", utcOffset: 480, utcOffsetDst: 480 },
+        "Australia/Queensland": { CC: "", utcOffset: 600, utcOffsetDst: 600 },
+        "Australia/South": { CC: "", utcOffset: 570, utcOffsetDst: 570 },
+        "Australia/Sydney": { CC: "AU", utcOffset: 600, utcOffsetDst: 600 },
+        "Australia/Tasmania": { CC: "", utcOffset: 600, utcOffsetDst: 600 },
+        "Australia/Victoria": { CC: "", utcOffset: 600, utcOffsetDst: 600 },
+        "Australia/West": { CC: "", utcOffset: 480, utcOffsetDst: 480 },
+        "Australia/Yancowinna": { CC: "", utcOffset: 570, utcOffsetDst: 570 },
+        "Brazil/Acre": { CC: "", utcOffset: -300, utcOffsetDst: -300 },
+        "Brazil/DeNoronha": { CC: "", utcOffset: -120, utcOffsetDst: -120 },
+        "Brazil/East": { CC: "", utcOffset: -180, utcOffsetDst: -180 },
+        "Brazil/West": { CC: "", utcOffset: -240, utcOffsetDst: -240 },
+        "Canada/Atlantic": { CC: "", utcOffset: -240, utcOffsetDst: -240 },
+        "Canada/Central": { CC: "", utcOffset: -360, utcOffsetDst: -360 },
+        "Canada/Eastern": { CC: "", utcOffset: -300, utcOffsetDst: -300 },
+        "Canada/East-Saskatchewan": { CC: "", utcOffset: -360, utcOffsetDst: -360 },
+        "Canada/Mountain": { CC: "", utcOffset: -420, utcOffsetDst: -420 },
+        "Canada/Newfoundland": { CC: "", utcOffset: -210, utcOffsetDst: -210 },
+        "Canada/Pacific": { CC: "", utcOffset: -480, utcOffsetDst: -480 },
+        "Canada/Saskatchewan": { CC: "", utcOffset: -360, utcOffsetDst: -360 },
+        "Canada/Yukon": { CC: "", utcOffset: -480, utcOffsetDst: -480 },
+        "CET": { CC: "", utcOffset: 60, utcOffsetDst: 60 },
+        "Chile/Continental": { CC: "", utcOffset: -180, utcOffsetDst: -180 },
+        "Chile/EasterIsland": { CC: "", utcOffset: -300, utcOffsetDst: -300 },
+        "CST6CDT": { CC: "", utcOffset: -360, utcOffsetDst: -360 },
+        "Cuba": { CC: "", utcOffset: -300, utcOffsetDst: -300 },
+        "EET": { CC: "", utcOffset: 120, utcOffsetDst: 120 },
+        "Egypt": { CC: "", utcOffset: 120, utcOffsetDst: 120 },
+        "Eire": { CC: "", utcOffset: 0, utcOffsetDst: 0 },
+        "EST": { CC: "", utcOffset: -300, utcOffsetDst: -300 },
+        "EST5EDT": { CC: "", utcOffset: -300, utcOffsetDst: -300 },
+        "Etc/GMT": { CC: "", utcOffset: 0, utcOffsetDst: 0 },
+        "Etc/GMT+0": { CC: "", utcOffset: 0, utcOffsetDst: 0 },
+        "Etc/GMT+1": { CC: "", utcOffset: -60, utcOffsetDst: -60 },
+        "Etc/GMT+10": { CC: "", utcOffset: -600, utcOffsetDst: -600 },
+        "Etc/GMT+11": { CC: "", utcOffset: -660, utcOffsetDst: -660 },
+        "Etc/GMT+12": { CC: "", utcOffset: -720, utcOffsetDst: -720 },
+        "Etc/GMT+2": { CC: "", utcOffset: -120, utcOffsetDst: -120 },
+        "Etc/GMT+3": { CC: "", utcOffset: -180, utcOffsetDst: -180 },
+        "Etc/GMT+4": { CC: "", utcOffset: -240, utcOffsetDst: -240 },
+        "Etc/GMT+5": { CC: "", utcOffset: -300, utcOffsetDst: -300 },
+        "Etc/GMT+6": { CC: "", utcOffset: -360, utcOffsetDst: -360 },
+        "Etc/GMT+7": { CC: "", utcOffset: -420, utcOffsetDst: -420 },
+        "Etc/GMT+8": { CC: "", utcOffset: -480, utcOffsetDst: -480 },
+        "Etc/GMT+9": { CC: "", utcOffset: -540, utcOffsetDst: -540 },
+        "Etc/GMT0": { CC: "", utcOffset: 0, utcOffsetDst: 0 },
+        "Etc/GMT-0": { CC: "", utcOffset: 0, utcOffsetDst: 0 },
+        "Etc/GMT-1": { CC: "", utcOffset: 60, utcOffsetDst: 60 },
+        "Etc/GMT-10": { CC: "", utcOffset: 600, utcOffsetDst: 600 },
+        "Etc/GMT-11": { CC: "", utcOffset: 660, utcOffsetDst: 660 },
+        "Etc/GMT-12": { CC: "", utcOffset: 720, utcOffsetDst: 720 },
+        "Etc/GMT-13": { CC: "", utcOffset: 780, utcOffsetDst: 780 },
+        "Etc/GMT-14": { CC: "", utcOffset: 840, utcOffsetDst: 840 },
+        "Etc/GMT-2": { CC: "", utcOffset: 120, utcOffsetDst: 120 },
+        "Etc/GMT-3": { CC: "", utcOffset: 180, utcOffsetDst: 180 },
+        "Etc/GMT-4": { CC: "", utcOffset: 240, utcOffsetDst: 240 },
+        "Etc/GMT-5": { CC: "", utcOffset: 300, utcOffsetDst: 300 },
+        "Etc/GMT-6": { CC: "", utcOffset: 360, utcOffsetDst: 360 },
+        "Etc/GMT-7": { CC: "", utcOffset: 420, utcOffsetDst: 420 },
+        "Etc/GMT-8": { CC: "", utcOffset: 480, utcOffsetDst: 480 },
+        "Etc/GMT-9": { CC: "", utcOffset: 540, utcOffsetDst: 540 },
+        "Etc/Greenwich": { CC: "", utcOffset: 0, utcOffsetDst: 0 },
+        "Etc/UCT": { CC: "", utcOffset: 0, utcOffsetDst: 0 },
+        "Etc/Universal": { CC: "", utcOffset: 0, utcOffsetDst: 0 },
+        "Etc/UTC": { CC: "", utcOffset: 0, utcOffsetDst: 0 },
+        "Etc/Zulu": { CC: "", utcOffset: 0, utcOffsetDst: 0 },
+        "Europe/Amsterdam": { CC: "NL", utcOffset: 60, utcOffsetDst: 60 },
+        "Europe/Andorra": { CC: "AD", utcOffset: 60, utcOffsetDst: 60 },
+        "Europe/Athens": { CC: "GR", utcOffset: 120, utcOffsetDst: 120 },
+        "Europe/Belfast": { CC: "", utcOffset: 0, utcOffsetDst: 0 },
+        "Europe/Belgrade": { CC: "RS", utcOffset: 60, utcOffsetDst: 60 },
+        "Europe/Berlin": { CC: "DE", utcOffset: 60, utcOffsetDst: 60 },
+        "Europe/Bratislava": { CC: "SK", utcOffset: 60, utcOffsetDst: 60 },
+        "Europe/Brussels": { CC: "BE", utcOffset: 60, utcOffsetDst: 60 },
+        "Europe/Bucharest": { CC: "RO", utcOffset: 120, utcOffsetDst: 120 },
+        "Europe/Budapest": { CC: "HU", utcOffset: 60, utcOffsetDst: 60 },
+        "Europe/Busingen": { CC: "DE", utcOffset: 60, utcOffsetDst: 60 },
+        "Europe/Chisinau": { CC: "MD", utcOffset: 120, utcOffsetDst: 120 },
+        "Europe/Copenhagen": { CC: "DK", utcOffset: 60, utcOffsetDst: 60 },
+        "Europe/Dublin": { CC: "IE", utcOffset: 0, utcOffsetDst: 0 },
+        "Europe/Gibraltar": { CC: "GI", utcOffset: 60, utcOffsetDst: 60 },
+        "Europe/Guernsey": { CC: "GG", utcOffset: 0, utcOffsetDst: 0 },
+        "Europe/Helsinki": { CC: "FI", utcOffset: 120, utcOffsetDst: 120 },
+        "Europe/Isle_of_Man": { CC: "IM", utcOffset: 0, utcOffsetDst: 0 },
+        "Europe/Istanbul": { CC: "TR", utcOffset: 120, utcOffsetDst: 120 },
+        "Europe/Jersey": { CC: "JE", utcOffset: 0, utcOffsetDst: 0 },
+        "Europe/Kaliningrad": { CC: "RU", utcOffset: 120, utcOffsetDst: 120 },
+        "Europe/Kiev": { CC: "UA", utcOffset: 120, utcOffsetDst: 120 },
+        "Europe/Lisbon": { CC: "PT", utcOffset: 0, utcOffsetDst: 0 },
+        "Europe/Ljubljana": { CC: "SI", utcOffset: 60, utcOffsetDst: 60 },
+        "Europe/London": { CC: "GB", utcOffset: 0, utcOffsetDst: 0 },
+        "Europe/Luxembourg": { CC: "LU", utcOffset: 60, utcOffsetDst: 60 },
+        "Europe/Madrid": { CC: "ES", utcOffset: 60, utcOffsetDst: 60 },
+        "Europe/Malta": { CC: "MT", utcOffset: 60, utcOffsetDst: 60 },
+        "Europe/Mariehamn": { CC: "AX", utcOffset: 120, utcOffsetDst: 120 },
+        "Europe/Minsk": { CC: "BY", utcOffset: 180, utcOffsetDst: 180 },
+        "Europe/Monaco": { CC: "MC", utcOffset: 60, utcOffsetDst: 60 },
+        "Europe/Moscow": { CC: "RU", utcOffset: 180, utcOffsetDst: 180 },
+        "Europe/Nicosia": { CC: "", utcOffset: 120, utcOffsetDst: 120 },
+        "Europe/Oslo": { CC: "NO", utcOffset: 60, utcOffsetDst: 60 },
+        "Europe/Paris": { CC: "FR", utcOffset: 60, utcOffsetDst: 60 },
+        "Europe/Podgorica": { CC: "ME", utcOffset: 60, utcOffsetDst: 60 },
+        "Europe/Prague": { CC: "CZ", utcOffset: 60, utcOffsetDst: 60 },
+        "Europe/Riga": { CC: "LV", utcOffset: 120, utcOffsetDst: 120 },
+        "Europe/Rome": { CC: "IT", utcOffset: 60, utcOffsetDst: 60 },
+        "Europe/Samara": { CC: "RU", utcOffset: 240, utcOffsetDst: 240 },
+        "Europe/San_Marino": { CC: "SM", utcOffset: 60, utcOffsetDst: 60 },
+        "Europe/Sarajevo": { CC: "BA", utcOffset: 60, utcOffsetDst: 60 },
+        "Europe/Simferopol": { CC: "UA", utcOffset: 120, utcOffsetDst: 120 },
+        "Europe/Skopje": { CC: "MK", utcOffset: 60, utcOffsetDst: 60 },
+        "Europe/Sofia": { CC: "BG", utcOffset: 120, utcOffsetDst: 120 },
+        "Europe/Stockholm": { CC: "SE", utcOffset: 60, utcOffsetDst: 60 },
+        "Europe/Tallinn": { CC: "EE", utcOffset: 120, utcOffsetDst: 120 },
+        "Europe/Tirane": { CC: "AL", utcOffset: 60, utcOffsetDst: 60 },
+        "Europe/Tiraspol": { CC: "", utcOffset: 120, utcOffsetDst: 120 },
+        "Europe/Uzhgorod": { CC: "UA", utcOffset: 120, utcOffsetDst: 120 },
+        "Europe/Vaduz": { CC: "LI", utcOffset: 60, utcOffsetDst: 60 },
+        "Europe/Vatican": { CC: "VA", utcOffset: 60, utcOffsetDst: 60 },
+        "Europe/Vienna": { CC: "AT", utcOffset: 60, utcOffsetDst: 60 },
+        "Europe/Vilnius": { CC: "LT", utcOffset: 120, utcOffsetDst: 120 },
+        "Europe/Volgograd": { CC: "RU", utcOffset: 180, utcOffsetDst: 180 },
+        "Europe/Warsaw": { CC: "PL", utcOffset: 60, utcOffsetDst: 60 },
+        "Europe/Zagreb": { CC: "HR", utcOffset: 60, utcOffsetDst: 60 },
+        "Europe/Zaporozhye": { CC: "UA", utcOffset: 120, utcOffsetDst: 120 },
+        "Europe/Zurich": { CC: "CH", utcOffset: 60, utcOffsetDst: 60 },
+        "GB": { CC: "", utcOffset: 0, utcOffsetDst: 0 },
+        "GB-Eire": { CC: "", utcOffset: 0, utcOffsetDst: 0 },
+        "GMT": { CC: "", utcOffset: 0, utcOffsetDst: 0 },
+        "GMT+0": { CC: "", utcOffset: 0, utcOffsetDst: 0 },
+        "GMT0": { CC: "", utcOffset: 0, utcOffsetDst: 0 },
+        "GMT-0": { CC: "", utcOffset: 0, utcOffsetDst: 0 },
+        "Greenwich": { CC: "", utcOffset: 0, utcOffsetDst: 0 },
+        "Hongkong": { CC: "", utcOffset: 480, utcOffsetDst: 480 },
+        "HST": { CC: "", utcOffset: -600, utcOffsetDst: -600 },
+        "Iceland": { CC: "", utcOffset: 0, utcOffsetDst: 0 },
+        "Indian/Antananarivo": { CC: "MG", utcOffset: 180, utcOffsetDst: 180 },
+        "Indian/Chagos": { CC: "IO", utcOffset: 360, utcOffsetDst: 360 },
+        "Indian/Christmas": { CC: "CX", utcOffset: 420, utcOffsetDst: 420 },
+        "Indian/Cocos": { CC: "CC", utcOffset: 390, utcOffsetDst: 390 },
+        "Indian/Comoro": { CC: "KM", utcOffset: 180, utcOffsetDst: 180 },
+        "Indian/Kerguelen": { CC: "TF", utcOffset: 300, utcOffsetDst: 300 },
+        "Indian/Mahe": { CC: "SC", utcOffset: 240, utcOffsetDst: 240 },
+        "Indian/Maldives": { CC: "MV", utcOffset: 300, utcOffsetDst: 300 },
+        "Indian/Mauritius": { CC: "MU", utcOffset: 240, utcOffsetDst: 240 },
+        "Indian/Mayotte": { CC: "YT", utcOffset: 180, utcOffsetDst: 180 },
+        "Indian/Reunion": { CC: "RE", utcOffset: 240, utcOffsetDst: 240 },
+        "Iran": { CC: "", utcOffset: 210, utcOffsetDst: 210 },
+        "Israel": { CC: "", utcOffset: 120, utcOffsetDst: 120 },
+        "Jamaica": { CC: "", utcOffset: -300, utcOffsetDst: -300 },
+        "Japan": { CC: "", utcOffset: 540, utcOffsetDst: 540 },
+        "Kwajalein": { CC: "", utcOffset: 720, utcOffsetDst: 720 },
+        "Libya": { CC: "", utcOffset: 120, utcOffsetDst: 120 },
+        "MET": { CC: "", utcOffset: 60, utcOffsetDst: 60 },
+        "Mexico/BajaNorte": { CC: "", utcOffset: -480, utcOffsetDst: -480 },
+        "Mexico/BajaSur": { CC: "", utcOffset: -420, utcOffsetDst: -420 },
+        "Mexico/General": { CC: "", utcOffset: -360, utcOffsetDst: -360 },
+        "MST": { CC: "", utcOffset: -420, utcOffsetDst: -420 },
+        "MST7MDT": { CC: "", utcOffset: -420, utcOffsetDst: -420 },
+        "Navajo": { CC: "", utcOffset: -420, utcOffsetDst: -420 },
+        "NZ": { CC: "", utcOffset: 720, utcOffsetDst: 720 },
+        "NZ-CHAT": { CC: "", utcOffset: 765, utcOffsetDst: 765 },
+        "Pacific/Apia": { CC: "WS", utcOffset: 780, utcOffsetDst: 780 },
+        "Pacific/Auckland": { CC: "NZ", utcOffset: 720, utcOffsetDst: 720 },
+        "Pacific/Bougainville": { CC: "PG", utcOffset: 660, utcOffsetDst: 660 },
+        "Pacific/Chatham": { CC: "NZ", utcOffset: 765, utcOffsetDst: 765 },
+        "Pacific/Chuuk": { CC: "FM", utcOffset: 600, utcOffsetDst: 600 },
+        "Pacific/Easter": { CC: "CL", utcOffset: -300, utcOffsetDst: -300 },
+        "Pacific/Efate": { CC: "VU", utcOffset: 660, utcOffsetDst: 660 },
+        "Pacific/Enderbury": { CC: "KI", utcOffset: 780, utcOffsetDst: 780 },
+        "Pacific/Fakaofo": { CC: "TK", utcOffset: 780, utcOffsetDst: 780 },
+        "Pacific/Fiji": { CC: "FJ", utcOffset: 720, utcOffsetDst: 720 },
+        "Pacific/Funafuti": { CC: "TV", utcOffset: 720, utcOffsetDst: 720 },
+        "Pacific/Galapagos": { CC: "EC", utcOffset: -360, utcOffsetDst: -360 },
+        "Pacific/Gambier": { CC: "PF", utcOffset: -540, utcOffsetDst: -540 },
+        "Pacific/Guadalcanal": { CC: "SB", utcOffset: 660, utcOffsetDst: 660 },
+        "Pacific/Guam": { CC: "GU", utcOffset: 600, utcOffsetDst: 600 },
+        "Pacific/Honolulu": { CC: "US", utcOffset: -600, utcOffsetDst: -600 },
+        "Pacific/Johnston": { CC: "UM", utcOffset: -600, utcOffsetDst: -600 },
+        "Pacific/Kiritimati": { CC: "KI", utcOffset: 840, utcOffsetDst: 840 },
+        "Pacific/Kosrae": { CC: "FM", utcOffset: 660, utcOffsetDst: 660 },
+        "Pacific/Kwajalein": { CC: "MH", utcOffset: 720, utcOffsetDst: 720 },
+        "Pacific/Majuro": { CC: "MH", utcOffset: 720, utcOffsetDst: 720 },
+        "Pacific/Marquesas": { CC: "PF", utcOffset: -570, utcOffsetDst: -570 },
+        "Pacific/Midway": { CC: "UM", utcOffset: -660, utcOffsetDst: -660 },
+        "Pacific/Nauru": { CC: "NR", utcOffset: 720, utcOffsetDst: 720 },
+        "Pacific/Niue": { CC: "NU", utcOffset: -660, utcOffsetDst: -660 },
+        "Pacific/Norfolk": { CC: "NF", utcOffset: 660, utcOffsetDst: 660 },
+        "Pacific/Noumea": { CC: "NC", utcOffset: 660, utcOffsetDst: 660 },
+        "Pacific/Pago_Pago": { CC: "AS", utcOffset: -660, utcOffsetDst: -660 },
+        "Pacific/Palau": { CC: "PW", utcOffset: 540, utcOffsetDst: 540 },
+        "Pacific/Pitcairn": { CC: "PN", utcOffset: -480, utcOffsetDst: -480 },
+        "Pacific/Pohnpei": { CC: "FM", utcOffset: 660, utcOffsetDst: 660 },
+        "Pacific/Ponape": { CC: "", utcOffset: 660, utcOffsetDst: 660 },
+        "Pacific/Port_Moresby": { CC: "PG", utcOffset: 600, utcOffsetDst: 600 },
+        "Pacific/Rarotonga": { CC: "CK", utcOffset: -600, utcOffsetDst: -600 },
+        "Pacific/Saipan": { CC: "MP", utcOffset: 600, utcOffsetDst: 600 },
+        "Pacific/Samoa": { CC: "", utcOffset: -660, utcOffsetDst: -660 },
+        "Pacific/Tahiti": { CC: "PF", utcOffset: -600, utcOffsetDst: -600 },
+        "Pacific/Tarawa": { CC: "KI", utcOffset: 720, utcOffsetDst: 720 },
+        "Pacific/Tongatapu": { CC: "TO", utcOffset: 780, utcOffsetDst: 780 },
+        "Pacific/Truk": { CC: "", utcOffset: 600, utcOffsetDst: 600 },
+        "Pacific/Wake": { CC: "UM", utcOffset: 720, utcOffsetDst: 720 },
+        "Pacific/Wallis": { CC: "WF", utcOffset: 720, utcOffsetDst: 720 },
+        "Pacific/Yap": { CC: "", utcOffset: 600, utcOffsetDst: 600 },
+        "Poland": { CC: "", utcOffset: 60, utcOffsetDst: 60 },
+        "Portugal": { CC: "", utcOffset: 0, utcOffsetDst: 0 },
+        "PRC": { CC: "", utcOffset: 480, utcOffsetDst: 480 },
+        "PST8PDT": { CC: "", utcOffset: -480, utcOffsetDst: -480 },
+        "ROC": { CC: "", utcOffset: 480, utcOffsetDst: 480 },
+        "ROK": { CC: "", utcOffset: 540, utcOffsetDst: 540 },
+        "Singapore": { CC: "", utcOffset: 480, utcOffsetDst: 480 },
+        "Turkey": { CC: "", utcOffset: 120, utcOffsetDst: 120 },
+        "UCT": { CC: "", utcOffset: 0, utcOffsetDst: 0 },
+        "Universal": { CC: "", utcOffset: 0, utcOffsetDst: 0 },
+        "US/Alaska": { CC: "", utcOffset: -540, utcOffsetDst: -540 },
+        "US/Aleutian": { CC: "", utcOffset: -600, utcOffsetDst: -600 },
+        "US/Arizona": { CC: "", utcOffset: -420, utcOffsetDst: -420 },
+        "US/Central": { CC: "", utcOffset: -360, utcOffsetDst: -360 },
+        "US/Eastern": { CC: "", utcOffset: -300, utcOffsetDst: -300 },
+        "US/East-Indiana": { CC: "", utcOffset: -300, utcOffsetDst: -300 },
+        "US/Hawaii": { CC: "", utcOffset: -600, utcOffsetDst: -600 },
+        "US/Indiana-Starke": { CC: "", utcOffset: -360, utcOffsetDst: -360 },
+        "US/Michigan": { CC: "", utcOffset: -300, utcOffsetDst: -300 },
+        "US/Mountain": { CC: "", utcOffset: -420, utcOffsetDst: -420 },
+        "US/Pacific": { CC: "", utcOffset: -480, utcOffsetDst: -480 },
+        "US/Pacific-New": { CC: "", utcOffset: -480, utcOffsetDst: -480 },
+        "US/Samoa": { CC: "", utcOffset: -660, utcOffsetDst: -660 },
+        "UTC": { CC: "", utcOffset: 0, utcOffsetDst: 0 },
+        "WET": { CC: "", utcOffset: 0, utcOffsetDst: 0 },
+        "W-SU": { CC: "", utcOffset: 180, utcOffsetDst: 180 },
+        "Zulu": { CC: "", utcOffset: 0, utcOffsetDst: 0 }
+    };
     
     return js_date;
 });

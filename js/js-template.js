@@ -282,6 +282,64 @@ jspyder.extend.fn("template", function () {
         /**
          * @member jspyder.template
          * 
+         * Loads templates from the specified XML file, using the following 
+         * format:
+         * 
+         * ```#!xml
+         * <templates>
+         *   <template name="template-name">
+         *     Template Contents
+         *   </template>
+         * </templates>
+         * ```
+         * 
+         * This function requires jspyder.ajax to function
+         * 
+         * @param {String} filename
+         *      The URL to the template file, to be called via AJAX
+         * 
+         * @param {Function} [fn]
+         *      The callback function to execute after the template is loaded.
+         */
+        storeTemplateXml: function (filename, fn) {
+            var errorMsg = "Attempted to call jspyder.template.storeTemplateXml() without loading jspyder.ajax module!";
+            filename = js.alg.string(filename);
+                
+            if (js.ajax) {
+                var data = {
+                    self: this,
+                    xmls: new XMLSerializer(),
+                    fn: fn
+                };
+                    
+                js.ajax(filename)
+                    .get(this._storeTemplateXml_ajax, data);
+            }
+            else {
+                js.log.error(errorMsg);
+            }
+            return this;
+        },
+        
+        /** @private */
+        _storeTemplateXml_ajax: function (xhttp, data) {
+            var $xml = js.dom(xhttp.responseXML.firstChild);
+            $xml.children(data.self._storeTemplateXml_children, data);
+            js.alg.run(data.fn);
+        },
+        
+        /** @private */
+        _storeTemplateXml_children: function (child, data) {
+            data.self.storeTemplate(
+                child.getAttribute("name"),
+                data.xmls.serializeToString(child)
+                    .replace(/\<[\/]?template[^\>]*\>/g, ""));
+            return;
+        },
+        
+        /**
+         * @member jspyder.template
+         * 
          * Pulls the selected template, and runs [fn] with the template as the
          * context. 
          * 
