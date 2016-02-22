@@ -411,11 +411,11 @@ jspyder.extend.fn("form", function () {
                     "</div>"
                 ].join(''),
                 
+                $date = js.date(config.value, config.format),
+                
                 // list of months
-                months = config.months || [
-                    "Jan", "Feb", "Mar", "Apr",
-                    "May", "Jun", "Jul", "Aug",
-                    "Sep", "Oct", "Nov", "Dec"],
+                months = config.months || $date.getMonthList("mmm"),
+
                 moCalendar = "";
                 
             js.alg.each(months, function(month, i) {
@@ -425,28 +425,40 @@ jspyder.extend.fn("form", function () {
             return function(event) {
                 var $calendar = js.dom(calendar, function() {
                     
-                    this.on("click", function(event) {
-                        pause = true;
-                    });
+                    var $title = this.find(".date-picker-title"),
+                        $tiles = this.find(".calendar-tiles"),
+                        $prev = this.find(".date-picker-prev"),
+                        $next = this.find(".date-picker-next");
                     
-                    this.find(".calendar-tiles")
+                    this.on("click", function(event) { pause = true; });
+                    $title.setHtml($date.asString("yyyy"));
+                    
+                    $tiles
                         .append(moCalendar)
                         .find(".month")
                             .on("click", function(event) {
                                 js.dom(this)
                                     .getValue(function(v) {
-                                        console.log("Month: "+v);
+                                        console.log("Month: " + v);
+                                        $date.setMonth(v);
+                                        var dCalendar = "";
+                                        js.alg.each($date.getDayList("d"), function (day, i) {
+                                            dCalendar += "<div class=\"date\" value=\"" + i + "\">" + day + "</div>";
+                                        });
+                                        $tiles.setHtml(dCalendar);
                                     });
                             });
                     
-                    this.find(".date-picker-prev")
-                        .on("click", function(event) {
-                            
+                    $prev
+                        .on("click", function (event) {
+                            pause = true;
+                            $title.setHtml($date.addYears(-1).asString("yyyy"));
                         });
                     
-                    this.find(".date-picker-next")
+                    $next
                         .on("click", function(event) {
                             pause = true;
+                            $title.setHtml($date.addYears(1).asString("yyyy"));
                         });
                 });
                 

@@ -395,7 +395,15 @@
             /**
              * Coerces any value to a boolean
              */
-            bool: function bool(b) { return b ? true : false },
+            bool: function bool(b, d) {
+                switch (typeof b) {
+                    case "undefined":
+                        return d || false;
+                    case "string":
+                        return (/true/i.test(b));
+                } 
+                return b ? true : false
+            },
             
             /**
              * Coerces any value to a Javascript Number object

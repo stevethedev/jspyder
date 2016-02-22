@@ -153,21 +153,19 @@
                 { division: "J29", fyq1: 2900 }
             ]
         };
-            
-        js.ajax("tmp/templates.xml")
-            .get(function(xhttp) {
-                var $xml = js.dom(xhttp.responseXML.firstChild),
-                    $template = js.template();
-                    
-                $xml.children(function(child) {
-                    $template.storeTemplate(child.getAttribute("name"), child.innerHTML);
-                });
-                
-                $t.compile("overview-table", projectedTravel, function(table) {
-                    js.dom(document.body).append(table);
-                    console.log(table);
-                });
-            });
+        
+        var formData = {
+                fields: {
+                    datefield: { type: "date" }
+                }
+            },
+            formTemplate = "<div>${datefield}</div>",
+            formFn = function(d) {
+                js.dom(document.body).append(d);
+            };
+        
+        js.form(formData)
+            .compileExplicit(formTemplate, null, formFn);
         
     </script>
 </body>

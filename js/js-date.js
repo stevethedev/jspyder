@@ -47,10 +47,7 @@ jspyder.extend.fn("date", function () {
      */
     function js_date(value, format, utc) {
         var ret = Object.create(js_date.fn);
-        ret._format = format;
-        ret._useUTC = utc;
-        
-        return ret.setDate(value, format);
+        return ret.setDate(value, format, utc);
     }
     
     js_date.fn = js_date.prototype = {
@@ -102,9 +99,11 @@ jspyder.extend.fn("date", function () {
          * @param {Boolean} [utc=true]
          */
         useUTC: function (utc) {
-            this._useUTC = !js.alg.bool(utc);
+            this._useUTC = js.alg.bool(utc, true);
             return this;
         },
+        
+        isUTC: function() { return this._useUTC; },
         /**
          * @method
          * 
@@ -114,7 +113,7 @@ jspyder.extend.fn("date", function () {
          * @param {Boolean} [local=true]
          */
         useLocal: function (local) {
-            this._useUTC = js.alg.bool(local);
+            this._useUTC = !js.alg.bool(local, true);
             return this;
         },
         
@@ -124,7 +123,7 @@ jspyder.extend.fn("date", function () {
          * Overrides the current date value, as if the constructor (jspyder.date)
          * had been run.
          */
-        setDate: function (value, format) {
+        setDate: function (value, format, utc) {
             var date;
             if (typeof value === "undefined") {
                 date = new Date();
@@ -147,6 +146,8 @@ jspyder.extend.fn("date", function () {
             }
 
             this._value = date;
+            this._format = js.alg.string(format, "");
+            this._useUTC = js.alg.bool(utc, false);
 
             return this;
         },
@@ -165,11 +166,11 @@ jspyder.extend.fn("date", function () {
          * @param {String} [format=this._format]
          *      The format to use when generating the string.
          * 
-         * @param {Boolean} [useUtc=this._useUtc]
+         * @param {Boolean} [useUtc=this._useUTC]
          */
         asString: function (format, useUtc) {
             format = js.alg.string(format, this._format || __defaultFormat);
-            useUtc = js.alg.bool(useUtc, this._useUtc || __defaultUtc);
+            useUtc = js.alg.bool(useUtc, this._useUTC);
             return __formatDate(this._value, format, useUtc);
         },
         
@@ -189,6 +190,28 @@ jspyder.extend.fn("date", function () {
         getDay: function () {
             return this._value.getDate();
         },
+        getDayList: function (format) {
+            format = js.alg.string(format, "d");
+            
+            var count = this.getDayCount(),
+                clone = this.clone(),
+                d = 1,
+                days = [];
+                
+            for (d; d <= count; d++) {
+                clone.setDay(d);
+                days.push(clone.asString(format));
+            }
+            
+            return days;
+        },
+        getDayCount: function () {
+            return js.alg.number(
+                this.clone()
+                    .addMonths(1)
+                    .setDay(0)
+                    .asString("d"));
+        },
         
         /**
          * @method
@@ -205,6 +228,24 @@ jspyder.extend.fn("date", function () {
         },
         getMonth: function () {
             return this._value.getMonth();
+        },
+        getMonthList: function (format) {
+            var data = { 
+                "a": [], 
+                "f": js.alg.string(format, "mmmm"),
+                "c": this.clone() };
+            
+            js.alg.each(__months, this._getMonthList_each, data);
+            
+            return data.a;
+        },
+        _getMonthList_each: function (monthDef, i, months, ctx) {
+            ctx.c.setMonth(i);
+            ctx.a.push(ctx.c.asString(ctx.f));
+            return;
+        },
+        getMonthCount: function () {
+            return __months.length;
         },
         
         /**
