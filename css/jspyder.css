@@ -201,19 +201,21 @@ label {
     .js-control.date-picker .calendar-tiles .month {
       width: 25%;
       padding: .6em; }
-    .js-control.date-picker .calendar-tiles .date {
-      width: 100%/7; }
-    .js-control.date-picker .calendar-tiles .month, .js-control.date-picker .calendar-tiles .date {
+    .js-control.date-picker .calendar-tiles .date-title {
+      background-color: rgba(182, 182, 182, 0.3); }
+    .js-control.date-picker .calendar-tiles .month, .js-control.date-picker .calendar-tiles .date, .js-control.date-picker .calendar-tiles .date-title {
       border: 0.0625em solid transparent;
       transition: border-color .2s, color .2s;
       display: inline-block;
       text-align: center;
       cursor: pointer; }
-      .js-control.date-picker .calendar-tiles .month:hover, .js-control.date-picker .calendar-tiles .date:hover {
+      .js-control.date-picker .calendar-tiles .month:hover, .js-control.date-picker .calendar-tiles .date:hover, .js-control.date-picker .calendar-tiles .date-title:hover {
         border-color: #303F9F;
         color: #303F9F; }
-    .js-control.date-picker .calendar-tiles .active {
-      background-color: #9bd9eb; }
+      .js-control.date-picker .calendar-tiles .month.active, .js-control.date-picker .calendar-tiles .date.active, .js-control.date-picker .calendar-tiles .date-title.active {
+        background-color: rgba(155, 217, 235, 0.3); }
+      .js-control.date-picker .calendar-tiles .month.today, .js-control.date-picker .calendar-tiles .date.today, .js-control.date-picker .calendar-tiles .date-title.today {
+        border-color: #9bd9eb; }
 
 input, textarea, .input {
   border: 0.0625em solid #b6b6b6;

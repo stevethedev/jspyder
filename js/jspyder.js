@@ -344,18 +344,43 @@
              * 
              * @return {Object} JSpyder 
              */
+            // each: function each(obj, fn, data) {
+            //     return (typeof obj.length === "number"
+            //         ? js_alg.eachArray(obj, fn, data)
+            //         : js_alg.eachObj(obj, fn, data));
+            // },
+            
             each: function each(obj, fn, data) {
                 var ctl = {
-                    "stop": function () {
-                        _break = false;
-                    }
-                },
+                        "stop": function () {
+                            _break = false;
+                        }
+                    },
                     _break = false;
 
                 if (obj && typeof obj === "object") {
                     for (var i in obj) {
                         fn.apply(ctl, [obj[i], i, obj, data]);
                         if (_break) {
+                            break;
+                        }
+                    }
+                }
+
+                return js;
+            },
+            arrEach: function each(obj, fn, data) {
+                var ctl = {
+                        "stop": function () {
+                            _break = false;
+                        }
+                    },
+                    _break = false;
+
+                if (obj && typeof obj === "object") {
+                    for(var i = 0; i < obj.length; i++) {
+                        fn.apply(ctl, [obj[i], i, obj, data]);
+                        if(_break) {
                             break;
                         }
                     }
@@ -1053,7 +1078,7 @@
                 this.each(function (element, i, elements) {
                     var child = element.firstElementChild;
                     while(child) {
-                        js_dom(child, fn, [child]);
+                        js_dom(child, fn, [child, data]);
                         child = child.nextElementSibling;
                     }
                 });

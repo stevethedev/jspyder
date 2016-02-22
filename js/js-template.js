@@ -307,13 +307,13 @@ jspyder.extend.fn("template", function () {
                 
             if (js.ajax) {
                 var data = {
-                    self: this,
+                    // self: this,
                     xmls: new XMLSerializer(),
                     fn: fn
                 };
                     
                 js.ajax(filename)
-                    .get(this._storeTemplateXml_ajax, data);
+                    .get(js_template.fn._storeTemplateXml_ajax, data);
             }
             else {
                 js.log.error(errorMsg);
@@ -324,13 +324,13 @@ jspyder.extend.fn("template", function () {
         /** @private */
         _storeTemplateXml_ajax: function (xhttp, data) {
             var $xml = js.dom(xhttp.responseXML.firstChild);
-            $xml.children(data.self._storeTemplateXml_children, data);
+            $xml.children(js_template.fn._storeTemplateXml_children, data);
             js.alg.run(data.fn);
         },
         
         /** @private */
         _storeTemplateXml_children: function (child, data) {
-            data.self.storeTemplate(
+            js_template.fn.storeTemplate(
                 child.getAttribute("name"),
                 data.xmls.serializeToString(child)
                     .replace(/\<[\/]?template[^\>]*\>/g, ""));
@@ -391,6 +391,7 @@ jspyder.extend.fn("template", function () {
     };
 
     js_template.storeTemplate = js_template.fn.storeTempate;
+    js_template.storeTemplateXml = js_template.fn.storeTemplateXml;
     js_template.getTemplate = js_template.fn.getTemplate;
     js_template.compile = js_template.fn.compile;
     js_template.compileExplicit = js_template.fn.compileExplicit;

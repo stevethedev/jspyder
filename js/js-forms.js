@@ -152,6 +152,11 @@ jspyder.extend.fn("form", function () {
          */
         _fields: null,
         
+        each: function(fn, data) {
+            js.alg.each(this._fields, fn, data);
+            return this;
+        },
+        
         /**
          * @method
          * Adds a group of fields using jspyder.form.addField where keys
@@ -216,13 +221,16 @@ jspyder.extend.fn("form", function () {
             
             var $field = js.dom(),
                 cfg = Object.create(js_form.fn.fieldTemplate),
-                dval = js.alg.string(cfg.default, ""),
-                val = js.alg.string(cfg.value, dval),
+                dval = js.alg.string(config.default, ""),
+                val = js.alg.string(config.value, dval),
                 option, i;
             
             // copy all of the config options over, if they exist.    
             js.alg.mergeObj(cfg, config);
             if (config.values) { cfg.values = js.alg.sliceArray(config.values); }
+            cfg.value = val;
+            cfg.default = dval;
+            cfg.name = name;
 
             switch (cfg.type) {
                 case "checkbox":
@@ -261,30 +269,12 @@ jspyder.extend.fn("form", function () {
                         .setValue(val);
                     break;
 
+                case "submit":
+                case "reset":
                 case "button":
-                    $field.and([
-                            "<div class=\"js-control button ", 
-                                js.alg.string(cfg.class,""), 
-                                "\" name=\"", name, "\">",
-                            (cfg.icon ? "<i class=\"" + cfg.icon + "\"></i>" : ""),
-                            "<span class=\"button-text\">", cfg.text, "</span>",
-                            "</div>"
-                        ].join(''))
-                        .setValue(val);
-                    break;
-
                 case "dropdown":
-                    $field
-                        .and(this._labelHtml(name, js.alg.string(cfg.text)))
-                        .and(js.dom([
-                                "<div name=\"", name, "\" class=\"input js-control dropdown\"", 
-                                    js.alg.string(cfg.class, ""), ">",
-                                    "<i class=\"dropdown-arrow arrow-drop-down\"></i>",
-                                    "<span class=\"dropdown-text\">", "&nbsp;", "</span>",
-                                "</div>"
-                            ].join(''))
-                            .on("click", this._boostrapDropdown_click(config.values))
-                        );
+                    
+                    this.templates[cfg.type] && this.templates[cfg.type].apply(this, [$field, cfg]);
                     break;
                     
                 case "date":
@@ -397,6 +387,56 @@ jspyder.extend.fn("form", function () {
             };
         },
         
+        templates: {
+            // generic button
+            "button": function($field, cfg) {
+                var html = [
+                        "<div class=\"js-control button ", 
+                            js.alg.string(cfg.class,""), 
+                            "\" name=\"", name, "\">",
+                            (cfg.icon ? "<i class=\"" + cfg.icon + "\"></i>" : ""),
+                            "<span class=\"button-text\">", cfg.text, "</span>",
+                        "</div>"
+                    ].join(''),
+                    
+                    $button = js.dom(html)
+                        .setValue(cfg.value)
+                        .on("click", cfg.click);
+                    
+                $field.and($button);
+                
+                return $button;
+            },
+            
+            // submit value
+            "submit": function($field, cfg) {
+                var $button = js_form.fn.templates["button"]($field, cfg),
+                    $form = this;
+                
+                // submit value
+                $button.on("click", function(event) {
+                    $form.submit();
+                });
+                
+                return $button;
+            },
+            
+            // dropdown value
+            "dropdown": function($field, cfg) {
+                $field
+                    .and(this._labelHtml(cfg.name, js.alg.string(cfg.text)))
+                    .and(js.dom([
+                            "<div name=\"", cfg.name, "\" class=\"input js-control dropdown\"", 
+                                js.alg.string(cfg.class, ""), ">",
+                                "<i class=\"dropdown-arrow arrow-drop-down\"></i>",
+                                "<span class=\"dropdown-text\">", (cfg.value || cfg.default || "&nbsp;"), "</span>",
+                            "</div>"
+                        ].join(''))
+                        .on("click", js_form.fn._boostrapDropdown_click(cfg.values))
+                    );
+            }
+        },
+        
         _bootstrapDatepicker_click: function(config) {
             var $doc = js.dom(document.documentElement),
                 
@@ -411,70 +451,220 @@ jspyder.extend.fn("form", function () {
                     "</div>"
                 ].join(''),
                 
-                $date = js.date(config.value, config.format),
+                format = js.alg.string(config.format, "dd-mmm-yyyy"),
                 
-                // list of months
-                months = config.months || $date.getMonthList("mmm"),
-
-                moCalendar = "";
+                pause = true,
+                preventClose = function() { pause = true; },
+                enableClose = function() { pause = false; },
                 
-            js.alg.each(months, function(month, i) {
-                moCalendar += "<div class=\"month\" value=\"" + i + "\">" + month + "</div>";
-            });
+                calStruct = {
+                    dom: null,
+                    title: null,
+                    tiles: null,
+                    prev: null,
+                    next: null,
+                    input: null,
+                    today: js.date(),
+                    date: js.date(config.value, config.format),
+                    
+                    navMonth: false,
+                    
+                    titleMonth: "mmm yyyy",
+                    titleYear: "yyyy", 
+                    
+                    clear: function() {
+                        this.dom && this.dom.remove();
+                        this.dom = null;
+                        this.title = null;
+                        this.tiles = null;
+                        this.prev = null;
+                        this.next = null;
+                        this.input = null;
+                        this.navMonth = false;
+                        this.today = js.date();
+                        return this;
+                    },
+                    load: function(jsdom) {
+                        this.today = js.date();
+                        this.dom = jsdom;
+                        this.title = jsdom.find(".date-picker-title");
+                        this.tiles = jsdom.find(".calendar-tiles");
+                        this.prev = jsdom.find(".date-picker-prev");
+                        this.next = jsdom.find(".date-picker-next");
+                        return this;
+                    },
+                    setTitle: function() {
+                        this.title.setHtml(
+                            this.date.asString(
+                                this.navMonth ? this.titleMonth : this.titleYear));
+                                
+                        this.input.setValue(this.date.asString(format));
+                        return this;
+                    },
+                    setTiles: function(data) {
+                        this.tiles.setHtml(data);
+                        return this;
+                    },
+                    enableClose: enableClose
+                };
+            
+            function __dom_internal() {
+                this.on("click", preventClose);
+                
+                preventClose();
+                
+                calStruct
+                    .load(this)
+                    .setTitle(calStruct.titleYear);
+                
+                js_form.fn._bootstrapDatepicker_click_monthlist(calStruct);
+                    
+                calStruct.prev
+                    .on("click", function __prevClick(event) {
+                        js_form.fn._bootstrapDatepicker_click_prevnextnav(calStruct, -1);
+                    });
+                    
+                calStruct.next
+                    .on("click", function __nextClick(event) {
+                        js_form.fn._bootstrapDatepicker_click_prevnextnav(calStruct, 1);
+                    });
+            }
+            
+            function __docClick(event) {
+                if(pause) { return enableClose(); }
+                calStruct.clear();
+                $doc.off("click", __docClick);
+            }
             
             return function(event) {
-                var $calendar = js.dom(calendar, function() {
-                    
-                    var $title = this.find(".date-picker-title"),
-                        $tiles = this.find(".calendar-tiles"),
-                        $prev = this.find(".date-picker-prev"),
-                        $next = this.find(".date-picker-next");
-                    
-                    this.on("click", function(event) { pause = true; });
-                    $title.setHtml($date.asString("yyyy"));
-                    
-                    $tiles
-                        .append(moCalendar)
-                        .find(".month")
-                            .on("click", function(event) {
-                                js.dom(this)
-                                    .getValue(function(v) {
-                                        console.log("Month: " + v);
-                                        $date.setMonth(v);
-                                        var dCalendar = "";
-                                        js.alg.each($date.getDayList("d"), function (day, i) {
-                                            dCalendar += "<div class=\"date\" value=\"" + i + "\">" + day + "</div>";
-                                        });
-                                        $tiles.setHtml(dCalendar);
-                                    });
-                            });
-                    
-                    $prev
-                        .on("click", function (event) {
-                            pause = true;
-                            $title.setHtml($date.addYears(-1).asString("yyyy"));
-                        });
-                    
-                    $next
-                        .on("click", function(event) {
-                            pause = true;
-                            $title.setHtml($date.addYears(1).asString("yyyy"));
-                        });
-                });
+                calStruct.clear();
+                calStruct.input = js.dom(this);
                 
-                js.dom(this.parentNode).append($calendar);
+                calStruct.date.setDate(this.value || config.value || config.default || new Date(), format);
                 
-                var pause = true;
+                js.dom(calendar, __dom_internal);
                 
-                $doc.on("click", function click(event) {
-                    if(pause) { return (pause = false); }
-                    $calendar.remove();
-                    $calendar = null;
-                    $doc.off("click", click);
-                });
+                js.dom(this.parentNode).append(calStruct.dom);
+                
+                $doc.on("click", __docClick);
                     
                 return;
             };
+        },
+        
+        _bootstrapDatepicker_click_prevnextnav: function(calStruct, val) {
+            calStruct.date[ calStruct.navMonth ? "addMonths" : "addYears" ](val);
+            calStruct.setTitle();
+            if(calStruct.navMonth) {
+                js_form.fn._bootstrapDatepicker_click_monthlist_click(calStruct);
+            }
+            else {
+                js_form.fn._bootstrapDatepicker_click_monthlist(calStruct);
+            }
+            return;
+        },
+        
+        // builds month list and attaches it to the dom
+        _bootstrapDatepicker_click_monthlist: function(calStruct) {
+            calStruct.months = "";
+            
+            js.alg.arrEach(
+                calStruct.date.getMonthList("mmm"), 
+                js_form.fn._bootstrapDatepicker_click_monthlist_internal, 
+                calStruct);
+            
+            calStruct.setTiles(calStruct.months);
+            calStruct.tiles
+                .find(".month")
+                .on("click", function __monthClick(event) {
+                    js.dom(this).getValue(function(v) {
+                        calStruct.date.setMonth(v);
+                        js_form.fn._bootstrapDatepicker_click_monthlist_click(calStruct);
+                    });
+                });
+                
+            return;
+        },
+        // builds month list
+        _bootstrapDatepicker_click_monthlist_internal: function(month, monthnum, months, data) {
+            var sameYear = data.today.getYear() === data.date.getYear(),
+                sameMonth = (monthnum + 1) === data.today.getMonth(); 
+                
+            data.months += [
+                "<div class=\"month ", (( sameYear && sameMonth ) ? "today" : ""), "\"",
+                    " value=\"", (monthnum + 1), "\">",
+                    month,
+                "</div>"
+            ].join('');
+            
+            return;
+        },
+        
+        // assigns month value within the month's click event
+        _bootstrapDatepicker_click_monthlist_click: function(calStruct) {
+            calStruct.today = js.date();
+            var weekdays = calStruct.date.getWeekdayList("DD"),
+                daylist = calStruct.date.getDayList("d"),
+                i = 0,
+                data = { 
+                    html: "", 
+                    wlen: weekdays.length,
+                    offset: calStruct.date.getWeekdayOffset(),
+                    calStruct: calStruct,
+                    today: (calStruct.today.getMonth() === calStruct.date.getMonth()) && (js.date().getDay()) };
+            
+            js.alg.arrEach(
+                weekdays, 
+                js_form.fn._bootstrapDatepicker_click_daylist_weekdays, 
+                data);
+                
+            for(i; i < data.offset; i++) {
+                js_form.fn._bootstrapDatepicker_click_daylist_numbered(
+                    "", i - data.offset, null, data);
+            }
+            
+            js.alg.arrEach(
+                daylist, 
+                js_form.fn._bootstrapDatepicker_click_daylist_numbered, 
+                data);
+            
+            calStruct.navMonth = true;
+            calStruct.setTiles(data.html);
+            calStruct.tiles.find(".date").on("click", function(event) {
+                js.dom(this).getValue(function(v) {
+                    calStruct.date.setDay(v);
+                    calStruct.setTitle();
+                });
+                calStruct.enableClose();
+            });
+            calStruct.setTitle();
+            return;
+        },
+        
+        _bootstrapDatepicker_click_daylist_weekdays: function(weekday, daynum, daylist, data) {
+            data.html += [
+                "<div class=\"date-title date-title-index-", (daynum + 1),
+                    "\" style=\"width:", (100 / data.wlen),"%\">",
+                    weekday,
+                "</div>"
+            ].join('');
+            return;
+        },
+        _bootstrapDatepicker_click_daylist_numbered: function (day, daynum, daylist, data) {
+            var sameYear = data.calStruct.today.getYear() === data.calStruct.date.getYear(),
+                sameMonth = data.calStruct.today.getMonth() === data.calStruct.date.getMonth(),
+                sameDate = data.calStruct.today.getDay() === (daynum + 1);
+                    
+            data.html += [
+                "<div class=\"date ", (sameYear && sameMonth && sameDate ? "today":"") ,"\" value=\"", (daynum + 1), "\" ",
+                    "style=\"",
+                        "width:", (100 / data.wlen), "%;",
+                        js.alg.bool(daylist) ? "" : "visibility: hidden;",
+                    "\">",
+                    day,
+                "</div>"
+            ].join('');
+            return;
         },
 
         /**
@@ -551,7 +741,7 @@ jspyder.extend.fn("form", function () {
             var value = [];
                 
             if ($checkboxes) {
-                $checkboxes.each(function (checkbox) {
+                $checkboxes.arrEach(function (checkbox) {
                     if ((checkbox instanceof HTMLInputElement)
                         && (checkbox.getAttribute("type") === "checkbox")
                         && (checkbox.checked)) {
@@ -586,6 +776,23 @@ jspyder.extend.fn("form", function () {
          *      parameters.
          */
         submit: function(onSuccess, onFail) {
+            onSuccess = (typeof onSuccess === "function" ? onSuccess : this._submit);
+            onFail = (typeof onFail === "function" ? onFail : this._failed);
+            
+            this.validate(function(valid, invalid) {
+                if(invalid) {
+                    onFail.apply(this, [valid, invalid]);
+                    console.log("FAILED");
+                }
+                else {
+                    onSuccess.apply(this, [valid, invalid]);
+                    console.log("SUBMITTED");
+                }
+                    console.table(valid);
+                    console.table(invalid);
+                return;
+            });
+            
             return this;
         },
         
@@ -606,8 +813,7 @@ jspyder.extend.fn("form", function () {
         /**
          * @method
          * 
-         * Triggers a manual form reset.  This will turn all of the form fields
-         * back to their initial values on creation.
+         * Triggers a manual form validation.
          * 
          * @param {Function} [fn]
          *      Optional callback to execute after the validation has been 
@@ -615,6 +821,33 @@ jspyder.extend.fn("form", function () {
          *      parameters.
          */
         validate: function(fn) {
+            var form = this,
+                valid = null,
+                invalid = null,
+                _copyInto = function(b,n) { 
+                    o = b 
+                        ? valid || (valid = {}) 
+                        : invalid || (invalid = {});
+                         
+                    return function(v) { o[n] = v; } };
+                
+            this.each(function(field, name) {
+                switch(typeof field.validate) {
+                    case "function":
+                        field.field.getValue(_copyInto(field.validate(form), name));
+                        break;
+                    case "boolean":
+                        field.field.getValue(_copyInto(field.validate, name));
+                        break;
+                    default:
+                        field.field.getValue(_copyInto(true, name));
+                        break;
+                }
+                return;
+            });
+            
+            fn.apply(this, [valid, invalid]);
+            
             return this;
         },
         

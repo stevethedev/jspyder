@@ -274,11 +274,14 @@ label {
                 padding: .6em;
             }
             
-            .date {
-                width: 100%/7;
+            // .date {
+            //     width: (100% / 7);
+            // }
+            .date-title {
+                background-color: rgba($color-divider, .3);
             }
             
-            .month, .date {
+            .month, .date, .date-title {
                 border: (1em/16) solid transparent;
                 transition: border-color .2s, color .2s;
                 display: inline-block;
@@ -289,11 +292,15 @@ label {
                     border-color: $color-primary;
                     color: $color-primary;
                 }
+                
+                &.active {
+                    background-color: rgba($color-info-background, .3);
+                }
+                &.today {
+                    border-color: $color-info-background;
+                }
             }
             
-            .active {
-                background-color: $color-info-background;
-            }
         }
     }
 }

@@ -86,8 +86,8 @@ jspyder.extend.fn("date", function () {
                 clone = this.clone();
                 
             return (
-                offset > clone.setMonth(0).utcOffset() ||
-                offset > clone.setMonth(5).utcOffset());
+                offset > clone.setMonth(1).utcOffset() ||
+                offset > clone.setMonth(6).utcOffset());
         },
         
         /**
@@ -213,6 +213,47 @@ jspyder.extend.fn("date", function () {
                     .asString("d"));
         },
         
+        getWeekdayList: function(format) {
+            format = js.alg.string(format, "dddd");
+            
+            var count = this.getWeekdayCount(),
+                w = 0,
+                weekday = null,
+                weekdays = [];
+                
+            for (w; w < count; w++) {
+                weekday = __weekdays[w];
+                weekdays.push(typeof weekday[format] === "undefined" 
+                    ? format 
+                    : weekday[format]); 
+            }
+            
+            return weekdays;
+        },
+        
+        getWeekdayCount: function() {
+            return js.alg.number(__weekdays.length, 0);
+        },
+        
+        getWeekdayOffset: function() {
+            var data = { 
+                    str: this.clone().setDay(1).asString("dddd"), 
+                    found: 0
+                };
+                
+            js.alg.arrEach(this.getWeekdayList(), this._getWeekdayOffset, data);
+            
+            return js.alg.number(data.found, 0);
+        },
+        
+        _getWeekdayOffset: function(day, daynum, days, data) {
+            if(day === data.str) {
+                data.found = daynum;
+                this.stop();
+            }
+            return;
+        },
+        
         /**
          * @method
          * 
@@ -222,12 +263,12 @@ jspyder.extend.fn("date", function () {
             this._value.setMonth(this._value.getMonth() + js.alg.number(months));
             return this;
         },
-        setMonth: function (months) {
-            this._value.setMonth(js.alg.number(months));
+        setMonth: function (month) {
+            this._value.setMonth(js.alg.number(month) - 1);
             return this;
         },
         getMonth: function () {
-            return this._value.getMonth();
+            return this._value.getMonth() + 1;
         },
         getMonthList: function (format) {
             var data = { 
@@ -235,12 +276,12 @@ jspyder.extend.fn("date", function () {
                 "f": js.alg.string(format, "mmmm"),
                 "c": this.clone() };
             
-            js.alg.each(__months, this._getMonthList_each, data);
+            js.alg.arrEach(__months, this._getMonthList_each, data);
             
             return data.a;
         },
         _getMonthList_each: function (monthDef, i, months, ctx) {
-            ctx.c.setMonth(i);
+            ctx.c.setMonth(i + 1);
             ctx.a.push(ctx.c.asString(ctx.f));
             return;
         },
@@ -324,7 +365,7 @@ jspyder.extend.fn("date", function () {
             "MMMM", "MMM", "MM", "M", 
             "mmmm", "mmm", "mm", "m",
             "dddd", "ddd", "dd", "d",
-            "DDDD", "DDD", "DD", "D",
+            "DDDD", "DDD", "DD", "D", "W",
             "AM", "am", 
             "HH", "H", "hh", "h", 
             "NN", "N", "nn", "n", 
@@ -531,7 +572,7 @@ jspyder.extend.fn("date", function () {
             val = {},
             rev = {};
             
-        js.alg.each(from, function(collection, i) {
+        js.alg.arrEach(from, function(collection, i) {
             var cs = collection[style];
             if (cs) {
                 reArray.push(cs);
@@ -572,7 +613,7 @@ jspyder.extend.fn("date", function () {
         var format = js.alg.string(f),
             d = { y: 0, m: 0, d: 1, h: 0, n: 0, s: 0, a: 0 };
         
-        js.alg.each(format.match(__reSearch), function(match) {
+        js.alg.arrEach(format.match(__reSearch), function(match) {
             // get the collection
             var collection = __formatCollection[match];
             if(!collection) { return match; }
@@ -647,7 +688,7 @@ jspyder.extend.fn("date", function () {
         };
         
         var left = "", right = format;
-        js.alg.each(format.match(__reSearch), function(match) {
+        js.alg.arrEach(format.match(__reSearch), function(match) {
             // get the collection
             var collection = __formatCollection[match];
             if(!collection) { return match; }
