@@ -333,7 +333,7 @@
          */
         js_alg = {
 
-<span id='jspyder-alg-method-each'>            /**
+<span id='jspyder-alg-method-'>            /**
 </span>             * Iterates through a provided object and executes fn() on each
              * step.  Uses a controller to manage the loop.
              * 
@@ -361,18 +361,43 @@
              * 
              * @return {Object} JSpyder 
              */
+            // each: function each(obj, fn, data) {
+            //     return (typeof obj.length === &quot;number&quot;
+            //         ? js_alg.eachArray(obj, fn, data)
+            //         : js_alg.eachObj(obj, fn, data));
+            // },
+            
             each: function each(obj, fn, data) {
                 var ctl = {
-                    &quot;stop&quot;: function () {
-                        _break = false;
-                    }
-                },
+                        &quot;stop&quot;: function () {
+                            _break = false;
+                        }
+                    },
                     _break = false;
 
                 if (obj &amp;&amp; typeof obj === &quot;object&quot;) {
                     for (var i in obj) {
                         fn.apply(ctl, [obj[i], i, obj, data]);
                         if (_break) {
+                            break;
+                        }
+                    }
+                }
+
+                return js;
+            },
+            arrEach: function each(obj, fn, data) {
+                var ctl = {
+                        &quot;stop&quot;: function () {
+                            _break = false;
+                        }
+                    },
+                    _break = false;
+
+                if (obj &amp;&amp; typeof obj === &quot;object&quot;) {
+                    for(var i = 0; i &lt; obj.length; i++) {
+                        fn.apply(ctl, [obj[i], i, obj, data]);
+                        if(_break) {
                             break;
                         }
                     }
@@ -412,7 +437,15 @@
 <span id='jspyder-alg-method-bool'>            /**
 </span>             * Coerces any value to a boolean
              */
-            bool: function bool(b) { return b ? true : false },
+            bool: function bool(b, d) {
+                switch (typeof b) {
+                    case &quot;undefined&quot;:
+                        return d || false;
+                    case &quot;string&quot;:
+                        return (/true/i.test(b));
+                } 
+                return b ? true : false
+            },
             
 <span id='jspyder-alg-method-number'>            /**
 </span>             * Coerces any value to a Javascript Number object
@@ -1055,17 +1088,16 @@
 </span>             * Gets the children of the elements in the node
              * 
              * @param {Function} fn
+             * @param {Mixed} [data]
+             *      Information to pass to the parameter [fn].
              */
-            children: function (fn) {
+            children: function (fn, data) {
                 this.each(function (element, i, elements) {
                     var child = element.firstElementChild;
                     while(child) {
-                        js_dom(child, fn, [child]);
+                        js_dom(child, fn, [child, data]);
                         child = child.nextElementSibling;
                     }
-                    // for (var j = 0; j &lt; element.children.length; j++) {
-                    //     js_dom(element.children[j], fn, [element.children[j]]);
-                    // }
                 });
                 return this;
             },
@@ -1366,6 +1398,42 @@
                 return $found;
             },
             
+            filter: function (cssSelector) {
+                var $found = js.dom(),
+                    _found = $found._element;
+                    
+                this.each(function (element) {
+                    if (js_dom.fn._matches(element, cssSelector)) {
+                        _found.push(element);
+                    }
+                });
+                
+                return $found;
+            },
+            _matches: function (element, selector) {
+                var fn = &quot;&quot;;
+                if(element.matches) { fn = &quot;matches&quot;; }
+                else if (element.matchesSelector) { fn = &quot;matchesSelector&quot;; }
+                else if (element.msMatchesSelector) { fn = &quot;msMatchesSelector&quot;; }
+                else if (element.mozMatchesSelector) { fn = &quot;mozMatchesSelector&quot;; }
+                else if (element.webkitMatchesSelector) { fn = &quot;webkitMatchesSelector&quot;; }
+                else if (element.oMatchesSelector) { fn = &quot;oMatchesSelector&quot;; }
+                else {
+                    // polyfill from MDN
+                    js_dom.fn._matches = function (element, selector) {
+                        var matches = (element.document || element.ownerDocument).querySelectorAll(selector),
+                            i = matches.length;
+                        while (--i &gt;= 0 &amp;&amp; matches.item(i) !== element);
+                        return i &gt; -1;
+                    }
+                }
+                
+                js_dom.fn._matches = function (element, selector) {
+                    return fn &amp;&amp; element[fn](selector);
+                }
+                return this._matches(element, selector);
+            },
+            
 <span id='jspyder-dom-method-and'>            /**
 </span>             * Adds the specified elements to this selection.  Takes the same
              * selection format as jspyder.dom.
@@ -1459,12 +1527,38 @@
                 }).use(fn);
             },
             
+            setOverride: function(name, fn) {
+                this.each(function(element) {
+                    element.__jspyder.override = (element.__jspyder.override || {});
+                    element.__jspyder.override[name] = fn; 
+                });
+                return this;
+            },
+            getOverride: function(name) {
+                var fn = null;
+                this.each(function(element) {
+                    if(element.__jspyder.override &amp;&amp; element.__jspyder.override[name]) {
+                        fn = element.__jspyder.override[name];
+                        this.stop();
+                    }
+                });
+                return fn;
+            },
+            
 <span id='jspyder-dom-method-getValue'>            /**
 </span>             * Gets the value of the wrapped elements
              */
             getValue: function(fn) {
                 var self = this;
                 return self.each(function(element) {
+                    var $me = js.dom(element),
+                        override = $me.getOverride(&quot;getValue&quot;);
+                        
+                    if(override) {
+                        $me.use(override, [fn]);
+                        return;
+                    }
+                    
                     var value = (typeof element.value !== &quot;undefined&quot;
                         ? element.value : element.getAttribute(&quot;value&quot;));
                         
@@ -1477,6 +1571,28 @@
                         self.use(fn, [value]);
                     }
                 });
+            },
+            exportValue: function() {
+                var value = null;
+                this.getValue(function(v) { value = v; });
+                return value;
+            },
+            getProps: function(obj, fn) {
+                this.each(function(element) {
+                    js.alg.each(obj, function(val, name, obj) {
+                        obj[name] = element[name];
+                    });
+                });
+                this.use(fn, [obj]);
+                return this;
+            },
+            setProps: function(obj) {
+                this.each(function(element) {
+                    js.alg.each(obj, function(val, name) {
+                        element[name] = val;
+                    });
+                });
+                return this;
             }
         };
 

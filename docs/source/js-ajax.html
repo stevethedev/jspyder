@@ -77,14 +77,14 @@ jspyder.extend.fn(&quot;ajax&quot;, function () {
      * 
      * Internals for running the AJAX query.
      */
-    function __js_ajax_try(method, url, data, fn) {
+    function __js_ajax_try(method, url, data, fn, context) {
         if (!url) { return this; }
              
         var xhttp = new XMLHttpRequest();
             
         xhttp.onreadystatechange = function xhttp_onreadystatechange() {
             if ((this.readyState === 4) &amp;&amp; (typeof fn === &quot;function&quot;)){
-                fn.apply(js, [this]);
+                fn.apply(js, [this, context]);
             }
             return null;
         };
@@ -146,9 +146,9 @@ jspyder.extend.fn(&quot;ajax&quot;, function () {
          * 
          * Executes the Ajax template as a &quot;GET&quot; call 
          */
-        &quot;get&quot;: function (fn) {
+        &quot;get&quot;: function (fn, context) {
             fn = (typeof fn === &quot;function&quot; ? fn : this.fn);
-            __js_ajax_try(&quot;GET&quot;, this.url, this.data, fn);
+            __js_ajax_try(&quot;GET&quot;, this.url, this.data, fn, context);
             return this;
         },
         
@@ -163,9 +163,9 @@ jspyder.extend.fn(&quot;ajax&quot;, function () {
          * 
          * Executes the Ajax template as a &quot;HEAD&quot; call 
          */
-        &quot;head&quot;: function (fn) {
+        &quot;head&quot;: function (fn, context) {
             fn = (typeof fn === &quot;function&quot; ? fn : this.fn);
-            __js_ajax_try(&quot;HEAD&quot;, this.url, this.data, fn);
+            __js_ajax_try(&quot;HEAD&quot;, this.url, this.data, fn, context);
             return this;
         },
         
@@ -180,9 +180,9 @@ jspyder.extend.fn(&quot;ajax&quot;, function () {
          * 
          * Executes the Ajax template as a &quot;POST&quot; call 
          */
-        &quot;post&quot;: function (fn) {
+        &quot;post&quot;: function (fn, context) {
             fn = (typeof fn === &quot;function&quot; ? fn : this.fn);
-            __js_ajax_try(&quot;POST&quot;, this.url, this.data, fn);
+            __js_ajax_try(&quot;POST&quot;, this.url, this.data, fn, context);
             return this;
         }
     }

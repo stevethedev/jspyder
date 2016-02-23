@@ -108,7 +108,7 @@ jspyder.extend.fn("form", function () {
          *      An object where keys correspond to input names, and values
          *      correspond to the values they are storing.
          */
-        _submit: function (values, invalid) { return this; },
+        _success: function (values, invalid) { return this; },
         
         /**
          * @private
@@ -125,7 +125,7 @@ jspyder.extend.fn("form", function () {
          *      An object of invalid fields where keys correspond to input
          *      names, and values correspond to the values they are storing.
          */
-        _failed: function (values, invalid) { return this; },
+        _failure: function (values, invalid) { return this; },
         
         /**
          * @private
@@ -219,86 +219,25 @@ jspyder.extend.fn("form", function () {
             name = js.alg.string(name, "");
             config = js.alg.object(config, {});
             
-            var $field = js.dom(),
-                cfg = Object.create(js_form.fn.fieldTemplate),
+            var cfg = Object.create(js_form.fn.fieldTemplate),
                 dval = js.alg.string(config.default, ""),
                 val = js.alg.string(config.value, dval),
-                option, i;
+                option, i, $field;
             
             // copy all of the config options over, if they exist.    
-            js.alg.mergeObj(cfg, config);
-            if (config.values) { cfg.values = js.alg.sliceArray(config.values); }
-            cfg.value = val;
-            cfg.default = dval;
-            cfg.name = name;
+            js.alg.mergeObj(cfg, config, {
+                "name": name,
+                "default": dval,
+                "value": val,
+                "values": js.alg.sliceArray(config.values)
+            });
 
-            switch (cfg.type) {
-                case "checkbox":
-                    // js.alg.each(cfg.values, this._createCheckboxes, { $field: $field, cfg: cfg, name: name });
-                    cfg.text && $field.and("<label for=\"" + name + "\">" + cfg.text + "</label>");
-                    for (i = 0; i < config.values.length; i++) {
-                        option = config.values[i];
-                        $field.and(
-                            "<div><input value=\"" + (option.value || option.text) +
-                            "\" name=\"" + name + "\" type=\"checkbox\"" +
-                            " class=\"" + js.alg.string(cfg.class, "") + "\"></input>" +
-                            this._labelHtml(name, js.alg.string(option.text, option.value)),
-                            "</div>");
-                    }
-                    break;
-                    
-                case "radio":
-                    // js.alg.each(cfg.values, this._createCheckboxes, { $field: $field, cfg: cfg, name: name });
-                    cfg.text && $field.and("<label for=\"" + name + "\">" + cfg.text + "</label>");
-                    for (i = 0; i < config.values.length; i++) {
-                        option = config.values[i];
-                        $field.and(
-                            "<div><input value=\"" + (option.value || option.text) +
-                            "\" name=\"" + name + "\" type=\"radio\"" +
-                            " class=\"" + js.alg.string(cfg.class, "") + "\"></input>" +
-                            this._labelHtml(name, js.alg.string(option.text, option.value)),
-                            "</div>");
-                    }
-                    break;
-
-                case "textarea":
-                    $field.and([
-                            this._labelHtml(name, js.alg.string(cfg.text)),
-                            "<textarea name=\"" + name + "\" class=\"" + js.alg.string(cfg.class, "") + "\">"
-                        ].join(''))
-                        .setValue(val);
-                    break;
-
-                case "submit":
-                case "reset":
-                case "button":
-                case "dropdown":
-                case "date":
-                case "hidden":
-                case "input":
-                case "currency":
-                default:
-                    // var tmp = this.templates[cfg.type] || this.templates["input"];
-                    // tmp.apply(this, [$field, cfg]);
-                    $field.and(this.buildControl(config));
-
-                    if (cfg.type === "hidden") {
-                        $field.setCss({ "display": "none !important" });
-                    }
-
-                    if (cfg.type === "autocomplete") {
-                        // do autocomplete stuff (similar to dropdown)
-                    }
-                    
-                    $field.setValue(val);
-
-                    break;
-            }
+            $field = this.buildControl(cfg).setValue(val);
 
             if (!this._fields) {
                 this._fields = {};
             }
-            this._fields[name] = { type: cfg.type, field: $field, section: config.section || null };
+            this._fields[name] = { type: cfg.type, field: $field, validate: cfg.validate };
 
             return this;
         },
@@ -307,19 +246,55 @@ jspyder.extend.fn("form", function () {
             js_form.fn.templates[typename] = constructor;
             return this;
         },
+        registerControlFn: function (typename, preconstructor) {
+            return this.registerControl(typename, js.alg.use(this, preconstructor));
+        },
         buildControl: function (config, nolabel) {
             var tmp = this.templates[config.type] || this.templates["input"],
                 ctl = tmp.apply(this, [config]),
                 fieldname = js.alg.string(config.name),
                 labeltext = js.alg.string(config.text),
-                lbl;
+                uselabel = !js.alg.bool(config.nolabel, nolabel),
+                lbl = this.buildLabel(uselabel && fieldname, uselabel && labeltext);
                 
-            nolabel = js.alg.bool(config.nolabel, nolabel),
-            lbl = js.dom(fieldname && labeltext && !nolabel
-                    ? ["<label for=\"", fieldname, "\">", labeltext, "</label>"].join('')
-                    : "");
+            js.alg.each(config["events"], function(callback, event) { 
+                ctl.on(event, callback);
+            });
                 
             return lbl.and(ctl);
+        },
+        buildLabel: function(fieldname, labeltext) {
+            var html = (fieldname && labeltext
+                    ? ["<label for=\"", fieldname, "\">", labeltext, "</label>"].join('')
+                    : "");
+                    
+            return js.dom(html);
+        },
+        getField: function(name, fn) {
+            var $field = (this._fields || {})[name];
+            
+            if($field) {
+                $field.use(fn, [$field.exportValue()]);
+            }
+            
+            return $field;
+        },
+        getFieldValue: function(name, fn) {
+            var args = [
+                this.exportFieldValue(name)
+            ];
+            js.alg.use(this, fn, args);
+            return this;
+        },
+        exportFieldValue: function(name) {
+            var $field = getField(name)
+                value = "";
+                
+            if($field) {
+                value = $field.exportValue();
+            }
+            
+            return value;
         },
         
         // _labelHtml: function(fieldName, labelText) {
@@ -335,7 +310,7 @@ jspyder.extend.fn("form", function () {
             var html = "";
             switch(fieldType) {
                 case "currency":
-                    html += "<div class=\"js-control currency-prefix\"></div>";
+                    html += "<div class=\"js-control js-control-currency-prefix\"></div>";
                     fieldClass += " data-currency";
                     break;
             }
@@ -346,106 +321,8 @@ jspyder.extend.fn("form", function () {
                     
             return html;
         },
-        _boostrapDropdown_click: function(options) {
-            var $doc = js.dom(document.documentElement);
-            
-            return function (event) {
-                var $self = js.dom(this),
-                    $popout = js.dom("<ul></ul>", function() {
-                        var $popout = this,
-                            option = null,
-                            value = "",
-                            text = "";
-                    
-                        for(var i = 0; i < options.length; i++) {
-                            option = options[i];
-                            text = js.alg.string(option.text, option.value);
-                            value = js.alg.string(option.value, option.text);
-                                
-                            $popout.append([
-                                "<li class=\"item\" value=\"", value,
-                                "\">", text, "</li>"].join(''));
-                        }
-                    })
-                    .setClasses({ "dropdown-selection": true })
-                    .on("click", function(event) {
-                        js.dom(event.target)
-                            .getValue(function(value) {
-                                $self.setValue(value);
-                                return;
-                            })
-                            .getHtml(function(html) {
-                                $self
-                                    .find(".dropdown-text")
-                                    .setHtml(html);
-                            });
-                            
-                        $doc.trigger("click");
-                        event.stopPropagation && event.stopPropagation();
-                        event.stopImmediatePropagation && event.stopImmediatePropagation();
-                    })
-                    .attach(this);
-                
-                var pause = true;
-                
-                $doc.on("click", function click(event) {
-                    if(pause) { return (pause = false); }
-                    $popout.remove();
-                    $popout = null;
-                    $doc.off("click", click);
-                });
-            };
-        },
         
-        templates: {
-            // generic button
-            "button": function($field, cfg) {
-                var html = [
-                        "<div class=\"js-control button ", 
-                            js.alg.string(cfg.class,""), 
-                            "\" name=\"", name, "\">",
-                            (cfg.icon ? "<i class=\"" + cfg.icon + "\"></i>" : ""),
-                            "<span class=\"button-text\">", cfg.text, "</span>",
-                        "</div>"
-                    ].join(''),
-                    
-                    $button = js.dom(html)
-                        .setValue(cfg.value)
-                        .on("click", cfg.click);
-                    
-                $field.and($button);
-                
-                return $button;
-            },
-            
-            // submit value
-            "submit": function($field, cfg) {
-                var $button = js_form.fn.templates["button"]($field, cfg),
-                    $form = this;
-                
-                // submit value
-                $button.on("click", function(event) {
-                    $form.submit();
-                });
-                
-                return $button;
-            },
-            
-            // dropdown value
-            "dropdown": function($field, cfg) {
-                $field
-                    .and(this._labelHtml(cfg.name, js.alg.string(cfg.text)))
-                    .and(js.dom([
-                            "<div name=\"", cfg.name, "\" class=\"input js-control dropdown\"", 
-                                js.alg.string(cfg.class, ""), ">",
-                                "<i class=\"dropdown-arrow arrow-drop-down\"></i>",
-                                "<span class=\"dropdown-text\">", (cfg.value || cfg.default || "&nbsp;"), "</span>",
-                            "</div>"
-                        ].join(''))
-                        .on("click", js_form.fn._boostrapDropdown_click(cfg.values))
-                    );
-            }
-        }, 
+        templates: { }, 
 
         /**
          * @method
@@ -463,20 +340,13 @@ jspyder.extend.fn("form", function () {
             var values = {};
             // js.alg.each(this._fields, this._values, { self: this, values: values });
             
-            var $field, $type, name;
+            var $field, $type, name, _export = function(v) { values[name] = $field; }
             for (name in this._fields) {
                 $field = this._fields[name].field;
                 $type = this._fields[name].type;
                 values[name] = null;
-
-                switch ($type) {
-                    case "checkbox":
-                        values[name] = self._checkboxValue($field);
-                        break;
-                    default:
-                        values[name] = self._genericValue($field);
-                        break;
-                }
+                
+                $field.getValue(_export);
             }
                 
             fn.apply(this, [values]);
@@ -496,20 +366,20 @@ jspyder.extend.fn("form", function () {
          * @return {String}
          *      The value of the element.
          */
-        _genericValue: function ($input) {
-            var value = "";
+        // _genericValue: function ($input) {
+        //     var value = "";
             
-            if ($input) {
-                $input.element(0, function () {
-                    value = this.value;
-                    if (typeof value === "undefined" || value === null) {
-                        value = "";
-                    }
-                });
-            }
+        //     if ($input) {
+        //         $input.element(0, function () {
+        //             value = this.value;
+        //             if (typeof value === "undefined" || value === null) {
+        //                 value = "";
+        //             }
+        //         });
+        //     }
             
-            return value;
-        },
+        //     return value;
+        // },
 
         /**
          * @method
@@ -556,20 +426,16 @@ jspyder.extend.fn("form", function () {
          *      parameters.
          */
         submit: function(onSuccess, onFail) {
-            onSuccess = (typeof onSuccess === "function" ? onSuccess : this._submit);
-            onFail = (typeof onFail === "function" ? onFail : this._failed);
+            onSuccess = (typeof onSuccess === "function" ? onSuccess : this._success);
+            onFail = (typeof onFail === "function" ? onFail : this._failure);
             
             this.validate(function(valid, invalid) {
                 if(invalid) {
                     onFail.apply(this, [valid, invalid]);
-                    console.log("FAILED");
                 }
                 else {
                     onSuccess.apply(this, [valid, invalid]);
-                    console.log("SUBMITTED");
                 }
-                    console.table(valid);
-                    console.table(invalid);
                 return;
             });
             
@@ -701,6 +567,7 @@ jspyder.extend.fn("form", function () {
     };
     
     js_form.registerControl = js_form.fn.registerControl;
+    js_form.registerControlFn = js_form.fn.registerControlFn;
     
     js_form
         .registerControl("input", function (cfg) {
@@ -715,13 +582,196 @@ jspyder.extend.fn("form", function () {
 
             return js.dom(html);
         })
-        .registerControl("date", js.alg.use(null, function () {
+        .registerControlFn("date", function () {
+            var $DOC = js.dom(document.documentElement);
             
-            function __clickFactory(config) {
-                var $doc = js.dom(document.documentElement),
+            function __calStructFactory(config) {
+                var calStruct = Object.create(__calStructFactory.fn);
                 
-                calendar = [
-                    "<div class=\"js-control date-picker\">",
+                calStruct.today = js.date();
+                calStruct.date = js.date(config.value, config.format);
+                calStruct.format = js.alg.string(config.format, calStruct.format);
+                
+                return calStruct;
+            }
+            __calStructFactory.fn = {
+                dom: null,
+                title: null,
+                tiles: null,
+                prev: null,
+                next: null,
+                input: null,
+                today: null,
+                date: null,
+                DOCDOM: js.dom(document.documentElement),
+                
+                navMonth: false,
+                
+                titleMonth: "mmm yyyy",
+                titleYear: "yyyy", 
+                format: "yyyy-mm-dd",
+                
+                clear: function() {
+                    this.dom && this.dom.remove();
+                    this.dom = null;
+                    this.title = null;
+                    this.tiles = null;
+                    this.prev = null;
+                    this.next = null;
+                    this.input = null;
+                    this.navMonth = false;
+                    this.today = js.date();
+                    return this;
+                },
+                load: function() {
+                    var jsdom = js.dom(this.calendarHtml),
+                        self = this;
+                        
+                    this.today = js.date();
+                    this.dom = jsdom;
+                    this.title = jsdom.find(".date-picker-title");
+                    this.tiles = jsdom.find(".calendar-tiles");
+                    this.prev = jsdom.find(".date-picker-prev");
+                    this.next = jsdom.find(".date-picker-next");
+                    
+                    this.prev.on("click", function(event) { self.prevNextClick(-1); });
+                    this.next.on("click", function(event) { self.prevNextClick(1); });
+                    
+                    this.setTitle();
+                    this.monthlistInit();
+                    
+                    jsdom.on("click", this.preventClose);
+                    
+                    return this;
+                },
+                setTitle: function(override) {
+                    var self = this;
+                    
+                    self.title.setHtml(
+                        this.date.asString(
+                            this.navMonth ? this.titleMonth : this.titleYear));
+                            
+                    this.input.getValue(function(v) {
+                        (override || v) && this.setValue(self.date.asString(this.format));
+                    });
+                    
+                    return this;
+                },
+                setTiles: function(data) {
+                    this.tiles.setHtml(data);
+                    return this;
+                },
+                enableClose: function() { this.pause = false; },
+                preventClose: function() { this.pause = true; },
+                prevNextClick: function(val) {
+                    this.date[ this.navMonth ? "addMonths" : "addYears" ](val);
+                    this.setTitle();
+                    if(this.navMonth) {
+                        this.monthClick(this);
+                    }
+                    else {
+                        this.monthlistInit();
+                    }
+                    this.preventClose();
+                    return;
+                },
+                monthlistInit: function() {
+                    var calStruct = this;
+                    this.months = "";
+                
+                    js.alg.arrEach(
+                        this.date.getMonthList("mmm"), 
+                        this.monthlistBuilder, 
+                        this);
+                        
+                    function copyValue(v) {
+                        calStruct.date.setMonth(v);
+                        calStruct.monthClick(calStruct);
+                    }
+                
+                    this.setTiles(calStruct.months);
+                    this.tiles
+                        .find(".month")
+                        .on("click", function __monthClick(event) {
+                            js.dom(this).getValue(copyValue);
+                        });
+                    
+                    return;
+                },
+                monthlistBuilder: function (month, monthnum, months, data) {
+                    var sameYear = data.today.getYear() === data.date.getYear(),
+                        sameMonth = (monthnum + 1) === data.today.getMonth(); 
+                        
+                    data.months += [
+                        "<div class=\"month ", (( sameYear && sameMonth ) ? "today" : ""), "\"",
+                            " value=\"", (monthnum + 1), "\">",
+                            month,
+                        "</div>"
+                    ].join('');
+                    
+                    return;
+                },
+                monthClick: function () {
+                    var calStruct = this;
+                    calStruct.today = js.date();
+                    var weekdays = calStruct.date.getWeekdayList("DD"),
+                        daylist = calStruct.date.getDayList("d"),
+                        i = 0,
+                        data = { 
+                            html: "", 
+                            wlen: weekdays.length,
+                            offset: calStruct.date.getWeekdayOffset(),
+                            calStruct: calStruct,
+                            today: (calStruct.today.getMonth() === calStruct.date.getMonth()) && (js.date().getDay()) };
+                    
+                    js.alg.arrEach(weekdays, calStruct.buildWeekdays, data);
+                        
+                    for(i; i < data.offset; i++) {
+                        this.buildNumberedDays("", i - data.offset, null, data);
+                    }
+                    
+                    js.alg.arrEach(daylist, this.buildNumberedDays, data);
+                    
+                    calStruct.navMonth = true;
+                    calStruct.setTiles(data.html);
+                    calStruct.tiles.find(".date").on("click", function(event) {
+                        js.dom(this).getValue(function(v) {
+                            calStruct.date.setDay(v);
+                            calStruct.setTitle(true);
+                        });
+                        calStruct.enableClose();
+                    });
+                    calStruct.setTitle();
+                    calStruct.preventClose();
+                    return;
+                },
+                buildWeekdays: function (weekday, daynum, daylist, data) {
+                    data.html += [
+                        "<div class=\"date-title date-title-index-", (daynum + 1),
+                            "\" style=\"width:", (100 / data.wlen),"%\">",
+                            weekday,
+                        "</div>"
+                    ].join('');
+                    return;
+                },
+                buildNumberedDays: function (day, daynum, daylist, data) {
+                    var sameYear = data.calStruct.today.getYear() === data.calStruct.date.getYear(),
+                        sameMonth = data.calStruct.today.getMonth() === data.calStruct.date.getMonth(),
+                        sameDate = data.calStruct.today.getDay() === (daynum + 1);
+                            
+                    data.html += [
+                        "<div class=\"date ", (sameYear && sameMonth && sameDate ? "today":"") ,"\" value=\"", (daynum + 1), "\" ",
+                            "style=\"",
+                                "width:", (100 / data.wlen), "%;",
+                                js.alg.bool(daylist) ? "" : "visibility: hidden;",
+                            "\">",
+                            day,
+                        "</div>"
+                    ].join('');
+                    return;
+                },
+                calendarHtml: [
+                    "<div class=\"js-control js-control-date-picker\">",
                         "<div class=\"date-picker-header\">",
                             "<i class=\"chevron-left date-picker-prev\"></i>",
                             "<h4 class=\"date-picker-title\">${YEAR}</h4>",
@@ -729,225 +779,362 @@ jspyder.extend.fn("form", function () {
                         "</div>",
                         "<div class=\"calendar-tiles\"></div>",
                     "</div>"
-                ].join(''),
-                
-                format = js.alg.string(config.format, "dd-mmm-yyyy"),
-                
-                pause = true,
-                preventClose = function() { pause = true; },
-                enableClose = function() { pause = false; },
-                
-                calStruct = {
-                    dom: null,
-                    title: null,
-                    tiles: null,
-                    prev: null,
-                    next: null,
-                    input: null,
-                    today: js.date(),
-                    date: js.date(config.value, config.format),
-                    
-                    navMonth: false,
-                    
-                    titleMonth: "mmm yyyy",
-                    titleYear: "yyyy", 
-                    
-                    clear: function() {
-                        this.dom && this.dom.remove();
-                        this.dom = null;
-                        this.title = null;
-                        this.tiles = null;
-                        this.prev = null;
-                        this.next = null;
-                        this.input = null;
-                        this.navMonth = false;
-                        this.today = js.date();
-                        return this;
-                    },
-                    load: function(jsdom) {
-                        this.today = js.date();
-                        this.dom = jsdom;
-                        this.title = jsdom.find(".date-picker-title");
-                        this.tiles = jsdom.find(".calendar-tiles");
-                        this.prev = jsdom.find(".date-picker-prev");
-                        this.next = jsdom.find(".date-picker-next");
-                        return this;
-                    },
-                    setTitle: function() {
-                        this.title.setHtml(
-                            this.date.asString(
-                                this.navMonth ? this.titleMonth : this.titleYear));
-                                
-                        this.input.setValue(this.date.asString(format));
-                        return this;
-                    },
-                    setTiles: function(data) {
-                        this.tiles.setHtml(data);
-                        return this;
-                    },
-                    enableClose: enableClose
-                };
-            
-            function __dom_internal() {
-                this.on("click", preventClose);
-                
-                preventClose();
-                
-                calStruct
-                    .load(this)
-                    .setTitle(calStruct.titleYear);
-                
-                __monthlist_init(calStruct);
-                    
-                calStruct.prev
-                    .on("click", function __prevClick(event) {
-                        __prevnext_click(calStruct, -1);
-                    });
-                    
-                calStruct.next
-                    .on("click", function __nextClick(event) {
-                        __prevnext_click(calStruct, 1);
-                    });
-            }
-            
-            function __docClick(event) {
-                if(pause) { return enableClose(); }
-                calStruct.clear();
-                $doc.off("click", __docClick);
-            }
-            
-            return function(event) {
-                calStruct.clear();
-                calStruct.input = js.dom(this);
-                
-                calStruct.date.setDate(this.value || config.value || config.default || new Date(), format);
-                
-                js.dom(calendar, __dom_internal);
-                
-                js.dom(this.parentNode).append(calStruct.dom);
-                
-                $doc.on("click", __docClick);
-                    
-                return;
+                ].join('')
             };
-        }
-        
-        function __prevnext_click(calStruct, val) {
-            calStruct.date[ calStruct.navMonth ? "addMonths" : "addYears" ](val);
-            calStruct.setTitle();
-            if(calStruct.navMonth) {
-                __month_click(calStruct);
-            }
-            else {
-                __monthlist_init(calStruct);
-            }
-            return;
-        }
-        
-        // builds month list and attaches it to the dom
-        function __monthlist_init(calStruct) {
-            calStruct.months = "";
             
-            js.alg.arrEach(
-                calStruct.date.getMonthList("mmm"), 
-                __month_builder, 
-                calStruct);
-            
-            calStruct.setTiles(calStruct.months);
-            calStruct.tiles
-                .find(".month")
-                .on("click", function __monthClick(event) {
-                    js.dom(this).getValue(function(v) {
-                        calStruct.date.setMonth(v);
-                        __month_click(calStruct);
-                    });
-                });
+            function __clickFactory(config) {
                 
-            return;
-        }
-        // builds month list
-        function __month_builder(month, monthnum, months, data) {
-            var sameYear = data.today.getYear() === data.date.getYear(),
-                sameMonth = (monthnum + 1) === data.today.getMonth(); 
+                var calStruct = __calStructFactory(config);
                 
-            data.months += [
-                "<div class=\"month ", (( sameYear && sameMonth ) ? "today" : ""), "\"",
-                    " value=\"", (monthnum + 1), "\">",
-                    month,
-                "</div>"
-            ].join('');
-            
-            return;
-        }
-        
-            // assigns month value within the month's click event
-            function __month_click(calStruct) {
-                calStruct.today = js.date();
-                var weekdays = calStruct.date.getWeekdayList("DD"),
-                    daylist = calStruct.date.getDayList("d"),
-                    i = 0,
-                    data = { 
-                        html: "", 
-                        wlen: weekdays.length,
-                        offset: calStruct.date.getWeekdayOffset(),
-                        calStruct: calStruct,
-                        today: (calStruct.today.getMonth() === calStruct.date.getMonth()) && (js.date().getDay()) };
-                
-                js.alg.arrEach(weekdays, __build_weekdays, data);
+                return function(event) {
+                    var dateVal = this.value || config.value || config.default || new Date();
                     
-                for(i; i < data.offset; i++) {
-                    __build_numberedDays("", i - data.offset, null, data);
-                }
-                
-                js.alg.arrEach(daylist, __build_numberedDays, data);
-                
-                calStruct.navMonth = true;
-                calStruct.setTiles(data.html);
-                calStruct.tiles.find(".date").on("click", function(event) {
-                    js.dom(this).getValue(function(v) {
-                        calStruct.date.setDay(v);
-                        calStruct.setTitle();
+                    calStruct.clear();
+                    calStruct.input = js.dom(this);
+                    
+                    calStruct.date.setDate(dateVal, calStruct.format);
+                    
+                    calStruct
+                        .load()
+                        .preventClose();
+                    
+                    js.dom(this.parentNode)
+                        .append(calStruct.dom);
+                    
+                    calStruct.DOCDOM.on("click", function __docClick(event) {
+                        if(calStruct.pause) { return calStruct.enableClose(); }
+                        calStruct.clear();
+                        calStruct.DOCDOM.off("click", __docClick);
                     });
-                    calStruct.enableClose();
-                });
-                calStruct.setTitle();
-                return;
-            }
-        
-            function __build_weekdays(weekday, daynum, daylist, data) {
-                data.html += [
-                    "<div class=\"date-title date-title-index-", (daynum + 1),
-                        "\" style=\"width:", (100 / data.wlen),"%\">",
-                        weekday,
-                    "</div>"
-                ].join('');
-                return;
-            }
-            function __build_numberedDays(day, daynum, daylist, data) {
-                var sameYear = data.calStruct.today.getYear() === data.calStruct.date.getYear(),
-                    sameMonth = data.calStruct.today.getMonth() === data.calStruct.date.getMonth(),
-                    sameDate = data.calStruct.today.getDay() === (daynum + 1);
                         
-                data.html += [
-                    "<div class=\"date ", (sameYear && sameMonth && sameDate ? "today":"") ,"\" value=\"", (daynum + 1), "\" ",
-                        "style=\"",
-                            "width:", (100 / data.wlen), "%;",
-                            js.alg.bool(daylist) ? "" : "visibility: hidden;",
-                        "\">",
-                        day,
-                    "</div>"
-                ].join('');
-                return;
+                    return;
+                };
             }
+            
+            var __override = {
+                type: "input"
+            };
             
             return function (cfg) {
-                var $field = this.buildControl("input");
+                var $datepicker = this.buildControl(js.alg.mergeObj({}, cfg, __override), true);
 
-                $field.filter("input").on("click", __clickFactory(cfg));
+                $datepicker.filter("input").on("click", __clickFactory(cfg));
 
-                return $field;
+                return $datepicker;
             }
-        }))
+        })
+        .registerControlFn("button", function() {
+            function button(cfg) {
+                // ensure that no label is used
+                cfg.nolabel = true;
+                var btnclass = js.alg.string(cfg.class, ""),
+                    btnicon = js.alg.string(cfg.icon, ""),
+                    btntext = js.alg.string(cfg.text, ""),
+                    btnname = js.alg.string(cfg.name, "");
+                
+                var html = [
+                        "<div class=\"js-control js-control-button ", btnclass, "\"",
+                            " name=\"", btnname, "\">",
+                                (btnicon ? "<i class=\"" + btnicon + "\"></i>" : ""),
+                                "<span class=\"button-text\">", btntext, "</span>",
+                        "</div>"
+                    ].join(''),
+                    
+                    $button = js.dom(html)
+                        .setValue(cfg.value)
+                        .on("click", cfg.click);
+                
+                return $button;
+            }
+            
+            return button;
+        })
+        .registerControlFn("submit", function() {
+            
+            function __submitClickFactory(form) {
+                return function __submitClick(event) {
+                    form.submit();
+                    return;
+                }
+            }
+            
+            var __override = {
+                type: "button",
+                nolabel: true
+            };
+            
+            function submit(cfg) {
+                var $button = this.buildControl(js.alg.mergeObj(cfg, __override), true);
+                $button.on("click", __submitClickFactory(this));
+                return $button;
+            }
+            
+            return submit;
+        })
+        .registerControlFn("dropdown", function() {
+            var $DOC = js.dom(document.documentElement);
+            
+            function __dropdownClickFactory(cfg) {
+                function __dropdownClick(event) {
+                    var $dropdown = js.dom(this);
+                    
+                    __createPopout($dropdown, cfg);
+                    
+                    $dropdown = null;
+                }
+                
+                return __dropdownClick;
+            }
+            
+            function __createPopout($dropdown, cfg) {
+                var options = cfg.values,
+                    $popout = js.dom("<ul class=\"dropdown-selection\"></ul>"),
+                    option = null,
+                    livalue = "",
+                    litext = "",
+                    lihtml = "",
+                    pause = true,
+                    i = 0;
+                        
+                for(i; i < options.length; i++) {
+                    option = options[i];
+                    litext = js.alg.string(option.text, option.value);
+                    livalue = js.alg.string(option.value, option.text);
+                    
+                    lihtml = [
+                        "<li class=\"item\" value=\"", livalue, "\">", litext, "</li>"].join('');
+                    
+                    $popout.append(lihtml);
+                }
+                
+                function __copyValue(value) { $dropdown.setValue(value); }
+                function __copyText(text) { $dropdown.find(".dropdown-text").setHtml(text); }
+                
+                $popout.on("click", function __popoutClick(event) {
+                    if(event.target.parentNode === this) {
+                        js.dom(event.target)
+                            .getValue(__copyValue)
+                            .getHtml(__copyText);
+                    }
+                        
+                    $DOC.trigger("click");
+                    event.stopPropagation && event.stopPropagation();
+                    event.stopImmediatePropagation && event.stopImmediatePropagation();
+                })
+                .attach($dropdown);
+                
+                $DOC.on("click", function docclick(event) {
+                    if(pause) { return (pause = false); }
+                    $popout && $popout.remove();
+                    $popout = null;
+                    $dropdown = null;
+                    $DOC.off("click", docclick);
+                })
+            }
+            
+            function dropdown(cfg) {
+                var cfgname = js.alg.string(cfg.name, ""),
+                    cfgclass = js.alg.string(cfg.class, ""),
+                    cfgvalue = js.alg.string(cfg.value, ""),
+                    cfgdefault = js.alg.string(cfg.default, ""),
+                
+                    html = [
+                        "<div name=\"", cfgname, "\"",
+                            " class=\"input js-control js-control-dropdown ", cfgclass, "\">",
+                            "<i class=\"dropdown-arrow arrow-drop-down\"></i>",
+                            "<span class=\"dropdown-text\">", (cfgvalue || cfgdefault || "&nbsp;"), "</span>",
+                        "</div>"
+                    ].join(''),
+                    
+                    $dropdown = js.dom(html);
+                    
+                $dropdown.on("click", __dropdownClickFactory(cfg));
+                
+                return $dropdown;
+            }
+            
+            return dropdown;
+        })
+        .registerControl("textarea", function(cfg) {
+            var cfgname = js.alg.string(cfg.name, ""),
+                cfgclass = js.alg.string(cfg.class, ""),
+                html = [
+                    "<textarea name=\"", cfgname, "\"",
+                        " class=\"input ", cfgclass, "\">",
+                    "</textarea>"
+                ].join('');
+                
+            return js.dom(html);
+        })
+        .registerControl("radio-single", function(cfg) {
+            var cfgtext = js.alg.string(cfg.text, ""),
+                cfgvalue = js.alg.string(cfg.value, ""),
+                cfgname = js.alg.string(cfg.name, ""),
+                cfgclass = js.alg.string(cfg.class, ""),
+                html = [
+                    "<input value=\"", cfgvalue, "\"",
+                        " name=\"", cfgname, "\"",
+                        " type=\"radio\"",
+                        " class=\"", cfgclass, "\">",
+                    "</input>"
+                ].join('');
+            
+            return js.dom(html).and(this.buildLabel(cfgname, cfgtext));
+        })
+        .registerControl("radio", function(cfg) {
+            var cfgtext = js.alg.string(cfg.text, ""),
+                cfgvalue = js.alg.string(cfg.value, ""),
+                cfgname = js.alg.string(cfg.name, ""),
+                cfgclass = js.alg.string(cfg.class, ""),
+                options = cfg.values || [],
+                option = null,
+                $option = null,
+                $radio = js.dom(), 
+                i = 0;
+                
+            for(i; i < options.length; i++) {
+                option = js.alg.mergeObj({ 
+                    "name": cfgname, 
+                    "class": cfgclass }, options[i]);
+                option.type = "radio-single";
+                option.class = cfgclass;
+                $option = js.dom("<div></div>").append(this.buildControl(option, true));
+                $radio.and($option);
+            }
+            
+            return $radio;
+        })
+        .registerControlFn("checkbox-single", function() {
+            function checkbox(cfg) {
+                var cfgtext = js.alg.string(cfg.text, ""),
+                    cfgvalue = js.alg.string(cfg.value, ""),
+                    cfgname = js.alg.string(cfg.name, ""),
+                    cfgclass = js.alg.string(cfg.class, ""),
+                    html = [
+                        "<input value=\"", cfgvalue, "\"",
+                            " name=\"", cfgname, "\"",
+                            " type=\"checkbox\"",
+                            " class=\"", cfgclass, "\">",
+                        "</input>"
+                    ].join(''),
+                    $checkbox = js.dom(html).and(this.buildLabel(cfgname, cfgtext));
+                    
+                return $checkbox;
+            }
+            return checkbox;
+        })
+        .registerControlFn("checkbox", function() {
+            
+            function __getValue(fn) {
+                var value = [];
+                
+                var props = { checked: false };
+                    
+                this.find("input[type=checkbox]")
+                    .each(function(input) {
+                        js.dom(input)
+                            .getProps(props)
+                            .getAttrs({ "value": "" }, function(attrs) {
+                                if(props.checked) {
+                                    value.push(attrs["value"]);
+                                }
+                                return;
+                            });
+                    });
+                
+                this.use(fn, [value]);
+                return this;
+            }
+            
+            function checkbox(cfg) {
+                var cfgtext = js.alg.string(cfg.text, ""),
+                    cfgvalue = js.alg.string(cfg.value, ""),
+                    cfgname = js.alg.string(cfg.name, ""),
+                    cfgclass = js.alg.string(cfg.class, ""),
+                    options = cfg.values || [],
+                    option = null,
+                    $option = null,
+                    $checkbox = js.dom(),
+                    values = {},
+                    i = 0;
+                    
+                for(i; i < options.length; i++) {
+                    option = js.alg.mergeObj({ 
+                        "name": cfgname, 
+                        "class": cfgclass }, options[i]);
+                    option.type = "checkbox-single";
+                    option.class = cfgclass;
+                    $option = js.dom("<div></div>").append(this.buildControl(option, true));
+                    $checkbox.and($option);
+                    $option.find("input").on("change", function(event) {
+                        var checked = this.checked;
+                        js.dom(this).getValue(function(v) {
+                            values["val-" + js.alg.string(v)] = checked;
+                        });
+                    });
+                }
+                
+                $checkbox.setOverride("getValue", function(fn) {
+                    var keys = [];
+                    for(var key in values) {
+                        if(values[key]) { keys.push(key.substring(4)); }
+                    }
+                    this.use(fn, [keys]);
+                    return this;
+                });
+                
+                return $checkbox;
+            }
+            
+            return checkbox;
+        })
+        .registerControlFn("hidden", function() {
+            var __override = {
+                    nolabel: true,
+                    type: "input"
+                },
+                __css = { "display": "none" };
+            
+            function hidden(cfg) {
+                cfg = js.alg.mergeObj({}, cfg, __override);
+                return this.buildControl(cfg, true).setCss(__css);
+            }
+            
+            return hidden;
+        })
+        .registerControlFn("autocomplete", function() {
+            var __override = {
+                    type: "input"
+                };
+            
+            function autocomplete(cfg) {
+                cfg = js.alg.merge({}, cfg, __override);
+                var $autocomplete = this.buildControl(cfg, true);
+                return $autocomplete;
+            }
+            
+            return autocomplete;
+        })
+        .registerControlFn("currency", function() {
+            var __override = {
+                    type: "input",
+                },
+                __attrs = {
+                    "data-type": "currency"
+                };
+            
+            function currency(cfg) {
+                cfg = js.alg.mergeObj({}, cfg, __override, {
+                    "class": js.alg.string(cfg.class, "") + " data-currency"
+                });
+                var $input = this.buildControl(cfg, true).setAttrs(__attrs),
+                    prefix = "<div class=\"js-control js-control-currency-prefix\"></div>";
+                    
+                return js.dom(prefix).and($input);
+            }
+            
+            return currency;
+        })
      
     return js_form;
  });

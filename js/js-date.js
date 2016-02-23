@@ -644,12 +644,12 @@ jspyder.extend.fn("date", function () {
                 case "MMM":
                 case "mmmm":
                 case "mmm":
-                    value = values[value];
+                    value = values[value] + 1;
                 case "MM":
                 case "mm":
                 case "M":
                 case "m":
-                    d["m"] = js.alg.number(value);
+                    d["m"] = js.alg.number(value) - 1;
                     break;
                 
                 // date

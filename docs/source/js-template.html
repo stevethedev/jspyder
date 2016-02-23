@@ -292,8 +292,68 @@ jspyder.extend.fn(&quot;template&quot;, function () {
          *      to remove the template from storage.
          */
         storeTemplate: function (name, template) {
-            _templates.stash(name, (template || &quot;&quot;).toString());
+            template = js.alg.string(template, &quot;&quot;);
+            template = template.replace(/\&lt;\!\-\-[^\&lt;]+\-\-\&gt;/g, &quot;&quot;);
+            _templates.stash(name, template);
             return this;
+        },
+        
+<span id='jspyder-template-method-storeTemplateXml'>        /**
+</span>         * @member jspyder.template
+         * 
+         * Loads templates from the specified XML file, using the following 
+         * format:
+         * 
+         * ```#!xml
+         * &lt;templates&gt;
+         *   &lt;template name=&quot;template-name&quot;&gt;
+         *     Template Contents
+         *   &lt;/template&gt;
+         * &lt;/templates&gt;
+         * ```
+         * 
+         * This function requires jspyder.ajax to function
+         * 
+         * @param {String} filename
+         *      The URL to the template file, to be called via AJAX
+         * 
+         * @param {Function} [fn]
+         *      The callback function to execute after the template is loaded.
+         */
+        storeTemplateXml: function (filename, fn) {
+            var errorMsg = &quot;Attempted to call jspyder.template.storeTemplateXml() without loading jspyder.ajax module!&quot;;
+            filename = js.alg.string(filename);
+                
+            if (js.ajax) {
+                var data = {
+                    // self: this,
+                    xmls: new XMLSerializer(),
+                    fn: fn
+                };
+                    
+                js.ajax(filename)
+                    .get(js_template.fn._storeTemplateXml_ajax, data);
+            }
+            else {
+                js.log.error(errorMsg);
+            }
+            return this;
+        },
+        
+<span id='jspyder-template-method-_storeTemplateXml_ajax'>        /** @private */
+</span>        _storeTemplateXml_ajax: function (xhttp, data) {
+            var $xml = js.dom(xhttp.responseXML.firstChild);
+            $xml.children(js_template.fn._storeTemplateXml_children, data);
+            js.alg.run(data.fn);
+        },
+        
+<span id='jspyder-template-method-_storeTemplateXml_children'>        /** @private */
+</span>        _storeTemplateXml_children: function (child, data) {
+            js_template.fn.storeTemplate(
+                child.getAttribute(&quot;name&quot;),
+                data.xmls.serializeToString(child)
+                    .replace(/\&lt;[\/]?template[^\&gt;]*\&gt;/g, &quot;&quot;));
+            return;
         },
         
 <span id='jspyder-template-method-getTemplate'>        /**
@@ -350,6 +410,7 @@ jspyder.extend.fn(&quot;template&quot;, function () {
     };
 
     js_template.storeTemplate = js_template.fn.storeTempate;
+    js_template.storeTemplateXml = js_template.fn.storeTemplateXml;
     js_template.getTemplate = js_template.fn.getTemplate;
     js_template.compile = js_template.fn.compile;
     js_template.compileExplicit = js_template.fn.compileExplicit;

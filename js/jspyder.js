@@ -1510,12 +1510,38 @@
                 }).use(fn);
             },
             
+            setOverride: function(name, fn) {
+                this.each(function(element) {
+                    element.__jspyder.override = (element.__jspyder.override || {});
+                    element.__jspyder.override[name] = fn; 
+                });
+                return this;
+            },
+            getOverride: function(name) {
+                var fn = null;
+                this.each(function(element) {
+                    if(element.__jspyder.override && element.__jspyder.override[name]) {
+                        fn = element.__jspyder.override[name];
+                        this.stop();
+                    }
+                });
+                return fn;
+            },
+            
             /**
              * Gets the value of the wrapped elements
              */
             getValue: function(fn) {
                 var self = this;
                 return self.each(function(element) {
+                    var $me = js.dom(element),
+                        override = $me.getOverride("getValue");
+                        
+                    if(override) {
+                        $me.use(override, [fn]);
+                        return;
+                    }
+                    
                     var value = (typeof element.value !== "undefined"
                         ? element.value : element.getAttribute("value"));
                         
@@ -1528,6 +1554,28 @@
                         self.use(fn, [value]);
                     }
                 });
+            },
+            exportValue: function() {
+                var value = null;
+                this.getValue(function(v) { value = v; });
+                return value;
+            },
+            getProps: function(obj, fn) {
+                this.each(function(element) {
+                    js.alg.each(obj, function(val, name, obj) {
+                        obj[name] = element[name];
+                    });
+                });
+                this.use(fn, [obj]);
+                return this;
+            },
+            setProps: function(obj) {
+                this.each(function(element) {
+                    js.alg.each(obj, function(val, name) {
+                        element[name] = val;
+                    });
+                });
+                return this;
             }
         };
 

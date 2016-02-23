@@ -275,7 +275,9 @@ jspyder.extend.fn("template", function () {
          *      to remove the template from storage.
          */
         storeTemplate: function (name, template) {
-            _templates.stash(name, (template || "").toString());
+            template = js.alg.string(template, "");
+            template = template.replace(/\<\!\-\-[^\<]+\-\-\>/g, "");
+            _templates.stash(name, template);
             return this;
         },
         
