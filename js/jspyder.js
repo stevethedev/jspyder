@@ -1381,6 +1381,33 @@
                 return $found;
             },
             
+            filter: function (cssSelector) {
+                var $found = js.dom(),
+                    _found = $found._element;
+                    
+                this.each(function (element) {
+                    if (js_dom.fn._matches(element, cssSelector)) {
+                        _found.push(element);
+                    }
+                });
+                
+                return $found;
+            },
+            _matches: function (element, selector) {
+                var fn = "";
+                if (element.matchesSelector) { fn = "matchesSelector"; }
+                else if (element.msMatchesSelector) { fn = "msMatchesSelector"; }
+                else if (element.mozMatchesSelector) { fn = "mozMatchesSelector"; }
+                else if (element.webkitMatchesSelector) { fn = "webkitMatchesSelector"; }
+                else if (element.oMatchesSelector) { fn = "oMatchesSelector"; }
+                else { }
+                
+                js_dom.fn._matches = function (element, selector) {
+                    return fn && element[fn](selector);
+                }
+                return this._matches(element, selector);
+            },
+            
             /**
              * Adds the specified elements to this selection.  Takes the same
              * selection format as jspyder.dom.

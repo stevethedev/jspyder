@@ -273,23 +273,14 @@ jspyder.extend.fn("form", function () {
                 case "reset":
                 case "button":
                 case "dropdown":
-                    
-                    this.templates[cfg.type] && this.templates[cfg.type].apply(this, [$field, cfg]);
-                    break;
-                    
                 case "date":
                 case "hidden":
                 case "input":
                 case "currency":
                 default:
-                    var textline = js.dom(this._textlineHtml(name, cfg.class, cfg.type)); 
-                    $field
-                        .and(this._labelHtml(name, js.alg.string(cfg.text)))
-                        .and(textline);
-                    
-                    if (cfg.type === "date") {
-                        textline.on("click", this._bootstrapDatepicker_click(config));
-                    }
+                    // var tmp = this.templates[cfg.type] || this.templates["input"];
+                    // tmp.apply(this, [$field, cfg]);
+                    $field.and(this.buildControl(config));
 
                     if (cfg.type === "hidden") {
                         $field.setCss({ "display": "none !important" });
@@ -312,11 +303,30 @@ jspyder.extend.fn("form", function () {
             return this;
         },
         
-        _labelHtml: function(fieldName, labelText) {
-            return (fieldName && labelText
-                ? "<label for=\"" + fieldName + "\">" + labelText + "</label>"
-                : "");
+        registerControl: function (typename, constructor) {
+            js_form.fn.templates[typename] = constructor;
+            return this;
         },
+        buildControl: function (config, nolabel) {
+            var tmp = this.templates[config.type] || this.templates["input"],
+                ctl = tmp.apply(this, [config]),
+                fieldname = js.alg.string(config.name),
+                labeltext = js.alg.string(config.text),
+                lbl;
+                
+            nolabel = js.alg.bool(config.nolabel, nolabel),
+            lbl = js.dom(fieldname && labeltext && !nolabel
+                    ? ["<label for=\"", fieldname, "\">", labeltext, "</label>"].join('')
+                    : "");
+                
+            return lbl.and(ctl);
+        },
+        
+        // _labelHtml: function(fieldName, labelText) {
+        //     return (fieldName && labelText
+        //         ? "<label for=\"" + fieldName + "\">" + labelText + "</label>"
+        //         : "");
+        // },
         _textlineHtml: function(fieldName, fieldClass, fieldType) {
             fieldName = js.alg.string(fieldName);
             fieldClass = js.alg.string(fieldClass);
@@ -435,237 +445,7 @@ jspyder.extend.fn("form", function () {
                         .on("click", js_form.fn._boostrapDropdown_click(cfg.values))
                     );
             }
-        },
-        
-        _bootstrapDatepicker_click: function(config) {
-            var $doc = js.dom(document.documentElement),
-                
-                calendar = [
-                    "<div class=\"js-control date-picker\">",
-                        "<div class=\"date-picker-header\">",
-                            "<i class=\"chevron-left date-picker-prev\"></i>",
-                            "<h4 class=\"date-picker-title\">${YEAR}</h4>",
-                            "<i class=\"chevron-right date-picker-next\"></i>",
-                        "</div>",
-                        "<div class=\"calendar-tiles\"></div>",
-                    "</div>"
-                ].join(''),
-                
-                format = js.alg.string(config.format, "dd-mmm-yyyy"),
-                
-                pause = true,
-                preventClose = function() { pause = true; },
-                enableClose = function() { pause = false; },
-                
-                calStruct = {
-                    dom: null,
-                    title: null,
-                    tiles: null,
-                    prev: null,
-                    next: null,
-                    input: null,
-                    today: js.date(),
-                    date: js.date(config.value, config.format),
-                    
-                    navMonth: false,
-                    
-                    titleMonth: "mmm yyyy",
-                    titleYear: "yyyy", 
-                    
-                    clear: function() {
-                        this.dom && this.dom.remove();
-                        this.dom = null;
-                        this.title = null;
-                        this.tiles = null;
-                        this.prev = null;
-                        this.next = null;
-                        this.input = null;
-                        this.navMonth = false;
-                        this.today = js.date();
-                        return this;
-                    },
-                    load: function(jsdom) {
-                        this.today = js.date();
-                        this.dom = jsdom;
-                        this.title = jsdom.find(".date-picker-title");
-                        this.tiles = jsdom.find(".calendar-tiles");
-                        this.prev = jsdom.find(".date-picker-prev");
-                        this.next = jsdom.find(".date-picker-next");
-                        return this;
-                    },
-                    setTitle: function() {
-                        this.title.setHtml(
-                            this.date.asString(
-                                this.navMonth ? this.titleMonth : this.titleYear));
-                                
-                        this.input.setValue(this.date.asString(format));
-                        return this;
-                    },
-                    setTiles: function(data) {
-                        this.tiles.setHtml(data);
-                        return this;
-                    },
-                    enableClose: enableClose
-                };
-            
-            function __dom_internal() {
-                this.on("click", preventClose);
-                
-                preventClose();
-                
-                calStruct
-                    .load(this)
-                    .setTitle(calStruct.titleYear);
-                
-                js_form.fn._bootstrapDatepicker_click_monthlist(calStruct);
-                    
-                calStruct.prev
-                    .on("click", function __prevClick(event) {
-                        js_form.fn._bootstrapDatepicker_click_prevnextnav(calStruct, -1);
-                    });
-                    
-                calStruct.next
-                    .on("click", function __nextClick(event) {
-                        js_form.fn._bootstrapDatepicker_click_prevnextnav(calStruct, 1);
-                    });
-            }
-            
-            function __docClick(event) {
-                if(pause) { return enableClose(); }
-                calStruct.clear();
-                $doc.off("click", __docClick);
-            }
-            
-            return function(event) {
-                calStruct.clear();
-                calStruct.input = js.dom(this);
-                
-                calStruct.date.setDate(this.value || config.value || config.default || new Date(), format);
-                
-                js.dom(calendar, __dom_internal);
-                
-                js.dom(this.parentNode).append(calStruct.dom);
-                
-                $doc.on("click", __docClick);
-                    
-                return;
-            };
-        },
-        
-        _bootstrapDatepicker_click_prevnextnav: function(calStruct, val) {
-            calStruct.date[ calStruct.navMonth ? "addMonths" : "addYears" ](val);
-            calStruct.setTitle();
-            if(calStruct.navMonth) {
-                js_form.fn._bootstrapDatepicker_click_monthlist_click(calStruct);
-            }
-            else {
-                js_form.fn._bootstrapDatepicker_click_monthlist(calStruct);
-            }
-            return;
-        },
-        
-        // builds month list and attaches it to the dom
-        _bootstrapDatepicker_click_monthlist: function(calStruct) {
-            calStruct.months = "";
-            
-            js.alg.arrEach(
-                calStruct.date.getMonthList("mmm"), 
-                js_form.fn._bootstrapDatepicker_click_monthlist_internal, 
-                calStruct);
-            
-            calStruct.setTiles(calStruct.months);
-            calStruct.tiles
-                .find(".month")
-                .on("click", function __monthClick(event) {
-                    js.dom(this).getValue(function(v) {
-                        calStruct.date.setMonth(v);
-                        js_form.fn._bootstrapDatepicker_click_monthlist_click(calStruct);
-                    });
-                });
-                
-            return;
-        },
-        // builds month list
-        _bootstrapDatepicker_click_monthlist_internal: function(month, monthnum, months, data) {
-            var sameYear = data.today.getYear() === data.date.getYear(),
-                sameMonth = (monthnum + 1) === data.today.getMonth(); 
-                
-            data.months += [
-                "<div class=\"month ", (( sameYear && sameMonth ) ? "today" : ""), "\"",
-                    " value=\"", (monthnum + 1), "\">",
-                    month,
-                "</div>"
-            ].join('');
-            
-            return;
-        },
-        
-        // assigns month value within the month's click event
-        _bootstrapDatepicker_click_monthlist_click: function(calStruct) {
-            calStruct.today = js.date();
-            var weekdays = calStruct.date.getWeekdayList("DD"),
-                daylist = calStruct.date.getDayList("d"),
-                i = 0,
-                data = { 
-                    html: "", 
-                    wlen: weekdays.length,
-                    offset: calStruct.date.getWeekdayOffset(),
-                    calStruct: calStruct,
-                    today: (calStruct.today.getMonth() === calStruct.date.getMonth()) && (js.date().getDay()) };
-            
-            js.alg.arrEach(
-                weekdays, 
-                js_form.fn._bootstrapDatepicker_click_daylist_weekdays, 
-                data);
-                
-            for(i; i < data.offset; i++) {
-                js_form.fn._bootstrapDatepicker_click_daylist_numbered(
-                    "", i - data.offset, null, data);
-            }
-            
-            js.alg.arrEach(
-                daylist, 
-                js_form.fn._bootstrapDatepicker_click_daylist_numbered, 
-                data);
-            
-            calStruct.navMonth = true;
-            calStruct.setTiles(data.html);
-            calStruct.tiles.find(".date").on("click", function(event) {
-                js.dom(this).getValue(function(v) {
-                    calStruct.date.setDay(v);
-                    calStruct.setTitle();
-                });
-                calStruct.enableClose();
-            });
-            calStruct.setTitle();
-            return;
-        },
-        
-        _bootstrapDatepicker_click_daylist_weekdays: function(weekday, daynum, daylist, data) {
-            data.html += [
-                "<div class=\"date-title date-title-index-", (daynum + 1),
-                    "\" style=\"width:", (100 / data.wlen),"%\">",
-                    weekday,
-                "</div>"
-            ].join('');
-            return;
-        },
-        _bootstrapDatepicker_click_daylist_numbered: function (day, daynum, daylist, data) {
-            var sameYear = data.calStruct.today.getYear() === data.calStruct.date.getYear(),
-                sameMonth = data.calStruct.today.getMonth() === data.calStruct.date.getMonth(),
-                sameDate = data.calStruct.today.getDay() === (daynum + 1);
-                    
-            data.html += [
-                "<div class=\"date ", (sameYear && sameMonth && sameDate ? "today":"") ,"\" value=\"", (daynum + 1), "\" ",
-                    "style=\"",
-                        "width:", (100 / data.wlen), "%;",
-                        js.alg.bool(daylist) ? "" : "visibility: hidden;",
-                    "\">",
-                    day,
-                "</div>"
-            ].join('');
-            return;
-        },
+        }, 
 
         /**
          * @method
@@ -920,7 +700,254 @@ jspyder.extend.fn("form", function () {
         }
     };
     
+    js_form.registerControl = js_form.fn.registerControl;
     
+    js_form
+        .registerControl("input", function (cfg) {
+            var fieldname = js.alg.string(cfg.name),
+                fieldclass = js.alg.string(cfg.class),
+                fieldtype = js.alg.string(cfg.type, "text"),
+                html = [
+                    "<input class=\"", fieldclass, "\"",
+                    " name=\"", fieldname, "\"",
+                    " data-type=\"", fieldtype, "\"></input>"
+                ].join('');
+
+            return js.dom(html);
+        })
+        .registerControl("date", js.alg.use(null, function () {
+            
+            function __clickFactory(config) {
+                var $doc = js.dom(document.documentElement),
+                
+                calendar = [
+                    "<div class=\"js-control date-picker\">",
+                        "<div class=\"date-picker-header\">",
+                            "<i class=\"chevron-left date-picker-prev\"></i>",
+                            "<h4 class=\"date-picker-title\">${YEAR}</h4>",
+                            "<i class=\"chevron-right date-picker-next\"></i>",
+                        "</div>",
+                        "<div class=\"calendar-tiles\"></div>",
+                    "</div>"
+                ].join(''),
+                
+                format = js.alg.string(config.format, "dd-mmm-yyyy"),
+                
+                pause = true,
+                preventClose = function() { pause = true; },
+                enableClose = function() { pause = false; },
+                
+                calStruct = {
+                    dom: null,
+                    title: null,
+                    tiles: null,
+                    prev: null,
+                    next: null,
+                    input: null,
+                    today: js.date(),
+                    date: js.date(config.value, config.format),
+                    
+                    navMonth: false,
+                    
+                    titleMonth: "mmm yyyy",
+                    titleYear: "yyyy", 
+                    
+                    clear: function() {
+                        this.dom && this.dom.remove();
+                        this.dom = null;
+                        this.title = null;
+                        this.tiles = null;
+                        this.prev = null;
+                        this.next = null;
+                        this.input = null;
+                        this.navMonth = false;
+                        this.today = js.date();
+                        return this;
+                    },
+                    load: function(jsdom) {
+                        this.today = js.date();
+                        this.dom = jsdom;
+                        this.title = jsdom.find(".date-picker-title");
+                        this.tiles = jsdom.find(".calendar-tiles");
+                        this.prev = jsdom.find(".date-picker-prev");
+                        this.next = jsdom.find(".date-picker-next");
+                        return this;
+                    },
+                    setTitle: function() {
+                        this.title.setHtml(
+                            this.date.asString(
+                                this.navMonth ? this.titleMonth : this.titleYear));
+                                
+                        this.input.setValue(this.date.asString(format));
+                        return this;
+                    },
+                    setTiles: function(data) {
+                        this.tiles.setHtml(data);
+                        return this;
+                    },
+                    enableClose: enableClose
+                };
+            
+            function __dom_internal() {
+                this.on("click", preventClose);
+                
+                preventClose();
+                
+                calStruct
+                    .load(this)
+                    .setTitle(calStruct.titleYear);
+                
+                __monthlist_init(calStruct);
+                    
+                calStruct.prev
+                    .on("click", function __prevClick(event) {
+                        __prevnext_click(calStruct, -1);
+                    });
+                    
+                calStruct.next
+                    .on("click", function __nextClick(event) {
+                        __prevnext_click(calStruct, 1);
+                    });
+            }
+            
+            function __docClick(event) {
+                if(pause) { return enableClose(); }
+                calStruct.clear();
+                $doc.off("click", __docClick);
+            }
+            
+            return function(event) {
+                calStruct.clear();
+                calStruct.input = js.dom(this);
+                
+                calStruct.date.setDate(this.value || config.value || config.default || new Date(), format);
+                
+                js.dom(calendar, __dom_internal);
+                
+                js.dom(this.parentNode).append(calStruct.dom);
+                
+                $doc.on("click", __docClick);
+                    
+                return;
+            };
+        }
+        
+        function __prevnext_click(calStruct, val) {
+            calStruct.date[ calStruct.navMonth ? "addMonths" : "addYears" ](val);
+            calStruct.setTitle();
+            if(calStruct.navMonth) {
+                __month_click(calStruct);
+            }
+            else {
+                __monthlist_init(calStruct);
+            }
+            return;
+        }
+        
+        // builds month list and attaches it to the dom
+        function __monthlist_init(calStruct) {
+            calStruct.months = "";
+            
+            js.alg.arrEach(
+                calStruct.date.getMonthList("mmm"), 
+                __month_builder, 
+                calStruct);
+            
+            calStruct.setTiles(calStruct.months);
+            calStruct.tiles
+                .find(".month")
+                .on("click", function __monthClick(event) {
+                    js.dom(this).getValue(function(v) {
+                        calStruct.date.setMonth(v);
+                        __month_click(calStruct);
+                    });
+                });
+                
+            return;
+        }
+        // builds month list
+        function __month_builder(month, monthnum, months, data) {
+            var sameYear = data.today.getYear() === data.date.getYear(),
+                sameMonth = (monthnum + 1) === data.today.getMonth(); 
+                
+            data.months += [
+                "<div class=\"month ", (( sameYear && sameMonth ) ? "today" : ""), "\"",
+                    " value=\"", (monthnum + 1), "\">",
+                    month,
+                "</div>"
+            ].join('');
+            
+            return;
+        }
+        
+            // assigns month value within the month's click event
+            function __month_click(calStruct) {
+                calStruct.today = js.date();
+                var weekdays = calStruct.date.getWeekdayList("DD"),
+                    daylist = calStruct.date.getDayList("d"),
+                    i = 0,
+                    data = { 
+                        html: "", 
+                        wlen: weekdays.length,
+                        offset: calStruct.date.getWeekdayOffset(),
+                        calStruct: calStruct,
+                        today: (calStruct.today.getMonth() === calStruct.date.getMonth()) && (js.date().getDay()) };
+                
+                js.alg.arrEach(weekdays, __build_weekdays, data);
+                    
+                for(i; i < data.offset; i++) {
+                    __build_numberedDays("", i - data.offset, null, data);
+                }
+                
+                js.alg.arrEach(daylist, __build_numberedDays, data);
+                
+                calStruct.navMonth = true;
+                calStruct.setTiles(data.html);
+                calStruct.tiles.find(".date").on("click", function(event) {
+                    js.dom(this).getValue(function(v) {
+                        calStruct.date.setDay(v);
+                        calStruct.setTitle();
+                    });
+                    calStruct.enableClose();
+                });
+                calStruct.setTitle();
+                return;
+            }
+        
+            function __build_weekdays(weekday, daynum, daylist, data) {
+                data.html += [
+                    "<div class=\"date-title date-title-index-", (daynum + 1),
+                        "\" style=\"width:", (100 / data.wlen),"%\">",
+                        weekday,
+                    "</div>"
+                ].join('');
+                return;
+            }
+            function __build_numberedDays(day, daynum, daylist, data) {
+                var sameYear = data.calStruct.today.getYear() === data.calStruct.date.getYear(),
+                    sameMonth = data.calStruct.today.getMonth() === data.calStruct.date.getMonth(),
+                    sameDate = data.calStruct.today.getDay() === (daynum + 1);
+                        
+                data.html += [
+                    "<div class=\"date ", (sameYear && sameMonth && sameDate ? "today":"") ,"\" value=\"", (daynum + 1), "\" ",
+                        "style=\"",
+                            "width:", (100 / data.wlen), "%;",
+                            js.alg.bool(daylist) ? "" : "visibility: hidden;",
+                        "\">",
+                        day,
+                    "</div>"
+                ].join('');
+                return;
+            }
+            
+            return function (cfg) {
+                var $field = this.buildControl("input");
+
+                $field.filter("input").on("click", __clickFactory(cfg));
+
+                return $field;
+            }
+        }))
      
     return js_form;
  });
