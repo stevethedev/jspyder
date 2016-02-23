@@ -1395,12 +1395,21 @@
             },
             _matches: function (element, selector) {
                 var fn = "";
-                if (element.matchesSelector) { fn = "matchesSelector"; }
+                if(element.matches) { fn = "matches"; }
+                else if (element.matchesSelector) { fn = "matchesSelector"; }
                 else if (element.msMatchesSelector) { fn = "msMatchesSelector"; }
                 else if (element.mozMatchesSelector) { fn = "mozMatchesSelector"; }
                 else if (element.webkitMatchesSelector) { fn = "webkitMatchesSelector"; }
                 else if (element.oMatchesSelector) { fn = "oMatchesSelector"; }
-                else { }
+                else {
+                    // polyfill from MDN
+                    js_dom.fn._matches = function (element, selector) {
+                        var matches = (element.document || element.ownerDocument).querySelectorAll(selector),
+                            i = matches.length;
+                        while (--i >= 0 && matches.item(i) !== element);
+                        return i > -1;
+                    }
+                }
                 
                 js_dom.fn._matches = function (element, selector) {
                     return fn && element[fn](selector);
