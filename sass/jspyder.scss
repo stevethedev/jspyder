@@ -637,6 +637,10 @@ input[type="checkbox"], input[type="radio"] {
         vertical-align: middle;
         margin-left: .2em;
     }
+    
+    &:active, &:focus {
+        @include transform(scale(1.2, 1.2));
+    }
 }
 
 /* XS */

@@ -1703,6 +1703,10 @@ input[type="checkbox"], input[type="radio"] {
     display: inline-block;
     vertical-align: middle;
     margin-left: .2em; }
+  input[type="checkbox"]:active, input[type="checkbox"]:focus, input[type="radio"]:active, input[type="radio"]:focus {
+    -ms-transform: scale(1.2, 1.2);
+    -webkit-transform: scale(1.2, 1.2);
+    transform: scale(1.2, 1.2); }
 
 /* XS */
 @media screen {

@@ -222,7 +222,7 @@ jspyder.extend.fn("form", function () {
             var cfg = Object.create(js_form.fn.fieldTemplate),
                 dval = js.alg.string(config.default, ""),
                 val = js.alg.string(config.value, dval),
-                option, i, $field;
+                $field;
             
             // copy all of the config options over, if they exist.    
             js.alg.mergeObj(cfg, config, {
@@ -232,12 +232,22 @@ jspyder.extend.fn("form", function () {
                 "values": js.alg.sliceArray(config.values)
             });
 
-            $field = this.buildControl(cfg).setValue(val);
+            $field = this.buildControl(cfg);
 
             if (!this._fields) {
                 this._fields = {};
             }
-            this._fields[name] = { type: cfg.type, field: $field, validate: cfg.validate };
+            this._fields[name] = {
+                type: cfg.type,
+                field: $field,
+                validate: cfg.validate,
+                exportValue: cfg.exportValue,
+                getValue: cfg.getValue,
+                setValue: cfg.setValue,
+                ignore: cfg.ignore,
+                config: cfg };
+                
+            this.setFieldValue(name, val);
 
             return this;
         },
@@ -270,15 +280,63 @@ jspyder.extend.fn("form", function () {
                     
             return js.dom(html);
         },
+        /**
+         * @method
+         * 
+         * Gets the defined field by name, and then passes it as a parameter
+         * into the function defined by fn.
+         */
         getField: function(name, fn) {
-            var $field = (this._fields || {})[name];
-            
-            if($field) {
-                $field.use(fn, [$field.exportValue()]);
-            }
-            
-            return $field;
+            var field = this.exportField(name);
+            js.alg.use(this, fn, [field]);
+            return this;
         },
+        /**
+         * @method
+         * 
+         * Retrieves the defined field by name.
+         */
+        exportField: function (name) {
+            var data = this.exportFieldData(name),
+                field = (data ? data.field : null);
+            return field;
+        },
+        /**
+         * @method
+         * 
+         * Gets the defined field object, and passes it as the parameter to the
+         * function defined by fn.
+         */
+        getFieldData: function (name, fn) {
+            var data = this.exportFieldData(name);
+            js.alg.use(this, fn, [data]);
+            return this;
+        },
+        /**
+         * @method
+         * 
+         * Retrieves the field object stored under the defined name.
+         */
+        exportFieldData: function (name) {
+            return this._fields[name] || null;
+        },
+        
+        setFieldValue: function (name, value) {
+            var data = this.exportFieldData(name),
+                field = this.exportField(name);
+                
+            if (field) {
+                if (data && data.setValue) {
+                    js.alg.use(field, data.setValue, [data, value]);
+                }
+                else {
+                    field.setValue(value);
+                }
+            }
+                
+            return this;
+        },
+        
         getFieldValue: function(name, fn) {
             var args = [
                 this.exportFieldValue(name)
@@ -286,12 +344,21 @@ jspyder.extend.fn("form", function () {
             js.alg.use(this, fn, args);
             return this;
         },
-        exportFieldValue: function(name) {
-            var $field = getField(name)
-                value = "";
+        exportFieldValue: function (name) {
+            var data = this.exportFieldData(name),
+                field = this.exportField(name),
+                value = null;
                 
-            if($field) {
-                value = $field.exportValue();
+            if (field) {
+                if (data && data.exportValue) {
+                    value = js.alg.use(field, data.exportValue, [data]);
+                }
+                else if (data && data.getValue) {
+                    js.alg.use(field, data.getValue, [data, function (v) { value = v; }]);
+                }
+                else {
+                    value = field.exportValue();
+                }
             }
             
             return value;
@@ -429,13 +496,8 @@ jspyder.extend.fn("form", function () {
             onSuccess = (typeof onSuccess === "function" ? onSuccess : this._success);
             onFail = (typeof onFail === "function" ? onFail : this._failure);
             
-            this.validate(function(valid, invalid) {
-                if(invalid) {
-                    onFail.apply(this, [valid, invalid]);
-                }
-                else {
-                    onSuccess.apply(this, [valid, invalid]);
-                }
+            this.validate(function (valid, invalid) {
+                js.alg.use(this, (invalid ? onFail : onSuccess), [valid, invalid]);
                 return;
             });
             
@@ -468,27 +530,26 @@ jspyder.extend.fn("form", function () {
          */
         validate: function(fn) {
             var form = this,
-                valid = null,
-                invalid = null,
-                _copyInto = function(b,n) { 
-                    o = b 
-                        ? valid || (valid = {}) 
-                        : invalid || (invalid = {});
-                         
-                    return function(v) { o[n] = v; } };
+                valid = {},
+                invalid = null;
                 
             this.each(function(field, name) {
+                var isValid = true;
+                
+                if(field.ignore) { return; }
+                
                 switch(typeof field.validate) {
                     case "function":
-                        field.field.getValue(_copyInto(field.validate(form), name));
+                        isValid = field.validate(form);
                         break;
                     case "boolean":
-                        field.field.getValue(_copyInto(field.validate, name));
-                        break;
-                    default:
-                        field.field.getValue(_copyInto(true, name));
+                        isValid = field.validate;
                         break;
                 }
+                
+                var group = (isValid ? valid : (invalid || (invalid = {})));
+                group[name] = form.exportFieldValue(name);
+                
                 return;
             });
             
@@ -932,6 +993,21 @@ jspyder.extend.fn("form", function () {
                 })
             }
             
+            function setValue(data, value) {
+                var options = data.config.values,
+                    self = this;
+                js.alg.each(options, function (option) {
+                    var oVal = js.alg.string(option.value, option.text),
+                        oTxt = js.alg.string(option.text, option.value);
+
+                    if (value === oVal) {
+                        self.setValue(oVal)
+                            .find(".dropdown-text")
+                            .setHtml(oTxt);
+                    }
+                });
+            }
+            
             function dropdown(cfg) {
                 var cfgname = js.alg.string(cfg.name, ""),
                     cfgclass = js.alg.string(cfg.class, ""),
@@ -939,7 +1015,7 @@ jspyder.extend.fn("form", function () {
                     cfgdefault = js.alg.string(cfg.default, ""),
                 
                     html = [
-                        "<div name=\"", cfgname, "\"",
+                        "<div name=\"", cfgname, "\" tabindex=\"0\"",
                             " class=\"input js-control js-control-dropdown ", cfgclass, "\">",
                             "<i class=\"dropdown-arrow arrow-drop-down\"></i>",
                             "<span class=\"dropdown-text\">", (cfgvalue || cfgdefault || "&nbsp;"), "</span>",
@@ -949,6 +1025,7 @@ jspyder.extend.fn("form", function () {
                     $dropdown = js.dom(html);
                     
                 $dropdown.on("click", __dropdownClickFactory(cfg));
+                cfg.setValue = setValue;
                 
                 return $dropdown;
             }
@@ -1046,17 +1123,52 @@ jspyder.extend.fn("form", function () {
                 return this;
             }
             
+            function exportValue(data) {
+                var keys = [],
+                    key,
+                    values = data.config["data-values"] = (data.config["data-values"] || {});
+                    
+                for(key in values) {
+                    if(values[key]) {
+                        keys.push(key.substring(4));
+                    }
+                }
+                
+                return keys;
+            }
+            
+            function setValue(data, values) {
+                this.find("input[type=checkbox]")
+                    .each(function (element) {
+                        var attrs = { "value": "" },
+                            props = { "checked": null },
+                            old = null;
+
+                        js.dom(element)
+                            .getProps(props)
+                            .getAttrs(attrs, function (attrs) {
+                                old = props["checked"];
+                                props["checked"] = values.indexOf(attrs.value) > -1;
+                            })
+                            .setProps(props)
+                            .trigger(props["checked"] !== old ? "change" : "");
+
+                        return;
+                    });
+
+                return this;
+            }
+            
             function checkbox(cfg) {
-                var cfgtext = js.alg.string(cfg.text, ""),
-                    cfgvalue = js.alg.string(cfg.value, ""),
-                    cfgname = js.alg.string(cfg.name, ""),
+                var cfgname = js.alg.string(cfg.name, ""),
                     cfgclass = js.alg.string(cfg.class, ""),
                     options = cfg.values || [],
                     option = null,
                     $option = null,
                     $checkbox = js.dom(),
-                    values = {},
                     i = 0;
+                    
+                cfg["data-values"] = {};
                     
                 for(i; i < options.length; i++) {
                     option = js.alg.mergeObj({ 
@@ -1065,28 +1177,84 @@ jspyder.extend.fn("form", function () {
                     option.type = "checkbox-single";
                     option.class = cfgclass;
                     $option = js.dom("<div></div>").append(this.buildControl(option, true));
-                    $checkbox.and($option);
-                    $option.find("input").on("change", function(event) {
-                        var checked = this.checked;
-                        js.dom(this).getValue(function(v) {
-                            values["val-" + js.alg.string(v)] = checked;
-                        });
-                    });
+                    $checkbox.and($option);                    
                 }
                 
-                $checkbox.setOverride("getValue", function(fn) {
-                    var keys = [];
-                    for(var key in values) {
-                        if(values[key]) { keys.push(key.substring(4)); }
-                    }
-                    this.use(fn, [keys]);
-                    return this;
-                });
+                $checkbox
+                    .find("input")
+                        .on("change", function (event) {
+                            var checked = this.checked;
+                            js.dom(this).getValue(function(v) {
+                                cfg["data-values"]["val-" + js.alg.string(v)] = checked;
+                            });
+                        });
+                
+                cfg.exportValue = exportValue;
+                cfg.setValue = setValue;
                 
                 return $checkbox;
             }
             
             return checkbox;
+        })
+        .registerControlFn("checkbox-bitwise", function () {
+            function exportValue(data) {
+                var values = js.alg.use(this, __baseExportValue, arguments),
+                    value = 0;
+                
+                js.alg.each(values, function (cbValue) {
+                    value = value | js.alg.number(cbValue);
+                });
+                
+                return value;
+            }
+            
+            function setValue(data, values) {
+                values = js.alg.number(values, 0);
+                this.find("input[type=checkbox]")
+                    .each(function (element) {
+                        var attrs = { "value": "" },
+                            props = { "checked": null },
+                            old = null;
+
+                        js.dom(element)
+                            .getProps(props)
+                            .getAttrs(attrs, function (attrs) {
+                                old = props["checked"];
+                                
+                                attrs["value"] = js.alg.number(attrs["value"], 0);
+                                
+                                props["checked"] = (values === attrs["value"]) || (values & attrs["value"]);
+                            })
+                            .setProps(props)
+                            .trigger(props["checked"] !== old ? "change" : "");
+
+                        return;
+                    });
+
+                return this;
+            }
+            
+            var __baseExportValue = null,
+                __override = {
+                    "type": "checkbox",
+                    "nolabel": true
+                };
+            
+            function checkboxBitwise(cfg) {
+                var tmp = js.alg.mergeObj({}, cfg, __override),
+                    $checkbox = this.buildControl(tmp, true);
+                    
+                cfg["data-values"] = tmp["data-values"];
+                    
+                __baseExportValue = __baseExportValue || tmp.exportValue;
+                cfg.exportValue = exportValue;
+                cfg.setValue = setValue;
+                    
+                return $checkbox;
+            }
+            
+            return checkboxBitwise;
         })
         .registerControlFn("hidden", function() {
             var __override = {

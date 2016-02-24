@@ -18,44 +18,46 @@
     <div id="test">This is a test div.</div>
     <div class="spread-3-1">
         <div>
-            <label class="spread-3-1">Input Number</label class="spread-3-1">
-            <input class="spread-3-2" id="input" />
+            <label class="spread-3-1">Input Number</label><!--
+         --><input class="spread-3-2" id="input" />
         </div>
         <div>
-            <label class="spread-3-1">BYTE</label class="spread-3-1">
-            <input class="spread-3-2" id="out-byte" />
+            <label class="spread-3-1">BYTE</label><!--
+         --><input class="spread-3-2" id="out-byte" />
         </div>
         <div>
-            <label class="spread-3-1">UBYTE</label class="spread-3-1">
-            <input class="spread-3-2" id="out-ubyte" />
+            <label class="spread-3-1">UBYTE</label><!--
+         --><input class="spread-3-2" id="out-ubyte" />
         </div>
         <div>
-            <label class="spread-3-1">SHORT</label class="spread-3-1">
-            <input class="spread-3-2" id="out-short" />
+            <label class="spread-3-1">SHORT</label><!--
+         --><input class="spread-3-2" id="out-short" />
         </div>
         <div>
-            <label class="spread-3-1">USHORT</label class="spread-3-1">
-            <input class="spread-3-2" id="out-ushort" />
+            <label class="spread-3-1">USHORT</label><!--
+         --><input class="spread-3-2" id="out-ushort" />
         </div>
         <div>
-            <label class="spread-3-1">INT</label class="spread-3-1">
-            <input class="spread-3-2" id="out-int" />
+            <label class="spread-3-1">INT</label><!--
+         --><input class="spread-3-2" id="out-int" />
         </div>
         <div>
-            <label class="spread-3-1">UINT</label class="spread-3-1">
-            <input class="spread-3-2" id="out-uint" />
+            <label class="spread-3-1">UINT</label><!--
+         --><input class="spread-3-2" id="out-uint" />
         </div>
         <div>
-            <label class="spread-3-1">FLOAT</label class="spread-3-1">
-            <input class="spread-3-2" id="out-float" />
+            <label class="spread-3-1">FLOAT</label><!--
+         --><input class="spread-3-2" id="out-float" />
         </div>
         <div>
-            <label class="spread-3-1">DOUBLE</label class="spread-3-1">
-            <input class="spread-3-2" id="out-double" />
+            <label class="spread-3-1">DOUBLE</label><!--
+         --><input class="spread-3-2" id="out-double" />
         </div>
     </div>
     <br />
     <br />
+    
+    <div id="form-print"></div>
 
     <script id="test-template" type="text/jspyder-template">
         <div class="my-template-div">
@@ -156,16 +158,74 @@
         
         var formData = {
                 fields: {
-                    datefield: { type: "date" }
+                    datefield: {
+                        type: "date",
+                        text: "Date Field" },
+                    checkboxes: { 
+                        type: "checkbox", 
+                        text: "Checkbox Field",
+                        values: [
+                            { text: "Checbox #1", value: "cb1" },
+                            { text: "Checbox #2", value: "cb2" },
+                            { text: "Checbox #3", value: "cb3" }
+                        ] },
+                    checkboxes_bitwise: { 
+                        type: "checkbox-bitwise", 
+                        text: "Bitwise Checkbox Field",
+                        default: 0x2,
+                        values: [
+                            { text: "Bitwise #1", value: 0x1 },
+                            { text: "Bitwise #2", value: 0x2 },
+                            { text: "Bitwise #3", value: 0x4 }
+                        ] },
+                    dropdown: {
+                        type: "dropdown", 
+                        text: "Dropdown Field",
+                        default: "Dropdown #3",
+                        values: [
+                            { text: "Dropdown #1", value: "Dropdown #1" },
+                            { text: "Dropdown #2", value: "Dropdown #2" },
+                            { text: "Dropdown #3", value: "Dropdown #3" }
+                        ]},
+                    submit: {
+                        type: "submit",
+                        text: "Submit Button",
+                        icon: "save",
+                        ignore: true }
+                },
+                success: function(values) {
+                    var $textarea = js.dom("#form-print"),
+                        strValues = [];
+                        
+                    js.alg.each(values, function(value, field) {
+                        value = (value instanceof Array ? value.join(', ') : value);
+                        if(field === "checkboxes_bitwise") {
+                            value = "000" + value.toString(2);
+                            value = value.substring(value.length - 3);
+                        }
+                        strValues.push(
+                            "<b>", field, ":</b> ", value, "<br />"
+                        );
+                    });
+                    
+                    $textarea.setHtml(strValues.join(''));
                 }
             },
-            formTemplate = "<div>${datefield}</div>",
+            formTemplate = [
+                "<div>",
+                    "<div class='spread-4-1'>${datefield}</div>",
+                    "<div class='spread-4-1'>${checkboxes}</div>",
+                    "<div class='spread-4-1'>${checkboxes_bitwise}</div>",
+                    "<div class='spread-4-1'>${dropdown}</div>",
+                    "<div class='spread-4-1'>${submit}</div>",
+                "</div>"
+            ].join(''),
             formFn = function(d) {
                 js.dom(document.body).append(d);
             };
         
-        js.form(formData)
-            .compileExplicit(formTemplate, null, formFn);
+        var $form = js.form(formData);
+        $form.compileExplicit(formTemplate, null, formFn);
         
     </script>
 </body>
