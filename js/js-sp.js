@@ -26,17 +26,17 @@ js.extend.fn("sp", function () {
     /** @ignore */
     var js = window.jspyder;
     
-    /**************************************************************************
+    /** ***********************************************************************
      * @class jspyder.sp
      * @member jspyder
      * 
      * # Managed Objects:
      * ## JSpyder SharePoint List Reference (jspyder.sp.list)
      * ## JSpyder SharePoint Query Reference (jspyder.sp.query)
-     *************************************************************************/
+     * ***********************************************************************/
     function sp() {};
     
-    /**************************************************************************
+    /** ***********************************************************************
      * @class jspyder.sp.list
      * @extends jspyder.sp
      * 
@@ -66,7 +66,7 @@ js.extend.fn("sp", function () {
      * 
      * @return {Object} 
      *      A JSpyder SharePoint List Reference Object ([sp.list]{#sp.list})
-     *************************************************************************/
+     * ***********************************************************************/
     sp.list =  function spList(config, fn) {
          
         if (!window.SP) {
@@ -97,6 +97,7 @@ js.extend.fn("sp", function () {
         
         list._columns = {};
         list._rows = [];
+        list._dirtyRows = [];
         
         js.alg.use(list, fn);
 
@@ -117,11 +118,12 @@ js.extend.fn("sp", function () {
         _caml: __caml,
         _columns: {},
         _rows: [],
+        _dirtyRows: [],
         get length() {
             return this._rows.length;
         },
         
-        /**********************************************************************
+        /** *******************************************************************
          * Adds a single column to the SP List proxy
          * 
          * @param {String} name
@@ -155,7 +157,7 @@ js.extend.fn("sp", function () {
          *              Defines a custom value lookup.  This will override (and
          *              not consider) any values found if a data.internal parameter
          *              is provided.
-         *********************************************************************/
+         * *******************************************************************/
         addColumn: function(name, data) {
             var column = Object.create(sp.column.fn, {
                 list: { value: this },
@@ -168,13 +170,13 @@ js.extend.fn("sp", function () {
             
             return this;
         },
-        /**********************************************************************
+        /** *******************************************************************
          * Adds a group of columns to the SP List proxy, via this.addColumn,
          * where keys correspond to the [name] parameter, and values correspond
          * to the [data] parameter.
          * 
          * @param {Object} dataObj
-         *********************************************************************/
+         * *******************************************************************/
         addColumns: function(dataObj) {
             js.alg.each(dataObj, function(data, name, dataObj, list) {
                 list.addColumn(name, data);
@@ -182,14 +184,14 @@ js.extend.fn("sp", function () {
             return this;
         },
         
-        /**********************************************************************
+        /** *******************************************************************
          * Gets the column template by name, as identified in js.sp.list.addColumn
          * 
          * @param {String} name
          *      The name of the field to retrieve the template for. Note that
          *      any changes to the template will change the template for all
          *      of the derived values within the table.
-         *********************************************************************/
+         * *******************************************************************/
         getColumn: function(name) {
             return (this._columns[name]
                 ? this._columns[name] 
@@ -198,28 +200,86 @@ js.extend.fn("sp", function () {
                     name: { value: name }}));
         },
         
-        /**********************************************************************
+        /** *******************************************************************
          * Gets the row number from the cache of stored values.  Note that this
          * number does not necessarily correspond to the row ID within 
          * SharePoint.
          * 
          * @param {Number} n
          *      The row number to retrieve from the cache.
-         *********************************************************************/
+         * *******************************************************************/
         getRow: function(n) {
             return this._rows[n]; 
         },
         
-        /**********************************************************************
+        /**
+         * 
+         */
+        getRowById: function(id) {
+            var found = null,
+                row = this.getRow(id),
+                i;
+            
+            if(row) {
+                if(row["ID"]["value"] === id) {
+                    found = row;
+                }
+                else if(row["ID"]["value"] < id) {
+                    for(i = id; row; i++) {
+                        row = this.getRow(i);
+                        if(row["ID"]["value"] === id) {
+                            found = row;
+                            break;
+                        }
+                        else if(row["ID"]["value"] > id) {
+                            break;
+                        }
+                    }
+                }
+                else {
+                    for(i = id; row; i--) {
+                        row = this.getRow(i);
+                        if(row["ID"]["value"] === id) {
+                            found = row;
+                            break;
+                        }
+                        else if(row["ID"]["value"] < id) {
+                            break;
+                        }
+                    }
+                }
+            }
+            return found;
+        },
+        
+        /**
+         * Gets the dirty rows
+         */
+        eachDirtyRow: function(fn, data) {
+            var list = this,
+                dirty = this._dirtyRows;
+                
+            if(typeof fn === "function") {
+                js.alg.each(dirty, fn, data);
+            }
+            
+            return this;
+        },
+        
+        _createListItem: function() {
+            
+        },
+        
+        /** *******************************************************************
          * Retrieves the number of rows within the cache.
          * 
          * @return {Number}
-         *********************************************************************/
+         * *******************************************************************/
         getRowCount: function(n) {
             return this._rows.length;
         },
         
-        /**********************************************************************
+        /** *******************************************************************
          * Executes an asynchronous read-query from the server to pull in 
          * fresh data. It is important to note, when using this function, that
          * any subsequent or chained functions will likely execute before this
@@ -236,7 +296,7 @@ js.extend.fn("sp", function () {
          *      [sender, args] as the parameters.  This function will be 
          *      executed instead of the failure function identified in the
          *      constructor.
-         *********************************************************************/
+         * *******************************************************************/
         pull: function (success, failure) {
             var ctx = new window.SP.ClientContext(this._url),
                 list = ctx.get_web().get_lists().getByTitle(this._name),
@@ -258,7 +318,7 @@ js.extend.fn("sp", function () {
             return this;
         },
         
-        /**********************************************************************
+        /** *******************************************************************
          * Creates a new query object. This function is synchronous, and 
          * executes data currently residing in the cache.
          * 
@@ -268,7 +328,7 @@ js.extend.fn("sp", function () {
          * 
          * @return {Object}
          *      [Query Reference]{#sp.query}
-         *********************************************************************/
+         * *******************************************************************/
         query: function (criteria) {
             var query = sp.query(this).reset();
             return (criteria instanceof Array
@@ -276,13 +336,17 @@ js.extend.fn("sp", function () {
                 : query.filter(criteria));
         },
 
-        /**********************************************************************
+        /** *******************************************************************
          * Clears all cached data within the list reference.  This is function
          * is automatically called when pulling data from the SharePoint List,
          * and should not be necessary for most implementations.
-         *********************************************************************/
+         * *******************************************************************/
         clearData: function () {
             this._rows = [];
+            // this._dirtyRows = [];
+            while(this._dirtyRows.pop()) {
+                // nothing
+            }
             js.alg.each(this._columns, function (colData) {
                 colData.rowIDs = {}; //< stores RowID:[Value,Value,Value]
                 colData.values = {}; //< stores Value:[RowID,RowID,RowID] 
@@ -290,7 +354,7 @@ js.extend.fn("sp", function () {
             return this;
         },
         
-        /**********************************************************************
+        /** *******************************************************************
          * Pushes changed data to the server.
          * 
          * !TODO: Implement the logic for this:
@@ -302,11 +366,122 @@ js.extend.fn("sp", function () {
          * 
          * Alternatively, I could cache the changed values when I mark them as
          * "dirty". 
-         *********************************************************************/
-        push: function() {}
+         * *******************************************************************/
+        push: function(success, failure) {
+            var ctx = new window.SP.ClientContext(this._url),
+                list = ctx.get_web().get_lists().getByTitle(this._name),
+                itemInfo = null,
+                listItem = null,
+                data = {
+                    clientContext: ctx,
+                    items: [],
+                    list: list,
+                    self: this
+                };
+
+            this.eachDirtyRow(this._pushLoopDirtyRows, data);
+
+            ctx.executeQueryAsync(
+                js.alg.bindFn(this, __successPush, [data.items, success]),
+                js.alg.bindFn(this, __failurePush, [data.items, failure]));
+                
+            return this;
+        },
+        _pushLoopDirtyRows: function(row, i, rows, data) {
+            var rowID = row.ID.value,
+                itemInfo = null,
+                listItem = null;
+            
+            if(row.ID.value < 0) {
+                itemInfo = new SP.ListItemCreationInformation();
+                listItem = data.list.addItem(itemInfo);
+                data.newrow = true;
+            }
+            else {
+                listItem = data.list.getItemById(rowID);
+                data.newrow = false;
+            }
+            
+            // set all list item values
+            data.listItem = listItem;
+            js.alg.each(row, data.self._pushLoopDirtyRowColumns, data);
+            // ----
+            
+            data.items.push(listItem);
+            
+            // cache data for update
+            listItem.update();
+            data.clientContext.load(listItem);
+        },
+        _pushLoopDirtyRowColumns: function(coldata, colname, columns, data) {
+            if(coldata.internal && coldata.dirty && (coldata.internal !== "ID")) {
+                data.listItem.set_item(coldata.internal, coldata.value);
+            }
+            return;
+        },
+        
+        createRow: function(values) {
+            var columns = this._columns,
+                data = {
+                    row: {},
+                    rowID: -1,
+                    values: js.alg.mergeObj({}, values)
+                };
+            
+            js.alg.each(columns, this._createRowEach, data);
+            data.row.ID.value = data.rowID;
+            this._dirtyRows.push(data.row);
+            
+            return this;
+        },
+        _createRowEach: function (colData, colName, column, data) {
+            var row = data.row,
+                value = data.values[colData.name],
+                cell = Object.create(colData, {
+                    rowID: { value: data.rowID },
+                    dirty: { get: function() { return colValue !== null; } },
+                    value: {
+                        get: function () {
+                            return (typeof this.macro === "function"
+                                ? this.macro(row)
+                                : colValue);
+                        },
+                        set: function (v) {
+                            if (colData.internal) {
+                                colValue = v;
+                            }
+                        }
+                    }
+                }),
+                colValue = (typeof value !== "undefined" ? value : colData.default || null);
+            
+            row[colData.name] = cell;
+        }
     };
 
-    /**************************************************************************
+    /**
+     * @private
+     * Called after a successful data push
+     */
+    function __successPush(listItems, successFn, sender, args) {
+        console.log("Successfully pushed " + listItems.length + " items!");
+        js.alg.use(this, successFn, [sender, args, listItems]);
+        while(this._dirtyRows.pop()) { /* nothing */ }
+        this.pull();
+        return;
+    }
+    
+    /**
+     * @private
+     * Called after an unsuccessful data push
+     */
+    function __failurePush(listItems, failureFn, sender, args) {
+        console.log("Failed to push " + listItems.length + " items!");
+        js.alg.use(this, failureFn, [sender, args, listItems]);
+        return;
+    }
+
+    /** ***********************************************************************
      * @private
      * Called after a successful query; loads data into the list reference.
      * 
@@ -321,7 +496,7 @@ js.extend.fn("sp", function () {
      * 
      * @param {Object} args
      *      Pushed in by SharePoint  
-     *************************************************************************/
+     * ***********************************************************************/
     function __successParse(listItems, successFn, sender, args) {
         var itemEnumerator = listItems.getEnumerator(),
             jsEach = js.alg.each,
@@ -345,7 +520,7 @@ js.extend.fn("sp", function () {
         successFn(sender, args);
     }
     
-    /**************************************************************************
+    /** ***********************************************************************
      * @private
      * Called in a loop to push data into the SP List Reference. This function 
      * is defined outside of the loop for efficiency.
@@ -364,7 +539,7 @@ js.extend.fn("sp", function () {
      *      Includes data.item (sharepoint row reference), data.id (value of
      *      associated row ID in sharepoint), and data._row (reference to
      *      list reference's row getting pushed into the stack).  
-     *************************************************************************/
+     * ***********************************************************************/
     function __pushRow(colData, colName, columns, data) {
         var rowID = data.id,
             row = data._row,
@@ -379,9 +554,12 @@ js.extend.fn("sp", function () {
                             : colValue);
                     },
                     set: function (v) {
-                        if (!colData.internal) {
+                        if (colData.internal) {
                             colValue = v;
                             dirty = true;
+                            if(colData.list._dirtyRows.indexOf(row) < 0) {
+                                colData.list._dirtyRows.push(row);
+                            }
                         }
                     }
                 }
@@ -440,7 +618,7 @@ js.extend.fn("sp", function () {
         return value;
     }
 
-    /**************************************************************************
+    /** ***********************************************************************
      * @private
      * Called after a failed query; loads data into the list reference.
      * 
@@ -455,13 +633,13 @@ js.extend.fn("sp", function () {
      * 
      * @param {Object} args
      *      Pushed in by SharePoint  
-     *************************************************************************/
+     * ***********************************************************************/
     function __failureParse(listItems, failureFn, sender, args) {
         failureFn(sender, args);
     }
 
 
-    /**************************************************************************
+    /** ***********************************************************************
      * @class jspyder.sp.query
      * @extends jspyder.sp
      * 
@@ -469,7 +647,7 @@ js.extend.fn("sp", function () {
      * it should be either created by a call to jspyder.sp.list.query() or a 
      * call to jspyder.sp.query.clone in order to ensure that it was properly 
      * configured at creation and before use.
-     *************************************************************************/
+     * ***********************************************************************/
     sp.query = function(list) {
         return Object.create(sp.query.fn, { _list: { value: list } });
     };
@@ -488,16 +666,16 @@ js.extend.fn("sp", function () {
             return this._rows[js.alg.number(n)];
         },
         
-        /**********************************************************************
+        /** *******************************************************************
          * Resets the query object to include all of the available rows in the
          * associated list's cache.
-         *********************************************************************/
+         * *******************************************************************/
         reset: function() {
             this._rows = this._list._rows.slice(0);
             return this;
         },
         
-        /**********************************************************************
+        /** *******************************************************************
          * Applies a single filter against the data stored in the cache.
          *
          * @param {Object} filterData
@@ -512,7 +690,7 @@ js.extend.fn("sp", function () {
          *       - neq:  "Field value != this.neq"       (3 != 4)
          *       - snq:  "Field value !== this.snq"      (3 !== "3")
          *       - test: "Field value matches this.test" (/^3/.test(3000))
-         *********************************************************************/
+         * *******************************************************************/
         filter: function(filterData) {
             if(filterData) {
                 js.alg.each(this._rows, __parseRows, [filterData]);
@@ -520,7 +698,7 @@ js.extend.fn("sp", function () {
             return this._cleanRows();
         },
         
-        /**********************************************************************
+        /** *******************************************************************
          * Applies a set of filters against the data stored in the cache. Due
          * to the nature of the filtering algorithm, this is the more efficient
          * of the two methods, as it requires fewer passes to apply multiple
@@ -528,7 +706,7 @@ js.extend.fn("sp", function () {
          *
          * @param {Array} filterArray
          *      Array of filter collections
-         *********************************************************************/
+         * *******************************************************************/
         filters: function(filterArray) {
             js.alg.each(this._rows, __parseRows, filterArray);
             return this._cleanRows();
@@ -543,7 +721,7 @@ js.extend.fn("sp", function () {
             return this;
         },
         
-        /**********************************************************************
+        /** *******************************************************************
          * Retrieves all stored data, and runs the function defined by [fn]
          * with the context [this] and the parameter pointing to a copy of the
          * data set.  Note that any changes to the array will mark the row for
@@ -553,7 +731,7 @@ js.extend.fn("sp", function () {
          *      Function to execute, with the context of the jspyder.sp.query
          *      object, and the first argument being the stored row references
          *      as an array.
-         *********************************************************************/
+         * *******************************************************************/
         data: function(fn) {
             js.alg.use(this, fn, [this._rows]);
             return this;
@@ -564,7 +742,7 @@ js.extend.fn("sp", function () {
             return this;
         },
         
-        /**********************************************************************
+        /** *******************************************************************
          * Retrieves the sum of all of the stored data, if it is numerical.
          * It not numerical, then makes no change to the default value 
          * provided.
@@ -578,7 +756,7 @@ js.extend.fn("sp", function () {
          * @param {Function} fn
          *      A callback function, using the jspyder.sp.query object as the
          *      context, and the columns object as the first argument.
-         *********************************************************************/
+         * *******************************************************************/
         sum: function(columns, fn) {
             this.data(function(rows) {
                 // initialize default values...
@@ -612,13 +790,13 @@ js.extend.fn("sp", function () {
             }
         },
         
-        /**********************************************************************
+        /** *******************************************************************
          * Creates a copy of the jspyder.sp.query object; pointing to the same
          * jspyder.sp.list object, but with its own context of data copied from
          * the current cache.
          * 
          * @return {Object} jspyder.sp.query object clone.
-         *********************************************************************/
+         * *******************************************************************/
         clone: function() {
             var clone = sp.query(this._list);
             clone._rows = this._rows.slice(0);
@@ -626,7 +804,7 @@ js.extend.fn("sp", function () {
         }
     };
 
-    /**********************************************************************
+    /** *******************************************************************
      * @private
      * Separated from jspyder.sp.query.filter for memory efficiency.
      * 
@@ -641,7 +819,7 @@ js.extend.fn("sp", function () {
      * 
      * @param {Object} filterData
      *      Collection of filters.  See jspyder.sp.query.filter
-     *********************************************************************/
+     * *******************************************************************/
     function __parseRows(row, id, _rows, filterData) {
         if(!row || !filterData || !filterData.length) { // catch null values
             return;
@@ -686,12 +864,56 @@ js.extend.fn("sp", function () {
     }
     
     // used in sp list
+    /**
+     * @class jspyder.sp.column
+     * @member jspyder.sp
+     * 
+     * Class definition
+     */
     sp.column = function() {};
     sp.column.fn = {
+        /**
+         * @property
+         * @member jspyder.sp.column
+         * 
+         * String which identifies how SharePoint recognizes the column.
+         */
         internal: "",
+        /**
+         * @property
+         * @member jspyder.sp.column
+         * 
+         * String which identifies how JSpyder should display the column name.
+         */
         text: "",
+        /**
+         * @property
+         * @member jspyder.sp.column
+         * 
+         * String which identifies the type of column this corresponds to.
+         */
         type: "string",
+        /**
+         * @property {Mixed} default
+         * @member jspyder.sp.column
+         * 
+         * Value which should be used in the absence of any other value.
+         */
         default: "",
+        /**
+         * @property {Mixed} [value]
+         * @member jspyder.sp.column
+         * 
+         * Value which is stored in a particular cell.  This is only available
+         * after queries have been performed.
+         */
+        /**
+         * @method
+         * @member jspyder.sp.column
+         * 
+         * Retrieves the value stored in the cell, when columns are retrieved
+         * during a query.
+         */
         valueOf: function() { return this.value; }
     };
 

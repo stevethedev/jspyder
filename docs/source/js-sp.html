@@ -703,12 +703,56 @@ js.extend.fn(&quot;sp&quot;, function () {
     }
     
     // used in sp list
+<span id='jspyder-sp-column'>    /**
+</span>     * @class jspyder.sp.column
+     * @member jspyder.sp
+     * 
+     * Class definition
+     */
     sp.column = function() {};
     sp.column.fn = {
+<span id='jspyder-sp-column-property-internal'>        /**
+</span>         * @property
+         * @member jspyder.sp.column
+         * 
+         * String which identifies how SharePoint recognizes the column.
+         */
         internal: &quot;&quot;,
+<span id='jspyder-sp-column-property-text'>        /**
+</span>         * @property
+         * @member jspyder.sp.column
+         * 
+         * String which identifies how JSpyder should display the column name.
+         */
         text: &quot;&quot;,
+<span id='jspyder-sp-column-property-type'>        /**
+</span>         * @property
+         * @member jspyder.sp.column
+         * 
+         * String which identifies the type of column this corresponds to.
+         */
         type: &quot;string&quot;,
+<span id='jspyder-sp-column-property-default'>        /**
+</span>         * @property {Mixed} default
+         * @member jspyder.sp.column
+         * 
+         * Value which should be used in the absence of any other value.
+         */
         default: &quot;&quot;,
+<span id='jspyder-sp-column-property-value'>        /**
+</span>         * @property {Mixed} [value]
+         * @member jspyder.sp.column
+         * 
+         * Value which is stored in a particular cell.  This is only available
+         * after queries have been performed.
+         */
+<span id='jspyder-sp-column-method-valueOf'>        /**
+</span>         * @method
+         * @member jspyder.sp.column
+         * 
+         * Retrieves the value stored in the cell, when columns are retrieved
+         * during a query.
+         */
         valueOf: function() { return this.value; }
     };
 

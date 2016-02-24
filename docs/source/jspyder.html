@@ -1319,6 +1319,7 @@
 
                 var e;
                 for (var i = 0; i &lt; event.length; i++) {
+                    if(!event[i]) { continue; }
                     try {
                         e = new Event(event[i], { &quot;bubbles&quot;: true, &quot;cancelable&quot;: false });
                     }

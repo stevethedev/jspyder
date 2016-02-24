@@ -1696,7 +1696,7 @@ input, textarea, .input {
 
 input[type="checkbox"], input[type="radio"] {
   vertical-align: middle;
-  width: 0;
+  width: 1em;
   text-align: left;
   display: inline-block; }
   input[type="checkbox"] + label, input[type="radio"] + label {
@@ -1799,13 +1799,13 @@ input[type="checkbox"], input[type="radio"] {
   display: block; }
 
 .display-none {
-  display: none; }
+  display: none !important; }
 
 .display-inline {
-  display: inline; }
+  display: inline !important; }
 
 .display-inline-block {
-  display: inline-block; }
+  display: inline-block !important; }
 
 .position.relative, .position.absolute, .position.static {
   font-size: 300%;

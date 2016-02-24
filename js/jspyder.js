@@ -697,6 +697,16 @@
             cloneObj: function(obj) {
                 if(!obj || typeof obj !== "object") { return obj; }
                 return js.alg.mergeObj(obj.constructor(), obj);
+            },
+            deepCloneObj: function(obj) {
+                if(!obj || typeof obj !== "object") { return obj; }
+                obj = this.cloneObj(obj);
+                
+                js.alg.each(obj, function(value, key, obj) {
+                    obj[key] = js.alg.deepCloneObj(value);
+                });
+                
+                return obj;
             }
         };
 
@@ -1302,6 +1312,7 @@
 
                 var e;
                 for (var i = 0; i < event.length; i++) {
+                    if(!event[i]) { continue; }
                     try {
                         e = new Event(event[i], { "bubbles": true, "cancelable": false });
                     }

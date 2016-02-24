@@ -628,7 +628,7 @@ input, textarea, .input {
 
 input[type="checkbox"], input[type="radio"] {
     vertical-align: middle;
-    width: 0;
+    width: 1em;
     text-align: left;
     display: inline-block;
     
@@ -686,9 +686,9 @@ input[type="checkbox"], input[type="radio"] {
     &.inline-block { display: inline-block; }
     &.block { display: block; }
 }
-.display-none { display: none; }
-.display-inline { display: inline; }
-.display-inline-block { display: inline-block; }
+.display-none { display: none !important; }
+.display-inline { display: inline !important; }
+.display-inline-block { display: inline-block !important; }
 
 .position {
     &.relative, &.absolute, &.static {
