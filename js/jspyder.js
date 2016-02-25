@@ -1167,7 +1167,7 @@
              * Attaches the element identified by [child] to the first element
              * identified in the jsDom object..
              *
-             * @param {Mixed} parent
+             * @param {Mixed} child
              *      The element/string/etc. which should be attached to this
              *      jsDom object.
              */
@@ -1178,6 +1178,25 @@
                         doc.appendChild(c);
                     }, doc);
                     this.appendChild(doc);
+                })
+                return this;
+            },
+            
+            /**
+             * Attaches the element identified by [child] to the first element
+             * identified in the jsDom object..
+             *
+             * @param {Mixed} child
+             *      The element/string/etc. which should be attached to the top 
+             *      of this jsDom object.
+             */
+            prepend: function(child) {
+                this.element(0, function () {
+                    var doc = document.createDocumentFragment();
+                    js_dom(child).each(function (c, _1, _2, doc) {
+                        doc.appendChild(c);
+                    }, doc);
+                    this.insertBefore(doc, this.firstChild);
                 })
                 return this;
             },

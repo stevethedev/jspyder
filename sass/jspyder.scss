@@ -41,6 +41,9 @@ $color-danger-text: darken($color-danger, 30);
 $color-black: #212121;
 $color-white: #FFF;
 
+$px: (1em / 16);
+$input-border-radius: .2em;
+
 $transition-transform-scale: -ms-transform 0.2s, 
                              -webkit-transform 0.2s, 
                              transform 0.2s;
@@ -56,6 +59,11 @@ $shadow-size-color: .16em rgba($color-black, .5);
 @mixin transition($transition) {
     -webkit-transition: $transition;
     transition: $transition;
+}
+
+@mixin calc($property, $expression) {
+    #{$property}: -webkit-calc(#{$expression});
+    #{$property}: calc(#{$expression});
 }
 
 html {
@@ -408,20 +416,21 @@ label {
     &.js-control-button {
         padding: .3em .5em;
         display: inline-block;
-        border-radius: .18em;
-        border: (1em / 16) solid $color-black;
+        border-radius: $input-border-radius;
+        border: $px solid $color-black;
         background-color: lighten($color-divider, 20);
-        box-shadow: 0 0 (1em / 16) rgba($color-secondary, .6) inset;
+        box-shadow: 0 0 $px rgba($color-secondary, .6) inset;
         cursor: pointer;
         
         .button-text {
             color: $color-black;
             vertical-align: middle;
             text-align: left;
+            margin-left: .5em;
         }
         
         &>i {
-            margin: -.1em .1em -.1em -.15em;
+            margin: -.1em -.15em -.1em -.15em;
         }
         
         &:hover {
@@ -469,31 +478,32 @@ label {
         }
         
         .dropdown-selection {
-            width: 100%;
+            @include calc("width", "100% - " 2 * $input-border-radius);
             margin: 0;
             padding: 0;
             text-decoration: none;
             list-style: outside none none;
-            border: (1em / 16) solid $color-divider;
-            border-top: (1em / 16) solid transparent;
-            border-radius: 0 0 .15em .15em;
+            border: $px solid $color-divider;
+            border-top: $px solid transparent;
+            border-radius: 0 0 $input-border-radius $input-border-radius;
             position: absolute;
-            margin-left: -(1em / 16) - .4em;
-            padding-top: .2em;
+            margin-left: $px;
+            margin-top: .2em;
             overflow: hidden;
+            left: 0;
             z-index: 2;
             
             &:hover {
                 border-color: $color-info-background;
-                box-shadow: 0 (1em / 16) .16em $color-info-background;
+                box-shadow: 0 $px .16em $color-info-background;
                 border-top-color: transparent;
             }
             
             li.item {
                 padding: .08em .3em;
                 background-color: $color-white;
-                border-top: (1em/16) solid transparent;
-                border-bottom: (1em/16) solid transparent;
+                border-top: $px solid transparent;
+                border-bottom: $px solid transparent;
                 
                 &:before {
                     content: "";
@@ -510,8 +520,8 @@ label {
                     &:before {
                         background-color: $color-info-background;
                     }
-                    border-top: (1em/16) solid $color-divider;
-                    border-bottom: (1em/16) solid $color-divider;
+                    border-top: $px solid $color-divider;
+                    border-bottom: $px solid $color-divider;
                 }
             }
         }
@@ -520,16 +530,16 @@ label {
     &.js-control-date-picker {
         display: block;
         width: 12.5em;
-        border: (1em/16) solid $color-black;
+        border: $px solid $color-black;
         position: absolute;
         box-shadow: 0 0 $shadow-size-color;
         z-index: 1000;
         background-color: $color-white;
-        border-radius: .2em;
+        border-radius: $input-border-radius;
         
         .date-picker-header {
             position: relative;
-            border-bottom: (1em/16) solid $color-black;
+            border-bottom: $px solid $color-black;
             
             .date-picker-prev, .date-picker-next {
                 position: absolute;
@@ -574,7 +584,7 @@ label {
             }
             
             .month, .date, .date-title {
-                border: (1em/16) solid transparent;
+                border: $px solid transparent;
                 transition: border-color .2s, color .2s;
                 display: inline-block;
                 text-align: center;
@@ -598,9 +608,9 @@ label {
 }
 
 input, textarea, .input {
-    border: (1em / 16) solid $color-divider;
+    border: $px solid $color-divider;
     padding: .2em .4em;
-    border-radius: .2em;
+    border-radius: $input-border-radius;
     box-shadow: 0 0 .05em rgba($color-black, .15) inset;
     display: block;
     width: 100%;
@@ -729,7 +739,7 @@ fieldset {
         font-size: (21em/16);
         line-height: inherit;
         color: $color-secondary;
-        border-width: 0 0 (1em/16);
+        border-width: 0 0 $px;
         border-style: none none solid;
         border-color: $color-divider;
         text-align: left;

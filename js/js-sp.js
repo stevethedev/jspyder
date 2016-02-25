@@ -209,7 +209,7 @@ js.extend.fn("sp", function () {
          *      The row number to retrieve from the cache.
          * *******************************************************************/
         getRow: function(n) {
-            return this._rows[n]; 
+            return this._rows[js.alg.number(n, 0)] || null;
         },
         
         /**
@@ -217,38 +217,17 @@ js.extend.fn("sp", function () {
          */
         getRowById: function(id) {
             var found = null,
-                row = this.getRow(id),
-                i;
-            
-            if(row) {
+                row = null,
+                i = 0;
+        
+            while(row = this.getRow(i++)) {
                 if(row["ID"]["value"] === id) {
                     found = row;
+                    break;
                 }
-                else if(row["ID"]["value"] < id) {
-                    for(i = id; row; i++) {
-                        row = this.getRow(i);
-                        if(row["ID"]["value"] === id) {
-                            found = row;
-                            break;
-                        }
-                        else if(row["ID"]["value"] > id) {
-                            break;
-                        }
-                    }
-                }
-                else {
-                    for(i = id; row; i--) {
-                        row = this.getRow(i);
-                        if(row["ID"]["value"] === id) {
-                            found = row;
-                            break;
-                        }
-                        else if(row["ID"]["value"] < id) {
-                            break;
-                        }
-                    }
-                }
+                
             }
+            
             return found;
         },
         
@@ -420,6 +399,28 @@ js.extend.fn("sp", function () {
             return;
         },
         
+        updateRow: function(id, values) {
+            var row = this.getRowById(id),
+                data = js.alg.mergeObj({}, values);
+                
+                if(row) {
+                    js.alg.each(row, this._updateRowEach, data);
+                }
+            
+            return this;
+        },
+        _updateRowEach: function (colData, colName, row, data) {
+            var row = data.row,
+                value = data[colData.name],
+                valDefined = (typeof value !== "undefined"),
+                valDifferent = (value !== colData.value);  
+            
+            if (valDefined && valDifferent) {
+                colData.value = value;
+            }
+            
+            return;
+        },
         createRow: function(values) {
             var columns = this._columns,
                 data = {
@@ -464,7 +465,7 @@ js.extend.fn("sp", function () {
      * Called after a successful data push
      */
     function __successPush(listItems, successFn, sender, args) {
-        console.log("Successfully pushed " + listItems.length + " items!");
+        // console.log("Successfully pushed " + listItems.length + " items!");
         js.alg.use(this, successFn, [sender, args, listItems]);
         while(this._dirtyRows.pop()) { /* nothing */ }
         this.pull();
@@ -476,7 +477,7 @@ js.extend.fn("sp", function () {
      * Called after an unsuccessful data push
      */
     function __failurePush(listItems, failureFn, sender, args) {
-        console.log("Failed to push " + listItems.length + " items!");
+        // console.log("Failed to push " + listItems.length + " items!");
         js.alg.use(this, failureFn, [sender, args, listItems]);
         return;
     }

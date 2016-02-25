@@ -910,7 +910,7 @@ jspyder.extend.fn("form", function () {
                         "<div class=\"js-control js-control-button ", btnclass, "\"",
                             " name=\"", btnname, "\">",
                                 (btnicon ? "<i class=\"" + btnicon + "\"></i>" : ""),
-                                "<span class=\"button-text\">", btntext, "</span>",
+                                btntext ? ("<span class=\"button-text\">" + btntext + "</span>") : "",
                         "</div>"
                     ].join(''),
                     
