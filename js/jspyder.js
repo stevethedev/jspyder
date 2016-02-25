@@ -578,6 +578,14 @@
                 return byteArray[0];
             },
             
+            rad2deg: function (n, d) {
+                return js.alg.number(n, d) * 180 / Math.PI;
+            },
+            
+            deg2rad: function (n, d) {
+                return js.alg.number(n, d) * Math.PI / 180;
+            },
+            
             /**
              * Applies an array slice against an object, if it is capable of
              * being performed.  If it cannot be performed, then returns a
