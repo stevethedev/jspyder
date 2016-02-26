@@ -158,6 +158,7 @@ jspyder.extend.fn("date", function () {
          * Gets the currently stored date value as a Date object.
          */
         asDate: function () { return this._value; },
+        
         /**
          * @method
          * 
@@ -167,11 +168,20 @@ jspyder.extend.fn("date", function () {
          *      The format to use when generating the string.
          * 
          * @param {Boolean} [useUtc=this._useUTC]
+         * 
+         * @param {Boolean} [defaultText=""]
          */
-        asString: function (format, useUtc) {
-            format = js.alg.string(format, this._format || __defaultFormat);
-            useUtc = js.alg.bool(useUtc, this._useUTC);
-            return __formatDate(this._value, format, useUtc);
+        asString: function (format, useUtc, defaultText) {
+            if( this.isValid() ) {
+                format = js.alg.string(format, this._format || __defaultFormat);
+                useUtc = js.alg.bool(useUtc, this._useUTC);
+                return __formatDate(this._value, format, useUtc);
+            }
+            return js.alg.string(defaultText, "");
+        },
+        
+        isValid: function() {
+            return this._value && !isNaN(this._value.getYear());
         },
         
         /**
@@ -711,7 +721,7 @@ jspyder.extend.fn("date", function () {
                     
                 case "YYYY":
                 case "yyyy":
-                    value = js.alg.string(d.y);
+                    value = js.alg.string(d.y, "");
                     break;
                    
                 case "MMMM":
@@ -769,7 +779,7 @@ jspyder.extend.fn("date", function () {
                     console.log(collection);
             }
             
-            left += value;
+            left += js.alg.string(value, "");
         });
         
         return left + right;

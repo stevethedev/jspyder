@@ -354,7 +354,7 @@
             each: function each(obj, fn, data) {
                 var ctl = {
                         "stop": function () {
-                            _break = false;
+                            _break = true;
                         },
                         "drop": function (n) {
                             
@@ -376,7 +376,7 @@
             arrEach: function each(obj, fn, data) {
                 var ctl = {
                         "stop": function () {
-                            _break = false;
+                            _break = true;
                             return this;
                         },
                         "drop": function(n) {

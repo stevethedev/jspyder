@@ -709,7 +709,7 @@ js.extend.fn("sp", function () {
          *      Array of filter collections
          * *******************************************************************/
         filters: function(filterArray) {
-            js.alg.each(this._rows, __parseRows, filterArray);
+            js.alg.arrEach(this._rows, __parseRows, filterArray);
             // return this._cleanRows();
             return this;
         },
@@ -755,7 +755,7 @@ js.extend.fn("sp", function () {
         },
         
         each: function(fn) {
-            js.alg.each(this._rows, fn, this);
+            js.alg.arrEach(this._rows, fn, this);
             return this;
         },
         
@@ -844,7 +844,9 @@ js.extend.fn("sp", function () {
         
         var f, filter, drop, value;
         
-        for(f = 0; f < filterData.length; f++) {
+        drop = false;
+        
+        for(f = 0; (!drop) && (f < filterData.length); f++) {
             filter = filterData[f];
             // make sure we have a column identified.
             if(!filter) { continue; } 
@@ -852,7 +854,6 @@ js.extend.fn("sp", function () {
             if(typeof row[filter.column] === "undefined") { continue; }
             
             value = row[filter.column].value;
-            drop = false;
             
             if(!drop && (typeof filter.gt  !== "undefined")) { drop = !(value >   filter.gt ); } 
             if(!drop && (typeof filter.geq !== "undefined")) { drop = !(value >=  filter.geq); } 
@@ -872,10 +873,11 @@ js.extend.fn("sp", function () {
                     drop = !(filter.test.test(value));
                 }
             }
-            if(drop) {
-                // _rows[id] = null;
-                this.drop();
-            }
+        }
+        
+        if(drop) {
+            // _rows[id] = null;
+            this.drop();
         }
         
         return this;
