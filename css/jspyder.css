@@ -1917,4 +1917,55 @@ fieldset {
     border-color: #dd6864 !important;
     background-color: #efb9b8 !important; }
 
+.js-dialog-background {
+  background-color: rgba(0, 0, 0, 0.5);
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0; }
+  .js-dialog-background .js-dialog {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #FFF;
+    border: 0.0625em solid #212121;
+    border-radius: 0.2em; }
+    .js-dialog-background .js-dialog .js-dialog-header {
+      padding: 0.4em;
+      background-color: #3d50c5;
+      color: #FFF;
+      height: 1.8em; }
+      .js-dialog-background .js-dialog .js-dialog-header .title-container {
+        height: auto; }
+      .js-dialog-background .js-dialog .js-dialog-header .dialog-buttons {
+        height: auto;
+        padding: .1em;
+        right: 0;
+        top: 0;
+        position: absolute; }
+        .js-dialog-background .js-dialog .js-dialog-header .dialog-buttons .button-close {
+          cursor: pointer;
+          opacity: .3; }
+          .js-dialog-background .js-dialog .js-dialog-header .dialog-buttons .button-close:hover {
+            opacity: 1; }
+    .js-dialog-background .js-dialog .js-dialog-body {
+      padding: 0.4em;
+      overflow: auto;
+      height: -webkit-calc(100% -  3.8em);
+      height: calc(100% -  3.8em); }
+      .js-dialog-background .js-dialog .js-dialog-body .body-container {
+        height: auto; }
+    .js-dialog-background .js-dialog .js-dialog-footer {
+      padding: 0.4em;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: #b6b6b6;
+      height: 2em; }
+      .js-dialog-background .js-dialog .js-dialog-footer .footer-container {
+        min-height: 0; }
+
 /*# sourceMappingURL=jspyder.css.map */

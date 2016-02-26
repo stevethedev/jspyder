@@ -799,3 +799,74 @@ fieldset {
         $color-danger-background, 
         $color-danger-text);
 }
+
+.js-dialog-background {
+    background-color: rgba(0, 0, 0, 0.5);
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    .js-dialog {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: $color-white;
+        border: $px solid $color-black;
+        border-radius: $input-border-radius;
+        $padding: .4em;
+        $header-height: 1.8em;
+        $footer-height: 2em;
+        
+        .js-dialog-header {
+            padding: $padding;
+            background-color: $color-background;
+            color: $color-inverted;
+            height: $header-height;
+            
+            .title-container {
+                height: auto;
+            }
+            
+            .dialog-buttons {
+                height: auto;
+                padding:.1em;
+                right:0;
+                top:0;
+                position: absolute;
+                
+                .button-close {
+                    cursor: pointer;
+                    opacity: .3;
+                    &:hover {
+                        opacity: 1;
+                    }
+                }
+            }
+        }
+        .js-dialog-body {
+            padding: $padding;
+            overflow: auto;
+            @include calc("height", "100% - " ($header-height + $footer-height));
+            
+            .body-container {
+                height: auto;
+            }
+        }
+        .js-dialog-footer {
+            padding: $padding;
+            position: absolute;
+            bottom:0;
+            left: 0;
+            right: 0;
+            background-color: $color-divider;
+            height: $footer-height;
+            
+            .footer-container {
+                min-height:0;
+            }
+        }
+    }
+}

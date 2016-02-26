@@ -335,6 +335,7 @@
              *      The context of this variable points to a controller object
              *      with the members:
              *       - stop() -- stops iterations and breaks from the function
+             *       - drop(n) -- deletes the current item from the array
              * 
              *      If the Function returns a value, then that value will be
              *      inserted in the array at that position.
@@ -354,6 +355,9 @@
                 var ctl = {
                         "stop": function () {
                             _break = false;
+                        },
+                        "drop": function (n) {
+                            
                         }
                     },
                     _break = false;
@@ -373,6 +377,11 @@
                 var ctl = {
                         "stop": function () {
                             _break = false;
+                            return this;
+                        },
+                        "drop": function(n) {
+                            (obj instanceof Array) && obj.splice(i--, js.alg.number(n, 1));
+                            return this;
                         }
                     },
                     _break = false;
@@ -604,6 +613,28 @@
                 }
                 catch(e) { ret = []; }
                 return ret;
+            },
+            
+            sortArrayObj(arr, asc, field /*, ... */) {
+                var list = js.alg.sliceArray(arguments, 2);
+                arr.sort(function (left, right) {
+                    for (var i = 0; left && right && i < list.length; i++) {
+                        left = left[list[i]];
+                        right = right[list[i]];
+                    }
+                    
+                    return (asc ? left >= right : left <= right);
+                });
+                return arr;
+            },
+            
+            sortArrayNum(arr, asc) {
+                arr.sort(function (left, right) {
+                    return (asc
+                        ? js.alg.number(left) - js.alg.number(right)
+                        : js.alg.number(right) - js.alg.number(left));
+                });
+                return arr;
             },
             
             /**

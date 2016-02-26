@@ -710,7 +710,8 @@ js.extend.fn("sp", function () {
          * *******************************************************************/
         filters: function(filterArray) {
             js.alg.each(this._rows, __parseRows, filterArray);
-            return this._cleanRows();
+            // return this._cleanRows();
+            return this;
         },
         
         _cleanRows: function() {
@@ -735,6 +736,21 @@ js.extend.fn("sp", function () {
          * *******************************************************************/
         data: function(fn) {
             js.alg.use(this, fn, [this._rows]);
+            return this;
+        },
+        
+        /**
+         * Sorts the rows in this query based on values, based on user-defined
+         * criteria.
+         * 
+         * @param {String} field
+         *      Field name to sort by
+         * @param {Boolean} asc
+         *      TRUE in order to sort ascending, FALSE in order to sort 
+         *      descending.
+         */
+        sort: function (field, asc) {
+            js.alg.sortArrayObj(this._rows, asc, field, "value");
             return this;
         },
         
@@ -857,7 +873,8 @@ js.extend.fn("sp", function () {
                 }
             }
             if(drop) {
-                _rows[id] = null;
+                // _rows[id] = null;
+                this.drop();
             }
         }
         
