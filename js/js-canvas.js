@@ -130,7 +130,6 @@ jspyder.extend.fn("canvas", function () {
                 var angle = js.alg.deg2rad(settings.angle, 0),
                     degrees = js.alg.deg2rad(settings.degrees, 360) + angle;
                 
-                this.context.strokeStyle = settings.border;
                 this.context.beginPath();
                 
                 this.context.arc(
@@ -147,7 +146,10 @@ jspyder.extend.fn("canvas", function () {
                 if (settings.closepath) {
                     this.context.closePath();
                 }
+                
+                this.context.strokeStyle = settings.border;
                 this.context.stroke();
+                
                 this.context.fillStyle = settings.fill;
                 this.context.fill();
             },
@@ -182,6 +184,23 @@ jspyder.extend.fn("canvas", function () {
                         
                     js.alg.use(canvas, canvas.cmd.arc, [arc]);
                 });
+                return;
+            },
+            text: function (settings) {
+                settings.size = js.alg.number(settings.size, 16);
+                settings.font = js.alg.string(settings.font, "Arial");
+                settings.text = js.alg.string(settings.text, "");
+                settings.x = js.alg.string(settings.x, 0);
+                settings.y = js.alg.string(settings.y, 0);
+                settings.outline = js.alg.string(settings.outline, "transparent");
+                settings.fill = js.alg.string(settings.fill, "black");
+                
+                this.context.font = settings.size + "px " + settings.font;
+                this.context.fillStyle = settings.fill;
+                this.context.fillText(settings.text, settings.x, settings.y);
+                this.context.strokeStyle = settings.outline;
+                this.context.strokeText(settings.text, settings.x, settings.y);
+                
                 return;
             }
         }
