@@ -366,9 +366,9 @@ jspyder.extend.fn("date", function () {
         }
     }
     
-        /**
-         * @private
-         */
+    /**
+     * @ignore
+     */
     var __reSearchStrings = [
             "YYYY", "YY", 
             "yyyy", "yy",
@@ -382,25 +382,25 @@ jspyder.extend.fn("date", function () {
             "SS", "S", "ss", "s"
         ],
         /**
-         * @private
+         * @ignore
          */
         __reSearch = new RegExp("(" + __reSearchStrings.join("|") + ")", "g"),
         /**
-         * @private
+         * @ignore
          */
         __defaultFormat = "ddd mmm d yyyy hh:mm:ss",
         /**
-         * @private
+         * @ignore
          */
         __defaultUtc = false,
         /**
-         * @private
+         * @ignore
          */
         __years = [
             { YY: "\\d{2}", YYYY: "\\d{4}", yy: "\\d{2}", yyyy: "\\d{4}" }
         ],
         /**
-         * @private
+         * @ignore
          */
         __months = [
             { m:  "1", mm: "01", mmm: "Jan", mmmm: "January",   M:  "1", MM: "01", MMM: "JAN", MMMM: "JANUARY"   },
@@ -417,7 +417,7 @@ jspyder.extend.fn("date", function () {
             { m: "12", mm: "12", mmm: "Dec", mmmm: "December",  M: "12", MM: "12", MMM: "DEC", MMMM: "DECEMBER"  },
         ],
         /**
-         * @private
+         * @ignore
          */
         __days = [
             { d:  "1", dd: "01" }, { d:  "2", dd: "02" }, { d:  "3", dd: "03" }, { d:  "4", dd: "04" },
@@ -430,7 +430,7 @@ jspyder.extend.fn("date", function () {
             { d: "29", dd: "29" }, { d: "30", dd: "30" }, { d: "31", dd: "31" },
         ],
         /**
-         * @private
+         * @ignore
          */
         __weekdays = [
             { D: "S", DD: "Su", DDD: "SUN", DDDD: "SUNDAY",    ddd: "Sun", dddd: "Sunday"    },
@@ -442,7 +442,7 @@ jspyder.extend.fn("date", function () {
             { D: "S", DD: "Sa", DDD: "SAT", DDDD: "SATURDAY",  ddd: "Sat", dddd: "Saturday"  },
         ],
         /**
-         * @private
+         * @ignore
          */
         __hours = [
             { h: "12", hh: "12", H:  "0", HH: "00", AM: "AM", am: "am" },
@@ -471,7 +471,7 @@ jspyder.extend.fn("date", function () {
             { h: "11", hh: "11", H: "23", HH: "23", AM: "PM", am: "pm" },
         ],
         /**
-         * @private
+         * @ignore
          */
         __minutes = [
             { n:  "0", nn: "00" }, { n:  "1", nn: "01" }, { n:  "2", nn: "02" }, { n:  "3", nn: "03" },
@@ -491,7 +491,7 @@ jspyder.extend.fn("date", function () {
             { n: "56", nn: "56" }, { n: "57", nn: "57" }, { n: "58", nn: "58" }, { n: "59", nn: "59" }
         ],
         /**
-         * @private
+         * @ignore
          */
         __seconds = [
             { s:  "0", ss: "00" }, { s:  "1", ss: "01" }, { s:  "2", ss: "02" }, { s:  "3", ss: "03" },
@@ -511,12 +511,12 @@ jspyder.extend.fn("date", function () {
             { s: "56", ss: "56" }, { s: "57", ss: "57" }, { s: "58", ss: "58" }, { s: "59", ss: "59" }
         ],
         /**
-         * @private
+         * @ignore
          */
         __timeZones = { },
         // collected definitions
         /**
-         * @private
+         * @ignore
          */
         __formatCollection = {
             // years
@@ -571,7 +571,7 @@ jspyder.extend.fn("date", function () {
         };
     
     /**
-     * @private
+     * @ignore
      * 
      * Generates a regular expression for the __formatCollection
      */
@@ -603,13 +603,16 @@ jspyder.extend.fn("date", function () {
             lookup: rev
         };
     }
+    /** @ignore */
     function __isDate(v) {
         return (v instanceof Date || Object.prototype.toString.call(v) === '[object Date]');
     }
+    /** @ignore */
     function __isJsDate(v) {
         return js_date.fn.isPrototypeOf(v);
     }
     
+    /** @ignore */
     function __timezoneOffset() {
         var offset = (new Date()).getTimezoneOffset(),
             hours = offset/60; // offset / minutes-per-hour
@@ -618,6 +621,7 @@ jspyder.extend.fn("date", function () {
     }
     
     // create a date from a string and an array of format strings
+    /** @ignore */
     function __parseString(v, f) {
         v = js.alg.string(v, "");
         var format = js.alg.string(f),
@@ -686,6 +690,7 @@ jspyder.extend.fn("date", function () {
         return new Date(d.y, d.m, d.d, d.h + d.a, d.n, d.s);
     }
     
+    /** @ignore */
     function __formatDate(date, format, useUTC) {
         var d = {
             y: useUTC ? date.getUTCFullYear() : date.getFullYear(),
@@ -785,7 +790,7 @@ jspyder.extend.fn("date", function () {
         return left + right;
     }
     
-    
+    /** @ignore */
     function __getTimezoneOffset() {
         
     }

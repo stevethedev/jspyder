@@ -220,7 +220,7 @@ jspyder.extend.fn("form", function () {
             config = js.alg.object(config, {});
             
             var cfg = Object.create(js_form.fn.fieldTemplate),
-                dval = js.alg.string(config.default, ""),
+                dval = config.default,
                 val = config.value,
                 $field;
             
@@ -247,7 +247,7 @@ jspyder.extend.fn("form", function () {
                 ignore: cfg.ignore,
                 config: cfg };
                 
-            this.setFieldValue(name, val);
+            this.setFieldValue(name, (typeof val !== "undefined" ? val : dval));
 
             return this;
         },
@@ -365,26 +365,6 @@ jspyder.extend.fn("form", function () {
             }
             
             return value;
-        },
-        
-        _textlineHtml: function(fieldName, fieldClass, fieldType) {
-            fieldName = js.alg.string(fieldName);
-            fieldClass = js.alg.string(fieldClass);
-            fieldType = js.alg.string(fieldType, "text");
-            
-            var html = "";
-            switch(fieldType) {
-                case "currency":
-                    html += "<div class=\"js-control js-control-currency-prefix\"></div>";
-                    fieldClass += " data-currency";
-                    break;
-            }
-            
-            html += "<input class=\"" + fieldClass + "\"" + 
-                    " name=\"" + fieldName + "\"" +
-                    " data-type=\"" + fieldType + "\"></input>";
-                    
-            return html;
         },
         
         templates: { }, 
@@ -579,6 +559,10 @@ jspyder.extend.fn("form", function () {
     js_form.registerControlFn = js_form.fn.registerControlFn;
     
     js_form
+        /**
+         * @method input
+         * @member jspyder.form.templates
+         */
         .registerControlFn("input", function() {
             function setValue(data, v) {
                 this.setValue(js.alg.string(v));
@@ -599,6 +583,10 @@ jspyder.extend.fn("form", function () {
                 return js.dom(html);
             }
         })
+        /**
+         * @method date
+         * @member jspyder.form.templates
+         */
         .registerControlFn("date", function () {
             function __calStructFactory(config) {
                 var calStruct = Object.create(__calStructFactory.fn);
@@ -843,6 +831,10 @@ jspyder.extend.fn("form", function () {
                 return $datepicker;
             }
         })
+        /**
+         * @method button
+         * @member jspyder.form.templates
+         */
         .registerControlFn("button", function() {
             
             function __clickFactory(form, fn) {
@@ -878,6 +870,10 @@ jspyder.extend.fn("form", function () {
             
             return button;
         })
+        /**
+         * @method submit
+         * @member jspyder.form.templates
+         */
         .registerControlFn("submit", function() {
             
             function __submitClickFactory(form) {
@@ -900,6 +896,10 @@ jspyder.extend.fn("form", function () {
             
             return submit;
         })
+        /**
+         * @method dropdown
+         * @member jspyder.form.templates
+         */
         .registerControlFn("dropdown", function() {
             var $DOC = js.dom(document.documentElement);
             
@@ -1006,6 +1006,10 @@ jspyder.extend.fn("form", function () {
             
             return dropdown;
         })
+        /**
+         * @method textarea
+         * @member jspyder.form.templates
+         */
         .registerControlFn("textarea", function() {
             function setValue(data, v) {
                 v = js.alg.string(v, "");
@@ -1026,46 +1030,12 @@ jspyder.extend.fn("form", function () {
                 return js.dom(html);
             }
         })
-        .registerControl("radio-single", function(cfg) {
-            var cfgtext = js.alg.string(cfg.text, ""),
-                cfgvalue = js.alg.string(cfg.value, ""),
-                cfgname = js.alg.string(cfg.name, ""),
-                cfgclass = js.alg.string(cfg.class, ""),
-                html = [
-                    "<input value=\"", cfgvalue, "\"",
-                        " name=\"", cfgname, "\"",
-                        " type=\"radio\"",
-                        " class=\"", cfgclass, "\">",
-                    "</input>"
-                ].join('');
-            
-            return js.dom(html).and(this.buildLabel(cfgname, cfgtext, cfgclass));
-        })
-        .registerControl("radio", function(cfg) {
-            var cfgtext = js.alg.string(cfg.text, ""),
-                cfgvalue = js.alg.string(cfg.value, ""),
-                cfgname = js.alg.string(cfg.name, ""),
-                cfgclass = js.alg.string(cfg.class, ""),
-                options = cfg.values || [],
-                option = null,
-                $option = null,
-                $radio = js.dom(), 
-                i = 0;
-                
-            for(i; i < options.length; i++) {
-                option = js.alg.mergeObj({ 
-                    "name": cfgname, 
-                    "class": cfgclass }, options[i]);
-                option.type = "radio-single";
-                option.class = cfgclass;
-                $option = js.dom("<div></div>").append(this.buildControl(option, true));
-                $radio.and($option);
-            }
-            
-            return $radio;
-        })
-        .registerControlFn("checkbox-single", function() {
-            function checkbox(cfg) {
+        /**
+         * @method radio
+         * @member jspyder.form.templates
+         */
+        .registerControlFn("radio", function () {
+            function single(cfg) {
                 var cfgtext = js.alg.string(cfg.text, ""),
                     cfgvalue = js.alg.string(cfg.value, ""),
                     cfgname = js.alg.string(cfg.name, ""),
@@ -1073,16 +1043,81 @@ jspyder.extend.fn("form", function () {
                     html = [
                         "<input value=\"", cfgvalue, "\"",
                             " name=\"", cfgname, "\"",
-                            " type=\"checkbox\"",
+                            " type=\"radio\"",
                             " class=\"", cfgclass, "\">",
                         "</input>"
-                    ].join(''),
-                    $checkbox = js.dom(html).and(this.buildLabel(cfgname, cfgtext, cfgclass));
-                    
-                return $checkbox;
+                    ].join('');
+                
+                return js.dom(html).and(js.form.fn.buildLabel(cfgname, cfgtext, cfgclass));
             }
-            return checkbox;
+            
+            function exportValue(data) {
+                return (data.config["data-value"] || null);
+            }
+            
+            function setValue(data, values) {
+                this.find("input[type=radio]")
+                    .each(function (element) {
+                        var attrs = { "value": "" },
+                            props = { "checked": null },
+                            old = null;
+
+                        js.dom(element)
+                            .getProps(props)
+                            .getAttrs(attrs, function (attrs) {
+                                old = props["checked"];
+                                if (values && values.indexOf) {
+                                    props["checked"] = values.indexOf(attrs.value) > -1;
+                                }
+                            })
+                            .setProps(props)
+                            .trigger(props["checked"] !== old ? "change" : "");
+
+                        return;
+                    });
+
+                return this;
+            }
+            
+            return function(cfg) {
+                var cfgname = js.alg.string(cfg.name, ""),
+                    cfgclass = js.alg.string(cfg.class, ""),
+                    options = cfg.values || [],
+                    option = null,
+                    $option = null,
+                    $radio = js.dom(), 
+                    i = 0;
+                    
+                cfg["data-values"] = {};
+                
+                for(i; i < options.length; i++) {
+                    option = js.alg.mergeObj({ 
+                        "name": cfgname, 
+                        "class": cfgclass }, options[i]);
+                    option.type = "radio-single";
+                    option.class = cfgclass + js.alg.string(options[i].class);
+                    $option = js.dom("<div></div>").append(single(option));
+                    $radio.and($option);
+                }
+                
+                $radio
+                    .find("input")
+                        .on("change", function (event) {
+                            js.dom(this).getValue(function(v) {
+                                cfg["data-value"] = v;
+                            });
+                        });
+                
+                cfg.exportValue = exportValue;
+                cfg.setValue = setValue;
+                
+                return $radio;
+            };
         })
+        /**
+         * @method checkbox
+         * @member jspyder.form.templates
+         */
         .registerControlFn("checkbox", function() {
             function exportValue(data) {
                 var keys = [],
@@ -1109,7 +1144,9 @@ jspyder.extend.fn("form", function () {
                             .getProps(props)
                             .getAttrs(attrs, function (attrs) {
                                 old = props["checked"];
-                                props["checked"] = values.indexOf(attrs.value) > -1;
+                                if (values && values.indexOf) {
+                                    props["checked"] = values.indexOf(attrs.value) > -1;
+                                }
                             })
                             .setProps(props)
                             .trigger(props["checked"] !== old ? "change" : "");
@@ -1121,6 +1158,23 @@ jspyder.extend.fn("form", function () {
             }
             
             function checkbox(cfg) {
+                var cfgtext = js.alg.string(cfg.text, ""),
+                    cfgvalue = js.alg.string(cfg.value, ""),
+                    cfgname = js.alg.string(cfg.name, ""),
+                    cfgclass = js.alg.string(cfg.class, ""),
+                    html = [
+                        "<input value=\"", cfgvalue, "\"",
+                            " name=\"", cfgname, "\"",
+                            " type=\"checkbox\"",
+                            " class=\"", cfgclass, "\">",
+                        "</input>"
+                    ].join(''),
+                    $checkbox = js.dom(html).and(js.form.fn.buildLabel(cfgname, cfgtext, cfgclass));
+                    
+                return $checkbox;
+            }
+            
+            return function (cfg) {
                 var cfgname = js.alg.string(cfg.name, ""),
                     cfgclass = js.alg.string(cfg.class, ""),
                     options = cfg.values || [],
@@ -1136,7 +1190,7 @@ jspyder.extend.fn("form", function () {
                         "name": cfgname }, options[i]);
                     option.type = "checkbox-single";
                     option.class = cfgclass + js.alg.string(options[i].class);
-                    $option = js.dom("<div></div>").append(this.buildControl(option, true));
+                    $option = js.dom("<div></div>").append(checkbox(option));
                     $checkbox.and($option);                    
                 }
                 
@@ -1154,9 +1208,11 @@ jspyder.extend.fn("form", function () {
                 
                 return $checkbox;
             }
-            
-            return checkbox;
         })
+        /**
+         * @method checkbox-bitwise
+         * @member jspyder.form.templates
+         */
         .registerControlFn("checkbox-bitwise", function () {
             function exportValue(data) {
                 var values = js.alg.use(this, __baseExportValue, arguments),
@@ -1216,6 +1272,10 @@ jspyder.extend.fn("form", function () {
             
             return checkboxBitwise;
         })
+        /**
+         * @method hidden
+         * @member jspyder.form.templates
+         */
         .registerControlFn("hidden", function() {
             var __override = {
                     nolabel: true,
@@ -1234,13 +1294,17 @@ jspyder.extend.fn("form", function () {
             
             return hidden;
         })
+        /**
+         * @method autocomplete
+         * @member jspyder.form.templates
+         */
         .registerControlFn("autocomplete", function() {
             var __override = {
                     type: "input"
                 };
             
             function autocomplete(cfg) {
-                var cfg2 = js.alg.merge({}, cfg, __override);
+                var cfg2 = js.alg.mergeObj({}, cfg, __override);
                 var $autocomplete = this.buildControl(cfg2, true);
                 
                 cfg.setValue = cfg2.setValue;
@@ -1250,49 +1314,159 @@ jspyder.extend.fn("form", function () {
             
             return autocomplete;
         })
-        .registerControlFn("currency", function() {
+        /**
+         * @method number
+         * @member jspyder.form.templates
+         */
+        .registerControlFn("number", function() {
             var __override = {
                     type: "input",
-                },
-                __attrs = {
-                    "data-type": "currency"
                 };
                 
             function setValue(data, v) {
-                v = js.alg.number(v, 0);
-                this.setValue(v);
+                v = js.alg.string(v, "");
+                
+                data.field.filter("input").getAttrs({ "data-focus": false },
+                    function (attrs) {
+                        if (attrs["data-focus"]) {
+                            v = toNumber(v, data.config.acc);
+                        }
+                        else {
+                            v =  toString(v, data.config.tsep, data.config.dec, data.config.acc);
+                        }
+                        this.setValue(v);
+                    });
+                
                 return;
             }
             
             function exportValue(data, v) {
-                var v = this.exportValue();
-                return js.alg.number(v, 0);
+                v = this.filter("input").exportValue();
+                
+                v = v.replace(/([^\d\.])/g, "");
+                
+                return toNumber(v);
+            }
+            
+            function toNumber(n, a) {
+                n = js.alg.string(n, '');
+                
+                var reStrip = /([^\d\.]+)/g,
+                    parts = null;
+                    
+                n = n.replace(reStrip, '');
+                parts = n.split('.');
+                if (parts) {
+                    parts[0] = js.alg.number(parts[0], 0);
+                    parts[1] = js.alg.string(parts[1], "0");
+                    n = js.alg.number(parts[0] + '.' + parts[1], 0);
+                }
+                else {
+                    n = 0;
+                }
+                
+                if (typeof a !== "undefined") {
+                    n = n.toFixed(a);
+                }
+                
+                return n;
+            }
+            
+            function toString(n, c, d, a) {
+                if (js.alg.string(n, "") === "") {
+                    return n;
+                }
+                n = js.alg.number(n, 0);
+                c = js.alg.string(c, ',');
+                d = js.alg.string(d, '.');
+                
+                if (typeof a !== "undefined") {
+                    n = n.toFixed(a);
+                }
+                
+                var reCommaSearch = /\B(?=(\d{3})+(?!\d))/g,
+                    str = js.alg.string(n, ""),
+                    part = str.split('.'),
+                    num = [];
+                    
+                num[0] = (part[0] || "").replace(reCommaSearch, c);
+                if (part[1]) { num.push(part[1]); }
+                
+                return num.join(d);
             }
             
             function change(event) {
-                this.setValue(null, this.exportValue());
+                var num = js.dom(this);
+                num.setValue(null, num.exportValue());
                 return;
             }
+            
+            function number(cfg) {
+                var cfg2 = js.alg.mergeObj({}, cfg, __override, {
+                    "class": js.alg.string(cfg.class, "") + " data-number"
+                });
+                var $input = this.buildControl(cfg2, true),
+                    form = this;
+                    
+                cfg.setValue = setValue;
+                cfg.exportValue = exportValue;
+                
+                $input.filter("input")
+                    .on("blur", function (event) {
+                        var $input = js.dom(this).setAttrs({ "data-focus": null });
+                        form.setFieldValue(cfg.name, $input.exportValue());
+                        return;
+                    })
+                    .on("focus", function (event) {
+                        var $input = js.dom(this).setAttrs({ "data-focus": true });
+                        form.setFieldValue(cfg.name, $input.exportValue());
+                        return;
+                    });
+                    
+                return $input;
+            }
+            
+            return number;
+        })
+        /**
+         * @method currency
+         * @member jspyder.form.templates
+         */
+        .registerControlFn("currency", function() {
+            var __override = {
+                type: "number",
+            };
+            
+            function setValue(data, value) {
+                value = data.field.exportValue();
+                js.alg.use(this, __setValue, [data, value]);
+            }
+            
+            var __setValue = null;
             
             function currency(cfg) {
                 var cfg2 = js.alg.mergeObj({}, cfg, __override, {
                     "class": js.alg.string(cfg.class, "") + " data-currency"
                 });
-                var $input = this.buildControl(cfg2, true).setAttrs(__attrs),
-                    prefix = "<div class=\"js-control js-control-currency-prefix\"></div>";
+                var $input = this.buildControl(cfg2, true),
+                    prefix = "<div class=\"js-control js-control-currency-prefix\">" + js.alg.string(cfg.prefix, "$") + "</div>";
                     
+                __setValue = (__setValue || cfg2.setValue);
+                
+                Object.defineProperty(cfg, "acc", {
+                    get: function() { return cfg2.acc; },
+                    set: function(v) { cfg2.acc = v; }
+                })
+                
                 cfg.setValue = setValue;
-                cfg.exportValue = exportValue;
+                cfg.exportValue = cfg2.exportValue;
+                cfg.acc = js.alg.number(cfg.acc, 2);
                     
-                var c = js.dom(prefix).and($input);
-                
-                c.on("change", change);
-                
-                return c;
+                return js.dom(prefix).and($input);
             }
             
             return currency;
-        })
+        });
      
     return js_form;
  });

@@ -315,7 +315,11 @@
          * JSpyder algorithm collection.
          */
         js_alg = {
-
+            // each: function each(obj, fn, data) {
+            //     return (typeof obj.length === "number"
+            //         ? js_alg.eachArray(obj, fn, data)
+            //         : js_alg.eachObj(obj, fn, data));
+            // },
             /**
              * Iterates through a provided object and executes fn() on each
              * step.  Uses a controller to manage the loop.
@@ -345,12 +349,6 @@
              * 
              * @return {Object} JSpyder 
              */
-            // each: function each(obj, fn, data) {
-            //     return (typeof obj.length === "number"
-            //         ? js_alg.eachArray(obj, fn, data)
-            //         : js_alg.eachObj(obj, fn, data));
-            // },
-            
             each: function each(obj, fn, data) {
                 var ctl = {
                         "stop": function () {
@@ -615,7 +613,7 @@
                 return ret;
             },
             
-            sortArrayObj(arr, asc, field /*, ... */) {
+            sortArrayObj: function(arr, asc, field /*, ... */) {
                 var list = js.alg.sliceArray(arguments, 2);
                 arr.sort(function (left, right) {
                     for (var i = 0; left && right && i < list.length; i++) {
@@ -628,7 +626,7 @@
                 return arr;
             },
             
-            sortArrayNum(arr, asc) {
+            sortArrayNum: function(arr, asc) {
                 arr.sort(function (left, right) {
                     return (asc
                         ? js.alg.number(left) - js.alg.number(right)

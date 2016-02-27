@@ -1559,8 +1559,6 @@ label {
 .js-control.js-control-currency-prefix {
   position: absolute;
   margin: .22em; }
-  .js-control.js-control-currency-prefix:after {
-    content: "$"; }
 .js-control.js-control-dropdown {
   cursor: pointer;
   position: relative; }

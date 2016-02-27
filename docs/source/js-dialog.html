@@ -1,10 +1,27 @@
-/* ****************************************************************************
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">/* ****************************************************************************
  * The MIT License (MIT)
  *
  * Copyright (c) 2015 Steven Jimenez
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to 
+ * of this software and associated documentation files (the &quot;Software&quot;), to 
  * deal in the Software without restriction, including without limitation the 
  * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or 
  * sell copies of the Software, and to permit persons to whom the Software is 
@@ -13,7 +30,7 @@
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
  * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
@@ -22,11 +39,11 @@
  * IN THE SOFTWARE.
  * ***************************************************************************/
 
-jspyder.extend.fn("dialog", function () {
+jspyder.extend.fn(&quot;dialog&quot;, function () {
     var js = this;
     
-    /**
-     * @class jspyder.dialog
+<span id='jspyder-dialog'>    /**
+</span>     * @class jspyder.dialog
      * 
      */
     function js_dialog(cfg) {
@@ -38,7 +55,7 @@ jspyder.extend.fn("dialog", function () {
             });
         
         dialog.setDimensions(cfg.width, cfg.height);
-        element.find("i.button-close").on("click", function (event) {
+        element.find(&quot;i.button-close&quot;).on(&quot;click&quot;, function (event) {
             dialog.remove();
         });
         
@@ -56,61 +73,61 @@ jspyder.extend.fn("dialog", function () {
         _element: null,
         _buttonDefs: null,
         _template: [
-            "<div class=\"js-dialog-background\">",
-                "<div class=\"js-dialog\">",
-                    "<div class=\"js-dialog-header\">",
-                        "<span class=\"title-container\"></span>",
-                        "<span class=\"dialog-buttons\"><i class=\"button-close close\"></i></span>",
-                    "</div>",
-                    "<div class=\"js-dialog-body\">",
-                        "<div class=\"body-container\"></div>",
-                    "</div>",
-                    "<div class=\"js-dialog-footer\">",
-                        "<div class=\"footer-container\"></div>",
-                    "</div>",
-                "</div>",
-            "</div>"
-        ].join(''),
+            &quot;&lt;div class=\&quot;js-dialog-background\&quot;&gt;&quot;,
+                &quot;&lt;div class=\&quot;js-dialog\&quot;&gt;&quot;,
+                    &quot;&lt;div class=\&quot;js-dialog-header\&quot;&gt;&quot;,
+                        &quot;&lt;span class=\&quot;title-container\&quot;&gt;&lt;/span&gt;&quot;,
+                        &quot;&lt;span class=\&quot;dialog-buttons\&quot;&gt;&lt;i class=\&quot;button-close close\&quot;&gt;&lt;/i&gt;&lt;/span&gt;&quot;,
+                    &quot;&lt;/div&gt;&quot;,
+                    &quot;&lt;div class=\&quot;js-dialog-body\&quot;&gt;&quot;,
+                        &quot;&lt;div class=\&quot;body-container\&quot;&gt;&lt;/div&gt;&quot;,
+                    &quot;&lt;/div&gt;&quot;,
+                    &quot;&lt;div class=\&quot;js-dialog-footer\&quot;&gt;&quot;,
+                        &quot;&lt;div class=\&quot;footer-container\&quot;&gt;&lt;/div&gt;&quot;,
+                    &quot;&lt;/div&gt;&quot;,
+                &quot;&lt;/div&gt;&quot;,
+            &quot;&lt;/div&gt;&quot;
+        ].join(&#39;&#39;),
         
         _height: 300,
         _width: 500,
         
         _buttonFactory: function (text) {
             var html = [
-                "<div>", text, "</div>"
-            ].join('');
+                &quot;&lt;div&gt;&quot;, text, &quot;&lt;/div&gt;&quot;
+            ].join(&#39;&#39;);
             return js.dom(html);
         },
         
         setBody: function (body) {
-            (this._element) &&
-                this._element.find(".body-container")
-                    .setHtml("")
+            (this._element) &amp;&amp;
+                this._element.find(&quot;.body-container&quot;)
+                    .setHtml(&quot;&quot;)
                     .append(body);
                 
             return this;
         },
         
         setBodyHtml: function (body) {
-            (this._element) &&
-                this._element.find(".body-container")
+            (this._element) &amp;&amp;
+                this._element.find(&quot;.body-container&quot;)
                     .setHtml(body);
 
             return this;
         },
         
         setTitle: function (title) {
-            (this._element) &&
-                this._element.find(".title-container")
-                    .setHtml("")
+            (this._element) &amp;&amp;
+                this._element.find(&quot;.title-container&quot;)
+                    .setHtml(&quot;&quot;)
                     .append(title);
             
             return this;
         },
         
         setTitleHtml: function (title) {
-            (this._element) &&
-                this._element.find(".title-container")
+            (this._element) &amp;&amp;
+                this._element.find(&quot;.title-container&quot;)
                     .setHtml(title);
             
             return this;
@@ -122,29 +139,29 @@ jspyder.extend.fn("dialog", function () {
         
         setHeight: function (height) {
             if (this._element) {
-                height = js.alg.number(height, this._height) + "px";
-                this._element.find(".js-dialog").setCss({ "height": height });
+                height = js.alg.number(height, this._height) + &quot;px&quot;;
+                this._element.find(&quot;.js-dialog&quot;).setCss({ &quot;height&quot;: height });
             }
             return this;
         },
         
         setWidth: function (width) {
             if (this._element) {
-                width = js.alg.number(width, this._width) + "px";
-                this._element.find(".js-dialog").setCss({ "width": width });
+                width = js.alg.number(width, this._width) + &quot;px&quot;;
+                this._element.find(&quot;.js-dialog&quot;).setCss({ &quot;width&quot;: width });
             }
             return this;
         },
         
         attach: function (parent) {
-            (this._element) && 
+            (this._element) &amp;&amp; 
                 this._element.attach(parent);
             
             return this;
         },
         
         remove: function () {
-            (this._element) &&
+            (this._element) &amp;&amp;
                 this._element.remove();
             
             return this;
@@ -152,4 +169,6 @@ jspyder.extend.fn("dialog", function () {
     };
     
     return js_dialog;
-});
+});</pre>
+</body>
+</html>

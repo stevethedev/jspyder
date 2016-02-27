@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <link type="text/css" rel="stylesheet" href="../css/jspyder.css" />
+    <link type="text/css" rel="stylesheet" href="../css/material-icons.css" />
+    <script type="text/javascript" src="../js/jspyder.js"></script>
+    <script type="text/javascript" src="../js/js-ajax.js"></script>
+    <script type="text/javascript" src="../js/js-dtype.js"></script>
+    <script type="text/javascript" src="../js/js-template.js"></script>
+    <script type="text/javascript" src="../js/js-forms.js"></script>
+    <script type="text/javascript" src="../js/js-sp.js"></script>
+    <script type="text/javascript" src="../js/js-date.js"></script>
+    <script type="text/javascript" src="../js/js-canvas.js"></script>
+    <script type="text/javascript" src="../js/js-dialog.js"></script>
+</head>
+
+<body>
+    <div id="form-print" class="spread-1-1" style="border: 1px solid black;"></div>
+    <script type="text/javascript">
+        var formData = {
+                fields: {
+                    autocomplete: {
+                        type: "autocomplete",
+                        text: "Autocomplete Field",
+                        values: [
+                            { text: "Steven",  value: "Steven" },
+                            { text: "Mario",   value: "Steven" },
+                            { text: "Jimenez", value: "Jimenez" }
+                        ] },
+                    button: {
+                        type: "button",
+                        text: "Button",
+                        ignore: true },
+                    checkboxes: { 
+                        type: "checkbox", 
+                        text: "Checkbox Field",
+                        default: "cb2",
+                        values: [
+                            { text: "Checbox #1", value: "cb1" },
+                            { text: "Checbox #2", value: "cb2" },
+                            { text: "Checbox #3", value: "cb3" }
+                        ] },
+                    checkboxes_bitwise: { 
+                        type: "checkbox-bitwise", 
+                        text: "Bitwise Checkbox Field",
+                        default: 0x2,
+                        values: [
+                            { text: "Bitwise #1", value: 0x1 },
+                            { text: "Bitwise #2", value: 0x2 },
+                            { text: "Bitwise #3", value: 0x4 }
+                        ] },
+                    currency: {
+                        type: "currency",
+                        text: "Currency Field",
+                        symbol: "$" },
+                    datefield: {
+                        type: "date",
+                        text: "Date Field" },
+                    dropdown: {
+                        type: "dropdown", 
+                        text: "Dropdown Field",
+                        default: "dd3",
+                        values: [
+                            { text: "Dropdown #1", value: "dd1" },
+                            { text: "Dropdown #2", value: "dd2" },
+                            { text: "Dropdown #3", value: "dd3" }
+                        ]},
+                    hidden: {
+                        type: "hidden",
+                        text: "Hidden Field" },
+                    input: {
+                        type: "input",
+                        text: "Input Field" },
+                    numerical: {
+                        type: "number",
+                        text: "Numerical Field" },
+                    radios: { 
+                        type: "radio", 
+                        text: "Radio Field",
+                        default: "radio2",
+                        values: [
+                            { text: "Radio #1", value: "radio1" },
+                            { text: "Radio #2", value: "radio2" },
+                            { text: "Radio #3", value: "radio3" }
+                        ] },
+                    textarea: {
+                        type: "textarea",
+                        text: "Textarea Field" },
+                    submit: {
+                        type: "submit",
+                        text: "Submit Button",
+                        icon: "save",
+                        ignore: true }
+                },
+                success: function(values) {
+                    var $textarea = js.dom("#form-print"),
+                        strValues = [];
+                        
+                    js.alg.each(values, function(value, field) {
+                        value = (value instanceof Array ? value.join(', ') : value);
+                        if(field === "checkboxes_bitwise") {
+                            value = "000" + value.toString(2);
+                            value = value.substring(value.length - 3);
+                        }
+                        strValues.push(
+                            "<b>", field, ":</b> ", value, "<br />"
+                        );
+                    });
+                    
+                    $textarea.setHtml(strValues.join(''));
+                }
+            },
+            formTemplate = [
+                "<div>",
+                    "<div class='spread-4-1'>${autocomplete}</div>",
+                    "<div class='spread-4-1'>${checkboxes}</div>",
+                    "<div class='spread-4-1'>${checkboxes_bitwise}</div>",
+                    "<div class='spread-4-1'>${currency}</div>",
+                    "<div class='spread-4-1'>${datefield}</div>",
+                    "<div class='spread-4-1'>${dropdown}</div>",
+                    "<div class='spread-4-1'>${hidden}</div>",
+                    "<div class='spread-4-1'>${input}</div>",
+                    "<div class='spread-4-1'>${numerical}</div>",
+                    "<div class='spread-4-1'>${radios}</div>",
+                    "<div class='spread-4-1'>${textarea}</div>",
+                    "<div class='spread-2-1'>${button}</div>",
+                    "<div class='spread-2-1'>${submit}</div>",
+                "</div>"
+            ].join(''),
+            formFn = function(d) {
+                jspyder.dom(document.body).append(d);
+            };
+        
+        var $form = jspyder.form(formData);
+        
+        $form.compileExplicit(formTemplate, null, formFn);
+        
+    </script>
+</body>
+
+</html>

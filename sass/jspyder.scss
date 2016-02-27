@@ -442,10 +442,6 @@ label {
     &.js-control-currency-prefix {
         position: absolute;
         margin: .22em;
-        
-        &:after {
-            content: "$";
-        }
     }
     
     &.js-control-dropdown {

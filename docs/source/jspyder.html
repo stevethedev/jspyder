@@ -185,7 +185,7 @@
 </span>     * @private
      * @member jspyder
      * 
-     * Bootstrap jspyder's environment variable collection.
+     * Bootstrap jspyder&#39;s environment variable collection.
      * 
      * @param {Object} js Jspyder Object
      */
@@ -207,7 +207,7 @@
                 else if (!window.addEventListener) { BROWSER_VERSION = 8; }
                 else { BROWSER_VERSION = 7; }
             }
-            else if (typeof window.InstallTrigger !== 'undefined') {
+            else if (typeof window.InstallTrigger !== &#39;undefined&#39;) {
                 BROWSER_NAME = &quot;Firefox&quot;;
 
                 if (Int8Array &amp;&amp; Int8Array.prototype.sort) { BROWSER_VERSION = 7; }
@@ -217,7 +217,7 @@
                 else if (typeof window.Reflect !== &quot;undefined&quot;) { BROWSER_VERSION = 42; }
                 else { BROWSER_VERSION = 41; }
             }
-            else if (!!window.opera || navigator.userAgent.indexOf(' OPR/') &gt;= 0) {
+            else if (!!window.opera || navigator.userAgent.indexOf(&#39; OPR/&#39;) &gt;= 0) {
                 BROWSER_NAME = &quot;Opera&quot;;
                 BROWSER_VERSION = 1;
             }
@@ -226,7 +226,7 @@
                 BROWSER_VERSION = 45;
                 //45 - 51;
             }
-            else if (Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') &gt; 0) {
+            else if (Object.prototype.toString.call(window.HTMLElement).indexOf(&#39;Constructor&#39;) &gt; 0) {
                 BROWSER_NAME = &quot;Safari&quot;;
                 if (window.CSS.supports) { BROWSER_VERSION = 9; }
                 else if (!window.CSS.supports) { BROWSER_VERSION = 8; }
@@ -314,7 +314,7 @@
 </span>     * @private
      * @member jspyder
      * 
-     * Bootstrap jspyder's algorithm collection.
+     * Bootstrap jspyder&#39;s algorithm collection.
      * 
      * @param {Object} js Jspyder Object
      */
@@ -332,8 +332,12 @@
          * JSpyder algorithm collection.
          */
         js_alg = {
-
-<span id='jspyder-alg-method-'>            /**
+            // each: function each(obj, fn, data) {
+            //     return (typeof obj.length === &quot;number&quot;
+            //         ? js_alg.eachArray(obj, fn, data)
+            //         : js_alg.eachObj(obj, fn, data));
+            // },
+<span id='jspyder-alg-method-each'>            /**
 </span>             * Iterates through a provided object and executes fn() on each
              * step.  Uses a controller to manage the loop.
              * 
@@ -352,6 +356,7 @@
              *      The context of this variable points to a controller object
              *      with the members:
              *       - stop() -- stops iterations and breaks from the function
+             *       - drop(n) -- deletes the current item from the array
              * 
              *      If the Function returns a value, then that value will be
              *      inserted in the array at that position.
@@ -361,16 +366,13 @@
              * 
              * @return {Object} JSpyder 
              */
-            // each: function each(obj, fn, data) {
-            //     return (typeof obj.length === &quot;number&quot;
-            //         ? js_alg.eachArray(obj, fn, data)
-            //         : js_alg.eachObj(obj, fn, data));
-            // },
-            
             each: function each(obj, fn, data) {
                 var ctl = {
                         &quot;stop&quot;: function () {
-                            _break = false;
+                            _break = true;
+                        },
+                        &quot;drop&quot;: function (n) {
+                            
                         }
                     },
                     _break = false;
@@ -389,7 +391,12 @@
             arrEach: function each(obj, fn, data) {
                 var ctl = {
                         &quot;stop&quot;: function () {
-                            _break = false;
+                            _break = true;
+                            return this;
+                        },
+                        &quot;drop&quot;: function(n) {
+                            (obj instanceof Array) &amp;&amp; obj.splice(i--, js.alg.number(n, 1));
+                            return this;
                         }
                     },
                     _break = false;
@@ -468,7 +475,7 @@
             },
             
             &quot;date&quot;: function(v, d) {
-                return ((input instanceof Date || Object.prototype.toString.call(input) === '[object Date]')
+                return ((input instanceof Date || Object.prototype.toString.call(input) === &#39;[object Date]&#39;)
                     ? v
                     : new Date());
             },
@@ -595,6 +602,14 @@
                 return byteArray[0];
             },
             
+            rad2deg: function (n, d) {
+                return js.alg.number(n, d) * 180 / Math.PI;
+            },
+            
+            deg2rad: function (n, d) {
+                return js.alg.number(n, d) * Math.PI / 180;
+            },
+            
 <span id='jspyder-alg-method-sliceArray'>            /**
 </span>             * Applies an array slice against an object, if it is capable of
              * being performed.  If it cannot be performed, then returns a
@@ -615,6 +630,28 @@
                 return ret;
             },
             
+            sortArrayObj: function(arr, asc, field /*, ... */) {
+                var list = js.alg.sliceArray(arguments, 2);
+                arr.sort(function (left, right) {
+                    for (var i = 0; left &amp;&amp; right &amp;&amp; i &lt; list.length; i++) {
+                        left = left[list[i]];
+                        right = right[list[i]];
+                    }
+                    
+                    return (asc ? left &gt;= right : left &lt;= right);
+                });
+                return arr;
+            },
+            
+            sortArrayNum: function(arr, asc) {
+                arr.sort(function (left, right) {
+                    return (asc
+                        ? js.alg.number(left) - js.alg.number(right)
+                        : js.alg.number(right) - js.alg.number(left));
+                });
+                return arr;
+            },
+            
 <span id='jspyder-alg-method-joinArray'>            /**
 </span>             * Performs an in-place concatenation of the 2nd-Nth parameter
              * arrays into arrRef.  Variadic function.
@@ -628,7 +665,7 @@
              * @return {Array} arrRef parameter
              */
             joinArray: function(arrRef, arrFrom /*, ... */) {
-                // limit pulled from Google's closure library:
+                // limit pulled from Google&#39;s closure library:
                 // https://github.com/google/closure-library/commit/da353e0265ea32583ea1db9e7520dce5cceb6f6a
                 var CHUNK_SIZE = 8192; 
                 
@@ -714,6 +751,16 @@
             cloneObj: function(obj) {
                 if(!obj || typeof obj !== &quot;object&quot;) { return obj; }
                 return js.alg.mergeObj(obj.constructor(), obj);
+            },
+            deepCloneObj: function(obj) {
+                if(!obj || typeof obj !== &quot;object&quot;) { return obj; }
+                obj = this.cloneObj(obj);
+                
+                js.alg.each(obj, function(value, key, obj) {
+                    obj[key] = js.alg.deepCloneObj(value);
+                });
+                
+                return obj;
             }
         };
 
@@ -823,7 +870,7 @@
         
 <span id='jspyder-dom-method-__getDomClasses'>        /**
 </span>         * @private
-         * Gets the DOM object's classes as an array
+         * Gets the DOM object&#39;s classes as an array
          */
         function __getDomClasses(element) {
             return (__isElement(element)
@@ -833,7 +880,7 @@
         
 <span id='jspyder-dom-method-_setDomClass'>        /**
 </span>         * @private
-         * Sets the DOM object's class based on the enable flag
+         * Sets the DOM object&#39;s class based on the enable flag
          */
         function _setDomClass(element, cls, enable) {
             var clss = __getDomClasses(element),
@@ -858,7 +905,7 @@
         
 <span id='jspyder-dom-method-_getDomClass'>        /**
 </span>         * @private
-         * Sets the DOM object's class based on the enable flag
+         * Sets the DOM object&#39;s class based on the enable flag
          */
         function _getDomClass(element, cls) {
             return (__getDomClasses(element).indexOf(cls) !== -1);
@@ -1166,7 +1213,7 @@
 </span>             * Attaches the element identified by [child] to the first element
              * identified in the jsDom object..
              *
-             * @param {Mixed} parent
+             * @param {Mixed} child
              *      The element/string/etc. which should be attached to this
              *      jsDom object.
              */
@@ -1177,6 +1224,25 @@
                         doc.appendChild(c);
                     }, doc);
                     this.appendChild(doc);
+                })
+                return this;
+            },
+            
+<span id='jspyder-dom-method-prepend'>            /**
+</span>             * Attaches the element identified by [child] to the first element
+             * identified in the jsDom object..
+             *
+             * @param {Mixed} child
+             *      The element/string/etc. which should be attached to the top 
+             *      of this jsDom object.
+             */
+            prepend: function(child) {
+                this.element(0, function () {
+                    var doc = document.createDocumentFragment();
+                    js_dom(child).each(function (c, _1, _2, doc) {
+                        doc.appendChild(c);
+                    }, doc);
+                    this.insertBefore(doc, this.firstChild);
                 })
                 return this;
             },
@@ -1475,7 +1541,7 @@
                     name = names[n];
                     field = fields[name];
 
-                    this._template_insert(tDOM, '${' + name + '}', field);
+                    this._template_insert(tDOM, &#39;${&#39; + name + &#39;}&#39;, field);
                 }
                 return tDOM;
             },

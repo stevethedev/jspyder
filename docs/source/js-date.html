@@ -175,6 +175,7 @@ jspyder.extend.fn(&quot;date&quot;, function () {
          * Gets the currently stored date value as a Date object.
          */
         asDate: function () { return this._value; },
+        
 <span id='jspyder-date-method-asString'>        /**
 </span>         * @method
          * 
@@ -184,11 +185,20 @@ jspyder.extend.fn(&quot;date&quot;, function () {
          *      The format to use when generating the string.
          * 
          * @param {Boolean} [useUtc=this._useUTC]
+         * 
+         * @param {Boolean} [defaultText=&quot;&quot;]
          */
-        asString: function (format, useUtc) {
-            format = js.alg.string(format, this._format || __defaultFormat);
-            useUtc = js.alg.bool(useUtc, this._useUTC);
-            return __formatDate(this._value, format, useUtc);
+        asString: function (format, useUtc, defaultText) {
+            if( this.isValid() ) {
+                format = js.alg.string(format, this._format || __defaultFormat);
+                useUtc = js.alg.bool(useUtc, this._useUTC);
+                return __formatDate(this._value, format, useUtc);
+            }
+            return js.alg.string(defaultText, &quot;&quot;);
+        },
+        
+        isValid: function() {
+            return this._value &amp;&amp; !isNaN(this._value.getYear());
         },
         
 <span id='jspyder-date-method-addDays'>        /**
@@ -373,9 +383,9 @@ jspyder.extend.fn(&quot;date&quot;, function () {
         }
     }
     
-<span id='jspyder-date-property-'>        /**
-</span>         * @private
-         */
+<span id='global-property-'>    /**
+</span>     * @ignore
+     */
     var __reSearchStrings = [
             &quot;YYYY&quot;, &quot;YY&quot;, 
             &quot;yyyy&quot;, &quot;yy&quot;,
@@ -388,26 +398,26 @@ jspyder.extend.fn(&quot;date&quot;, function () {
             &quot;NN&quot;, &quot;N&quot;, &quot;nn&quot;, &quot;n&quot;, 
             &quot;SS&quot;, &quot;S&quot;, &quot;ss&quot;, &quot;s&quot;
         ],
-<span id='jspyder-date-property-'>        /**
-</span>         * @private
+<span id='global-property-'>        /**
+</span>         * @ignore
          */
         __reSearch = new RegExp(&quot;(&quot; + __reSearchStrings.join(&quot;|&quot;) + &quot;)&quot;, &quot;g&quot;),
-<span id='jspyder-date-property-'>        /**
-</span>         * @private
+<span id='global-property-'>        /**
+</span>         * @ignore
          */
         __defaultFormat = &quot;ddd mmm d yyyy hh:mm:ss&quot;,
-<span id='jspyder-date-property-'>        /**
-</span>         * @private
+<span id='global-property-'>        /**
+</span>         * @ignore
          */
         __defaultUtc = false,
-<span id='jspyder-date-property-'>        /**
-</span>         * @private
+<span id='global-property-'>        /**
+</span>         * @ignore
          */
         __years = [
             { YY: &quot;\\d{2}&quot;, YYYY: &quot;\\d{4}&quot;, yy: &quot;\\d{2}&quot;, yyyy: &quot;\\d{4}&quot; }
         ],
-<span id='jspyder-date-property-'>        /**
-</span>         * @private
+<span id='global-property-'>        /**
+</span>         * @ignore
          */
         __months = [
             { m:  &quot;1&quot;, mm: &quot;01&quot;, mmm: &quot;Jan&quot;, mmmm: &quot;January&quot;,   M:  &quot;1&quot;, MM: &quot;01&quot;, MMM: &quot;JAN&quot;, MMMM: &quot;JANUARY&quot;   },
@@ -423,8 +433,8 @@ jspyder.extend.fn(&quot;date&quot;, function () {
             { m: &quot;11&quot;, mm: &quot;11&quot;, mmm: &quot;Nov&quot;, mmmm: &quot;November&quot;,  M: &quot;11&quot;, MM: &quot;11&quot;, MMM: &quot;NOV&quot;, MMMM: &quot;NOVEMBER&quot;  },
             { m: &quot;12&quot;, mm: &quot;12&quot;, mmm: &quot;Dec&quot;, mmmm: &quot;December&quot;,  M: &quot;12&quot;, MM: &quot;12&quot;, MMM: &quot;DEC&quot;, MMMM: &quot;DECEMBER&quot;  },
         ],
-<span id='jspyder-date-property-'>        /**
-</span>         * @private
+<span id='global-property-'>        /**
+</span>         * @ignore
          */
         __days = [
             { d:  &quot;1&quot;, dd: &quot;01&quot; }, { d:  &quot;2&quot;, dd: &quot;02&quot; }, { d:  &quot;3&quot;, dd: &quot;03&quot; }, { d:  &quot;4&quot;, dd: &quot;04&quot; },
@@ -436,8 +446,8 @@ jspyder.extend.fn(&quot;date&quot;, function () {
             { d: &quot;25&quot;, dd: &quot;25&quot; }, { d: &quot;26&quot;, dd: &quot;26&quot; }, { d: &quot;27&quot;, dd: &quot;27&quot; }, { d: &quot;28&quot;, dd: &quot;28&quot; },
             { d: &quot;29&quot;, dd: &quot;29&quot; }, { d: &quot;30&quot;, dd: &quot;30&quot; }, { d: &quot;31&quot;, dd: &quot;31&quot; },
         ],
-<span id='jspyder-date-property-'>        /**
-</span>         * @private
+<span id='global-property-'>        /**
+</span>         * @ignore
          */
         __weekdays = [
             { D: &quot;S&quot;, DD: &quot;Su&quot;, DDD: &quot;SUN&quot;, DDDD: &quot;SUNDAY&quot;,    ddd: &quot;Sun&quot;, dddd: &quot;Sunday&quot;    },
@@ -448,8 +458,8 @@ jspyder.extend.fn(&quot;date&quot;, function () {
             { D: &quot;F&quot;, DD: &quot;Fr&quot;, DDD: &quot;FRI&quot;, DDDD: &quot;FRIDAY&quot;,    ddd: &quot;Fri&quot;, dddd: &quot;Friday&quot;    },
             { D: &quot;S&quot;, DD: &quot;Sa&quot;, DDD: &quot;SAT&quot;, DDDD: &quot;SATURDAY&quot;,  ddd: &quot;Sat&quot;, dddd: &quot;Saturday&quot;  },
         ],
-<span id='jspyder-date-property-'>        /**
-</span>         * @private
+<span id='global-property-'>        /**
+</span>         * @ignore
          */
         __hours = [
             { h: &quot;12&quot;, hh: &quot;12&quot;, H:  &quot;0&quot;, HH: &quot;00&quot;, AM: &quot;AM&quot;, am: &quot;am&quot; },
@@ -477,8 +487,8 @@ jspyder.extend.fn(&quot;date&quot;, function () {
             { h: &quot;10&quot;, hh: &quot;10&quot;, H: &quot;22&quot;, HH: &quot;22&quot;, AM: &quot;PM&quot;, am: &quot;pm&quot; },
             { h: &quot;11&quot;, hh: &quot;11&quot;, H: &quot;23&quot;, HH: &quot;23&quot;, AM: &quot;PM&quot;, am: &quot;pm&quot; },
         ],
-<span id='jspyder-date-property-'>        /**
-</span>         * @private
+<span id='global-property-'>        /**
+</span>         * @ignore
          */
         __minutes = [
             { n:  &quot;0&quot;, nn: &quot;00&quot; }, { n:  &quot;1&quot;, nn: &quot;01&quot; }, { n:  &quot;2&quot;, nn: &quot;02&quot; }, { n:  &quot;3&quot;, nn: &quot;03&quot; },
@@ -497,8 +507,8 @@ jspyder.extend.fn(&quot;date&quot;, function () {
             { n: &quot;52&quot;, nn: &quot;52&quot; }, { n: &quot;53&quot;, nn: &quot;53&quot; }, { n: &quot;54&quot;, nn: &quot;54&quot; }, { n: &quot;55&quot;, nn: &quot;55&quot; }, 
             { n: &quot;56&quot;, nn: &quot;56&quot; }, { n: &quot;57&quot;, nn: &quot;57&quot; }, { n: &quot;58&quot;, nn: &quot;58&quot; }, { n: &quot;59&quot;, nn: &quot;59&quot; }
         ],
-<span id='jspyder-date-property-'>        /**
-</span>         * @private
+<span id='global-property-'>        /**
+</span>         * @ignore
          */
         __seconds = [
             { s:  &quot;0&quot;, ss: &quot;00&quot; }, { s:  &quot;1&quot;, ss: &quot;01&quot; }, { s:  &quot;2&quot;, ss: &quot;02&quot; }, { s:  &quot;3&quot;, ss: &quot;03&quot; },
@@ -517,13 +527,13 @@ jspyder.extend.fn(&quot;date&quot;, function () {
             { s: &quot;52&quot;, ss: &quot;52&quot; }, { s: &quot;53&quot;, ss: &quot;53&quot; }, { s: &quot;54&quot;, ss: &quot;54&quot; }, { s: &quot;55&quot;, ss: &quot;55&quot; }, 
             { s: &quot;56&quot;, ss: &quot;56&quot; }, { s: &quot;57&quot;, ss: &quot;57&quot; }, { s: &quot;58&quot;, ss: &quot;58&quot; }, { s: &quot;59&quot;, ss: &quot;59&quot; }
         ],
-<span id='jspyder-date-property-'>        /**
-</span>         * @private
+<span id='global-property-'>        /**
+</span>         * @ignore
          */
         __timeZones = { },
         // collected definitions
-<span id='jspyder-date-property-'>        /**
-</span>         * @private
+<span id='global-property-'>        /**
+</span>         * @ignore
          */
         __formatCollection = {
             // years
@@ -577,8 +587,8 @@ jspyder.extend.fn(&quot;date&quot;, function () {
             &quot;SS&quot;:   __buildFormatRegexStringFrom(__seconds, &quot;SS&quot;   )
         };
     
-<span id='jspyder-date-method-__buildFormatRegexStringFrom'>    /**
-</span>     * @private
+<span id='global-method-__buildFormatRegexStringFrom'>    /**
+</span>     * @ignore
      * 
      * Generates a regular expression for the __formatCollection
      */
@@ -610,14 +620,17 @@ jspyder.extend.fn(&quot;date&quot;, function () {
             lookup: rev
         };
     }
-    function __isDate(v) {
-        return (v instanceof Date || Object.prototype.toString.call(v) === '[object Date]');
+<span id='global-method-__isDate'>    /** @ignore */
+</span>    function __isDate(v) {
+        return (v instanceof Date || Object.prototype.toString.call(v) === &#39;[object Date]&#39;);
     }
-    function __isJsDate(v) {
+<span id='global-method-__isJsDate'>    /** @ignore */
+</span>    function __isJsDate(v) {
         return js_date.fn.isPrototypeOf(v);
     }
     
-    function __timezoneOffset() {
+<span id='global-method-__timezoneOffset'>    /** @ignore */
+</span>    function __timezoneOffset() {
         var offset = (new Date()).getTimezoneOffset(),
             hours = offset/60; // offset / minutes-per-hour
             
@@ -625,7 +638,8 @@ jspyder.extend.fn(&quot;date&quot;, function () {
     }
     
     // create a date from a string and an array of format strings
-    function __parseString(v, f) {
+<span id='global-method-__parseString'>    /** @ignore */
+</span>    function __parseString(v, f) {
         v = js.alg.string(v, &quot;&quot;);
         var format = js.alg.string(f),
             d = { y: 0, m: 0, d: 1, h: 0, n: 0, s: 0, a: 0 };
@@ -693,7 +707,8 @@ jspyder.extend.fn(&quot;date&quot;, function () {
         return new Date(d.y, d.m, d.d, d.h + d.a, d.n, d.s);
     }
     
-    function __formatDate(date, format, useUTC) {
+<span id='global-method-__formatDate'>    /** @ignore */
+</span>    function __formatDate(date, format, useUTC) {
         var d = {
             y: useUTC ? date.getUTCFullYear() : date.getFullYear(),
             m: useUTC ? date.getUTCMonth()    : date.getMonth(),
@@ -728,7 +743,7 @@ jspyder.extend.fn(&quot;date&quot;, function () {
                     
                 case &quot;YYYY&quot;:
                 case &quot;yyyy&quot;:
-                    value = js.alg.string(d.y);
+                    value = js.alg.string(d.y, &quot;&quot;);
                     break;
                    
                 case &quot;MMMM&quot;:
@@ -786,14 +801,14 @@ jspyder.extend.fn(&quot;date&quot;, function () {
                     console.log(collection);
             }
             
-            left += value;
+            left += js.alg.string(value, &quot;&quot;);
         });
         
         return left + right;
     }
     
-    
-    function __getTimezoneOffset() {
+<span id='global-method-__getTimezoneOffset'>    /** @ignore */
+</span>    function __getTimezoneOffset() {
         
     }
     
