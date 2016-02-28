@@ -1546,6 +1546,18 @@ label {
   background-color: #e9e9e9;
   box-shadow: 0 0 0.0625em rgba(114, 114, 114, 0.6) inset;
   cursor: pointer; }
+  .js-control.js-control-button.js-buttonset {
+    display: inline-block;
+    border-radius: 0; }
+    .js-control.js-control-button.js-buttonset[data-checked] {
+      background-color: #9bd9eb;
+      color: #175c71; }
+    .js-control.js-control-button.js-buttonset:first-of-type {
+      border-radius: 0.2em 0 0 0.2em; }
+    .js-control.js-control-button.js-buttonset:nth-of-type(n+2) {
+      border-left: none; }
+    .js-control.js-control-button.js-buttonset:last-of-type {
+      border-radius: 0 0.2em 0.2em 0; }
   .js-control.js-control-button .button-text {
     color: #212121;
     vertical-align: middle;
@@ -1618,6 +1630,47 @@ label {
         border-bottom: 0.0625em solid #b6b6b6; }
         .js-control.js-control-dropdown .dropdown-selection li.item:hover:before {
           background-color: #9bd9eb; }
+.js-control.js-autocomplete-search {
+  width: -webkit-calc(100% -  0.4em);
+  width: calc(100% -  0.4em);
+  margin: 0;
+  padding: 0;
+  text-decoration: none;
+  list-style: outside none none;
+  border: 0.0625em solid #b6b6b6;
+  border-top: 0.0625em solid transparent;
+  border-radius: 0 0 0.2em 0.2em;
+  margin-left: 0.0625em;
+  margin-top: .2em;
+  overflow: hidden;
+  z-index: 2;
+  margin-left: -0.03125em;
+  margin-top: -0.0625em;
+  position: absolute; }
+  .js-control.js-autocomplete-search:hover {
+    border-color: #9bd9eb;
+    box-shadow: 0 0.0625em 0.16em #9bd9eb;
+    border-top-color: transparent; }
+  .js-control.js-autocomplete-search li.search-item {
+    padding: .08em .3em;
+    background-color: #FFF;
+    border-top: 0.0625em solid transparent;
+    border-bottom: 0.0625em solid transparent;
+    position: relative; }
+    .js-control.js-autocomplete-search li.search-item:before {
+      content: "";
+      display: inline-block;
+      background-color: #b6b6b6;
+      position: absolute;
+      left: 0;
+      width: .2em;
+      height: 1.5em;
+      margin-top: -.14em; }
+    .js-control.js-autocomplete-search li.search-item:hover, .js-control.js-autocomplete-search li.search-item.selected {
+      border-top: 0.0625em solid #b6b6b6;
+      border-bottom: 0.0625em solid #b6b6b6; }
+      .js-control.js-autocomplete-search li.search-item:hover:before, .js-control.js-autocomplete-search li.search-item.selected:before {
+        background-color: #9bd9eb; }
 .js-control.js-control-date-picker {
   display: block;
   width: 12.5em;

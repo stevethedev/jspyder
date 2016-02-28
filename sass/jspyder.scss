@@ -422,6 +422,26 @@ label {
         box-shadow: 0 0 $px rgba($color-secondary, .6) inset;
         cursor: pointer;
         
+        &.js-buttonset {
+            display: inline-block;
+            border-radius: 0;
+            
+            &[data-checked] {
+                background-color: $color-info-background;
+                color: $color-info-text;
+            }
+            
+            &:first-of-type {
+                border-radius: $input-border-radius 0 0 $input-border-radius;
+            }
+            &:nth-of-type(n+2) {
+                border-left: none;
+            }
+            &:last-of-type {
+                border-radius: 0 $input-border-radius $input-border-radius 0;
+            }
+        }
+        
         .button-text {
             color: $color-black;
             vertical-align: middle;
@@ -519,6 +539,57 @@ label {
                     border-top: $px solid $color-divider;
                     border-bottom: $px solid $color-divider;
                 }
+            }
+        }
+    }
+    
+    &.js-autocomplete-search {
+        @include calc("width", "100% - " 2 * $input-border-radius);
+        margin: 0;
+        padding: 0;
+        text-decoration: none;
+        list-style: outside none none;
+        border: $px solid $color-divider;
+        border-top: $px solid transparent;
+        border-radius: 0 0 $input-border-radius $input-border-radius;
+        margin-left: $px;
+        margin-top: .2em;
+        overflow: hidden;
+        z-index: 2;
+        margin-left: -0.5 * $px;
+        margin-top: -$px;
+        position: absolute;
+        
+        &:hover {
+            border-color: $color-info-background;
+            box-shadow: 0 $px .16em $color-info-background;
+            border-top-color: transparent;
+        }
+        
+        li.search-item {
+            padding: .08em .3em;
+            background-color: $color-white;
+            border-top: $px solid transparent;
+            border-bottom: $px solid transparent;
+            position: relative;
+            
+            &:before {
+                content: "";
+                display: inline-block;
+                background-color: $color-divider;
+                position: absolute;
+                left: 0;
+                width: .2em;
+                height: 1.5em;
+                margin-top: -.14em;
+            }
+            
+            &:hover, &.selected {
+                &:before {
+                    background-color: $color-info-background;
+                }
+                border-top: $px solid $color-divider;
+                border-bottom: $px solid $color-divider;
             }
         }
     }

@@ -24,10 +24,15 @@
                     autocomplete: {
                         type: "autocomplete",
                         text: "Autocomplete Field",
+                        value: "auto1",
+                        strict: true,
                         values: [
-                            { text: "Steven",  value: "Steven" },
-                            { text: "Mario",   value: "Steven" },
-                            { text: "Jimenez", value: "Jimenez" }
+                            { text: "Search #1",  value: "auto1" },
+                            { text: "Search #2",  value: "auto2" },
+                            { text: "Search #3",  value: "auto3" },
+                            { text: "Search #4",  value: "auto4" },
+                            { text: "Search #5",  value: "auto5" },
+                            { text: "Search #6",  value: "auto6" }
                         ] },
                     button: {
                         type: "button",
@@ -85,14 +90,24 @@
                             { text: "Radio #2", value: "radio2" },
                             { text: "Radio #3", value: "radio3" }
                         ] },
-                    textarea: {
-                        type: "textarea",
-                        text: "Textarea Field" },
                     submit: {
                         type: "submit",
                         text: "Submit Button",
                         icon: "save",
-                        ignore: true }
+                        ignore: true },
+                    textarea: {
+                        type: "textarea",
+                        text: "Textarea Field" },
+                    toggles: {
+                        type: "toggles",
+                        text: "Toggle Field",
+                        default: "toggle2",
+                        values: [
+                            { text: "Toggle #1", value: "toggle1" },
+                            { text: "Toggle #2", value: "toggle2" },
+                            { text: "Toggle #3", value: "toggle3" }
+                        ]
+                    }
                 },
                 success: function(values) {
                     var $textarea = js.dom("#form-print"),
@@ -117,6 +132,7 @@
                     "<div class='spread-4-1'>${autocomplete}</div>",
                     "<div class='spread-4-1'>${checkboxes}</div>",
                     "<div class='spread-4-1'>${checkboxes_bitwise}</div>",
+                    "<div class='spread-4-2'>${toggles}</div>",
                     "<div class='spread-4-1'>${currency}</div>",
                     "<div class='spread-4-1'>${datefield}</div>",
                     "<div class='spread-4-1'>${dropdown}</div>",
