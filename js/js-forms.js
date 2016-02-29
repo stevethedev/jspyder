@@ -247,7 +247,8 @@ jspyder.extend.fn("form", function () {
                 ignore: cfg.ignore,
                 config: cfg };
                 
-            this.setFieldValue(name, (typeof val !== "undefined" ? val : dval));
+            // this.setFieldValue(name, (typeof val !== "undefined" ? val : dval));
+            this.resetFieldValue(name);
 
             return this;
         },
@@ -322,6 +323,23 @@ jspyder.extend.fn("form", function () {
          */
         exportFieldData: function (name) {
             return this._fields[name] || null;
+        },
+        
+        resetFieldValue: function (name) {
+            var data = this.exportFieldData(name),
+                dval = data.config.default,
+                val = data.config.value;
+                
+            this.setFieldValue(name, typeof val !== "undefined" ? val : dval);
+            return this;
+        },
+        
+        resetFieldValues: function () {
+            this.each(this._resetFieldValues, this);;
+        },
+        _resetFieldValues: function (field, name, fields, form) {
+            form.resetFieldValue(name);
+            return;
         },
         
         setFieldValue: function (name, value) {
@@ -442,7 +460,11 @@ jspyder.extend.fn("form", function () {
          *      Optional callback to execute after the reset has been completed.
          *      See jspyder.form constructor for expected parameters.
          */
-        reset: function(fn) {
+        reset: function (fn) {
+            this.resetFieldValues();
+            
+            js.alg.use(this, typeof fn === "function" ? fn : this._reset);
+            
             return this;
         },
         
@@ -533,13 +555,29 @@ jspyder.extend.fn("form", function () {
             return this._compiler(template, data, fn, "compileExplicit");
         },
         
+        compileDom: function (dom, data, fn) {
+            if (dom && dom.getHtml) {
+                var form = this;
+                dom.getHtml(function (html) {
+                    form._compiler(html, data, fn, dom);
+                });
+            }
+            return this;
+            // return this._compiler(dom, data, fn, null);
+        },
+        
         _compiler: function(template, data, fn, compile) {
             var dom = null;
             
-            js.template(data)
-                [compile](template, null, function(text) {
-                    dom = js.dom(text);
-                });
+            if (typeof compile !== "string") {
+                dom = compile;
+            }
+            else {
+                js.template(data)
+                    [compile](template, null, function(text) {
+                        dom = js.dom(text);
+                    });
+            }
                 
             this._dom = dom;
             
@@ -856,8 +894,8 @@ jspyder.extend.fn("form", function () {
                 var html = [
                         "<div class=\"js-control js-control-button ", btnclass, "\"",
                             " name=\"", btnname, "\">",
-                                (btnicon ? "<i class=\"" + btnicon + "\"></i>" : ""),
-                                btntext ? ("<span class=\"button-text\">" + btntext + "</span>") : "",
+                                "<i class=\"" + btnicon + "\"></i>",
+                                "<span class=\"button-text\" data-buttontext=\"" + btntext + "\"></span>",
                         "</div>"
                     ].join(''),
                     
@@ -891,6 +929,32 @@ jspyder.extend.fn("form", function () {
             function submit(cfg) {
                 var $button = this.buildControl(js.alg.mergeObj(cfg, __override), true);
                 $button.on("click", __submitClickFactory(this));
+                return $button;
+            }
+            
+            return submit;
+        })
+        /**
+         * @method reset
+         * @member jspyder.form.templates
+         */
+        .registerControlFn("reset", function() {
+            
+            function __resetClickFactory(form) {
+                return function __resetClick(event) {
+                    form.reset();
+                    return;
+                }
+            }
+            
+            var __override = {
+                type: "button",
+                nolabel: true
+            };
+            
+            function submit(cfg) {
+                var $button = this.buildControl(js.alg.mergeObj(cfg, __override), true);
+                $button.on("click", __resetClickFactory(this));
                 return $button;
             }
             
@@ -1094,7 +1158,6 @@ jspyder.extend.fn("form", function () {
                     option = js.alg.mergeObj({ 
                         "name": cfgname, 
                         "class": cfgclass }, options[i]);
-                    option.type = "radio-single";
                     option.class = cfgclass + js.alg.string(options[i].class);
                     $option = js.dom("<div></div>").append(single(option));
                     $radio.and($option);
@@ -1214,8 +1277,7 @@ jspyder.extend.fn("form", function () {
          */
         .registerControlFn("toggles", function() {
             function exportValue(data) {
-                var keys = [],
-                    key;
+                var keys = [];
                     
                 this.filter(".js-buttonset").each(function (el) {
                     js.dom(el).getAttrs({ "data-value": null, "data-checked": null }, function (attrs) {
@@ -1240,7 +1302,7 @@ jspyder.extend.fn("form", function () {
                         js.dom(element)
                             .getAttrs(attrs, function (attrs) {
                                 old = attrs["data-checked"];
-                                if (values && values.indexOf(attrs["data-value"]) > -1) {
+                                if (values && values.indexOf) {
                                     attrs["data-checked"] = (values.indexOf(attrs["data-value"]) > -1 ? true : null);
                                 }
                                 return;
@@ -1262,7 +1324,7 @@ jspyder.extend.fn("form", function () {
                         type: "button",
                         text: cfgtext,
                         class: cfgclass + " js-buttonset",
-                        click: function (event) {
+                        click: function (data, event) {
                             js.dom(this)
                                 .getAttrs({ "data-checked": false }, function (attrs) {
                                     attrs["data-checked"] = (js.alg.bool(attrs["data-checked"]) ? null : true);
@@ -1291,21 +1353,128 @@ jspyder.extend.fn("form", function () {
                         "name": cfgname }, options[i]);
                     option.class = cfgclass + js.alg.string(options[i].class);
                     $option = js.dom(checkbox(option));
-                    $checkbox.and($option);                    
+                    $checkbox.and($option);
                 }
-                
-                $checkbox
-                    .find("input")
-                        .on("change", function (event) {
-                            var checked = this.checked;
-                            js.dom(this).getValue(function(v) {
-                                cfg["data-values"]["val-" + js.alg.string(v)] = checked;
-                            });
-                        });
                 
                 cfg.exportValue = exportValue;
                 cfg.setValue = setValue;
                 
+                return $checkbox;
+            }
+        })
+        /**
+         * @method toggles-radio
+         * @member jspyder.form.templates
+         */
+        .registerControlFn("toggles-radio", function() {
+            function exportValue(data) {
+                var value = null;
+                    
+                this.filter(".js-buttonset[data-checked]").at(0)
+                    .getAttrs({ "data-value": null, "data-checked": null }, function (attrs) {
+                        value = attrs["data-value"];
+                        return;
+                    });
+                
+                return value;
+            }
+            
+            function setValue(data, values) {
+                this.filter(".js-buttonset[data-checked]:not([data-value=\"" + values + "\"])")
+                    .setAttrs({ "data-checked": null })
+                    .trigger("change");
+                    
+                this.filter(".js-buttonset[data-value=\"" + values + "\"]:not([data-checked])")
+                    .setAttrs({ "data-checked": true })
+                    .trigger("change");
+
+                return this;
+            }
+            
+            var __override = {
+                    "type": "toggles",
+                    "nolabel": true
+                };
+            
+            return function (cfg) {
+                var tmp = js.alg.mergeObj({}, cfg, __override),
+                    $checkbox = this.buildControl(tmp, true),
+                    form = this;
+                    
+                $checkbox.on("click", function (event) {
+                    var self = js.dom(this);
+                    js.alg.each(cfg.values, function (valObj) {
+                        self.getAttrs({ "data-value": null }, function (attrs) {
+                            form.setFieldValue(cfg.name, attrs["data-value"]);
+                        });
+                        return;
+                    });
+                });
+                    
+                cfg.exportValue = exportValue;
+                cfg.setValue = setValue;
+                    
+                return $checkbox;
+            }
+        })
+        /**
+         * @method toggles-bitwise
+         * @member jspyder.form.templates
+         */
+        .registerControlFn("toggles-bitwise", function() {
+            function exportValue(data) {
+                var values = js.alg.use(this, __baseExportValue, arguments),
+                    value = 0;
+                
+                js.alg.each(values, function (cbValue) {
+                    value = value | js.alg.number(cbValue);
+                });
+                
+                return value;
+            }
+            
+            function setValue(data, values) {
+                values = js.alg.number(values, 0);
+                this.filter(".js-buttonset")
+                    .each(function (element) {
+                        var attrs = {
+                                "data-value": "",
+                                "data-checked": null
+                            },
+                            old = null;
+
+                        js.dom(element)
+                            .getAttrs(attrs, function (attrs) {
+                                old = attrs["data-checked"];
+                                attrs["data-value"] = js.alg.number(attrs["data-value"], 0);
+                                attrs["data-checked"] = ((values === attrs["data-value"]) || (values & attrs["data-value"])) ? true : null;
+                                return;
+                            })
+                            .setAttrs(attrs)
+                            .trigger(attrs["data-checked"] !== old ? "change" : "");
+
+                        return;
+                    });
+
+                return this;
+            }
+            
+            var __baseExportValue = null,
+                __override = {
+                    "type": "toggles",
+                    "nolabel": true
+                };
+            
+            return function (cfg) {
+                var tmp = js.alg.mergeObj({}, cfg, __override),
+                    $checkbox = this.buildControl(tmp, true);
+                    
+                cfg["data-values"] = tmp["data-values"];
+                    
+                __baseExportValue = __baseExportValue || tmp.exportValue;
+                cfg.exportValue = exportValue;
+                cfg.setValue = setValue;
+                    
                 return $checkbox;
             }
         })
@@ -1417,38 +1586,61 @@ jspyder.extend.fn("form", function () {
                     return;
                 }
                 
-                autocomplete.on("keydown", function (event) {
-                    var up = false;
-                    switch (event.keyCode) {
-                        case js.alg.keycodes.KC_UpArrow:
-                            up = true;
-                        case js.alg.keycodes.KC_DownArrow:
-                            var sel = found.find(".search-item.selected"),
-                                selId = -1;
-                            found.find(".search-item").each(function (item, i) {
-                                var cls = { "selected": false };
-                                js.dom(item).getClasses(cls);
-                                
-                                if (cls["selected"]) {
-                                    selId = i;
-                                }
-                                return;
-                            });
-                            found.find(".search-item")
-                                .setClasses({ "selected": false })
-                                .at(selId + (up ? -1 : 1))
+                autocomplete
+                    .on("keydown", function (event) {
+                        var up = false;
+                        switch (event.keyCode) {
+                            case js.alg.keycodes.KC_UpArrow:
+                                up = true;
+                            case js.alg.keycodes.KC_DownArrow:
+                                var selId = -1;
+
+                                found.find(".search-item").each(function (item, i) {
+                                    var cls = { "selected": false };
+                                    js.dom(item).getClasses(cls);
+
+                                    if (cls["selected"]) {
+                                        selId = i;
+                                    }
+                                    return;
+                                });
+
+                                found.find(".search-item")
+                                    .setClasses({ "selected": false })
+                                    .at(selId + (up ? -1 : 1))
                                     .setClasses({ "selected": true });
-                                
-                            break;
-                        case js.alg.keycodes.KC_Tab:
-                        case js.alg.keycodes.KC_Enter:
-                            found.find(".search-item.selected").trigger("click");
-                            break;
-                    }
-                    return;
-                });
+
+                                break;
+
+                            case js.alg.keycodes.KC_Tab:
+                            case js.alg.keycodes.KC_Enter:
+                                found.find(".search-item.selected").trigger("mousedown");
+                                break;
+                        }
+                        return;
+                    })
+                    .on("blur", function (event) {
+                        if (config["strict"]) {
+                            var match = searchValue(config, this.value, true);
+                            if(!match) {
+                                this.value = "";
+                                js.dom(this).setAttrs({ "data-value": "" });
+                            }
+                            
+                            else {
+                                this.value = match.text;
+                                js.dom(this).setAttrs({ "data-value": match.value });
+                            }
+                            // check if anything matches this value
+                            // form.setFieldValue(config.name, this.value);
+                            // found.find(".search-item").at(0, function () { this.trigger(".click"); });
+                        }
+                        fns.hide();
+                        // found.remove();
+                        return;
+                    });
                 
-                return {
+                var fns =  {
                     show: function search(value) {
                         var values = config.values || [],
                             minlen = js.alg.number(config.minlen, 3),
@@ -1468,21 +1660,23 @@ jspyder.extend.fn("form", function () {
                                 .setHtml(data.match.join(""))
                                 .attachAfter(this)
                                 .setCss(css)
-                                .find(".search-item").on("click", searchClick);
+                                .find(".search-item").on("mousedown", searchClick);
                         }
                         else {
                             found.remove();
                         }
                     },
                     hide: function () {
-                        setTimeout(function () {
-                            found.remove();
-                        }, 100);
+                        // setTimeout(function () {
+                        found.remove();
+                        // }, 100);
                     },
                     getFirst: function () {
                         
                     }
                 };
+                
+                return fns;
             }
             
             function __searchLoop(valObj, i, values, data) {
@@ -1504,7 +1698,7 @@ jspyder.extend.fn("form", function () {
                 var value = js.alg.string(valObj.value),
                     text = js.alg.string(valObj.text, value);
 
-                if (data.find.test(value)) {
+                if (data.find.test(data.searchText ? text : value)) {
                     data.match = ({ value: value, text: text });
                     this.stop();
                 }
@@ -1512,23 +1706,29 @@ jspyder.extend.fn("form", function () {
                 return;
             }
             
+            function searchValue(config, value, searchText) {
+                var data = {
+                    match: null,
+                    find: new RegExp("^" + value + "$"),
+                    searchText: searchText
+                };
+                
+                js.alg.arrEach(config.values, __searchValue, data);
+                return data.match;
+            }
+            
             function setValue(data, value) {
                 var config = data.config,
                     field = data.field,
                     strict = js.alg.bool(config.strict),
                     values = data.config.values,
-                    cdata = {
-                        match: null,
-                        find: new RegExp("^" + value + "$")
-                    },
                     text = "",
-                    attrs = {};
-
-                js.alg.arrEach(values, __searchValue, cdata);
+                    attrs = {},
+                    match = searchValue(data.config, value, false);
                 
-                if (cdata.match) {
-                    attrs["data-value"] = cdata.match.value;
-                    text = cdata.match.text;
+                if (match) {
+                    attrs["data-value"] = match.value;
+                    text = match.text;
                 }
                 else {
                     if (!strict) {
@@ -1559,21 +1759,20 @@ jspyder.extend.fn("form", function () {
             }
             
             return function (cfg) {
-                var cfg2 = js.alg.mergeObj({}, cfg, __override);
-                var $autocomplete = this.buildControl(cfg2, true);
+                var cfg2 = js.alg.mergeObj({}, cfg, __override),
+                    $autocomplete = this.buildControl(cfg2, true),
+                    form = this,
+                    search = null;
                 
                 cfg.setValue = setValue;
                 cfg.exportValue = exportValue;
                 
-                var search = buildFunctions(this, $autocomplete, cfg);
+                search = buildFunctions(form, $autocomplete, cfg);
                 
                 $autocomplete
                     .on("focus input", function (event) {
                         $autocomplete.getValue(search.show);
-                    })
-                    .on("blur", function (event) {
-                        search.hide();
-                    })
+                    });
                 
                 return $autocomplete;
             }

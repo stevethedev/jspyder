@@ -17,7 +17,31 @@
 </head>
 
 <body>
-    <div id="form-print" class="spread-1-1" style="border: 1px solid black;"></div>
+    <div id="form-template"><!-- 
+        --><div class="spread-5-4"><!--
+            --><div class='spread-1-1'>${hidden}</div><!--
+                
+            --><div class='spread-3-1'>${input}</div><!--
+            --><div class='spread-3-1'>${autocomplete}</div><!--
+            --><div class='spread-3-1'>${numerical}</div><!--
+            --><div class='spread-3-1'>${currency}</div><!--
+            --><div class='spread-3-1'>${datefield}</div><!--
+            --><div class='spread-3-1'>${dropdown}</div><!--
+                
+            --><div class='spread-1-1'>${textarea}</div><!--
+                
+            --><div class='spread-3-1'>${checkboxes}</div><!--
+            --><div class='spread-3-1'>${checkboxes_bitwise}</div><!--
+            --><div class='spread-3-1'>${radios}</div><!--
+                
+            --><div class='spread-3-1'>${toggles}</div><!--
+            --><div class='spread-3-1'>${toggles_bitwise}</div><!--
+            --><div class='spread-3-1'>${toggles_radio}</div><!--
+                
+            --><div class='spread-1-1' style="text-align: center; padding: 1em;">${button} <span>${submit}${reset}</span></div><!--
+        --></div><!--
+        --><div id="form-print" class="spread-5-1" style="border: 1px solid black;"></div><!--
+    --></div>
     <script type="text/javascript">
         var formData = {
                 fields: {
@@ -30,9 +54,12 @@
                             { text: "Search #1",  value: "auto1" },
                             { text: "Search #2",  value: "auto2" },
                             { text: "Search #3",  value: "auto3" },
-                            { text: "Search #4",  value: "auto4" },
-                            { text: "Search #5",  value: "auto5" },
-                            { text: "Search #6",  value: "auto6" }
+                            { text: "Search No. 1",  value: "auto1" },
+                            { text: "Search No. 2",  value: "auto2" },
+                            { text: "Search No. 3",  value: "auto3" },
+                            { text: "Search 1",  value: "auto1" },
+                            { text: "Search 2",  value: "auto2" },
+                            { text: "Search 3",  value: "auto3" }
                         ] },
                     button: {
                         type: "button",
@@ -90,10 +117,17 @@
                             { text: "Radio #2", value: "radio2" },
                             { text: "Radio #3", value: "radio3" }
                         ] },
+                    reset: {
+                        type: "reset",
+                        text: "Reset Button",
+                        icon: "refresh",
+                        class: "js-buttonset",
+                        ignore: true },
                     submit: {
                         type: "submit",
                         text: "Submit Button",
                         icon: "save",
+                        class: "js-buttonset",
                         ignore: true },
                     textarea: {
                         type: "textarea",
@@ -106,8 +140,25 @@
                             { text: "Toggle #1", value: "toggle1" },
                             { text: "Toggle #2", value: "toggle2" },
                             { text: "Toggle #3", value: "toggle3" }
-                        ]
-                    }
+                        ] },
+                    toggles_bitwise: {
+                        type: "toggles-bitwise",
+                        text: "Bitwise Toggle Field",
+                        default: 0x2,
+                        values: [
+                            { text: "0x4", value: 0x4 },
+                            { text: "0x2", value: 0x2 },
+                            { text: "0x1", value: 0x1 }
+                        ] },
+                    toggles_radio: {
+                        type: "toggles-radio",
+                        text: "Radio Toggle Field",
+                        default: "tradio2",
+                        values: [
+                            { text: "TRadio #1", value: "tradio1" },
+                            { text: "TRadio #2", value: "tradio2" },
+                            { text: "TRadio #3", value: "tradio3" }
+                        ] }
                 },
                 success: function(values) {
                     var $textarea = js.dom("#form-print"),
@@ -115,7 +166,7 @@
                         
                     js.alg.each(values, function(value, field) {
                         value = (value instanceof Array ? value.join(', ') : value);
-                        if(field === "checkboxes_bitwise") {
+                        if(field === "checkboxes_bitwise" || field === "toggles_bitwise") {
                             value = "000" + value.toString(2);
                             value = value.substring(value.length - 3);
                         }
@@ -127,31 +178,10 @@
                     $textarea.setHtml(strValues.join(''));
                 }
             },
-            formTemplate = [
-                "<div>",
-                    "<div class='spread-4-1'>${autocomplete}</div>",
-                    "<div class='spread-4-1'>${checkboxes}</div>",
-                    "<div class='spread-4-1'>${checkboxes_bitwise}</div>",
-                    "<div class='spread-4-2'>${toggles}</div>",
-                    "<div class='spread-4-1'>${currency}</div>",
-                    "<div class='spread-4-1'>${datefield}</div>",
-                    "<div class='spread-4-1'>${dropdown}</div>",
-                    "<div class='spread-4-1'>${hidden}</div>",
-                    "<div class='spread-4-1'>${input}</div>",
-                    "<div class='spread-4-1'>${numerical}</div>",
-                    "<div class='spread-4-1'>${radios}</div>",
-                    "<div class='spread-4-1'>${textarea}</div>",
-                    "<div class='spread-2-1'>${button}</div>",
-                    "<div class='spread-2-1'>${submit}</div>",
-                "</div>"
-            ].join(''),
-            formFn = function(d) {
-                jspyder.dom(document.body).append(d);
-            };
+            formTemplate = js.dom("#form-template");
         
         var $form = jspyder.form(formData);
-        
-        $form.compileExplicit(formTemplate, null, formFn);
+        $form.compileDom(formTemplate);
         
     </script>
 </body>

@@ -446,11 +446,24 @@ label {
             color: $color-black;
             vertical-align: middle;
             text-align: left;
-            margin-left: .5em;
+            
+            &:after {
+                content: attr(data-buttontext);
+                display: inline;
+                margin-left: .5em;
+            }
         }
         
         &>i {
             margin: -.1em -.15em -.1em -.15em;
+            
+            &[class=""] {
+                display: none;
+                
+                & + .button-text:after {
+                    margin-left: 0;
+                }
+            }
         }
         
         &:hover {

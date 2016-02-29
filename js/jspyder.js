@@ -1021,10 +1021,6 @@
         // Template for selected objects: js.dom.fn
         js_dom.fn = {
             _element: [],
-            _export: null,
-            exp: function () {
-                return this._export;
-            },
 
             get count() { return this._element.length; },
 
@@ -1063,7 +1059,7 @@
              *      Any parameters to pass to the function, in "apply" format
              */
             use: function (fn, args) {
-                this._export = js.alg.use(this, fn, args);
+                js.alg.use(this, fn, args);
                 return this;
             },
 
@@ -1131,7 +1127,6 @@
                         if (typeof fn === "function") { js_dom(el, fn, [css]); }
                     }, { first: css, others: o });
                 }
-                this._export = css;
                 return this;
             },
             
@@ -1205,7 +1200,6 @@
                         if (typeof fn === "function") { js_dom(el, fn, [attrs]); }
                     }, { first: attrs, others: o });
                 }
-                this._export = attrs;
                 return this;
             },
             
@@ -1253,11 +1247,8 @@
              * @param {Function} fn
              */
             parents: function (fn) {
-                var self = this;
                 this.each(function (element, i, elements) {
-                    var d = js_dom(element.parentNode, fn, [element]);
-
-                    if (!js.alg.number(i)) { self._export = d; }
+                    js_dom(element.parentNode, fn, [element]);
                 });
                 return this;
             },
@@ -1310,7 +1301,6 @@
                     if (el && typeof fn === "function") {
                         fn.apply(el, [this]);
                     }
-                    self._export = el;
                 });
                 return this;
             },
@@ -1491,7 +1481,6 @@
                     // run the callback
                     js_dom(element, fn, [classes]);
                 }, { first: classes, second: Object.create(classes) });
-                this._export = classes;
                 return this;
             },
             
