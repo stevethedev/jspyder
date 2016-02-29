@@ -613,6 +613,7 @@ jspyder.extend.fn("form", function () {
                     html = [
                         "<input class=\"", fieldclass, "\"",
                         " name=\"", fieldname, "\"",
+                        (cfg.readonly ? " readonly=\"readonly\"" : ""),
                         " data-type=\"", fieldtype, "\"></input>"
                     ].join('');
                     
@@ -1969,28 +1970,19 @@ jspyder.extend.fn("form", function () {
                 type: "number",
             };
             
-            function setValue(data, value) {
-                value = data.field.exportValue();
-                js.alg.use(this, __setValue, [data, value]);
-            }
-            
-            var __setValue = null;
-            
             function currency(cfg) {
                 var cfg2 = js.alg.mergeObj({}, cfg, __override, {
-                    "class": js.alg.string(cfg.class, "") + " data-currency"
-                });
-                var $input = this.buildControl(cfg2, true),
+                        "class": js.alg.string(cfg.class, "") + " data-currency"
+                    }),
+                    $input = this.buildControl(cfg2, true),
                     prefix = "<div class=\"js-control js-control-currency-prefix\">" + js.alg.string(cfg.prefix, "$") + "</div>";
-                    
-                __setValue = (__setValue || cfg2.setValue);
                 
                 Object.defineProperty(cfg, "acc", {
                     get: function() { return cfg2.acc; },
                     set: function(v) { cfg2.acc = v; }
                 })
                 
-                cfg.setValue = setValue;
+                cfg.setValue = cfg2.setValue;
                 cfg.exportValue = cfg2.exportValue;
                 cfg.acc = js.alg.number(cfg.acc, 2);
                     

@@ -1579,7 +1579,8 @@ label {
     box-shadow: 0 0 0.4em rgba(114, 114, 114, 0.4); }
 .js-control.js-control-currency-prefix {
   position: absolute;
-  margin: .22em; }
+  margin: .22em;
+  width: 0 !important; }
 .js-control.js-control-dropdown {
   cursor: pointer;
   position: relative; }
@@ -1753,6 +1754,10 @@ input, textarea, .input {
   input:hover, textarea:hover, .input:hover {
     border-color: #9bd9eb;
     box-shadow: 0 0 0.16em #9bd9eb inset; }
+  input[readonly]:active, input[readonly]:focus, textarea[readonly]:active, textarea[readonly]:focus, .input[readonly]:active, .input[readonly]:focus {
+    -ms-transform: none;
+    -webkit-transform: none;
+    transform: none; }
   input:active, input:focus, textarea:active, textarea:focus, .input:active, .input:focus {
     border-color: #9bd9eb;
     box-shadow: 0 0 0.16em #9bd9eb;
@@ -1773,6 +1778,10 @@ input[type="checkbox"], input[type="radio"] {
     display: inline-block;
     vertical-align: middle;
     margin-left: .2em; }
+  input[type="checkbox"][readonly]:active, input[type="checkbox"][readonly]:focus, input[type="radio"][readonly]:active, input[type="radio"][readonly]:focus {
+    -ms-transform: none;
+    -webkit-transform: none;
+    transform: none; }
   input[type="checkbox"]:active, input[type="checkbox"]:focus, input[type="radio"]:active, input[type="radio"]:focus {
     -ms-transform: scale(1.2, 1.2);
     -webkit-transform: scale(1.2, 1.2);

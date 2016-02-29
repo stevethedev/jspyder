@@ -480,6 +480,7 @@ label {
     &.js-control-currency-prefix {
         position: absolute;
         margin: .22em;
+        width: 0 !important;
     }
     
     &.js-control-dropdown {
@@ -714,6 +715,12 @@ input, textarea, .input {
         box-shadow: 0 0 .16em $color-info-background inset;
     }
     
+    &[readonly] {
+        &:active, &:focus {
+            @include transform(none);
+        }
+    }
+    
     &:active, &:focus {
         border-color:  $color-info-background;
         box-shadow: 0 0 .16em $color-info-background;
@@ -737,6 +744,12 @@ input[type="checkbox"], input[type="radio"] {
         display: inline-block;
         vertical-align: middle;
         margin-left: .2em;
+    }
+    
+    &[readonly] {
+        &:active, &:focus {
+            @include transform(none);
+        }
     }
     
     &:active, &:focus {
