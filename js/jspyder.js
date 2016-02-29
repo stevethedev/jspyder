@@ -1131,9 +1131,9 @@
             },
             
             getPosition: function (fn) {
-                this.each(function () {
-                    var pos = this._element[0].getBoundingClientRect();
-                    js.dom(this).use(fn, [pos]);
+                this.each(function (el) {
+                    var pos = el.getBoundingClientRect();
+                    js.dom(el).use(fn, [pos]);
                 })
                 return this;
             },

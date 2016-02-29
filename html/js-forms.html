@@ -28,7 +28,8 @@
             --><div class='spread-3-1'>${datefield}</div><!--
             --><div class='spread-3-1'>${dropdown}</div><!--
                 
-            --><div class='spread-1-1'>${textarea}</div><!--
+            --><div class='spread-2-1'>${textarea}</div><!--
+            --><div class='spread-2-1'>${textarea_resize}</div><!--
                 
             --><div class='spread-3-1'>${checkboxes}</div><!--
             --><div class='spread-3-1'>${checkboxes_bitwise}</div><!--
@@ -132,6 +133,9 @@
                     textarea: {
                         type: "textarea",
                         text: "Textarea Field" },
+                    textarea_resize: {
+                        type: "textarea-autosize",
+                        text: "Autosized Textarea Field" },
                     toggles: {
                         type: "toggles",
                         text: "Toggle Field",

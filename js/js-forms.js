@@ -1091,7 +1091,76 @@ jspyder.extend.fn("form", function () {
                     
                 cfg.setValue = setValue;
                     
-                return js.dom(html);
+                var textarea = js.dom(html);
+                
+                return textarea;
+            }
+        })
+        /**
+         * @method textarea-autosize
+         * @member jspyder.form.templates
+         */
+        .registerControlFn("textarea-autosize", function() {
+            function setValue(data, v) {
+                v = js.alg.string(v, "");
+                this.setValue(v);
+            }
+            
+            function input(event) {
+                div = document.createElement("div");
+                var css = {
+                    "font-family": null,
+                    "font-size": null,
+                    "font-weight": null,
+                    "padding-left": null,
+                    "padding-right": null,
+                    "padding-bottom": null,
+                    "padding-top": null,
+                    "border-left": null,
+                    "border-right": null,
+                    "border-top": null,
+                    "border-bottom": null,
+                    "line-height": null,
+                    "word-wrap": null
+                };
+
+                div.style["position"] = "fixed";
+                div.style["left"] = -0xFFFF + "px";
+                div.style["white-space"] = "pre-wrap";
+                div.style["white-space"] = "-moz-pre-wrap";
+                div.style["white-space"] = "-pre-wrap";
+                div.style["white-space"] = "-o-pre-wrap";
+                div.style["width"] = div.style["min-width"] = div.style["max-width"] = this.clientWidth + "px";
+                document.body.appendChild(div);
+                
+                var textarea = js.dom(this).getCss(css);
+                js.dom(div)
+                    .setText(this.value)
+                    .setCss(css)
+                    .getPosition(function(pos) {
+                        textarea.setCss({
+                            "height": (pos.height + 20) + "px"
+                        });
+                    }).remove();
+                return;
+            }
+            
+            return function(cfg) {
+                var cfgname = js.alg.string(cfg.name, ""),
+                    cfgclass = js.alg.string(cfg.class, ""),
+                    html = [
+                        "<textarea name=\"", cfgname, "\"",
+                            " class=\"input js-control js-control-autosize ", cfgclass, "\">",
+                        "</textarea>"
+                    ].join('');
+                    
+                cfg.setValue = setValue;
+                    
+                var textarea = js.dom(html);
+                
+                textarea.on("input", input);
+                
+                return textarea;
             }
         })
         /**

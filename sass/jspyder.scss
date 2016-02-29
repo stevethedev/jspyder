@@ -682,8 +682,17 @@ label {
             
         }
     }
+    
+    &.js-control-autosize {
+        resize: none;
+        transition: height .1s;
+        vertical-align: top;
+    }
 }
 
+textarea {
+    min-height: 3em;
+}
 input, textarea, .input {
     border: $px solid $color-divider;
     padding: .2em .4em;

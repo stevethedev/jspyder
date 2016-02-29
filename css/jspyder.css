@@ -1730,6 +1730,13 @@ label {
         background-color: rgba(155, 217, 235, 0.3); }
       .js-control.js-control-date-picker .calendar-tiles .month.today, .js-control.js-control-date-picker .calendar-tiles .date.today, .js-control.js-control-date-picker .calendar-tiles .date-title.today {
         border-color: #9bd9eb; }
+.js-control.js-control-autosize {
+  resize: none;
+  transition: height .1s;
+  vertical-align: top; }
+
+textarea {
+  min-height: 3em; }
 
 input, textarea, .input {
   border: 0.0625em solid #b6b6b6;
