@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'Material Icons';
-  font-style: normal;
   font-weight: 400;
-  src: url("font/MaterialIcons-Regular.eot");
+  font-style: normal;
+  src: url("./font/MaterialIcons-Regular.eot");
   /* For IE6-8 */
-  src: local("Material Icons"), local("MaterialIcons-Regular"), url("font/MaterialIcons-Regular.woff2") format("woff2"), url("font/MaterialIcons-Regular.woff") format("woff"), url("font/MaterialIcons-Regular.ttf") format("truetype"); }
+  src: local("Material Icons"), local("MaterialIcons-Regular"), url("./font/MaterialIcons-Regular.woff2") format("woff2"), url("./font/MaterialIcons-Regular.woff") format("woff"), url("./font/MaterialIcons-Regular.ttf") format("truetype"); }
 i, .icon {
   font-family: 'Material Icons';
   font-weight: normal;
@@ -20,7 +20,7 @@ i, .icon {
   word-wrap: normal;
   white-space: nowrap;
   direction: ltr;
-  vertical-align: midle;
+  vertical-align: middle;
   /* Support for all WebKit browsers. */
   -webkit-font-smoothing: antialiased;
   /* Support for Safari and Chrome. */
@@ -239,6 +239,8 @@ i, .icon {
     content: "\e232"; }
   i.border-vertical:after, .icon.border-vertical:after {
     content: "\e233"; }
+  i.branding-watermark:after, .icon.branding-watermark:after {
+    content: "\e06b"; }
   i.brightness-1:after, .icon.brightness-1:after {
     content: "\e3a6"; }
   i.brightness-2:after, .icon.brightness-2:after {
@@ -265,10 +267,14 @@ i, .icon {
     content: "\e3ad"; }
   i.brush:after, .icon.brush:after {
     content: "\e3ae"; }
+  i.bubble-chart:after, .icon.bubble-chart:after {
+    content: "\e6dd"; }
   i.bug-report:after, .icon.bug-report:after {
     content: "\e868"; }
   i.build:after, .icon.build:after {
     content: "\e869"; }
+  i.burst-mode:after, .icon.burst-mode:after {
+    content: "\e43c"; }
   i.business:after, .icon.business:after {
     content: "\e0af"; }
   i.business-center:after, .icon.business-center:after {
@@ -293,6 +299,8 @@ i, .icon {
     content: "\e0b5"; }
   i.call-split:after, .icon.call-split:after {
     content: "\e0b6"; }
+  i.call-to-action:after, .icon.call-to-action:after {
+    content: "\e06c"; }
   i.camera:after, .icon.camera:after {
     content: "\e3af"; }
   i.camera-alt:after, .icon.camera-alt:after {
@@ -451,6 +459,10 @@ i, .icon {
     content: "\e3c7"; }
   i.delete:after, .icon.delete:after {
     content: "\e872"; }
+  i.delete-forever:after, .icon.delete-forever:after {
+    content: "\e92b"; }
+  i.delete-sweep:after, .icon.delete-sweep:after {
+    content: "\e16c"; }
   i.description:after, .icon.description:after {
     content: "\e873"; }
   i.desktop-mac:after, .icon.desktop-mac:after {
@@ -501,6 +513,10 @@ i, .icon {
     content: "\e612"; }
   i.do-not-disturb-alt:after, .icon.do-not-disturb-alt:after {
     content: "\e611"; }
+  i.do-not-disturb-off:after, .icon.do-not-disturb-off:after {
+    content: "\e643"; }
+  i.do-not-disturb-on:after, .icon.do-not-disturb-on:after {
+    content: "\e644"; }
   i.dock:after, .icon.dock:after {
     content: "\e30e"; }
   i.domain:after, .icon.domain:after {
@@ -537,6 +553,10 @@ i, .icon {
     content: "\e000"; }
   i.error-outline:after, .icon.error-outline:after {
     content: "\e001"; }
+  i.euro-symbol:after, .icon.euro-symbol:after {
+    content: "\e926"; }
+  i.ev-station:after, .icon.ev-station:after {
+    content: "\e56d"; }
   i.event:after, .icon.event:after {
     content: "\e878"; }
   i.event-available:after, .icon.event-available:after {
@@ -581,6 +601,10 @@ i, .icon {
     content: "\e87d"; }
   i.favorite-border:after, .icon.favorite-border:after {
     content: "\e87e"; }
+  i.featured-play-list:after, .icon.featured-play-list:after {
+    content: "\e06d"; }
+  i.featured-video:after, .icon.featured-video:after {
+    content: "\e06e"; }
   i.feedback:after, .icon.feedback:after {
     content: "\e87f"; }
   i.fiber-dvr:after, .icon.fiber-dvr:after {
@@ -643,6 +667,8 @@ i, .icon {
     content: "\e881"; }
   i.fingerprint:after, .icon.fingerprint:after {
     content: "\e90d"; }
+  i.first-page:after, .icon.first-page:after {
+    content: "\e5dc"; }
   i.fitness-center:after, .icon.fitness-center:after {
     content: "\eb43"; }
   i.flag:after, .icon.flag:after {
@@ -741,6 +767,8 @@ i, .icon {
     content: "\e5d1"; }
   i.functions:after, .icon.functions:after {
     content: "\e24a"; }
+  i.g-translate:after, .icon.g-translate:after {
+    content: "\e927"; }
   i.gamepad:after, .icon.gamepad:after {
     content: "\e30f"; }
   i.games:after, .icon.games:after {
@@ -903,6 +931,8 @@ i, .icon {
     content: "\e320"; }
   i.laptop-windows:after, .icon.laptop-windows:after {
     content: "\e321"; }
+  i.last-page:after, .icon.last-page:after {
+    content: "\e5dd"; }
   i.launch:after, .icon.launch:after {
     content: "\e895"; }
   i.layers:after, .icon.layers:after {
@@ -1031,6 +1061,8 @@ i, .icon {
     content: "\e028"; }
   i.loupe:after, .icon.loupe:after {
     content: "\e402"; }
+  i.low-priority:after, .icon.low-priority:after {
+    content: "\e16d"; }
   i.loyalty:after, .icon.loyalty:after {
     content: "\e89a"; }
   i.mail:after, .icon.mail:after {
@@ -1063,6 +1095,8 @@ i, .icon {
     content: "\e253"; }
   i.mode-edit:after, .icon.mode-edit:after {
     content: "\e254"; }
+  i.monetization-on:after, .icon.monetization-on:after {
+    content: "\e263"; }
   i.money-off:after, .icon.money-off:after {
     content: "\e25c"; }
   i.monochrome-photos:after, .icon.monochrome-photos:after {
@@ -1089,6 +1123,8 @@ i, .icon {
     content: "\e404"; }
   i.movie-filter:after, .icon.movie-filter:after {
     content: "\e43a"; }
+  i.multiline-chart:after, .icon.multiline-chart:after {
+    content: "\e6df"; }
   i.music-note:after, .icon.music-note:after {
     content: "\e405"; }
   i.music-video:after, .icon.music-video:after {
@@ -1127,6 +1163,8 @@ i, .icon {
     content: "\e0cc"; }
   i.not-interested:after, .icon.not-interested:after {
     content: "\e033"; }
+  i.note:after, .icon.note:after {
+    content: "\e06f"; }
   i.note-add:after, .icon.note-add:after {
     content: "\e89c"; }
   i.notifications:after, .icon.notifications:after {
@@ -1265,6 +1303,10 @@ i, .icon {
     content: "\e8aa"; }
   i.picture-in-picture-alt:after, .icon.picture-in-picture-alt:after {
     content: "\e911"; }
+  i.pie-chart:after, .icon.pie-chart:after {
+    content: "\e6c4"; }
+  i.pie-chart-outlined:after, .icon.pie-chart-outlined:after {
+    content: "\e6c5"; }
   i.pin-drop:after, .icon.pin-drop:after {
     content: "\e55e"; }
   i.place:after, .icon.place:after {
@@ -1307,6 +1349,8 @@ i, .icon {
     content: "\e0df"; }
   i.print:after, .icon.print:after {
     content: "\e8ad"; }
+  i.priority-high:after, .icon.priority-high:after {
+    content: "\e645"; }
   i.public:after, .icon.public:after {
     content: "\e80b"; }
   i.publish:after, .icon.publish:after {
@@ -1351,6 +1395,8 @@ i, .icon {
     content: "\e067"; }
   i.remove-red-eye:after, .icon.remove-red-eye:after {
     content: "\e417"; }
+  i.remove-shopping-cart:after, .icon.remove-shopping-cart:after {
+    content: "\e928"; }
   i.reorder:after, .icon.reorder:after {
     content: "\e8fe"; }
   i.repeat:after, .icon.repeat:after {
@@ -1373,10 +1419,14 @@ i, .icon {
     content: "\e160"; }
   i.report-problem:after, .icon.report-problem:after {
     content: "\e8b2"; }
+  i.restaurant:after, .icon.restaurant:after {
+    content: "\e56c"; }
   i.restaurant-menu:after, .icon.restaurant-menu:after {
     content: "\e561"; }
   i.restore:after, .icon.restore:after {
     content: "\e8b3"; }
+  i.restore-page:after, .icon.restore-page:after {
+    content: "\e929"; }
   i.ring-volume:after, .icon.ring-volume:after {
     content: "\e0d1"; }
   i.room:after, .icon.room:after {
@@ -1395,6 +1445,8 @@ i, .icon {
     content: "\e328"; }
   i.rowing:after, .icon.rowing:after {
     content: "\e921"; }
+  i.rss-feed:after, .icon.rss-feed:after {
+    content: "\e0e5"; }
   i.rv-hookup:after, .icon.rv-hookup:after {
     content: "\e642"; }
   i.satellite:after, .icon.satellite:after {
@@ -1429,6 +1481,16 @@ i, .icon {
     content: "\e162"; }
   i.send:after, .icon.send:after {
     content: "\e163"; }
+  i.sentiment-dissatisfied:after, .icon.sentiment-dissatisfied:after {
+    content: "\e811"; }
+  i.sentiment-neutral:after, .icon.sentiment-neutral:after {
+    content: "\e812"; }
+  i.sentiment-satisfied:after, .icon.sentiment-satisfied:after {
+    content: "\e813"; }
+  i.sentiment-very-dissatisfied:after, .icon.sentiment-very-dissatisfied:after {
+    content: "\e814"; }
+  i.sentiment-very-satisfied:after, .icon.sentiment-very-satisfied:after {
+    content: "\e815"; }
   i.settings:after, .icon.settings:after {
     content: "\e8b8"; }
   i.settings-applications:after, .icon.settings-applications:after {
@@ -1477,6 +1539,8 @@ i, .icon {
     content: "\e8cc"; }
   i.short-text:after, .icon.short-text:after {
     content: "\e261"; }
+  i.show-chart:after, .icon.show-chart:after {
+    content: "\e6e1"; }
   i.shuffle:after, .icon.shuffle:after {
     content: "\e043"; }
   i.signal-cellular-4-bar:after, .icon.signal-cellular-4-bar:after {
@@ -1533,6 +1597,8 @@ i, .icon {
     content: "\e32e"; }
   i.speaker-notes:after, .icon.speaker-notes:after {
     content: "\e8cd"; }
+  i.speaker-notes-off:after, .icon.speaker-notes-off:after {
+    content: "\e92a"; }
   i.speaker-phone:after, .icon.speaker-phone:after {
     content: "\e0d2"; }
   i.spellcheck:after, .icon.spellcheck:after {
@@ -1565,6 +1631,8 @@ i, .icon {
     content: "\e563"; }
   i.straighten:after, .icon.straighten:after {
     content: "\e41c"; }
+  i.streetview:after, .icon.streetview:after {
+    content: "\e56e"; }
   i.strikethrough-s:after, .icon.strikethrough-s:after {
     content: "\e257"; }
   i.style:after, .icon.style:after {
@@ -1579,6 +1647,8 @@ i, .icon {
     content: "\e064"; }
   i.subtitles:after, .icon.subtitles:after {
     content: "\e048"; }
+  i.subway:after, .icon.subway:after {
+    content: "\e56f"; }
   i.supervisor-account:after, .icon.supervisor-account:after {
     content: "\e8d3"; }
   i.surround-sound:after, .icon.surround-sound:after {
@@ -1651,6 +1721,8 @@ i, .icon {
     content: "\e424"; }
   i.timer-off:after, .icon.timer-off:after {
     content: "\e426"; }
+  i.title:after, .icon.title:after {
+    content: "\e264"; }
   i.toc:after, .icon.toc:after {
     content: "\e8de"; }
   i.today:after, .icon.today:after {
@@ -1667,6 +1739,12 @@ i, .icon {
     content: "\e8e1"; }
   i.traffic:after, .icon.traffic:after {
     content: "\e565"; }
+  i.train:after, .icon.train:after {
+    content: "\e570"; }
+  i.tram:after, .icon.tram:after {
+    content: "\e571"; }
+  i.transfer-within-a-station:after, .icon.transfer-within-a-station:after {
+    content: "\e572"; }
   i.transform:after, .icon.transform:after {
     content: "\e428"; }
   i.translate:after, .icon.translate:after {
@@ -1707,6 +1785,10 @@ i, .icon {
     content: "\e25a"; }
   i.vibration:after, .icon.vibration:after {
     content: "\e62d"; }
+  i.video-call:after, .icon.video-call:after {
+    content: "\e070"; }
+  i.video-label:after, .icon.video-label:after {
+    content: "\e071"; }
   i.video-library:after, .icon.video-library:after {
     content: "\e04a"; }
   i.videocam:after, .icon.videocam:after {

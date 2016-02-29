@@ -1,4 +1,4 @@
-/******************************************************************************
+/* ****************************************************************************
  * The MIT License (MIT)
  *
  * Copyright (c) 2015 Steven Jimenez
@@ -20,25 +20,28 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
- *****************************************************************************/
+ * ***************************************************************************/
 
-jspyder.extend.fn("ajax", function (js) {
-    /**************************************************************************
+jspyder.extend.fn("ajax", function () {
+    var js = this;
+    
+    /**
      * @class jspyder.ajax
-     * @extends jspyder
+     * @member jspyder
      * 
-     * Abstracts AJAX calls for simple use
+     * Abstracts Ajax calls for simple use via callbacks.
      * 
      * @param {String} url
      *      The URL to send the command against
      * 
      * @param {Object} data
      *      A data object, if one is necessary, consisting of the information
-     *      to send to the server.  If one doesn't exist, then 
+     *      to send to the server.  If one is not provided, then a blank 
+     *      dataset is initialized.
      * 
      * @param {Function} fn
      *      The callback function to perform once the AJAX call has completed.
-     *************************************************************************/
+     */
     function js_ajax(url, data, fn) {
         var ajax = Object.create(js_ajax.fn);
         
@@ -52,18 +55,19 @@ jspyder.extend.fn("ajax", function (js) {
         return ajax;
     } 
     
-    /**************************************************************************
+    /**
      * @private
+     * 
      * Internals for running the AJAX query.
-     *************************************************************************/
-    function __js_ajax_try(method, url, data, fn) {
+     */
+    function __js_ajax_try(method, url, data, fn, context) {
         if (!url) { return this; }
              
         var xhttp = new XMLHttpRequest();
             
         xhttp.onreadystatechange = function xhttp_onreadystatechange() {
             if ((this.readyState === 4) && (typeof fn === "function")){
-                fn.apply(js, [this]);
+                fn.apply(js, [this, context]);
             }
             return null;
         };
@@ -82,29 +86,90 @@ jspyder.extend.fn("ajax", function (js) {
         return this;
     };
     
-    /**************************************************************************
-     * @class jspyder.ajax.fn
-     * @extends jspyder.ajax
+    /**
+     * @property fn
+     * @member jspyder.ajax
      * 
      * Prototype for created ajax objects.
-     *************************************************************************/
+     */
     js_ajax.fn = {
+        /**
+         * @property {Object} data
+         * @member jspyder.ajax.fn
+         * 
+         * Information which will be (or has been) sent to the server via the
+         * Ajax call. 
+         */
         data: {},
+        
+        /**
+         * @property {String} url
+         * @member jspyder.ajax.fn
+         * 
+         * URL which data will be (or has been) setn to via the Ajax call.
+         */
         url: "",
+        
+        /**
+         * @property {Function} fn
+         * @member jspyder.ajax.fn
+         * 
+         * Function which will be executed after the Ajax call has returned.
+         */
         fn: function () { },
-        "get": function (fn) {
+        
+        /**
+         * @property {Function} get
+         * @member jspyder.ajax.fn
+         * 
+         * @param {Function} [fn]
+         *      A function to execute in place of the stored callback function.
+         *      If no function is provided, then the default function provided
+         *      at initialization will be used.
+         * 
+         * Executes the Ajax template as a "GET" call 
+         */
+        "get": function (fn, context) {
             fn = (typeof fn === "function" ? fn : this.fn);
-            __js_ajax_try("GET", this.url, this.data, fn || fn);
+            __js_ajax_try("GET", this.url, this.data, fn, context);
+            return this;
         },
-        "head": function (fn) {
+        
+        /**
+         * @property {Function} head
+         * @member jspyder.ajax.fn
+         * 
+         * @param {Function} [fn]
+         *      A function to execute in place of the stored callback function.
+         *      If no function is provided, then the default function provided
+         *      at initialization will be used.
+         * 
+         * Executes the Ajax template as a "HEAD" call 
+         */
+        "head": function (fn, context) {
             fn = (typeof fn === "function" ? fn : this.fn);
-            __js_ajax_try("HEAD", this.url, this.data, fn);
+            __js_ajax_try("HEAD", this.url, this.data, fn, context);
+            return this;
         },
-        "post": function (fn) {
+        
+        /**
+         * @property {Function} post
+         * @member jspyder.ajax.fn
+         * 
+         * @param {Function} [fn]
+         *      A function to execute in place of the stored callback function.
+         *      If no function is provided, then the default function provided
+         *      at initialization will be used.
+         * 
+         * Executes the Ajax template as a "POST" call 
+         */
+        "post": function (fn, context) {
             fn = (typeof fn === "function" ? fn : this.fn);
-            __js_ajax_try("POST", this.url, this.data, fn);
+            __js_ajax_try("POST", this.url, this.data, fn, context);
+            return this;
         }
     }
     
     return js_ajax;
-}, jspyder);
+});
+
