@@ -38,9 +38,14 @@ jspyder.extend.fn("dialog", function () {
             });
         
         dialog.setDimensions(cfg.width, cfg.height);
+        
         element.find("i.button-close").on("click", function (event) {
             dialog.remove();
         });
+        
+        if(cfg.noclose) {
+            element.find("i.button-close").remove();
+        }
         
         if (cfg.title) { dialog.setTitle(cfg.title); }
         else if (cfg.titleHtml) { dialog.setTitleHtml(cfg.titleHtml); }
@@ -49,9 +54,89 @@ jspyder.extend.fn("dialog", function () {
         else if (cfg.bodyHtml) { dialog.setBodyHtml(cfg.bodyHtml); }
         
         //! CREATE BUTTONS WITH CALLBACKS
+        if (cfg.buttons) { dialog.setButtons(cfg.buttons); }
+        
+        if(cfg.parent) { dialog.attach(cfg.parent); }
         
         return dialog;
     }
+    
+    js_dialog.alert = function(cfg) {
+        var dlg = js_dialog({
+            titleHtml: js.alg.string(cfg.title, "Alert"),
+            bodyHtml: js.alg.string(cfg.message, ""),
+            noclose: true,
+            parent: cfg.parent || document.body,
+            buttons: [
+                { 
+                    text: "OK", 
+                    value: "OK", 
+                    click: function(event) { 
+                        dlg.remove(); 
+                        (typeof cfg.callback === "function") && (cfg.callback());
+                    } 
+                }
+            ]
+        });
+        return dlg;
+    };
+    
+    js_dialog.confirm = function(cfg) {
+        var dlg = js_dialog({
+            titleHtml: js.alg.string(cfg.title, "Alert"),
+            bodyHtml: js.alg.string(cfg.message, ""),
+            noclose: true,
+            parent: cfg.parent || document.body,
+            buttons: [
+                { 
+                    text: "OK", 
+                    value: "OK", 
+                    click: function(event) {
+                        dlg.remove(); 
+                        (typeof cfg.callback === "function") && (cfg.callback(true));
+                    } 
+                },
+                { 
+                    text: "Cancel", 
+                    value: "Cancel", 
+                    click: function(event) {
+                        dlg.remove(); 
+                        (typeof cfg.callback === "function") && (cfg.callback(false)); 
+                    } 
+                },
+            ]
+        });
+        return dlg;
+    };
+    
+    js_dialog.query = function(cfg) {
+        var dlg = js_dialog({
+            titleHtml: js.alg.string(cfg.title, "Alert"),
+            bodyHtml: js.alg.string(cfg.message, ""),
+            noclose: true,
+            parent: cfg.parent || document.body,
+            buttons: [
+                { 
+                    text: "Yes", 
+                    value: "Yes", 
+                    click: function(event) {
+                        dlg.remove(); 
+                        (typeof cfg.callback === "function") && (cfg.callback(true));
+                    } 
+                },
+                { 
+                    text: "No", 
+                    value: "No", 
+                    click: function(event) {
+                        dlg.remove(); 
+                        (typeof cfg.callback === "function") && (cfg.callback(false)); 
+                    } 
+                },
+            ]
+        });
+        return dlg;
+    };
+    
     js_dialog.fn = {
         _element: null,
         _buttonDefs: null,
@@ -72,8 +157,8 @@ jspyder.extend.fn("dialog", function () {
             "</div>"
         ].join(''),
         
-        _height: 300,
-        _width: 500,
+        _height: 237.2,
+        _width: 498,
         
         _buttonFactory: function (text) {
             var html = [
@@ -116,6 +201,20 @@ jspyder.extend.fn("dialog", function () {
             return this;
         },
         
+        setButtons: function(buttons) {
+            if(this._element) {
+                var container = this._element.find(".footer-container").setHtml(""),
+                    form = js.form();
+                    
+                js.alg.each(buttons, function(button, i) {
+                    button = js.alg.mergeObj({}, button, { type: "button" });
+                    form.addField("button-" + i, button)
+                    container.append(form.exportField("button-" + i));
+                });
+            }
+            return this;
+        },
+        
         setDimensions: function (width, height) {
             return this.setHeight(height).setWidth(width);
         },
@@ -123,7 +222,7 @@ jspyder.extend.fn("dialog", function () {
         setHeight: function (height) {
             if (this._element) {
                 height = js.alg.number(height, this._height) + "px";
-                this._element.find(".js-dialog").setCss({ "height": height });
+                this._element.find(".js-dialog-body").setCss({ "max-height": height });
             }
             return this;
         },
@@ -131,7 +230,7 @@ jspyder.extend.fn("dialog", function () {
         setWidth: function (width) {
             if (this._element) {
                 width = js.alg.number(width, this._width) + "px";
-                this._element.find(".js-dialog").setCss({ "width": width });
+                this._element.find(".js-dialog-body").setCss({ "width": width });
             }
             return this;
         },

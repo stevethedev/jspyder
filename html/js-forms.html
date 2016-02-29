@@ -17,7 +17,7 @@
 </head>
 
 <body>
-    <div id="form-template"><!-- 
+    <div id="form-template" style="position: relative"><!-- 
         --><div class="spread-5-4"><!--
             --><div class='spread-1-1'>${hidden}</div><!--
                 
@@ -65,7 +65,17 @@
                     button: {
                         type: "button",
                         text: "Button",
-                        ignore: true },
+                        ignore: true,
+                        click: function() {
+                            js.dialog.confirm({
+                                message: "This is my custom confirmation",
+                                callback: function(v) {
+                                    js.dialog.alert({
+                                    message: "You pressed the " + (v ? "OK" : "Cancel") + " button."
+                                    });
+                                }
+                            });
+                        } },
                     checkboxes: { 
                         type: "checkbox", 
                         text: "Checkbox Field",

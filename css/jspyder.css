@@ -2017,20 +2017,15 @@ fieldset {
             opacity: 1; }
     .js-dialog-background .js-dialog .js-dialog-body {
       padding: 0.4em;
-      overflow: auto;
-      height: -webkit-calc(100% -  3.8em);
-      height: calc(100% -  3.8em); }
+      overflow: auto; }
       .js-dialog-background .js-dialog .js-dialog-body .body-container {
         height: auto; }
     .js-dialog-background .js-dialog .js-dialog-footer {
-      padding: 0.4em;
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background-color: #b6b6b6;
-      height: 2em; }
+      background-color: #b6b6b6; }
       .js-dialog-background .js-dialog .js-dialog-footer .footer-container {
-        min-height: 0; }
+        min-height: 0;
+        text-align: right; }
+        .js-dialog-background .js-dialog .js-dialog-footer .footer-container .js-control-button {
+          margin: 0.4em 0.4em 0.4em 0; }
 
 /*# sourceMappingURL=jspyder.css.map */

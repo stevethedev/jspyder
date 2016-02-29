@@ -935,23 +935,22 @@ fieldset {
         .js-dialog-body {
             padding: $padding;
             overflow: auto;
-            @include calc("height", "100% - " ($header-height + $footer-height));
             
             .body-container {
                 height: auto;
             }
         }
         .js-dialog-footer {
-            padding: $padding;
-            position: absolute;
-            bottom:0;
-            left: 0;
-            right: 0;
+            // padding: $padding;
             background-color: $color-divider;
-            height: $footer-height;
             
             .footer-container {
                 min-height:0;
+                text-align: right;
+                
+                .js-control-button {
+                    margin: $padding $padding $padding 0;
+                }
             }
         }
     }
