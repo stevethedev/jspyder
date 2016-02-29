@@ -276,7 +276,7 @@ jspyder.extend.fn("template", function () {
          */
         storeTemplate: function (name, template) {
             template = js.alg.string(template, "");
-            template = template.replace(/\<\!\-\-[^\<]+\-\-\>/g, "");
+            template = template.replace(/\<\!\-\-[^\<]+\-\-\>/g, "").replace(/\<([^\s\>]+)([^\>]+)\/\>/i, "<$1 $2></$1>");
             _templates.stash(name, template);
             return this;
         },
