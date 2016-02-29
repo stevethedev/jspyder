@@ -484,7 +484,8 @@ jspyder.extend.fn("form", function () {
                 invalid = null;
                 
             this.each(function(field, name) {
-                var isValid = true;
+                var isValid = true,
+                    value = form.exportFieldValue(name);
                 
                 if(field.ignore) { return; }
                 
@@ -497,8 +498,12 @@ jspyder.extend.fn("form", function () {
                         break;
                 }
                 
+                if(field.config.required && !value) {
+                    isValid = false;
+                }
+                
                 var group = (isValid ? valid : (invalid || (invalid = {})));
-                group[name] = form.exportFieldValue(name);
+                group[name] = value;
                 
                 return;
             });
