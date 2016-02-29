@@ -1884,7 +1884,7 @@ jspyder.extend.fn("form", function () {
             function toNumber(n, a) {
                 n = js.alg.string(n, '');
                 
-                var reStrip = /([^\d\.]+)/g,
+                var reStrip = /([^\-\d\.]+)/g,
                     parts = null;
                     
                 n = n.replace(reStrip, '');
