@@ -447,6 +447,10 @@ label {
             vertical-align: middle;
             text-align: left;
             
+            &[data-buttontext=""]:after {
+                margin-left: 0;
+            }
+            
             &:after {
                 content: attr(data-buttontext);
                 display: inline;
@@ -455,7 +459,8 @@ label {
         }
         
         &>i {
-            margin: -.1em -.15em -.1em -.15em;
+            // margin: -.1em -.15em -.1em -.15em;
+            margin: -.15em;
             
             &[class=""] {
                 display: none;

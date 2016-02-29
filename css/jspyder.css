@@ -1562,12 +1562,14 @@ label {
     color: #212121;
     vertical-align: middle;
     text-align: left; }
+    .js-control.js-control-button .button-text[data-buttontext=""]:after {
+      margin-left: 0; }
     .js-control.js-control-button .button-text:after {
       content: attr(data-buttontext);
       display: inline;
       margin-left: .5em; }
   .js-control.js-control-button > i {
-    margin: -.1em -.15em -.1em -.15em; }
+    margin: -.15em; }
     .js-control.js-control-button > i[class=""] {
       display: none; }
       .js-control.js-control-button > i[class=""] + .button-text:after {
