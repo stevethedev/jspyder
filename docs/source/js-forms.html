@@ -264,7 +264,8 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                 ignore: cfg.ignore,
                 config: cfg };
                 
-            this.setFieldValue(name, (typeof val !== &quot;undefined&quot; ? val : dval));
+            // this.setFieldValue(name, (typeof val !== &quot;undefined&quot; ? val : dval));
+            this.resetFieldValue(name);
 
             return this;
         },
@@ -339,6 +340,23 @@ jspyder.extend.fn(&quot;form&quot;, function () {
          */
         exportFieldData: function (name) {
             return this._fields[name] || null;
+        },
+        
+        resetFieldValue: function (name) {
+            var data = this.exportFieldData(name),
+                dval = data.config.default,
+                val = data.config.value;
+                
+            this.setFieldValue(name, typeof val !== &quot;undefined&quot; ? val : dval);
+            return this;
+        },
+        
+        resetFieldValues: function () {
+            this.each(this._resetFieldValues, this);;
+        },
+        _resetFieldValues: function (field, name, fields, form) {
+            form.resetFieldValue(name);
+            return;
         },
         
         setFieldValue: function (name, value) {
@@ -459,7 +477,11 @@ jspyder.extend.fn(&quot;form&quot;, function () {
          *      Optional callback to execute after the reset has been completed.
          *      See jspyder.form constructor for expected parameters.
          */
-        reset: function(fn) {
+        reset: function (fn) {
+            this.resetFieldValues();
+            
+            js.alg.use(this, typeof fn === &quot;function&quot; ? fn : this._reset);
+            
             return this;
         },
         
@@ -550,13 +572,29 @@ jspyder.extend.fn(&quot;form&quot;, function () {
             return this._compiler(template, data, fn, &quot;compileExplicit&quot;);
         },
         
+        compileDom: function (dom, data, fn) {
+            if (dom &amp;&amp; dom.getHtml) {
+                var form = this;
+                dom.getHtml(function (html) {
+                    form._compiler(html, data, fn, dom);
+                });
+            }
+            return this;
+            // return this._compiler(dom, data, fn, null);
+        },
+        
         _compiler: function(template, data, fn, compile) {
             var dom = null;
             
-            js.template(data)
-                [compile](template, null, function(text) {
-                    dom = js.dom(text);
-                });
+            if (typeof compile !== &quot;string&quot;) {
+                dom = compile;
+            }
+            else {
+                js.template(data)
+                    [compile](template, null, function(text) {
+                        dom = js.dom(text);
+                    });
+            }
                 
             this._dom = dom;
             
@@ -873,8 +911,8 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                 var html = [
                         &quot;&lt;div class=\&quot;js-control js-control-button &quot;, btnclass, &quot;\&quot;&quot;,
                             &quot; name=\&quot;&quot;, btnname, &quot;\&quot;&gt;&quot;,
-                                (btnicon ? &quot;&lt;i class=\&quot;&quot; + btnicon + &quot;\&quot;&gt;&lt;/i&gt;&quot; : &quot;&quot;),
-                                btntext ? (&quot;&lt;span class=\&quot;button-text\&quot;&gt;&quot; + btntext + &quot;&lt;/span&gt;&quot;) : &quot;&quot;,
+                                &quot;&lt;i class=\&quot;&quot; + btnicon + &quot;\&quot;&gt;&lt;/i&gt;&quot;,
+                                &quot;&lt;span class=\&quot;button-text\&quot; data-buttontext=\&quot;&quot; + btntext + &quot;\&quot;&gt;&lt;/span&gt;&quot;,
                         &quot;&lt;/div&gt;&quot;
                     ].join(&#39;&#39;),
                     
@@ -908,6 +946,32 @@ jspyder.extend.fn(&quot;form&quot;, function () {
             function submit(cfg) {
                 var $button = this.buildControl(js.alg.mergeObj(cfg, __override), true);
                 $button.on(&quot;click&quot;, __submitClickFactory(this));
+                return $button;
+            }
+            
+            return submit;
+        })
+<span id='jspyder-form-templates-method-reset'>        /**
+</span>         * @method reset
+         * @member jspyder.form.templates
+         */
+        .registerControlFn(&quot;reset&quot;, function() {
+            
+            function __resetClickFactory(form) {
+                return function __resetClick(event) {
+                    form.reset();
+                    return;
+                }
+            }
+            
+            var __override = {
+                type: &quot;button&quot;,
+                nolabel: true
+            };
+            
+            function submit(cfg) {
+                var $button = this.buildControl(js.alg.mergeObj(cfg, __override), true);
+                $button.on(&quot;click&quot;, __resetClickFactory(this));
                 return $button;
             }
             
@@ -1044,7 +1108,76 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                     
                 cfg.setValue = setValue;
                     
-                return js.dom(html);
+                var textarea = js.dom(html);
+                
+                return textarea;
+            }
+        })
+<span id='jspyder-form-templates-method-textarea-autosize'>        /**
+</span>         * @method textarea-autosize
+         * @member jspyder.form.templates
+         */
+        .registerControlFn(&quot;textarea-autosize&quot;, function() {
+            function setValue(data, v) {
+                v = js.alg.string(v, &quot;&quot;);
+                this.setValue(v);
+            }
+            
+            function input(event) {
+                div = document.createElement(&quot;div&quot;);
+                var css = {
+                    &quot;font-family&quot;: null,
+                    &quot;font-size&quot;: null,
+                    &quot;font-weight&quot;: null,
+                    &quot;padding-left&quot;: null,
+                    &quot;padding-right&quot;: null,
+                    &quot;padding-bottom&quot;: null,
+                    &quot;padding-top&quot;: null,
+                    &quot;border-left&quot;: null,
+                    &quot;border-right&quot;: null,
+                    &quot;border-top&quot;: null,
+                    &quot;border-bottom&quot;: null,
+                    &quot;line-height&quot;: null,
+                    &quot;word-wrap&quot;: null
+                };
+
+                div.style[&quot;position&quot;] = &quot;fixed&quot;;
+                div.style[&quot;left&quot;] = -0xFFFF + &quot;px&quot;;
+                div.style[&quot;white-space&quot;] = &quot;pre-wrap&quot;;
+                div.style[&quot;white-space&quot;] = &quot;-moz-pre-wrap&quot;;
+                div.style[&quot;white-space&quot;] = &quot;-pre-wrap&quot;;
+                div.style[&quot;white-space&quot;] = &quot;-o-pre-wrap&quot;;
+                div.style[&quot;width&quot;] = div.style[&quot;min-width&quot;] = div.style[&quot;max-width&quot;] = this.clientWidth + &quot;px&quot;;
+                document.body.appendChild(div);
+                
+                var textarea = js.dom(this).getCss(css);
+                js.dom(div)
+                    .setText(this.value)
+                    .setCss(css)
+                    .getPosition(function(pos) {
+                        textarea.setCss({
+                            &quot;height&quot;: (pos.height + 20) + &quot;px&quot;
+                        });
+                    }).remove();
+                return;
+            }
+            
+            return function(cfg) {
+                var cfgname = js.alg.string(cfg.name, &quot;&quot;),
+                    cfgclass = js.alg.string(cfg.class, &quot;&quot;),
+                    html = [
+                        &quot;&lt;textarea name=\&quot;&quot;, cfgname, &quot;\&quot;&quot;,
+                            &quot; class=\&quot;input js-control js-control-autosize &quot;, cfgclass, &quot;\&quot;&gt;&quot;,
+                        &quot;&lt;/textarea&gt;&quot;
+                    ].join(&#39;&#39;);
+                    
+                cfg.setValue = setValue;
+                    
+                var textarea = js.dom(html);
+                
+                textarea.on(&quot;input&quot;, input);
+                
+                return textarea;
             }
         })
 <span id='jspyder-form-templates-method-radio'>        /**
@@ -1111,7 +1244,6 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                     option = js.alg.mergeObj({ 
                         &quot;name&quot;: cfgname, 
                         &quot;class&quot;: cfgclass }, options[i]);
-                    option.type = &quot;radio-single&quot;;
                     option.class = cfgclass + js.alg.string(options[i].class);
                     $option = js.dom(&quot;&lt;div&gt;&lt;/div&gt;&quot;).append(single(option));
                     $radio.and($option);
@@ -1231,8 +1363,7 @@ jspyder.extend.fn(&quot;form&quot;, function () {
          */
         .registerControlFn(&quot;toggles&quot;, function() {
             function exportValue(data) {
-                var keys = [],
-                    key;
+                var keys = [];
                     
                 this.filter(&quot;.js-buttonset&quot;).each(function (el) {
                     js.dom(el).getAttrs({ &quot;data-value&quot;: null, &quot;data-checked&quot;: null }, function (attrs) {
@@ -1257,7 +1388,7 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                         js.dom(element)
                             .getAttrs(attrs, function (attrs) {
                                 old = attrs[&quot;data-checked&quot;];
-                                if (values &amp;&amp; values.indexOf(attrs[&quot;data-value&quot;]) &gt; -1) {
+                                if (values &amp;&amp; values.indexOf) {
                                     attrs[&quot;data-checked&quot;] = (values.indexOf(attrs[&quot;data-value&quot;]) &gt; -1 ? true : null);
                                 }
                                 return;
@@ -1279,7 +1410,7 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                         type: &quot;button&quot;,
                         text: cfgtext,
                         class: cfgclass + &quot; js-buttonset&quot;,
-                        click: function (event) {
+                        click: function (data, event) {
                             js.dom(this)
                                 .getAttrs({ &quot;data-checked&quot;: false }, function (attrs) {
                                     attrs[&quot;data-checked&quot;] = (js.alg.bool(attrs[&quot;data-checked&quot;]) ? null : true);
@@ -1308,21 +1439,128 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                         &quot;name&quot;: cfgname }, options[i]);
                     option.class = cfgclass + js.alg.string(options[i].class);
                     $option = js.dom(checkbox(option));
-                    $checkbox.and($option);                    
+                    $checkbox.and($option);
                 }
-                
-                $checkbox
-                    .find(&quot;input&quot;)
-                        .on(&quot;change&quot;, function (event) {
-                            var checked = this.checked;
-                            js.dom(this).getValue(function(v) {
-                                cfg[&quot;data-values&quot;][&quot;val-&quot; + js.alg.string(v)] = checked;
-                            });
-                        });
                 
                 cfg.exportValue = exportValue;
                 cfg.setValue = setValue;
                 
+                return $checkbox;
+            }
+        })
+<span id='jspyder-form-templates-method-toggles-radio'>        /**
+</span>         * @method toggles-radio
+         * @member jspyder.form.templates
+         */
+        .registerControlFn(&quot;toggles-radio&quot;, function() {
+            function exportValue(data) {
+                var value = null;
+                    
+                this.filter(&quot;.js-buttonset[data-checked]&quot;).at(0)
+                    .getAttrs({ &quot;data-value&quot;: null, &quot;data-checked&quot;: null }, function (attrs) {
+                        value = attrs[&quot;data-value&quot;];
+                        return;
+                    });
+                
+                return value;
+            }
+            
+            function setValue(data, values) {
+                this.filter(&quot;.js-buttonset[data-checked]:not([data-value=\&quot;&quot; + values + &quot;\&quot;])&quot;)
+                    .setAttrs({ &quot;data-checked&quot;: null })
+                    .trigger(&quot;change&quot;);
+                    
+                this.filter(&quot;.js-buttonset[data-value=\&quot;&quot; + values + &quot;\&quot;]:not([data-checked])&quot;)
+                    .setAttrs({ &quot;data-checked&quot;: true })
+                    .trigger(&quot;change&quot;);
+
+                return this;
+            }
+            
+            var __override = {
+                    &quot;type&quot;: &quot;toggles&quot;,
+                    &quot;nolabel&quot;: true
+                };
+            
+            return function (cfg) {
+                var tmp = js.alg.mergeObj({}, cfg, __override),
+                    $checkbox = this.buildControl(tmp, true),
+                    form = this;
+                    
+                $checkbox.on(&quot;click&quot;, function (event) {
+                    var self = js.dom(this);
+                    js.alg.each(cfg.values, function (valObj) {
+                        self.getAttrs({ &quot;data-value&quot;: null }, function (attrs) {
+                            form.setFieldValue(cfg.name, attrs[&quot;data-value&quot;]);
+                        });
+                        return;
+                    });
+                });
+                    
+                cfg.exportValue = exportValue;
+                cfg.setValue = setValue;
+                    
+                return $checkbox;
+            }
+        })
+<span id='jspyder-form-templates-method-toggles-bitwise'>        /**
+</span>         * @method toggles-bitwise
+         * @member jspyder.form.templates
+         */
+        .registerControlFn(&quot;toggles-bitwise&quot;, function() {
+            function exportValue(data) {
+                var values = js.alg.use(this, __baseExportValue, arguments),
+                    value = 0;
+                
+                js.alg.each(values, function (cbValue) {
+                    value = value | js.alg.number(cbValue);
+                });
+                
+                return value;
+            }
+            
+            function setValue(data, values) {
+                values = js.alg.number(values, 0);
+                this.filter(&quot;.js-buttonset&quot;)
+                    .each(function (element) {
+                        var attrs = {
+                                &quot;data-value&quot;: &quot;&quot;,
+                                &quot;data-checked&quot;: null
+                            },
+                            old = null;
+
+                        js.dom(element)
+                            .getAttrs(attrs, function (attrs) {
+                                old = attrs[&quot;data-checked&quot;];
+                                attrs[&quot;data-value&quot;] = js.alg.number(attrs[&quot;data-value&quot;], 0);
+                                attrs[&quot;data-checked&quot;] = ((values === attrs[&quot;data-value&quot;]) || (values &amp; attrs[&quot;data-value&quot;])) ? true : null;
+                                return;
+                            })
+                            .setAttrs(attrs)
+                            .trigger(attrs[&quot;data-checked&quot;] !== old ? &quot;change&quot; : &quot;&quot;);
+
+                        return;
+                    });
+
+                return this;
+            }
+            
+            var __baseExportValue = null,
+                __override = {
+                    &quot;type&quot;: &quot;toggles&quot;,
+                    &quot;nolabel&quot;: true
+                };
+            
+            return function (cfg) {
+                var tmp = js.alg.mergeObj({}, cfg, __override),
+                    $checkbox = this.buildControl(tmp, true);
+                    
+                cfg[&quot;data-values&quot;] = tmp[&quot;data-values&quot;];
+                    
+                __baseExportValue = __baseExportValue || tmp.exportValue;
+                cfg.exportValue = exportValue;
+                cfg.setValue = setValue;
+                    
                 return $checkbox;
             }
         })
@@ -1434,38 +1672,61 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                     return;
                 }
                 
-                autocomplete.on(&quot;keydown&quot;, function (event) {
-                    var up = false;
-                    switch (event.keyCode) {
-                        case js.alg.keycodes.KC_UpArrow:
-                            up = true;
-                        case js.alg.keycodes.KC_DownArrow:
-                            var sel = found.find(&quot;.search-item.selected&quot;),
-                                selId = -1;
-                            found.find(&quot;.search-item&quot;).each(function (item, i) {
-                                var cls = { &quot;selected&quot;: false };
-                                js.dom(item).getClasses(cls);
-                                
-                                if (cls[&quot;selected&quot;]) {
-                                    selId = i;
-                                }
-                                return;
-                            });
-                            found.find(&quot;.search-item&quot;)
-                                .setClasses({ &quot;selected&quot;: false })
-                                .at(selId + (up ? -1 : 1))
+                autocomplete
+                    .on(&quot;keydown&quot;, function (event) {
+                        var up = false;
+                        switch (event.keyCode) {
+                            case js.alg.keycodes.KC_UpArrow:
+                                up = true;
+                            case js.alg.keycodes.KC_DownArrow:
+                                var selId = -1;
+
+                                found.find(&quot;.search-item&quot;).each(function (item, i) {
+                                    var cls = { &quot;selected&quot;: false };
+                                    js.dom(item).getClasses(cls);
+
+                                    if (cls[&quot;selected&quot;]) {
+                                        selId = i;
+                                    }
+                                    return;
+                                });
+
+                                found.find(&quot;.search-item&quot;)
+                                    .setClasses({ &quot;selected&quot;: false })
+                                    .at(selId + (up ? -1 : 1))
                                     .setClasses({ &quot;selected&quot;: true });
-                                
-                            break;
-                        case js.alg.keycodes.KC_Tab:
-                        case js.alg.keycodes.KC_Enter:
-                            found.find(&quot;.search-item.selected&quot;).trigger(&quot;click&quot;);
-                            break;
-                    }
-                    return;
-                });
+
+                                break;
+
+                            case js.alg.keycodes.KC_Tab:
+                            case js.alg.keycodes.KC_Enter:
+                                found.find(&quot;.search-item.selected&quot;).trigger(&quot;mousedown&quot;);
+                                break;
+                        }
+                        return;
+                    })
+                    .on(&quot;blur&quot;, function (event) {
+                        if (config[&quot;strict&quot;]) {
+                            var match = searchValue(config, this.value, true);
+                            if(!match) {
+                                this.value = &quot;&quot;;
+                                js.dom(this).setAttrs({ &quot;data-value&quot;: &quot;&quot; });
+                            }
+                            
+                            else {
+                                this.value = match.text;
+                                js.dom(this).setAttrs({ &quot;data-value&quot;: match.value });
+                            }
+                            // check if anything matches this value
+                            // form.setFieldValue(config.name, this.value);
+                            // found.find(&quot;.search-item&quot;).at(0, function () { this.trigger(&quot;.click&quot;); });
+                        }
+                        fns.hide();
+                        // found.remove();
+                        return;
+                    });
                 
-                return {
+                var fns =  {
                     show: function search(value) {
                         var values = config.values || [],
                             minlen = js.alg.number(config.minlen, 3),
@@ -1485,21 +1746,23 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                                 .setHtml(data.match.join(&quot;&quot;))
                                 .attachAfter(this)
                                 .setCss(css)
-                                .find(&quot;.search-item&quot;).on(&quot;click&quot;, searchClick);
+                                .find(&quot;.search-item&quot;).on(&quot;mousedown&quot;, searchClick);
                         }
                         else {
                             found.remove();
                         }
                     },
                     hide: function () {
-                        setTimeout(function () {
-                            found.remove();
-                        }, 100);
+                        // setTimeout(function () {
+                        found.remove();
+                        // }, 100);
                     },
                     getFirst: function () {
                         
                     }
                 };
+                
+                return fns;
             }
             
             function __searchLoop(valObj, i, values, data) {
@@ -1521,7 +1784,7 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                 var value = js.alg.string(valObj.value),
                     text = js.alg.string(valObj.text, value);
 
-                if (data.find.test(value)) {
+                if (data.find.test(data.searchText ? text : value)) {
                     data.match = ({ value: value, text: text });
                     this.stop();
                 }
@@ -1529,23 +1792,29 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                 return;
             }
             
+            function searchValue(config, value, searchText) {
+                var data = {
+                    match: null,
+                    find: new RegExp(&quot;^&quot; + value + &quot;$&quot;),
+                    searchText: searchText
+                };
+                
+                js.alg.arrEach(config.values, __searchValue, data);
+                return data.match;
+            }
+            
             function setValue(data, value) {
                 var config = data.config,
                     field = data.field,
                     strict = js.alg.bool(config.strict),
                     values = data.config.values,
-                    cdata = {
-                        match: null,
-                        find: new RegExp(&quot;^&quot; + value + &quot;$&quot;)
-                    },
                     text = &quot;&quot;,
-                    attrs = {};
-
-                js.alg.arrEach(values, __searchValue, cdata);
+                    attrs = {},
+                    match = searchValue(data.config, value, false);
                 
-                if (cdata.match) {
-                    attrs[&quot;data-value&quot;] = cdata.match.value;
-                    text = cdata.match.text;
+                if (match) {
+                    attrs[&quot;data-value&quot;] = match.value;
+                    text = match.text;
                 }
                 else {
                     if (!strict) {
@@ -1576,21 +1845,20 @@ jspyder.extend.fn(&quot;form&quot;, function () {
             }
             
             return function (cfg) {
-                var cfg2 = js.alg.mergeObj({}, cfg, __override);
-                var $autocomplete = this.buildControl(cfg2, true);
+                var cfg2 = js.alg.mergeObj({}, cfg, __override),
+                    $autocomplete = this.buildControl(cfg2, true),
+                    form = this,
+                    search = null;
                 
                 cfg.setValue = setValue;
                 cfg.exportValue = exportValue;
                 
-                var search = buildFunctions(this, $autocomplete, cfg);
+                search = buildFunctions(form, $autocomplete, cfg);
                 
                 $autocomplete
                     .on(&quot;focus input&quot;, function (event) {
                         $autocomplete.getValue(search.show);
-                    })
-                    .on(&quot;blur&quot;, function (event) {
-                        search.hide();
-                    })
+                    });
                 
                 return $autocomplete;
             }
