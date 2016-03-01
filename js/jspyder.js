@@ -611,7 +611,7 @@
             sliceArray: function(a, n) {
                 var ret = a;
                 try {
-                    ret = Array.prototype.slice.call(a, n || 0);
+                    ret = Array.prototype.slice.call(a || [], n || 0);
                 }
                 catch(e) { ret = []; }
                 return ret;
@@ -619,15 +619,35 @@
             
             sortArrayObj: function(arr, asc, field /*, ... */) {
                 var list = js.alg.sliceArray(arguments, 2);
-                arr.sort(function (left, right) {
-                    for (var i = 0; left && right && i < list.length; i++) {
-                        left = left[list[i]];
-                        right = right[list[i]];
-                    }
-                    
-                    return (asc ? left >= right : left <= right);
-                });
+                arr.sort(js.alg.__sortArrayObj(asc, list));
                 return arr;
+            },
+            
+            __sortArrayObj: function(asc, list) {
+                switch(js.env.browser.name) {
+                    case "IE":
+                    case "Edge":
+                        return function (left, right) {
+                            for (var i = 0; left && right && i < list.length; i++) {
+                                left = left[list[i]];
+                                right = right[list[i]];
+                            }
+                            
+                            var a = (asc ? left : right),
+                                b = (asc ? right : left);
+                                
+                            return (a > b ? 1 : (a < b ? -1 : 0 ));
+                        };
+                    default:
+                        return function (left, right) {
+                                for (var i = 0; left && right && i < list.length; i++) {
+                                    left = left[list[i]];
+                                    right = right[list[i]];
+                                }
+                                
+                                return (asc ? left >= right : left <= right);
+                            };
+                }
             },
             
             sortArrayNum: function(arr, asc) {
@@ -923,7 +943,7 @@
             element = element || [];
             var s = element, el;
 
-            if (!(js.dom.fn.isPrototypeOf(element))) {
+            if (!(js_dom.fn.isPrototypeOf(element))) {
 
                 if (typeof s === "string") {
                     try {
@@ -1151,7 +1171,7 @@
             getPosition: function (fn) {
                 this.each(function (el) {
                     var pos = el.getBoundingClientRect();
-                    js.dom(el).use(fn, [pos]);
+                    js_dom(el).use(fn, [pos]);
                 })
                 return this;
             },
@@ -1183,7 +1203,7 @@
                         });
                     }
                     
-                    js.dom(this).use(fn, [ret]);
+                    js_dom(this).use(fn, [ret]);
                     return;
                 });
                 return this;
@@ -1632,19 +1652,19 @@
              *      found elements.
              */
             find: function(cssSelector) {
-                var $found = js.dom(),
+                var $found = js_dom(),
                     _found = $found._element;
                     
                 this.each(function(element) {
                     var children = element.querySelectorAll(cssSelector);
-                    js.alg.joinArray(_found, js.dom(children)._element);
+                    js.alg.joinArray(_found, js_dom(children)._element);
                 });
                 
                 return $found;
             },
             
             filter: function (cssSelector) {
-                var $found = js.dom(),
+                var $found = js_dom(),
                     _found = $found._element;
                     
                 this.each(function (element) {
@@ -1750,7 +1770,7 @@
                 
                 next = node.splitText(index);
                 next.data = next.data.substr(text.length);
-                js.dom(element)
+                js_dom(element)
                     .each(function(element) {
                         parent.insertBefore(element, next);
                     });
@@ -1796,7 +1816,7 @@
             getValue: function(fn) {
                 var self = this;
                 return self.each(function(element) {
-                    var $me = js.dom(element),
+                    var $me = js_dom(element),
                         override = $me.getOverride("getValue");
                         
                     if(override) {
@@ -1840,6 +1860,8 @@
                 return this;
             }
         };
+        
+        js_dom.doc = js_dom(document.documentElement);
 
         if (js) {
             Object.defineProperty(js, "dom", { value: js_dom });

@@ -1579,7 +1579,7 @@ label {
     box-shadow: 0 0 0.4em rgba(114, 114, 114, 0.4); }
 .js-control.js-control-currency-prefix {
   position: absolute;
-  margin: .22em;
+  margin: .334em;
   width: 0 !important; }
 .js-control.js-control-dropdown {
   cursor: pointer;
@@ -1588,8 +1588,7 @@ label {
     color: #212121;
     text-align: left;
     font-size: 1em;
-    display: inline-block;
-    line-height: 23em / 16; }
+    display: inline-block; }
   .js-control.js-control-dropdown i.dropdown-arrow {
     vertical-align: middle;
     float: right;
@@ -1625,7 +1624,11 @@ label {
       padding: .08em .3em;
       background-color: #FFF;
       border-top: 0.0625em solid transparent;
-      border-bottom: 0.0625em solid transparent; }
+      border-bottom: 0.0625em solid transparent;
+      width: 100%;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap; }
       .js-control.js-control-dropdown .dropdown-selection li.item:before {
         content: "";
         display: inline-block;
@@ -1666,16 +1669,21 @@ label {
     background-color: #FFF;
     border-top: 0.0625em solid transparent;
     border-bottom: 0.0625em solid transparent;
-    position: relative; }
+    width: 100%;
+    height: 1.5em;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap; }
     .js-control.js-autocomplete-search li.search-item:before {
-      content: "";
+      content: "\0020";
       display: inline-block;
       background-color: #b6b6b6;
       position: absolute;
       left: 0;
       width: .2em;
-      height: 1.5em;
-      margin-top: -.14em; }
+      margin-top: -.14em;
+      vertical-align: middle;
+      height: 1.5em; }
     .js-control.js-autocomplete-search li.search-item:hover, .js-control.js-autocomplete-search li.search-item.selected {
       border-top: 0.0625em solid #b6b6b6;
       border-bottom: 0.0625em solid #b6b6b6; }

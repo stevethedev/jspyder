@@ -479,7 +479,7 @@ label {
     
     &.js-control-currency-prefix {
         position: absolute;
-        margin: .22em;
+        margin: .334em;
         width: 0 !important;
     }
     
@@ -492,7 +492,7 @@ label {
             text-align: left;
             font-size: 1em;
             display: inline-block;
-            line-height: 23em / 16;
+            // line-height: (23em / 16);
         }
         
         i.dropdown-arrow {
@@ -539,6 +539,10 @@ label {
                 background-color: $color-white;
                 border-top: $px solid transparent;
                 border-bottom: $px solid transparent;
+                width: 100%;
+                text-overflow: ellipsis;
+                overflow: hidden;
+                white-space: nowrap;
                 
                 &:before {
                     content: "";
@@ -590,17 +594,22 @@ label {
             background-color: $color-white;
             border-top: $px solid transparent;
             border-bottom: $px solid transparent;
-            position: relative;
+            width: 100%;
+            height: 1.5em;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
             
             &:before {
-                content: "";
+                content: "\0020";
                 display: inline-block;
                 background-color: $color-divider;
                 position: absolute;
                 left: 0;
                 width: .2em;
-                height: 1.5em;
                 margin-top: -.14em;
+                vertical-align: middle;
+                height: 1.5em; 
             }
             
             &:hover, &.selected {

@@ -1001,7 +1001,7 @@ jspyder.extend.fn("form", function () {
                     livalue = js.alg.string(option.value, option.text);
                     
                     lihtml = [
-                        "<li class=\"item\" value=\"", livalue, "\">", litext, "</li>"].join('');
+                        "<li class=\"item\" value=\"", livalue, "\" title=\"", litext, "\">", litext, "</li>"].join('');
                     
                     $popout.append(lihtml);
                 }
@@ -1759,7 +1759,7 @@ jspyder.extend.fn("form", function () {
                     text = js.alg.string(valObj.text, value);
 
                 if (data.regexp.test(text)) {
-                    data.match.push("<li class=\"search-item\" data-value=\"" + value + "\">" + text + "</li>");
+                    data.match.push("<li class=\"search-item\" data-value=\"" + value + "\" title=\"" + text + "\">" + text + "</li>");
                 }
 
                 if (data.match.length >= data.depth) {
@@ -1824,11 +1824,15 @@ jspyder.extend.fn("form", function () {
             function exportValue(data, v) {
                 var value = "";
                 
-                data.field.getAttrs(
-                    { "data-value": null },
-                    function (attrs) {
+                data.field.getAttrs( { "data-value": null }, function (attrs) {
                         value = attrs["data-value"];
                     });
+                    
+                if(!value && !data.config.strict) {
+                    data.field.getProps({ "value": null }, function(props) {
+                        value = props["value"];
+                    });
+                }
                     
                 return value;
             }
