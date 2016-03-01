@@ -851,6 +851,24 @@
                 KC_LBracket: 219,
                 KC_RBracket: 221,
                 KC_Apos: 222
+            },
+            
+            min: function(a,b) {
+                var min = a;
+                js.alg.each(arguments, function(arg) {
+                    min = (typeof min === "undefined" ? arg : min);
+                    min = (min > arg ? arg : min);
+                });
+                return min;
+            },
+            
+            max: function(a, b) {
+                var max = a;
+                js.alg.each(arguments, function(arg) {
+                    max = (typeof max === "undefined" ? arg : max);
+                    max = (max < arg ? arg : max);
+                });
+                return max;
             }
         };
 

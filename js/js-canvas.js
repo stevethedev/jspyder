@@ -72,6 +72,11 @@ jspyder.extend.fn("canvas", function () {
             }
             return this;
         },
+        exportSize: function() {
+            var size = {};
+            this.getSize(size);
+            return size;
+        },
         clear: function () {
             var self = this;
             this.getSize({}, function (size) {
@@ -200,6 +205,56 @@ jspyder.extend.fn("canvas", function () {
                 this.context.fillText(settings.text, settings.x, settings.y);
                 this.context.strokeStyle = settings.outline;
                 this.context.strokeText(settings.text, settings.x, settings.y);
+                
+                return;
+            },
+            barchart: function (settings) {
+                var sections = js.alg.sliceArray(settings.sections) || [];
+                
+                var min, max, cols = 0, columnSplit = -1, width = 0, height = 0, self = this;
+                
+                js.alg.arrEach(sections, function(group) {
+                    var c = 0;
+                    
+                    js.alg.arrEach(group.values, function(bar) {
+                        ++c;
+                        min = js.alg.min(min, bar);
+                        max = js.alg.max(max, bar);
+                    });
+                    
+                    cols = js.alg.max(++c, cols);
+                });
+                
+                columnSplit = (sections.length + 1) * (cols - 1) - 1;
+                
+                var size = this.exportSize();
+                width = size.width;
+                height = size.height;
+                
+                var count = 0, chartBars = [], s = 0, 
+                    w = (width / columnSplit)
+                
+                js.alg.arrEach(sections, function(group, g) {
+                    var color = js.alg.string(group.color, "black"),
+                        bars = js.alg.sliceArray(group.values) || [];
+
+                    js.alg.arrEach(bars, function(bar, b) {
+                        
+                        var value = height * (js.alg.number(bar) / (max || 1)),
+                            y = (height - value),
+                            x = (g + b*(sections.length + 1)) * w,
+                            h = (value);
+                            
+                        self.cmd.rectangle.call(self, {
+                            x: x,
+                            y: y,
+                            width: w,
+                            height: h,
+                            fill: color
+                        });
+                    });
+                    count++;
+                });
                 
                 return;
             }
