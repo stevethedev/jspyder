@@ -293,13 +293,22 @@ jspyder.extend.fn("canvas", function () {
                         y: ((height * (5 - i)) / 5) - (labelSize / 3),
                         size: labelSize,
                         font: "Arial",
-                        text: (i / 5) * max
+                        text: (i / 5) * max,
+                        textalign: "left"
+                    });
+                    self.cmd.text.call(self, {
+                        x: width - (labelSize / 3),
+                        y: ((height * (5 - i)) / 5) - (labelSize / 3),
+                        size: labelSize,
+                        font: "Arial",
+                        text: (i / 5) * max,
+                        textalign: "right"
                     });
                 });
                                 
                 width -= 50;
                 chartX += 50;
-                columnSplit = (sections.length + 1) * (cols) - 1;
+                columnSplit = (sections.length + 1) * (cols);
                 colWidth = (width / columnSplit);
                 
                 
