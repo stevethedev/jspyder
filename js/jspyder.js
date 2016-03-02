@@ -353,9 +353,10 @@
                 var ctl = {
                         "stop": function () {
                             _break = true;
+                            return this;
                         },
                         "drop": function (n) {
-                            
+                            return this;
                         }
                     },
                     _break = false;
@@ -394,6 +395,33 @@
                 }
 
                 return js;
+            },
+            
+            iterate: function(start, end, fn, data) {
+                start = js.alg.number(start);
+                end = js.alg.number(end);
+                var ctl = {
+                    "stop": function() {
+                        _break = true;
+                        return this;
+                    },
+                    "drop": function(n) { return this; }
+                },
+                _break = false,
+                step = (end < start ? -1 : 1), i;
+                
+                for(i = start; i !== end; i += step) {
+                    fn.apply(ctl, [i, data]);
+                    if(_break) { break; }
+                }
+                
+                return js;
+            },
+            
+            magnitude: function(n) {
+                n = js.alg.number(n);
+                var y = Math.pow(10, (n | 0).toString().length-1);
+                return Math.ceil(n/y)*y;
             },
             
             escapeString: function (str) {

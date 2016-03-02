@@ -192,6 +192,7 @@ jspyder.extend.fn("canvas", function () {
                 return;
             },
             text: function (settings) {
+                settings = settings || {};
                 settings.size = js.alg.number(settings.size, 16);
                 settings.font = js.alg.string(settings.font, "Arial");
                 settings.text = js.alg.string(settings.text, "");
@@ -199,7 +200,9 @@ jspyder.extend.fn("canvas", function () {
                 settings.y = js.alg.string(settings.y, 0);
                 settings.outline = js.alg.string(settings.outline, "transparent");
                 settings.fill = js.alg.string(settings.fill, "black");
+                settings.textalign = js.alg.string(settings.textalign, "start");
                 
+                this.context.textAlign = settings.textalign;
                 this.context.font = settings.size + "px " + settings.font;
                 this.context.fillStyle = settings.fill;
                 this.context.fillText(settings.text, settings.x, settings.y);
@@ -208,16 +211,66 @@ jspyder.extend.fn("canvas", function () {
                 
                 return;
             },
-            barchart: function (settings) {
-                var sections = js.alg.sliceArray(settings.sections) || [];
+            line: function(settings) {
+                settings = settings || {}; 
+                settings.x = js.alg.number(settings.x, 0);
+                settings.y = js.alg.number(settings.y, 0);
+                settings.width = js.alg.number(settings.width, 0);
+                settings.height = js.alg.number(settings.height, 0);
+                settings.color = js.alg.string(settings.color, "black");
+                settings.thickness = js.alg.number(settings.thickness, 1);
                 
-                var min, max, cols = 0, columnSplit = -1, width = 0, height = 0, self = this;
+                this.context.strokeStyle = settings.color;
+                this.context.lineWidth = settings.thickness;
+                this.context.beginPath();
+                this.context.moveTo(settings.x, settings.y);
+                this.context.lineTo(settings.width + settings.x, settings.height + settings.y);
+                this.context.stroke();
+                
+                return;
+            },
+            barchart: function (settings) {
+                settings = settings || {};
+                var sections = js.alg.sliceArray(settings.sections) || [],
+                    size = this.exportSize(),
+                    borderWidth = js.alg.number(settings.borderWidth, 1),
+                    width = js.alg.number(settings.width, size.width),
+                    height = js.alg.number(settings.height, size.height),
+                    chartX = js.alg.number(settings.x, 0),
+                    chartY = js.alg.number(settings.y, 0),
+                    fill = js.alg.string(settings.fill, "white"),
+                    border = js.alg.string(settings.border, "black"),
+                    labels = settings.labels || [],
+                    labelSize = js.alg.number(settings.labelSize, 16),
+                    self = this,
+                    min, 
+                    max = js.alg.number(settings.max), 
+                    cols, 
+                    columnSplit,
+                    colWidth;
+                    
+                self.cmd.rectangle.call(this, {
+                    width: width,
+                    height: height,
+                    x: chartX,
+                    y: chartY,
+                    fill: fill,
+                    borderWidth: borderWidth,
+                    border: border
+                });
+                
+                width -= borderWidth * 2;
+                height -= borderWidth * 2;
+                chartX += borderWidth;
+                chartY += borderWidth;
+                
+                height -= 50;
                 
                 js.alg.arrEach(sections, function(group) {
-                    var c = 0;
+                    var c = -1;
                     
                     js.alg.arrEach(group.values, function(bar) {
-                        ++c;
+                        c++;
                         min = js.alg.min(min, bar);
                         max = js.alg.max(max, bar);
                     });
@@ -225,35 +278,66 @@ jspyder.extend.fn("canvas", function () {
                     cols = js.alg.max(++c, cols);
                 });
                 
-                columnSplit = (sections.length + 1) * (cols - 1) - 1;
+                max = js.alg.magnitude(max);
                 
-                var size = this.exportSize();
-                width = size.width;
-                height = size.height;
+                js.alg.iterate(0, 5, function(i) {
+                    self.cmd.line.call(self, {
+                        x: 0,
+                        y: (height * (5 - i)) / 5,
+                        width: width,
+                        height: 0,
+                        color: "rgba(0, 0, 0, 0.3)"
+                    });
+                    self.cmd.text.call(self, {
+                        x: labelSize / 3,
+                        y: ((height * (5 - i)) / 5) - (labelSize / 3),
+                        size: labelSize,
+                        font: "Arial",
+                        text: (i / 5) * max
+                    });
+                });
+                                
+                width -= 50;
+                chartX += 50;
+                columnSplit = (sections.length + 1) * (cols) - 1;
+                colWidth = (width / columnSplit);
                 
-                var count = 0, chartBars = [], s = 0, 
-                    w = (width / columnSplit)
                 
                 js.alg.arrEach(sections, function(group, g) {
-                    var color = js.alg.string(group.color, "black"),
-                        bars = js.alg.sliceArray(group.values) || [];
-
-                    js.alg.arrEach(bars, function(bar, b) {
+                    var barColor = js.alg.string(group.fill, "black"),
+                        barOutline = js.alg.string(group.border, barColor),
+                        barOutlineWidth = js.alg.number(group.borderWidth, 1);
                         
+                    js.alg.arrEach(group && group.values, function(bar, b) {
                         var value = height * (js.alg.number(bar) / (max || 1)),
-                            y = (height - value),
-                            x = (g + b*(sections.length + 1)) * w,
-                            h = (value);
+                            barY = (height - value),
+                            barX = (g + b * (sections.length + 1)) * colWidth,
+                            barH = (value);
                             
                         self.cmd.rectangle.call(self, {
-                            x: x,
-                            y: y,
-                            width: w,
-                            height: h,
-                            fill: color
+                            x: chartX + barX,
+                            y: chartY + barY,
+                            width: colWidth,
+                            height: barH,
+                            fill: barColor,
+                            border: barOutline,
+                            borderWidth: barOutlineWidth
+                        });
+                    
+                        var colCount = js.alg.number(group && group.values.length, 0) - 1,
+                            minBarX = b * colCount * colWidth,
+                            maxBarX = minBarX + colWidth * colCount,
+                            offset = chartX + colWidth * b + (minBarX + maxBarX)/2;
+                            
+                        self.cmd.text.call(self, {
+                            text: labels[b],
+                            font: "Arial",
+                            size: labelSize,
+                            x: offset,
+                            y: height + labelSize,
+                            textalign: "center"
                         });
                     });
-                    count++;
                 });
                 
                 return;
