@@ -855,20 +855,106 @@ js.extend.fn("sp", function () {
             
             value = row[filter.column].value;
             
-            if(!drop && (typeof filter.gt  !== "undefined")) { drop = !(value >   filter.gt ); } 
-            if(!drop && (typeof filter.geq !== "undefined")) { drop = !(value >=  filter.geq); } 
-            if(!drop && (typeof filter.leq !== "undefined")) { drop = !(value <=  filter.leq); } 
-            if(!drop && (typeof filter.lt  !== "undefined")) { drop = !(value <   filter.lt ); }
-            if(!drop && (typeof filter.eq  !== "undefined")) { drop = !(value ==  filter.eq ); }
-            if(!drop && (typeof filter.seq !== "undefined")) { drop = !(value === filter.seq); }
-            if(!drop && (typeof filter.neq !== "undefined")) { drop = !(value !=  filter.neq); }
-            if(!drop && (typeof filter.snq !== "undefined")) { drop = !(value !== filter.snq); }
+            if(!drop && (typeof filter.gt  !== "undefined")) {
+                if(filter.gt && typeof filter.gt === "object") {
+                    js.alg.each(filter.gt, function(or) {
+                        drop = drop && !(value > or);
+                        drop && this.stop();
+                    });
+                }
+                else { drop = !(value > filter.gt ); } 
+            } 
+            if(!drop && (typeof filter.geq !== "undefined")) {
+                if(filter.geq && typeof filter.geq === "object") {
+                    js.alg.each(filter.geq, function(or) {
+                        drop = drop && !(value >= or);
+                        drop && this.stop();
+                    });
+                } 
+                else { drop = !(value >= filter.geq); } 
+            } 
+            if(!drop && (typeof filter.leq !== "undefined")) {
+                if(filter.leq && typeof filter.leq === "object") {
+                    js.alg.each(filter.leq, function(or) {
+                        drop = drop && !(value <= or);
+                        drop && this.stop();
+                    });
+                } 
+                else { drop = !(value <= filter.leq); } 
+            } 
+            if(!drop && (typeof filter.lt  !== "undefined")) {
+                if(filter.lt && typeof filter.lt === "object") {
+                    js.alg.each(filter.lt, function(or) {
+                        drop = drop && !(value < or);
+                        drop && this.stop();
+                    });
+                } 
+                else { drop = !(value < filter.lt ); } 
+            }
+            if(!drop && (typeof filter.eq  !== "undefined")) {
+                if(filter.eq && typeof filter.eq === "object") {
+                    js.alg.each(filter.eq, function(or) {
+                        drop = drop && !(value == or);
+                        drop && this.stop();
+                    });
+                } 
+                else { drop = !(value == filter.eq ); } 
+            }
+            if(!drop && (typeof filter.seq !== "undefined")) {
+                if(filter.seq && typeof filter.seq === "object") {
+                    js.alg.each(filter.seq, function(or) {
+                        drop = drop && !(value === or);
+                        drop && this.stop();
+                    });
+                } 
+                else { drop = !(value === filter.seq); } 
+            }
+            if(!drop && (typeof filter.neq !== "undefined")) {
+                if(filter.neq && typeof filter.neq === "object") {
+                    js.alg.each(filter.neq, function(or) {
+                        drop = drop && !(value != or);
+                        drop && this.stop();
+                    });
+                } 
+                else { drop = !(value != filter.neq); } 
+            }
+            if(!drop && (typeof filter.snq !== "undefined")) {
+                if(filter.snq && typeof filter.snq === "object") {
+                    js.alg.each(filter.snq, function(or) {
+                        drop = drop && !(value !== or);
+                        drop && this.stop();
+                    });
+                } 
+                else { drop = !(value !== filter.snq); } 
+            }
             // binary
-            if(!drop && (typeof filter.and !== "undefined")) { drop = !((value & filter.and) === filter.and); }
-            if(!drop && (typeof filter.not !== "undefined")) { drop = !((value & filter.not) !== filter.not); }
+            if(!drop && (typeof filter.and !== "undefined")) {
+                if(filter.and && typeof filter.and === "object") {
+                    js.alg.each(filter.and, function(or) {
+                        drop = drop && !((value & or) === or);
+                        drop && this.stop();
+                    });
+                }
+                else { drop = !((value & filter.and) === filter.and); }
+            }
+            if(!drop && (typeof filter.not !== "undefined")) {
+                if(filter.not && typeof filter.not === "object") {
+                    js.alg.each(filter.not, function(or) {
+                        drop = drop && !((value & or) !== or);
+                        drop && this.stop();
+                    });
+                }
+                else { drop = !((value & filter.not) !== filter.not); }
+            }
             
             if(!drop && (typeof filter.test !== "undefined")) { 
                 // prevent invalid regexp values from breaking our query
+                if(filter.test && typeof filter.and === "object") {
+                    js.alg.each(filter.test, function(or) {
+                        drop = drop && !(or.test(value));
+                        drop && this.stop();
+                    });
+                }
                 if(filter.test instanceof RegExp) { 
                     drop = !(filter.test.test(value));
                 }
