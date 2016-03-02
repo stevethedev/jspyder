@@ -806,6 +806,32 @@ js.extend.fn("sp", function () {
             }
         },
         
+        /**
+         * Copies all of the values from the rows in the query into the object 
+         * provided.
+         */
+        getValues: function (columns, fn) {
+            // initializes [columns] variable
+            js.alg.each(columns, function(v, k, columns) {
+                columns[k] = {};
+            });
+            // iterates the rows
+            this.each(function(row) {
+                js.alg.each(columns, __copyColumn, row);
+            });
+            function __copyColumn(arr, key, columns, row) {
+                arr[row[key].value] = true;
+            }
+            // sort the results
+            js.alg.each(columns, function(obj, k, columns) {
+                columns[k] = Object.keys(obj).sort();
+            });
+            
+            js.alg.use(this, fn, [columns]);
+            
+            return this;
+        },
+        
         /** *******************************************************************
          * Creates a copy of the jspyder.sp.query object; pointing to the same
          * jspyder.sp.list object, but with its own context of data copied from
