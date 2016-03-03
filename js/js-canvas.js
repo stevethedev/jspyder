@@ -230,7 +230,7 @@ jspyder.extend.fn("canvas", function () {
                 this.context.lineWidth = settings.thickness;
                 this.context.beginPath();
                 this.context.moveTo(settings.x, settings.y);
-                this.context.lineTo(settings.x + settings.width, settings.height + settings.y);
+                this.context.lineTo(settings.x + settings.width, settings.y + settings.height);
                 this.context.stroke();
                 
                 return;
