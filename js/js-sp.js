@@ -326,10 +326,6 @@ js.extend.fn("sp", function () {
             while(this._dirtyRows.pop()) {
                 // nothing
             }
-            js.alg.each(this._columns, function (colData) {
-                colData.rowIDs = {}; //< stores RowID:[Value,Value,Value]
-                colData.values = {}; //< stores Value:[RowID,RowID,RowID] 
-            });
             return this;
         },
         
@@ -570,14 +566,6 @@ js.extend.fn("sp", function () {
         if (colData.internal) {
             try {
                 colValue = data.item.get_item(colData.internal);
-            
-                // eventually, this will need to change to support multi-value fields.
-                colData.rowIDs[rowID] = colValue;
-
-                if (!colData.values[colValue]) {
-                    colData.values[colValue] = [];
-                }
-                colData.values[colValue].push(rowID);
             }
             catch(e) {
                 js.log.warn("Could not load data from column name " + colData.internal);
