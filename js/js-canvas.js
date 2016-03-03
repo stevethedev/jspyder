@@ -158,6 +158,12 @@ jspyder.extend.fn("canvas", function () {
                 this.context.fillStyle = settings.fill;
                 this.context.fill();
             },
+            circle: function (settings) {
+                settings = __mergeSettings(settings);
+                settings.degrees = 360;
+                
+                this.cmd.arc.call(this, settings);
+            },
             pie: function (settings) {
                 settings = __mergeSettings(settings);
                 settings.radius = js.alg.number(settings.radius, 0);
@@ -224,7 +230,7 @@ jspyder.extend.fn("canvas", function () {
                 this.context.lineWidth = settings.thickness;
                 this.context.beginPath();
                 this.context.moveTo(settings.x, settings.y);
-                this.context.lineTo(settings.width + settings.x, settings.height + settings.y);
+                this.context.lineTo(settings.x + settings.width, settings.y + settings.height);
                 this.context.stroke();
                 
                 return;
@@ -345,6 +351,165 @@ jspyder.extend.fn("canvas", function () {
                             x: offset,
                             y: height + labelSize,
                             textalign: "center"
+                        });
+                    });
+                });
+                
+                return;
+            },
+            linechart: function (settings) {
+                settings = settings || {};
+                var sections = js.alg.sliceArray(settings.sections) || [],
+                    size = this.exportSize(),
+                    borderWidth = js.alg.number(settings.borderWidth, 1),
+                    width = js.alg.number(settings.width, size.width),
+                    height = js.alg.number(settings.height, size.height),
+                    chartX = js.alg.number(settings.x, 0),
+                    chartY = js.alg.number(settings.y, 0),
+                    fill = js.alg.string(settings.fill, "white"),
+                    border = js.alg.string(settings.border, "black"),
+                    labels = settings.labels || [],
+                    labelSize = js.alg.number(settings.labelSize, 16),
+                    lineColor = js.alg.string(settings.linecolor, "rgba(0, 0, 0, 0.3)"),
+                    self = this,
+                    min, 
+                    max = js.alg.number(settings.max), 
+                    cols, 
+                    columnSplit,
+                    colWidth,
+                    offsetX = 50,
+                    offsetY = 50;
+                    
+                self.cmd.rectangle.call(this, {
+                    width: width,
+                    height: height,
+                    x: chartX,
+                    y: chartY,
+                    fill: fill,
+                    borderWidth: borderWidth,
+                    border: border
+                });
+                
+                width -= borderWidth * 2;
+                height -= borderWidth * 2;
+                chartX += borderWidth;
+                chartY += borderWidth;
+                
+                height -= offsetY;
+                
+                js.alg.arrEach(sections, function(group) {
+                    var c = -1;
+                    
+                    js.alg.arrEach(group.values, function(value) {
+                        c++;
+                        min = js.alg.min(min, value);
+                        max = js.alg.max(max, value);
+                    });
+                    
+                    cols = js.alg.max(++c, cols);
+                });
+                
+                max = js.alg.magnitude(max);
+                
+                js.alg.iterate(0, 5, function(i) {
+                    self.cmd.line.call(self, {
+                        x: chartX,
+                        y: (height * (5 - i)) / 5,
+                        width: width + chartX,
+                        height: 0,
+                        color: "rgba(0, 0, 0, 0.3)"
+                    });
+                    self.cmd.text.call(self, {
+                        x: labelSize / 3,
+                        y: ((height * (5 - i)) / 5) - (labelSize / 3),
+                        size: labelSize,
+                        font: "Arial",
+                        text: (i / 5) * max,
+                        textalign: "left"
+                    });
+                    self.cmd.text.call(self, {
+                        x: width - (labelSize / 3),
+                        y: ((height * (5 - i)) / 5) - (labelSize / 3),
+                        size: labelSize,
+                        font: "Arial",
+                        text: (i / 5) * max,
+                        textalign: "right"
+                    });
+                });
+                
+                width -= offsetX;
+                chartX += offsetX;
+                columnSplit = (sections.length + 1) * (cols);
+                colWidth = (width + offsetX + chartX + chartX) / (cols);
+                
+                var workArea = {
+                    x: chartX,
+                    y: chartY,
+                    height: height - chartY,
+                    width: width - chartX,
+                    vertWidth: (width - chartX) / (cols - 1)
+                };
+                
+                js.alg.iterate(0, cols, function(i) {
+                    var x = workArea.x + (workArea.vertWidth * i);
+                    self.cmd.line.call(self, {
+                        x: x,
+                        y: workArea.y,
+                        width: 0,
+                        height: workArea.height,
+                        color: "rgba(0, 0, 0, 0.3)"
+                    });
+                    self.cmd.text.call(self, {
+                        text: labels[i],
+                        font: "Arial",
+                        size: labelSize,
+                        x: x,
+                        y: workArea.height + labelSize,
+                        textalign: "center"
+                    });
+                });
+                
+                js.alg.arrEach(sections, function(group, g) {
+                    var lineColor = js.alg.string(group.fill, "transparent"),
+                        lineOutline = js.alg.string(group.border, "black"),
+                        lineOutlineWidth = js.alg.number(group.borderWidth, 1),
+                        dotColor = js.alg.string(group.dotfill, lineColor),
+                        dotOutline = js.alg.string(group.dotBorder, lineOutline),
+                        dotOutlineWidth = js.alg.string(group.dotBorderWidth, lineOutlineWidth),
+                        dotRadius = js.alg.number(group.dotRadius, 4);
+                        
+                    js.alg.arrEach(group && group.values, function(val, b, values) {
+                        
+                        var v1 = workArea.height - (workArea.y + (workArea.height * js.alg.number(values[b-1]) / (max || 1))),
+                            v2 = workArea.height - (workArea.y + (workArea.height * js.alg.number(val) / (max || 1))),
+                            x = workArea.x + (workArea.vertWidth * (b - 1)),
+                            dotX = workArea.x + (workArea.vertWidth * (b));
+                            
+                        if(b) {
+                            self.cmd.line.call(self, {
+                                x: x,
+                                y: v1,
+                                width: workArea.vertWidth,
+                                height: (v2 - v1),
+                                color: lineOutline,
+                                thickness: lineOutlineWidth 
+                            });
+                        }
+                        self.cmd.circle.call(self, {
+                            y: v2,
+                            x: dotX,
+                            radius: 4,
+                            fill: dotColor,
+                            border: dotOutline,
+                            thickness: dotOutlineWidth
+                        });
+                        self.cmd.circle.call(self, {
+                            y: v1,
+                            x: x,
+                            radius: 4,
+                            fill: dotColor,
+                            border: dotOutline,
+                            thickness: dotOutlineWidth
                         });
                     });
                 });

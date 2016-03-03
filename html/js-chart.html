@@ -40,10 +40,20 @@
             css: { "border": "1px solid black" }, 
             height: 500, 
             width: 800 
-        }); 
+        });
+        
+        var chart2 = js.canvas({
+            css: { "border": "1px solid black" },
+            height: 500,
+            width: 800
+        });
         
         chart.attach(document.body)
             .draw("barchart", data)
+            .render();
+            
+        chart2.attach(document.body)
+            .draw("linechart", data)
             .render();
     </script>
 </body>
