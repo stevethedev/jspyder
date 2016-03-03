@@ -246,14 +246,17 @@ jspyder.extend.fn("canvas", function () {
                     chartY = js.alg.number(settings.y, 0),
                     fill = js.alg.string(settings.fill, "white"),
                     border = js.alg.string(settings.border, "black"),
+                    lineColor = js.alg.string(settings.lineColor, "rgba(0, 0, 0, 0.3)"),
                     labels = settings.labels || [],
                     labelSize = js.alg.number(settings.labelSize, 16),
                     self = this,
-                    min, 
-                    max = js.alg.number(settings.max), 
+                    min = js.alg.number(settings.min, Infinity), 
+                    max = js.alg.number(settings.max, -Infinity), 
                     cols, 
                     columnSplit,
-                    colWidth;
+                    colWidth,
+                    offsetY = 50,
+                    offsetX = 50;
                     
                 self.cmd.rectangle.call(this, {
                     width: width,
@@ -267,10 +270,11 @@ jspyder.extend.fn("canvas", function () {
                 
                 width -= borderWidth * 2;
                 height -= borderWidth * 2;
+                
                 chartX += borderWidth;
                 chartY += borderWidth;
                 
-                height -= 50;
+                height -= offsetY;
                 
                 js.alg.arrEach(sections, function(group) {
                     var c = -1;
@@ -288,11 +292,11 @@ jspyder.extend.fn("canvas", function () {
                 
                 js.alg.iterate(0, 5, function(i) {
                     self.cmd.line.call(self, {
-                        x: 0,
+                        x: chartX,
                         y: (height * (5 - i)) / 5,
-                        width: width,
+                        width: width + chartX,
                         height: 0,
-                        color: "rgba(0, 0, 0, 0.3)"
+                        color: lineColor
                     });
                     self.cmd.text.call(self, {
                         x: labelSize / 3,
@@ -312,11 +316,38 @@ jspyder.extend.fn("canvas", function () {
                     });
                 });
                                 
-                width -= 50;
-                chartX += 50;
+                width -= offsetX;
+                chartX += offsetX;
                 columnSplit = (sections.length + 1) * (cols);
                 colWidth = (width / columnSplit);
                 
+                var workArea = {
+                    x: chartX,
+                    y: chartY,
+                    height: height - chartY,
+                    width: width - chartX,
+                    vertWidth: (width - chartX) / cols
+                };
+                
+                js.alg.iterate(0, cols + 1, function(i) {
+                    var x = workArea.x + (workArea.vertWidth * i);
+                    
+                    self.cmd.line.call(self, {
+                        x: x,
+                        y: workArea.y,
+                        width: 0,
+                        height: workArea.height,
+                        color: lineColor
+                    });
+                    self.cmd.text.call(self, {
+                        text: labels[i],
+                        font: "Arial",
+                        size: labelSize,
+                        x: workArea.x + (workArea.vertWidth * (i + i + 1)/2),
+                        y: workArea.height + labelSize,
+                        textalign: "center"
+                    });
+                });
                 
                 js.alg.arrEach(sections, function(group, g) {
                     var barColor = js.alg.string(group.fill, "black"),
@@ -325,32 +356,17 @@ jspyder.extend.fn("canvas", function () {
                         
                     js.alg.arrEach(group && group.values, function(bar, b) {
                         var value = height * (js.alg.number(bar) / (max || 1)),
-                            barY = (height - value),
-                            barX = (g + b * (sections.length + 1)) * colWidth,
-                            barH = (value);
+                            barY = (workArea.height - workArea.y - value),
+                            barX = (colWidth / sections.length) + (g * colWidth) + (b * workArea.vertWidth);
                             
                         self.cmd.rectangle.call(self, {
-                            x: chartX + barX,
-                            y: chartY + barY,
+                            x: workArea.x + barX,
+                            y: workArea.y + barY,
                             width: colWidth,
-                            height: barH,
+                            height: value,
                             fill: barColor,
                             border: barOutline,
                             borderWidth: barOutlineWidth
-                        });
-                    
-                        var colCount = js.alg.number(group && group.values.length, 0) - 1,
-                            minBarX = b * colCount * colWidth,
-                            maxBarX = minBarX + colWidth * colCount,
-                            offset = chartX + colWidth * b + (minBarX + maxBarX)/2;
-                            
-                        self.cmd.text.call(self, {
-                            text: labels[b],
-                            font: "Arial",
-                            size: labelSize,
-                            x: offset,
-                            y: height + labelSize,
-                            textalign: "center"
                         });
                     });
                 });
@@ -372,11 +388,9 @@ jspyder.extend.fn("canvas", function () {
                     labelSize = js.alg.number(settings.labelSize, 16),
                     lineColor = js.alg.string(settings.linecolor, "rgba(0, 0, 0, 0.3)"),
                     self = this,
-                    min, 
-                    max = js.alg.number(settings.max), 
-                    cols, 
-                    columnSplit,
-                    colWidth,
+                    min = js.alg.number(settings.min, Infinity), 
+                    max = js.alg.number(settings.max, -Infinity), 
+                    cols,
                     offsetX = 50,
                     offsetY = 50;
                     
@@ -417,7 +431,7 @@ jspyder.extend.fn("canvas", function () {
                         y: (height * (5 - i)) / 5,
                         width: width + chartX,
                         height: 0,
-                        color: "rgba(0, 0, 0, 0.3)"
+                        color: lineColor
                     });
                     self.cmd.text.call(self, {
                         x: labelSize / 3,
@@ -439,8 +453,6 @@ jspyder.extend.fn("canvas", function () {
                 
                 width -= offsetX;
                 chartX += offsetX;
-                columnSplit = (sections.length + 1) * (cols);
-                colWidth = (width + offsetX + chartX + chartX) / (cols);
                 
                 var workArea = {
                     x: chartX,
@@ -457,7 +469,7 @@ jspyder.extend.fn("canvas", function () {
                         y: workArea.y,
                         width: 0,
                         height: workArea.height,
-                        color: "rgba(0, 0, 0, 0.3)"
+                        color: lineColor
                     });
                     self.cmd.text.call(self, {
                         text: labels[i],
