@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <link type="text/css" rel="stylesheet" href="../css/jspyder.css" />
+    <link type="text/css" rel="stylesheet" href="../css/material-icons.css" />
+    <script type="text/javascript" src="../js/jspyder.js"></script>
+    <script type="text/javascript" src="../js/js-ajax.js"></script>
+    <script type="text/javascript" src="../js/js-dtype.js"></script>
+    <script type="text/javascript" src="../js/js-template.js"></script>
+    <script type="text/javascript" src="../js/js-forms.js"></script>
+    <script type="text/javascript" src="../js/js-sp.js"></script>
+    <script type="text/javascript" src="../js/js-date.js"></script>
+    <script type="text/javascript" src="../js/js-canvas.js"></script>
+    <script type="text/javascript" src="../js/js-dialog.js"></script>
+</head>
+
+<body>
+    <div id="js-chart-demo"></div>
+        
+    <script type="text/javascript">
+        var data = {
+            // width: 400,
+            // height: 300,
+            // x: 200,
+            // y: 100,
+            borderWidth: 0,
+            max: 10000,
+            labelSize: 12,
+            labels: ["Group #1", "Group #2", "Group #3", "Group #4"],
+            sections: [
+                { fill: "#FBB", border: "#D00", borderWidth: 1, values: [Math.random() * 10000,Math.random() * 10000,Math.random() * 10000,Math.random() * 10000] },
+                { fill: "#BFB", border: "#0D0", borderWidth: 1, values: [Math.random() * 10000,Math.random() * 10000,Math.random() * 10000,Math.random() * 10000] },
+                { fill: "#BBF", border: "#00D", borderWidth: 1, values: [Math.random() * 10000,Math.random() * 10000,Math.random() * 10000,Math.random() * 10000] }
+            ]
+        };
+
+        var chart = js.canvas({
+            css: { "border": "1px solid black" }, 
+            height: 500, 
+            width: 800 
+        });
+        
+        var chart2 = js.canvas({
+            css: { "border": "1px solid black" },
+            height: 500,
+            width: 800
+        });
+        
+        chart.attach(document.body)
+            .draw("barchart", data)
+            .render();
+            
+        chart2.attach(document.body)
+            .draw("linechart", data)
+            .render();
+    </script>
+</body>
+
+</html>

@@ -50,7 +50,7 @@ jspyder.extend.fn("dialog", function () {
         if (cfg.title) { dialog.setTitle(cfg.title); }
         else if (cfg.titleHtml) { dialog.setTitleHtml(cfg.titleHtml); }
         
-        if (cfg.body) { dialog.setTitle(cfg.body); }
+        if (cfg.body) { dialog.setBody(cfg.body); }
         else if (cfg.bodyHtml) { dialog.setBodyHtml(cfg.bodyHtml); }
         
         //! CREATE BUTTONS WITH CALLBACKS
