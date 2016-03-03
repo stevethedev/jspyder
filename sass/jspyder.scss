@@ -432,13 +432,15 @@ label {
             }
             
             &:first-of-type {
-                border-radius: $input-border-radius 0 0 $input-border-radius;
+                border-top-left-radius: $input-border-radius;
+                border-bottom-left-radius: $input-border-radius;
             }
             &:nth-of-type(n+2) {
                 border-left: none;
             }
             &:last-of-type {
-                border-radius: 0 $input-border-radius $input-border-radius 0;
+                border-top-right-radius: $input-border-radius;
+                border-bottom-right-radius: $input-border-radius;
             }
         }
         

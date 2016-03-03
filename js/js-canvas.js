@@ -288,7 +288,7 @@ jspyder.extend.fn("canvas", function () {
                     cols = js.alg.max(++c, cols);
                 });
                 
-                max = js.alg.magnitude(max);
+                max = js.alg.magnitude(max) * 1.1;
                 
                 js.alg.iterate(0, 5, function(i) {
                     self.cmd.line.call(self, {
@@ -423,7 +423,7 @@ jspyder.extend.fn("canvas", function () {
                     cols = js.alg.max(++c, cols);
                 });
                 
-                max = js.alg.magnitude(max);
+                max = js.alg.magnitude(max) * 1.1;
                 
                 js.alg.iterate(0, 5, function(i) {
                     self.cmd.line.call(self, {

@@ -1553,11 +1553,13 @@ label {
       background-color: #9bd9eb;
       color: #175c71; }
     .js-control.js-control-button.js-buttonset:first-of-type {
-      border-radius: 0.2em 0 0 0.2em; }
+      border-top-left-radius: 0.2em;
+      border-bottom-left-radius: 0.2em; }
     .js-control.js-control-button.js-buttonset:nth-of-type(n+2) {
       border-left: none; }
     .js-control.js-control-button.js-buttonset:last-of-type {
-      border-radius: 0 0.2em 0.2em 0; }
+      border-top-right-radius: 0.2em;
+      border-bottom-right-radius: 0.2em; }
   .js-control.js-control-button .button-text {
     color: #212121;
     vertical-align: middle;

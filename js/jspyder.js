@@ -1684,8 +1684,10 @@
                     _found = $found._element;
                     
                 this.each(function(element) {
-                    var children = element.querySelectorAll(cssSelector);
-                    js.alg.joinArray(_found, js_dom(children)._element);
+                    if(cssSelector) {
+                        var children = element.querySelectorAll(cssSelector);
+                        js.alg.joinArray(_found, js_dom(children)._element);
+                    }
                 });
                 
                 return $found;
