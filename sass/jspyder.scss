@@ -42,7 +42,7 @@ $color-warning-text: $color-orange-900;
 $color-danger: $color-red-600;
 $color-danger-background: $color-red-200;
 $color-danger-text: $color-red-900;
-// $color-black: #212121;
+$color-text: $color-grey-900;
 
 $px: (1em / 16);
 $input-border-radius: .2em;
@@ -51,7 +51,7 @@ $transition-transform-scale: -ms-transform 0.2s,
                              -webkit-transform 0.2s, 
                              transform 0.2s;
                              
-$shadow-size-color: .16em rgba($color-black, .5);
+$shadow-size-color: .16em rgba($color-text, .5);
 
 @mixin transform($transform) {
     -ms-transform: $transform;

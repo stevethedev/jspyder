@@ -1627,7 +1627,7 @@ label {
   padding: .3em .5em;
   display: inline-block;
   border-radius: 0.2em;
-  border: 0.0625em solid #000000;
+  border: 0.0625em solid #212121;
   background-color: #f0f0f0;
   box-shadow: 0 0 0.0625em rgba(97, 97, 97, 0.6) inset;
   cursor: pointer; }
@@ -1644,7 +1644,7 @@ label {
     .js-control.js-control-button.js-buttonset:last-of-type {
       border-radius: 0 0.2em 0.2em 0; }
   .js-control.js-control-button .button-text {
-    color: #000000;
+    color: #212121;
     vertical-align: middle;
     text-align: left; }
     .js-control.js-control-button .button-text[data-buttontext=""]:after {
@@ -1670,7 +1670,7 @@ label {
   cursor: pointer;
   position: relative; }
   .js-control.js-control-dropdown .dropdown-text {
-    color: #000000;
+    color: #212121;
     text-align: left;
     font-size: 1em;
     display: inline-block; }
@@ -1777,15 +1777,15 @@ label {
 .js-control.js-control-date-picker {
   display: block;
   width: 12.5em;
-  border: 0.0625em solid #000000;
+  border: 0.0625em solid #212121;
   position: absolute;
-  box-shadow: 0 0 0.16em rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 0.16em rgba(33, 33, 33, 0.5);
   z-index: 1000;
   background-color: #FFFFFF;
   border-radius: 0.2em; }
   .js-control.js-control-date-picker .date-picker-header {
     position: relative;
-    border-bottom: 0.0625em solid #000000; }
+    border-bottom: 0.0625em solid #212121; }
     .js-control.js-control-date-picker .date-picker-header .date-picker-prev, .js-control.js-control-date-picker .date-picker-header .date-picker-next {
       position: absolute;
       top: 0;
@@ -1838,7 +1838,7 @@ input, textarea, .input {
   border: 0.0625em solid #bdbdbd;
   padding: .2em .4em;
   border-radius: 0.2em;
-  box-shadow: 0 0 0.05em rgba(0, 0, 0, 0.15) inset;
+  box-shadow: 0 0 0.05em rgba(33, 33, 33, 0.15) inset;
   display: block;
   width: 100%;
   font-size: 1em;
@@ -2014,7 +2014,7 @@ sup {
     left: 50%;
     transform: translate(-50%, -50%);
     background-color: #FFFFFF;
-    border: 0.0625em solid #000000;
+    border: 0.0625em solid #212121;
     border-radius: 0.2em; }
     .js-dialog-background .js-dialog .js-dialog-header {
       padding: 0.4em;

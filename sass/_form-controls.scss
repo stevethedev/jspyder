@@ -9,7 +9,7 @@ label {
         padding: .3em .5em;
         display: inline-block;
         border-radius: $input-border-radius;
-        border: $px solid $color-black;
+        border: $px solid $color-grey-900;
         background-color: lighten($color-divider, 20);
         box-shadow: 0 0 $px rgba($color-secondary, .6) inset;
         cursor: pointer;
@@ -35,7 +35,7 @@ label {
         }
         
         .button-text {
-            color: $color-black;
+            color: $color-grey-900;
             vertical-align: middle;
             text-align: left;
             
@@ -80,7 +80,7 @@ label {
         position: relative;
         
         .dropdown-text {
-            color: $color-black;
+            color: $color-grey-900;
             text-align: left;
             font-size: 1em;
             display: inline-block;
@@ -217,7 +217,7 @@ label {
     &.js-control-date-picker {
         display: block;
         width: 12.5em;
-        border: $px solid $color-black;
+        border: $px solid $color-grey-900;
         position: absolute;
         box-shadow: 0 0 $shadow-size-color;
         z-index: 1000;
@@ -226,7 +226,7 @@ label {
         
         .date-picker-header {
             position: relative;
-            border-bottom: $px solid $color-black;
+            border-bottom: $px solid $color-grey-900;
             
             .date-picker-prev, .date-picker-next {
                 position: absolute;
@@ -304,7 +304,7 @@ input, textarea, .input {
     border: $px solid $color-divider;
     padding: .2em .4em;
     border-radius: $input-border-radius;
-    box-shadow: 0 0 .05em rgba($color-black, .15) inset;
+    box-shadow: 0 0 .05em rgba($color-grey-900, .15) inset;
     display: block;
     width: 100%;
     font-size: 1em;
