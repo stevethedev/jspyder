@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">/* ****************************************************************************
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2015 Steven Jimenez
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the &quot;Software&quot;), to 
+ * deal in the Software without restriction, including without limitation the 
+ * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or 
+ * sell copies of the Software, and to permit persons to whom the Software is 
+ * furnished to do so, subject to the following conditions:
+ *  
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+ * IN THE SOFTWARE.
+ * ***************************************************************************/
+ 
+js.extend.fn(&quot;download&quot;, function () {
+    
+<span id='download'>    /**
+</span>     * @class download
+     * 
+     */
+    function download(def) {
+        var dl = Object.create(download.fn);
+        
+        def = def || {};
+        dl.setName(def.name)
+            .setType(def.type)
+            .setData(def.data)
+            .setCharset(def.charset);
+        
+        return dl;
+    }
+    
+    download.fn = {
+        save: function(def) {
+            def = def || {};
+            var name = def.name || this._name,
+                type = def.type || this._type,
+                data = def.data || this._data;
+                
+            __save(name, type, data);
+            return this;
+        },
+        saveText: function(def) {
+            def = def || {};
+            var name = (def.name || this._name),
+                data = (def.data || this._name),
+                charset = (def.charset || this._charset);
+                
+            __saveText(name, charset, data);
+            return this;
+        },
+        saveMime: function(def) {
+            def = def || {};
+            var name = (def.name || this._name).split(&#39;.&#39;),
+                data = (def.data || this._data),
+                type = (def.type || this._type),
+                charset = (def.charset || this._charset),
+                extension = &quot;.txt&quot;;
+                
+            if(name.length &gt; 1) {
+                extension = name.pop();
+            }
+            name = name.join(&#39;&#39;);
+            
+            __saveTextWithMime(data, name, extension, type, charset);
+            return this;
+        },
+        
+        setName: function(name) { this._name = js.alg.string(name, &quot;download&quot;); return this; },
+        getName: function() { return this._name; },
+        
+        setType: function(type) { this._type = js.alg.string(type, safeType); return this; },
+        getType: function() { return this._type; },
+        
+        setData: function(data) { this._data = data || &quot;&quot;; return this; },
+        getData: function() { return this._data; },
+        
+        setCharset: function(charset) { this._charset = charset || &quot;UTF-8&quot;; return this; },
+        getCharset: function() { return this._charset; }
+    }
+    
+    var doc = window.document,
+        URL = window.URL || window.webkitURL || window,
+        getObjUrl = function(blob) { return URL.createObjectURL(blob); },
+        killObjUrl = function(url) { return URL.revokeObjectURL(url); },
+        safeType = &quot;application/octet-stream&quot;,
+        sliceBlob = Blob.prototype.slice || Blob.prototype.webkitSlice,
+        reqFilesystem = window.requestFileSystem || window.webkitRequestFileSystem || window.mozRequestFileSystem;
+    
+    function __save(name, type, blob) {
+        &quot;use strict&quot;;
+        name = js.alg.string(name, &quot;download&quot;);
+        type = js.alg.string(type, safeType);
+        
+        var saveLink = js.dom(doc.createElementNS(&quot;http://w3.org/19999/xhtml&quot;, &quot;a&quot;)),
+            props = { &quot;download&quot;: null },
+            url = getObjUrl(blob),
+            changed = false;
+            saveLink.getProps(props);
+            
+        if(window.externalHost &amp;&amp; typeof props.download !== &quot;undefined&quot;) {
+            saveLink
+                .setProps({ href: url, download: name })
+                .on(&quot;click&quot;, function(event) { killObjUrl(url); })
+                .trigger(&quot;click&quot;);
+        }
+        
+        if(js.env.browser === &quot;Chrome&quot;){
+            if(type !== safeType) {
+                blob = sliceBlob.call(blob, 0, blob.size, safeType);
+                killObjUrl(url);
+                getObjUrl(blob);
+            }
+            if(name !== &quot;download&quot;) {
+                name += &quot;.download&quot;;
+            }
+        }
+
+        window.open(url, &quot;_blank&quot;);
+        killObjUrl(url);
+    }
+    
+    // helps with endian-ness
+    var __encoding = {
+        &quot;UTF-8&quot;: &quot;&quot;, //&quot;\xEF\xBB\xBF&quot;,
+        &quot;UTF-16&quot;: &quot;\uFEFF&quot;, //&lt; LE: \uFFEF
+        &quot;UTF-32&quot;: &quot;\u0000\uFEFF&quot;,
+        &quot;UTF-7&quot;: &quot;\x2B\x2F\x76\x38&quot;,
+        &quot;UTF-1&quot;: &quot;\xF7\x64\x4C&quot;
+    }
+    
+    function __saveTextWithMime(content, filename, extension, dataType, charset) {
+        if(window.Blob) {
+            __saveTextWithMime = function(content, filename, extension, dataType, charset) {
+                charset = js.alg.string(charset, &quot;UTF-8&quot;);
+                filename = js.alg.string(filename, &quot;download&quot;);
+                content = content || &#39;&#39;;
+                
+                var blobData = { type: dataType + &quot;;charset=&quot; + charset }, 
+                    blobPrefix = (__encoding[charset]||&quot;&quot;), 
+                    blobDef = [blobPrefix + content],
+                    blob = new window.Blob(blobDef, blobData);
+                __save(filename, dataType, blob); 
+                
+                return;
+            };
+        }
+        else if(js.env.browser === &quot;IE&quot; &amp;&amp; js.env.browserVersion &lt;= 9) {
+            __saveTextWithMime = function (content, filename, extension, dataType, charset) {
+                charset = js.alg.string(charset, &quot;UTF-8&quot;);
+                filename = js.alg.string(filename, &quot;download&quot;);
+                content = content || &#39;&#39;;
+                
+                js.dialog.alert({
+                    title: &quot;Alert&quot;,
+                    message: [&quot;Because you are using Internet Explorer &quot;, js.env.browserVersion,
+                        &quot;, your download \&quot;&quot;, filename,&quot;.&quot;,extension, &quot;\&quot; has been changed to \&quot;&quot;, 
+                        filename,&quot;.txt\&quot;.  It is recommended that this value be changed in the&quot;,
+                        &quot; save menu, or after the file has been downloaded.&quot;].join(&#39;&#39;)
+                });
+                
+                __saveText(content, filename, charset);
+                return;
+            };
+        }
+        else {
+            __saveTextWithMime = function (content, filename, extension, dataType, charset) {
+                charset = js.alg.string(charset, &quot;UTF-8&quot;);
+                filename = js.alg.string(filename, &quot;download&quot;);
+                content = content || &#39;&#39;;
+                filename = filename + &#39;.&#39; + extension;
+                __saveText(content, filename, charset);
+                return;
+            };
+        }
+        
+        return __saveTextWithMime.apply(this, arguments);
+    }
+    
+    function __saveText(content, name, charset) {
+        content = content.replace(/\r?\n/g, &quot;\r\n&quot;);
+        if(window.Blob) {
+            __saveText = function(content, name, charset) {
+                charset = js.alg.string(charset, &quot;UTF-8&quot;);
+                filename = js.alg.string(filename, &quot;download&quot;);
+                content = content || &#39;&#39;;
+                
+                var blob = new Blob([content], { type: &quot;text/plain;charset=&quot; + charset });
+                __save(name, &quot;text/text&quot;, blob);
+                return;
+            }
+        }
+        else {
+            __saveText = function(content, name, charset) {
+                charset = js.alg.string(charset, &quot;UTF-8&quot;);
+                filename = js.alg.string(filename, &quot;download&quot;);
+                content = content || &#39;&#39;;
+                
+                var ret = &quot;&quot;;
+                
+                js.dom(&quot;&lt;iframe&gt;&lt;/iframe&gt;&quot;)
+                    .setCss({&quot;display&quot;: &quot;none&quot;})
+                    .attach(document.body)
+                    .element(0, function(el) {
+                        el.document.open(&quot;text/html&quot;, &quot;replace&quot;);
+                        el.document.charset = charset;
+                        if(/(.html|.htm)$/i.test(name)) {
+                            el.document.close();
+                            el.document.body.innerHTML = &quot;\r\n&quot; + content + &quot;\r\n&quot;;
+                        }
+                        else {
+                            if(!/.txt$/i.test(name)) {
+                                name += &quot;.txt&quot;;
+                            }
+                            
+                            el.document.write(content);
+                            el.document.close();
+                        }
+                        
+                        ret = el.document.execCommand(&quot;SaveAs&quot;, null, name);
+                        el.close();
+                    });
+                    
+                return ret;
+            }
+        }
+        
+        return __saveText.apply(this, arguments);
+    }
+    
+    return download;
+});
+</pre>
+</body>
+</html>
