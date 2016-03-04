@@ -225,9 +225,10 @@ jspyder.extend.fn(&quot;date&quot;, function () {
                 d = 1,
                 days = [];
                 
-            for (d; d &lt;= count; d++) {
+            while(d &lt;= count) {
                 clone.setDay(d);
                 days.push(clone.asString(format));
+                d++;
             }
             
             return days;
@@ -248,11 +249,12 @@ jspyder.extend.fn(&quot;date&quot;, function () {
                 weekday = null,
                 weekdays = [];
                 
-            for (w; w &lt; count; w++) {
+            while (w &lt; count) {
                 weekday = __weekdays[w];
                 weekdays.push(typeof weekday[format] === &quot;undefined&quot; 
                     ? format 
-                    : weekday[format]); 
+                    : weekday[format]);
+                w++;
             }
             
             return weekdays;
