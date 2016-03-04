@@ -500,8 +500,8 @@ js.extend.fn("sp", function () {
             if (data) {
                 var perm = data.web.get_effectiveBasePermissions();
 
-                js.alg.each(window.SP.PermissionKind, function (value, pName) {
-                    permissions[pName] = js.alg.bool(perm.has(pName));
+                js.alg.each(new window.SP.PermissionKind(), function (pValue, pName) {
+                    permissions[pName] = js.alg.bool(perm.has(pValue));
                 });
                 js.alg.use(this, callback, [this._permissions]);
                 return;
