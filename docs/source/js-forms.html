@@ -296,7 +296,7 @@ jspyder.extend.fn(&quot;form&quot;, function () {
         },
         buildLabel: function(fieldname, labeltext, labelclass) {
             var html = (fieldname &amp;&amp; labeltext
-                    ? [&quot;&lt;label for=\&quot;&quot;, fieldname, &quot;\&quot; class=\&quot;&quot;, labelclass, &quot;\&quot;&gt;&quot;, labeltext, &quot;&lt;/label&gt;&quot;].join('')
+                    ? [&quot;&lt;label for=\&quot;&quot;, fieldname, &quot;\&quot; class=\&quot;&quot;, labelclass, &quot;\&quot;&gt;&quot;, labeltext, &quot;&lt;/label&gt;&quot;].join(&#39;&#39;)
                     : &quot;&quot;);
                     
             return js.dom(html);
@@ -637,7 +637,7 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                         &quot; name=\&quot;&quot;, fieldname, &quot;\&quot;&quot;,
                         (cfg.readonly ? &quot; readonly=\&quot;readonly\&quot;&quot; : &quot;&quot;),
                         &quot; data-type=\&quot;&quot;, fieldtype, &quot;\&quot;&gt;&lt;/input&gt;&quot;
-                    ].join('');
+                    ].join(&#39;&#39;);
                     
                 cfg.setValue = setValue;
 
@@ -771,7 +771,7 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                             &quot; value=\&quot;&quot;, (monthnum + 1), &quot;\&quot;&gt;&quot;,
                             month,
                         &quot;&lt;/div&gt;&quot;
-                    ].join('');
+                    ].join(&#39;&#39;);
                     
                     return;
                 },
@@ -815,7 +815,7 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                             &quot;\&quot; style=\&quot;width:&quot;, (100 / data.wlen),&quot;%\&quot;&gt;&quot;,
                             weekday,
                         &quot;&lt;/div&gt;&quot;
-                    ].join('');
+                    ].join(&#39;&#39;);
                     return;
                 },
                 buildNumberedDays: function (day, daynum, daylist, data) {
@@ -831,7 +831,7 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                             &quot;\&quot;&gt;&quot;,
                             day,
                         &quot;&lt;/div&gt;&quot;
-                    ].join('');
+                    ].join(&#39;&#39;);
                     return;
                 },
                 calendarHtml: [
@@ -843,7 +843,7 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                         &quot;&lt;/div&gt;&quot;,
                         &quot;&lt;div class=\&quot;calendar-tiles\&quot;&gt;&lt;/div&gt;&quot;,
                     &quot;&lt;/div&gt;&quot;
-                ].join('')
+                ].join(&#39;&#39;)
             };
             
             var __override = {
@@ -920,7 +920,7 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                                 &quot;&lt;i class=\&quot;&quot; + btnicon + &quot;\&quot;&gt;&lt;/i&gt;&quot;,
                                 &quot;&lt;span class=\&quot;button-text\&quot; data-buttontext=\&quot;&quot; + btntext + &quot;\&quot;&gt;&lt;/span&gt;&quot;,
                         &quot;&lt;/div&gt;&quot;
-                    ].join(''),
+                    ].join(&#39;&#39;),
                     
                     $button = js.dom(html)
                         .setValue(btnvalue)
@@ -1018,7 +1018,7 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                     livalue = js.alg.string(option.value, option.text);
                     
                     lihtml = [
-                        &quot;&lt;li class=\&quot;item\&quot; value=\&quot;&quot;, livalue, &quot;\&quot; title=\&quot;&quot;, litext, &quot;\&quot;&gt;&quot;, litext, &quot;&lt;/li&gt;&quot;].join('');
+                        &quot;&lt;li class=\&quot;item\&quot; value=\&quot;&quot;, livalue, &quot;\&quot; title=\&quot;&quot;, litext, &quot;\&quot;&gt;&quot;, litext, &quot;&lt;/li&gt;&quot;].join(&#39;&#39;);
                     
                     $popout.append(lihtml);
                 }
@@ -1081,7 +1081,7 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                             &quot;&lt;i class=\&quot;dropdown-arrow arrow-drop-down\&quot;&gt;&lt;/i&gt;&quot;,
                             &quot;&lt;span class=\&quot;dropdown-text\&quot;&gt;&quot;, (cfgvalue || cfgdefault || &quot;&amp;nbsp;&quot;), &quot;&lt;/span&gt;&quot;,
                         &quot;&lt;/div&gt;&quot;
-                    ].join(''),
+                    ].join(&#39;&#39;),
                     
                     $dropdown = js.dom(html);
                     
@@ -1110,7 +1110,7 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                         &quot;&lt;textarea name=\&quot;&quot;, cfgname, &quot;\&quot;&quot;,
                             &quot; class=\&quot;input &quot;, cfgclass, &quot;\&quot;&gt;&quot;,
                         &quot;&lt;/textarea&gt;&quot;
-                    ].join('');
+                    ].join(&#39;&#39;);
                     
                 cfg.setValue = setValue;
                     
@@ -1175,7 +1175,7 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                         &quot;&lt;textarea name=\&quot;&quot;, cfgname, &quot;\&quot;&quot;,
                             &quot; class=\&quot;input js-control js-control-autosize &quot;, cfgclass, &quot;\&quot;&gt;&quot;,
                         &quot;&lt;/textarea&gt;&quot;
-                    ].join('');
+                    ].join(&#39;&#39;);
                     
                 cfg.setValue = setValue;
                     
@@ -1202,7 +1202,7 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                             &quot; type=\&quot;radio\&quot;&quot;,
                             &quot; class=\&quot;&quot;, cfgclass, &quot;\&quot;&gt;&quot;,
                         &quot;&lt;/input&gt;&quot;
-                    ].join('');
+                    ].join(&#39;&#39;);
                 
                 return js.dom(html).and(js.form.fn.buildLabel(cfgname, cfgtext, cfgclass));
             }
@@ -1323,7 +1323,7 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                             &quot; type=\&quot;checkbox\&quot;&quot;,
                             &quot; class=\&quot;&quot;, cfgclass, &quot;\&quot;&gt;&quot;,
                         &quot;&lt;/input&gt;&quot;
-                    ].join(''),
+                    ].join(&#39;&#39;),
                     $checkbox = js.dom(html).and(js.form.fn.buildLabel(cfgname, cfgtext, cfgclass));
                     
                 return $checkbox;
@@ -1712,7 +1712,10 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                         return;
                     })
                     .on(&quot;blur&quot;, function (event) {
-                        if (config[&quot;strict&quot;]) {
+                        if(this.value === &quot;&quot;){ 
+                            js.dom(this).setAttrs({ &quot;data-value&quot;: &quot;&quot; });
+                        }
+                        else if (config[&quot;strict&quot;]) {
                             var match = searchValue(config, this.value, true);
                             if(!match) {
                                 this.value = &quot;&quot;;
@@ -1759,9 +1762,7 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                         }
                     },
                     hide: function () {
-                        // setTimeout(function () {
                         found.remove();
-                        // }, 100);
                     },
                     getFirst: function () {
                         
@@ -1908,17 +1909,17 @@ jspyder.extend.fn(&quot;form&quot;, function () {
             }
             
             function toNumber(n, a) {
-                n = js.alg.string(n, '');
+                n = js.alg.string(n, &#39;&#39;);
                 
                 var reStrip = /([^\-\d\.]+)/g,
                     parts = null;
                     
-                n = n.replace(reStrip, '');
-                parts = n.split('.');
+                n = n.replace(reStrip, &#39;&#39;);
+                parts = n.split(&#39;.&#39;);
                 if (parts) {
                     parts[0] = js.alg.number(parts[0], 0);
                     parts[1] = js.alg.string(parts[1], &quot;0&quot;);
-                    n = js.alg.number(parts[0] + '.' + parts[1], 0);
+                    n = js.alg.number(parts[0] + &#39;.&#39; + parts[1], 0);
                 }
                 else {
                     n = 0;
@@ -1936,8 +1937,8 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                     return n;
                 }
                 n = js.alg.number(n, 0);
-                c = js.alg.string(c, ',');
-                d = js.alg.string(d, '.');
+                c = js.alg.string(c, &#39;,&#39;);
+                d = js.alg.string(d, &#39;.&#39;);
                 
                 if (typeof a !== &quot;undefined&quot;) {
                     n = n.toFixed(a);
@@ -1945,7 +1946,7 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                 
                 var reCommaSearch = /\B(?=(\d{3})+(?!\d))/g,
                     str = js.alg.string(n, &quot;&quot;),
-                    part = str.split('.'),
+                    part = str.split(&#39;.&#39;),
                     num = [];
                     
                 num[0] = (part[0] || &quot;&quot;).replace(reCommaSearch, c);

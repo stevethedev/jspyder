@@ -41,11 +41,42 @@ function generate_docs {
     jsduck --title "JSpyder" --tags ./jsduck-data/tags.rb ./js --output ./docs
 }
 
+function install_html {
+    echo "Installing HTML Files for GitHub Pages Site"
+    
+    if [ -d "./gh-pages/docs" ] ; then
+        echo " > Clearing GitHub Site Documentation Files..."
+	rm -d -r ./gh-pages/docs
+    fi
+
+    echo " > Installing new documentation"
+    cp -r ./docs ./gh-pages/docs
+    
+    if [ -d "./gh-pages/js" ] ; then
+        echo " > Clearing GitHub Site JavaScript..."
+	rm -d -r ./gh-pages/js
+    fi
+
+    echo " > Installing new JavaScript..."
+    cp -r ./js ./gh-pages/js
+
+    if [ -d "./gh-pages/css" ] ; then
+        echo " > Clearing GitHub Site CSS..."
+	rm -d -r ./gh-pages/css
+    fi
+    echo " > Installing new CSS files..."
+    cp -r ./css ./gh-pages/css
+
+    (test "$DO_INSTALL_HTML" -eq "1") && cd ./gh-pages && git add --all && git commit -m "Automatic update pushed to GitHub Site by JSpyder Compiler script" && git push && cd ..
+}
+
 test $# -eq "0" && help
 
 DO_DOCS=0
 DO_ICONS=0
 DO_CSS=0
+DO_HTML=0
+DO_INSTALL_HTML=0
 
 while test $# -gt 0; do
     case "$1" in
@@ -54,21 +85,37 @@ while test $# -gt 0; do
 	    help
             ;;
              
-        -a|-d|--docs)
+        -d|--docs)
             shift
             DO_DOCS=1
             ;;
         
-        -a|-i|--icons)
+        -i|--icons)
             shift
             DO_ICONS=1
             ;;
             
-        -a|-c|--css)
+        -c|--css)
             shift
             DO_CSS=1
             ;;
-
+	-H|--install-html)
+	    shift
+	    DO_HTML=1
+	    DO_INSTALL_HTML=1
+	    ;;
+	-h|--html)
+	    shift
+	    DO_HTML=1
+	    ;;
+	-a|--all)
+	    shift
+	    DO_HTML=1
+	    DO_INSTALL_HTML=1
+	    DO_ICONS=1
+	    DO_CSS=1
+	    DO_DOCS=1
+	    ;;
 	*)
 	    shift
 	    ;;
@@ -77,3 +124,4 @@ done
 
 (test "$DO_ICONS" -eq "1" || test "$DO_CSS" -eq "1") && (sass_fn)
 (test "$DO_DOCS" -eq "1") && (generate_docs)
+(test "$DO_HTML" -eq "1") && (install_html)

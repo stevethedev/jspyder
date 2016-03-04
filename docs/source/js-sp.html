@@ -122,8 +122,8 @@ js.extend.fn(&quot;sp&quot;, function () {
     }
 
     var __rowLimit = 10000;
-    var __caml = &quot;&lt;View&gt;&lt;Query&gt;&lt;Where&gt;&lt;Geq&gt;&lt;FieldRef Name='ID' /&gt;&quot;
-        + &quot;&lt;Value Type='Number'&gt;1&lt;/Value&gt;&lt;/Geq&gt;&lt;/Where&gt;&lt;/Query&gt;&quot;
+    var __caml = &quot;&lt;View&gt;&lt;Query&gt;&lt;Where&gt;&lt;Geq&gt;&lt;FieldRef Name=&#39;ID&#39; /&gt;&quot;
+        + &quot;&lt;Value Type=&#39;Number&#39;&gt;1&lt;/Value&gt;&lt;/Geq&gt;&lt;/Where&gt;&lt;/Query&gt;&quot;
         + &quot;&lt;RowLimit&gt;&quot; + __rowLimit + &quot;&lt;/RowLimit&gt;&lt;/View&gt;&quot;
 
     sp.list.fn = {
@@ -322,7 +322,7 @@ js.extend.fn(&quot;sp&quot;, function () {
          * executes data currently residing in the cache.
          * 
          * @param {Array} criteria
-         *      A list of criteria to run against the list reference's cache.
+         *      A list of criteria to run against the list reference&#39;s cache.
          *      Expected as an array of query objects.  See jspyder.sp.query.filter
          * 
          * @return {Object}
@@ -487,6 +487,12 @@ js.extend.fn(&quot;sp&quot;, function () {
          * Retrieves the permission levels for the current user in the
          * associated list.
          * 
+         * @param {Function} success
+         *      The function to execute if the permissions were successfully retrieved.
+         * 
+         * @param {Function} failure
+         *      The function to execute if the permissions failed to retrieve.
+         * 
          * @async
          */
         getPermissions: function (success, failure) {
@@ -505,18 +511,20 @@ js.extend.fn(&quot;sp&quot;, function () {
                 
             return this;
         },
-        _getPermissionsSuccess: function (data, callback) {
+        _getPermissionsSuccess: function (data, callback, sender, args) {
             var permissions = this._permissions = {};
             
             if (data) {
                 var perm = data.web.get_effectiveBasePermissions();
 
-                js.alg.each(window.SP.PermissionKind, function (value, pName) {
-                    permissions[pName] = js.alg.bool(perm.has(pName));
+                js.alg.each(new window.SP.PermissionKind(), function (pValue, pName) {
+                    permissions[pName] = js.alg.bool(perm.has(pValue));
                 });
+                js.alg.use(this, callback, [this._permissions]);
+                return;
             }
             
-            js.alg.use(this, callback, [this._permissions]);
+            js.alg.use(this, callback, [sender, args]);
             return;
         }
     };
@@ -591,7 +599,7 @@ js.extend.fn(&quot;sp&quot;, function () {
      *      Individual column template (based on sp.column.fn)
      * 
      * @param {String} colName
-     *      Column's internal reference ID, defined in constructor
+     *      Column&#39;s internal reference ID, defined in constructor
      * 
      * @param {Object} columns
      *      Collection of js column references
@@ -600,7 +608,7 @@ js.extend.fn(&quot;sp&quot;, function () {
      *      Collection of relevant loop data, pushed in my js.alg.each.
      *      Includes data.item (sharepoint row reference), data.id (value of
      *      associated row ID in sharepoint), and data._row (reference to
-     *      list reference's row getting pushed into the stack).  
+     *      list reference&#39;s row getting pushed into the stack).  
      * ***********************************************************************/
     function __pushRow(colData, colName, columns, data) {
         var rowID = data.id,
@@ -730,7 +738,7 @@ js.extend.fn(&quot;sp&quot;, function () {
         
 <span id='jspyder-sp-query-method-reset'>        /** *******************************************************************
 </span>         * Resets the query object to include all of the available rows in the
-         * associated list's cache.
+         * associated list&#39;s cache.
          * *******************************************************************/
         reset: function() {
             this._rows = this._list._rows.slice(0);
@@ -904,6 +912,14 @@ js.extend.fn(&quot;sp&quot;, function () {
             var clone = sp.query(this._list);
             clone._rows = this._rows.slice(0);
             return clone;
+        },
+        
+        toExcelString: function(name, columns) {
+            return __generateXML(name, this._rows, columns);
+        },
+        
+        toCsvString: function(columns) {
+            return __generateCSV(this._rows, columns);
         }
     };
 
@@ -1060,7 +1076,6 @@ js.extend.fn(&quot;sp&quot;, function () {
         }
         
         if(drop) {
-            // _rows[id] = null;
             this.drop();
         }
         
@@ -1120,6 +1135,95 @@ js.extend.fn(&quot;sp&quot;, function () {
          */
         valueOf: function() { return this.value; }
     };
+    
+    function __generateXML (name, rows, columns, styles) {
+        var xml = [
+            &quot;&lt;?xml version=\&quot;1.0\&quot;?&gt;&quot;,
+            &quot;&lt;?mso-application progid=\&quot;Excel.Sheet\&quot;?&gt;&quot;,
+            __workbook(name, rows, columns)];
+            
+        function __workbook(name, rows, columns) {
+            return [
+                &quot;&lt;ss:Workbook xmlns:ss=\&quot;urn:schemas-microsoft-com:office:spreadsheet\&quot;&gt;&quot;,
+                    __styles(),
+                    __worksheet(name, rows, columns),
+                &quot;&lt;/ss:Workbook&gt;&quot;
+            ].join(&#39;&#39;);
+        }
+        
+        function __styles(styles) {
+            return [
+                &quot;&lt;ss:Styles&gt;&quot;,
+                    &quot;&lt;ss:Style ss:ID=\&quot;1\&quot;&gt;&quot;,
+                        &quot;&lt;ss:Font ss:Bold=\&quot;1\&quot; /&gt;&quot;,
+                    &quot;&lt;/ss:Style&gt;&quot;,
+                &quot;&lt;/ss:Styles&gt;&quot;
+            ].join(&#39;&#39;);
+        }
+        
+        function __worksheet(name, rows, columns) {
+            return [
+                &quot;&lt;ss:Worksheet ss:Name=\&quot;&quot;, name, &quot;\&quot;&gt;&quot;,
+                    &quot;&lt;ss:Table&gt;&quot;,
+                        __rows(rows, columns),
+                    &quot;&lt;/ss:Table&gt;&quot;,
+                &quot;&lt;/ss:Worksheet&gt;&quot;
+            ].join(&#39;&#39;);
+        }
+        
+        function __rows(rows, columns) {
+            var __rows = [];
+            
+            __rows.push(&quot;&lt;ss:Row ss:StyleID=\&quot;1\&quot;&gt;&quot;);
+            js.alg.arrEach(columns, __pushRow, &quot;text&quot;);
+            __rows.push(&quot;&lt;/ss:Row&gt;&quot;);
+            
+            js.alg.arrEach(rows, function(row, i) {
+                __rows.push(&quot;&lt;ss:Row&gt;&quot;);
+                js.alg.arrEach(columns, __pushRow, &quot;value&quot;);
+                __rows.push(&quot;&lt;/ss:Row&gt;&quot;);
+            });
+            
+            function __pushRow (col, i, cols, data) {
+                __rows.push([
+                    &quot;&lt;ss:Cell&gt;&lt;ss:Data ss:Type=\&quot;String\&quot;&gt;&quot;, rows[col][data], &quot;&lt;/ss:Data&gt;&lt;/ss:Cell&gt;&quot;
+                ].join(&#39;&#39;))
+            }
+            
+            return __rows.join(&#39;&#39;);
+        }
+        
+        return xml.join(&#39;&#39;);
+    }
+    
+    function __generateCSV (rows, columns) {
+        var csv = [
+            &quot;\uFEFF&quot;,
+            __rows(rows, columns)];
+        
+        function __rows(rows, columns) {
+            var __rows = [],
+                __oneRow = [];
+                
+            js.alg.arrEach(columns, __pushRow, { row: rows[0], type: &quot;text&quot; });
+            __rows.push(__oneRow.join(&#39;,&#39;));
+            __oneRow = [];
+            
+            js.alg.arrEach(rows, function(row, i) {
+                js.alg.arrEach(columns, __pushRow, { row: row, type: &quot;value&quot;, r: [] });
+                __rows.push(__oneRow.join(&#39;,&#39;));
+                __oneRow = [];
+            });
+            
+            function __pushRow (col, i, cols, data) {
+                __oneRow.push([ &quot;\&quot;&quot;, (data.row[col] || {})[data.type] || &quot;&quot;, &quot;\&quot;&quot; ].join(&#39;&#39;))
+            }
+            
+            return __rows.join(&#39;\r\n&#39;);
+        }
+        
+        return csv.join(&#39;&#39;);
+    }
 
     return sp;
 });

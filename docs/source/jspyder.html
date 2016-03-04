@@ -185,7 +185,7 @@
 </span>     * @private
      * @member jspyder
      * 
-     * Bootstrap jspyder's environment variable collection.
+     * Bootstrap jspyder&#39;s environment variable collection.
      * 
      * @param {Object} js Jspyder Object
      */
@@ -207,7 +207,7 @@
                 else if (!window.addEventListener) { BROWSER_VERSION = 8; }
                 else { BROWSER_VERSION = 7; }
             }
-            else if (typeof window.InstallTrigger !== 'undefined') {
+            else if (typeof window.InstallTrigger !== &#39;undefined&#39;) {
                 BROWSER_NAME = &quot;Firefox&quot;;
 
                 if (Int8Array &amp;&amp; Int8Array.prototype.sort) { BROWSER_VERSION = 7; }
@@ -217,7 +217,7 @@
                 else if (typeof window.Reflect !== &quot;undefined&quot;) { BROWSER_VERSION = 42; }
                 else { BROWSER_VERSION = 41; }
             }
-            else if (!!window.opera || navigator.userAgent.indexOf(' OPR/') &gt;= 0) {
+            else if (!!window.opera || navigator.userAgent.indexOf(&#39; OPR/&#39;) &gt;= 0) {
                 BROWSER_NAME = &quot;Opera&quot;;
                 BROWSER_VERSION = 1;
             }
@@ -226,7 +226,7 @@
                 BROWSER_VERSION = 45;
                 //45 - 51;
             }
-            else if (Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') &gt; 0) {
+            else if (Object.prototype.toString.call(window.HTMLElement).indexOf(&#39;Constructor&#39;) &gt; 0) {
                 BROWSER_NAME = &quot;Safari&quot;;
                 if (window.CSS.supports) { BROWSER_VERSION = 9; }
                 else if (!window.CSS.supports) { BROWSER_VERSION = 8; }
@@ -314,7 +314,7 @@
 </span>     * @private
      * @member jspyder
      * 
-     * Bootstrap jspyder's algorithm collection.
+     * Bootstrap jspyder&#39;s algorithm collection.
      * 
      * @param {Object} js Jspyder Object
      */
@@ -507,7 +507,7 @@
             },
             
             &quot;date&quot;: function(v, d) {
-                return ((input instanceof Date || Object.prototype.toString.call(input) === '[object Date]')
+                return ((input instanceof Date || Object.prototype.toString.call(input) === &#39;[object Date]&#39;)
                     ? v
                     : new Date());
             },
@@ -732,7 +732,7 @@
              * @return {Array} arrRef parameter
              */
             joinArray: function(arrRef, arrFrom /*, ... */) {
-                // limit pulled from Google's closure library:
+                // limit pulled from Google&#39;s closure library:
                 // https://github.com/google/closure-library/commit/da353e0265ea32583ea1db9e7520dce5cceb6f6a
                 var CHUNK_SIZE = 8192; 
                 
@@ -1058,7 +1058,7 @@
         
 <span id='jspyder-dom-method-__getDomClasses'>        /**
 </span>         * @private
-         * Gets the DOM object's classes as an array
+         * Gets the DOM object&#39;s classes as an array
          */
         function __getDomClasses(element) {
             return (__isElement(element)
@@ -1068,7 +1068,7 @@
         
 <span id='jspyder-dom-method-_setDomClass'>        /**
 </span>         * @private
-         * Sets the DOM object's class based on the enable flag
+         * Sets the DOM object&#39;s class based on the enable flag
          */
         function _setDomClass(element, cls, enable) {
             var clss = __getDomClasses(element),
@@ -1093,7 +1093,7 @@
         
 <span id='jspyder-dom-method-_getDomClass'>        /**
 </span>         * @private
-         * Sets the DOM object's class based on the enable flag
+         * Sets the DOM object&#39;s class based on the enable flag
          */
         function _getDomClass(element, cls) {
             return (__getDomClasses(element).indexOf(cls) !== -1);
@@ -1801,7 +1801,7 @@
                     name = names[n];
                     field = fields[name];
 
-                    this._template_insert(tDOM, '${' + name + '}', field);
+                    this._template_insert(tDOM, &#39;${&#39; + name + &#39;}&#39;, field);
                 }
                 return tDOM;
             },
