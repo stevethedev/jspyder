@@ -773,8 +773,9 @@ jspyder.extend.fn("form", function () {
                     
                     js.alg.arrEach(weekdays, calStruct.buildWeekdays, data);
                         
-                    for(i; i < data.offset; i++) {
+                    while (i < data.offset) {
                         this.buildNumberedDays("", i - data.offset, null, data);
+                        i++;
                     }
                     
                     js.alg.arrEach(daylist, this.buildNumberedDays, data);
@@ -995,7 +996,7 @@ jspyder.extend.fn("form", function () {
                     pause = true,
                     i = 0;
                         
-                for(i; i < options.length; i++) {
+                while(i < options.length) {
                     option = options[i];
                     litext = js.alg.string(option.text, option.value);
                     livalue = js.alg.string(option.value, option.text);
@@ -1004,6 +1005,7 @@ jspyder.extend.fn("form", function () {
                         "<li class=\"item\" value=\"", livalue, "\" title=\"", litext, "\">", litext, "</li>"].join('');
                     
                     $popout.append(lihtml);
+                    i++
                 }
                 
                 function __copyValue(value) { $dropdown.setValue(value); }
@@ -1224,12 +1226,12 @@ jspyder.extend.fn("form", function () {
                     options = cfg.values || [],
                     option = null,
                     $option = null,
-                    $radio = js.dom(), 
-                    i = 0;
+                    $radio = js.dom(),
+                    i;
                     
                 cfg["data-values"] = {};
                 
-                for(i; i < options.length; i++) {
+                for(i = 0; i < options.length; i++) {
                     option = js.alg.mergeObj({ 
                         "name": cfgname, 
                         "class": cfgclass }, options[i]);
@@ -1319,11 +1321,11 @@ jspyder.extend.fn("form", function () {
                     option = null,
                     $option = null,
                     $checkbox = js.dom(),
-                    i = 0;
+                    i;
                     
                 cfg["data-values"] = {};
                     
-                for(i; i < options.length; i++) {
+                for(i = 0; i < options.length; i++) {
                     option = js.alg.mergeObj({ 
                         "name": cfgname }, options[i]);
                     option.class = cfgclass + js.alg.string(options[i].class);
@@ -1419,11 +1421,11 @@ jspyder.extend.fn("form", function () {
                     option = null,
                     $option = null,
                     $checkbox = js.dom(),
-                    i = 0;
+                    i;
                     
                 cfg["data-values"] = {};
                     
-                for(i; i < options.length; i++) {
+                for(i = 0; i < options.length; i++) {
                     option = js.alg.mergeObj({ 
                         "name": cfgname }, options[i]);
                     option.class = cfgclass + js.alg.string(options[i].class);

@@ -41,6 +41,10 @@ function generate_docs {
     jsduck --title "JSpyder" --tags ./jsduck-data/tags.rb ./js --output ./docs
 }
 
+function closure_compiler {
+    java -jar ./closure-compiler/compiler.jar --language_out=ES5 --js ./js/jspyder.js --js ./js/js-**.js --js_output_file ./js-compiled/jspyder.js
+}
+
 function install_html {
     echo "Installing HTML Files for GitHub Pages Site"
     
@@ -58,7 +62,7 @@ function install_html {
     fi
 
     echo " > Installing new JavaScript..."
-    cp -r ./js ./gh-pages/js
+    cp -r ./js-compiled ./gh-pages/js
 
     if [ -d "./gh-pages/css" ] ; then
         echo " > Clearing GitHub Site CSS..."
@@ -77,6 +81,7 @@ DO_ICONS=0
 DO_CSS=0
 DO_HTML=0
 DO_INSTALL_HTML=0
+DO_COMPILE_JS=0
 
 while test $# -gt 0; do
     case "$1" in
@@ -99,15 +104,23 @@ while test $# -gt 0; do
             shift
             DO_CSS=1
             ;;
+
 	-H|--install-html)
 	    shift
 	    DO_HTML=1
 	    DO_INSTALL_HTML=1
 	    ;;
+
 	-h|--html)
 	    shift
 	    DO_HTML=1
 	    ;;
+
+	-j|--compile-javascript)
+	    shift
+	    DO_COMPILE_JS=1
+	    ;;
+
 	-a|--all)
 	    shift
 	    DO_HTML=1
@@ -115,6 +128,7 @@ while test $# -gt 0; do
 	    DO_ICONS=1
 	    DO_CSS=1
 	    DO_DOCS=1
+	    DO_COMPILE_JS=1
 	    ;;
 	*)
 	    shift
@@ -124,4 +138,5 @@ done
 
 (test "$DO_ICONS" -eq "1" || test "$DO_CSS" -eq "1") && (sass_fn)
 (test "$DO_DOCS" -eq "1") && (generate_docs)
+(test "$DO_COMPILE_JS" -eq "1") && (closure_compiler)
 (test "$DO_HTML" -eq "1") && (install_html)
