@@ -617,6 +617,22 @@
                 return byteArray[0];
             },
             
+            /**
+             * Takes an array of keys, and generates an enumerated
+             * object with them.
+             */
+            makeEnum: function (keys, enm) {
+                enm = enm || {};
+                var v = 1;
+                    
+                js.alg.arrEach(keys, function (key, val) {
+                    enm[key] = v;
+                    v *= 2;
+                });
+                
+                return enm;
+            },
+            
             rad2deg: function (n, d) {
                 return js.alg.number(n, d) * 180 / Math.PI;
             },
@@ -652,7 +668,7 @@
             },
             
             __sortArrayObj: function(asc, list) {
-                switch(js.env.browser.name) {
+                switch (js.env.browser.name) {
                     case "IE":
                     case "Edge":
                         return function (left, right) {
@@ -660,22 +676,21 @@
                                 left = left[list[i]];
                                 right = right[list[i]];
                             }
-                            
+
                             var a = (asc ? left : right),
                                 b = (asc ? right : left);
-                                
-                            return (a > b ? 1 : (a < b ? -1 : 0 ));
+
+                            return (a > b ? 1 : (a < b ? -1 : 0));
                         };
-                    default:
-                        return function (left, right) {
-                                for (var i = 0; left && right && i < list.length; i++) {
-                                    left = left[list[i]];
-                                    right = right[list[i]];
-                                }
-                                
-                                return (asc ? left >= right : left <= right);
-                            };
                 }
+                return function (left, right) {
+                        for (var i = 0; left && right && i < list.length; i++) {
+                            left = left[list[i]];
+                            right = right[list[i]];
+                        }
+                        
+                        return (asc ? left >= right : left <= right);
+                    };
             },
             
             sortArrayNum: function(arr, asc) {

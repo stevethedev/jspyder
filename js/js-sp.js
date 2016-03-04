@@ -34,7 +34,48 @@ js.extend.fn("sp", function () {
      * ## JSpyder SharePoint List Reference (jspyder.sp.list)
      * ## JSpyder SharePoint Query Reference (jspyder.sp.query)
      * ***********************************************************************/
-    function sp() {};
+    function sp() { };
+    
+    /**
+     * 
+     */
+    sp.permissions = {
+        emptyMask: 0,
+        viewListItems: 1,
+        addListItems: 2,
+        editListItems: 4,
+        deleteListItems: 8,
+        approveItems: 16,
+        openItems: 32,
+        viewVersions: 64,
+        deleteVersions: 128,
+        cancelCheckout: 256,
+        managePersonalViews: 512,
+        manageLists: 2048,
+        viewFormPages: 4096,
+        open: 65536,
+        viewPages: 131072,
+        addAndCustomizePages: 262144,
+        applyThemeAndBorder: 524288,
+        applyStyleSheets: 1048576,
+        viewUsageData: 2097152,
+        createSSCSite: 4194304,
+        manageSubwebs: 8388608,
+        createGroups: 16777216,
+        managePermissions: 33554432,
+        browseDirectories: 67108864,
+        browseUserInfo: 134217728,
+        addDelPrivateWebParts: 268435456,
+        updatePersonalWebParts: 536870912,
+        manageWeb: 1073741824,
+        useClientIntegration: 68719476736,
+        useRemoteAPIs: 137438953472,
+        manageAlerts: 274877906944,
+        createAlerts: 549755813888,
+        editMyUserInfo: 1099511627776,
+        enumeratePermissions: 4611686018427387904,
+        fullMask: 9223372036854775807
+    };
     
     /** ***********************************************************************
      * @class jspyder.sp.list
@@ -278,7 +319,8 @@ js.extend.fn("sp", function () {
          * *******************************************************************/
         pull: function (success, failure) {
             var ctx = new window.SP.ClientContext(this._url),
-                list = ctx.get_web().get_lists().getByTitle(this._name),
+                web = ctx.get_web(),
+                list = web.get_lists().getByTitle(this._name),
                 caml = new window.SP.CamlQuery(),
                 successFn = (typeof success === "function"
                     ? success
@@ -291,6 +333,7 @@ js.extend.fn("sp", function () {
             var listItems = list.getItems(caml);
 
             ctx.load(listItems);
+            
             ctx.executeQueryAsync(
                 js.alg.bindFn(this, __successParse, [listItems, successFn]),
                 js.alg.bindFn(this, __failureParse, [listItems, failureFn]));
@@ -349,8 +392,6 @@ js.extend.fn("sp", function () {
         push: function(success, failure) {
             var ctx = new window.SP.ClientContext(this._url),
                 list = ctx.get_web().get_lists().getByTitle(this._name),
-                itemInfo = null,
-                listItem = null,
                 data = {
                     clientContext: ctx,
                     items: [],
@@ -457,6 +498,43 @@ js.extend.fn("sp", function () {
                 colValue = (typeof value !== "undefined" ? value : colData.default || null);
             
             row[colData.name] = cell;
+        },
+        
+        /**
+         * @method
+         * 
+         * Retrieves the permission levels for the current user in the
+         * associated list.
+         */
+        getPermissions: function (success, failure) {
+            var ctx = new window.SP.ClientContext(this._url),
+                web = ctx.get_web(),
+                data = {
+                    currentUser: web.get_currentUser(),
+                    web: web
+                };
+                
+            ctx.load(data.currentUser);
+            ctx.load(web, "EffectiveBasePermissions");
+            ctx.executeQueryAsync(
+                js.alg.bindFn(this, this._getPermissionsSuccess, [data, success]),
+                js.alg.bindFn(this, this._getPermissionsSuccess, [null, failure]));
+                
+            return this;
+        },
+        _getPermissionsSuccess(data, callback) {
+            var permissions = this._permissions = {};
+            
+            if (data) {
+                var perm = data.web.get_effectiveBasePermissions();
+
+                js.alg.each(window.SP.PermissionKind, function (value, pName) {
+                    permissions[pName] = js.alg.bool(perm.has(pName));
+                });
+            }
+            
+            js.alg.use(this, callback, [this._permissions]);
+            return;
         }
     };
 
