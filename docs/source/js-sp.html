@@ -43,17 +43,17 @@ js.extend.fn(&quot;sp&quot;, function () {
 <span id='global-property-js'>    /** @ignore */
 </span>    var js = window.jspyder;
     
-<span id='jspyder-sp'>    /** ***********************************************************************
+<span id='jspyder-sp'>    /**
 </span>     * @class jspyder.sp
      * @member jspyder
      * 
      * # Managed Objects:
      * ## JSpyder SharePoint List Reference (jspyder.sp.list)
      * ## JSpyder SharePoint Query Reference (jspyder.sp.query)
-     * ***********************************************************************/
-    function sp() {};
+     */
+    function sp() { };
     
-<span id='jspyder-sp-list'>    /** ***********************************************************************
+<span id='jspyder-sp-list'>    /**
 </span>     * @class jspyder.sp.list
      * @extends jspyder.sp
      * 
@@ -83,7 +83,7 @@ js.extend.fn(&quot;sp&quot;, function () {
      * 
      * @return {Object} 
      *      A JSpyder SharePoint List Reference Object ([sp.list]{#sp.list})
-     * ***********************************************************************/
+     */
     sp.list =  function spList(config, fn) {
          
         if (!window.SP) {
@@ -122,8 +122,8 @@ js.extend.fn(&quot;sp&quot;, function () {
     }
 
     var __rowLimit = 10000;
-    var __caml = &quot;&lt;View&gt;&lt;Query&gt;&lt;Where&gt;&lt;Geq&gt;&lt;FieldRef Name=&#39;ID&#39; /&gt;&quot;
-        + &quot;&lt;Value Type=&#39;Number&#39;&gt;1&lt;/Value&gt;&lt;/Geq&gt;&lt;/Where&gt;&lt;/Query&gt;&quot;
+    var __caml = &quot;&lt;View&gt;&lt;Query&gt;&lt;Where&gt;&lt;Geq&gt;&lt;FieldRef Name='ID' /&gt;&quot;
+        + &quot;&lt;Value Type='Number'&gt;1&lt;/Value&gt;&lt;/Geq&gt;&lt;/Where&gt;&lt;/Query&gt;&quot;
         + &quot;&lt;RowLimit&gt;&quot; + __rowLimit + &quot;&lt;/RowLimit&gt;&lt;/View&gt;&quot;
 
     sp.list.fn = {
@@ -140,7 +140,7 @@ js.extend.fn(&quot;sp&quot;, function () {
             return this._rows.length;
         },
         
-<span id='jspyder-sp-list-method-addColumn'>        /** *******************************************************************
+<span id='jspyder-sp-list-method-addColumn'>        /**
 </span>         * Adds a single column to the SP List proxy
          * 
          * @param {String} name
@@ -174,7 +174,7 @@ js.extend.fn(&quot;sp&quot;, function () {
          *              Defines a custom value lookup.  This will override (and
          *              not consider) any values found if a data.internal parameter
          *              is provided.
-         * *******************************************************************/
+         */
         addColumn: function(name, data) {
             var column = Object.create(sp.column.fn, {
                 list: { value: this },
@@ -187,13 +187,13 @@ js.extend.fn(&quot;sp&quot;, function () {
             
             return this;
         },
-<span id='jspyder-sp-list-method-addColumns'>        /** *******************************************************************
+<span id='jspyder-sp-list-method-addColumns'>        /**
 </span>         * Adds a group of columns to the SP List proxy, via this.addColumn,
          * where keys correspond to the [name] parameter, and values correspond
          * to the [data] parameter.
          * 
          * @param {Object} dataObj
-         * *******************************************************************/
+         */
         addColumns: function(dataObj) {
             js.alg.each(dataObj, function(data, name, dataObj, list) {
                 list.addColumn(name, data);
@@ -201,14 +201,14 @@ js.extend.fn(&quot;sp&quot;, function () {
             return this;
         },
         
-<span id='jspyder-sp-list-method-getColumn'>        /** *******************************************************************
+<span id='jspyder-sp-list-method-getColumn'>        /**
 </span>         * Gets the column template by name, as identified in js.sp.list.addColumn
          * 
          * @param {String} name
          *      The name of the field to retrieve the template for. Note that
          *      any changes to the template will change the template for all
          *      of the derived values within the table.
-         * *******************************************************************/
+         */
         getColumn: function(name) {
             return (this._columns[name]
                 ? this._columns[name] 
@@ -217,14 +217,14 @@ js.extend.fn(&quot;sp&quot;, function () {
                     name: { value: name }}));
         },
         
-<span id='jspyder-sp-list-method-getRow'>        /** *******************************************************************
+<span id='jspyder-sp-list-method-getRow'>        /**
 </span>         * Gets the row number from the cache of stored values.  Note that this
          * number does not necessarily correspond to the row ID within 
          * SharePoint.
          * 
          * @param {Number} n
          *      The row number to retrieve from the cache.
-         * *******************************************************************/
+         */
         getRow: function(n) {
             return this._rows[js.alg.number(n, 0)] || null;
         },
@@ -266,16 +266,16 @@ js.extend.fn(&quot;sp&quot;, function () {
             
         },
         
-<span id='jspyder-sp-list-method-getRowCount'>        /** *******************************************************************
+<span id='jspyder-sp-list-method-getRowCount'>        /**
 </span>         * Retrieves the number of rows within the cache.
          * 
          * @return {Number}
-         * *******************************************************************/
+         */
         getRowCount: function(n) {
             return this._rows.length;
         },
         
-<span id='jspyder-sp-list-method-pull'>        /** *******************************************************************
+<span id='jspyder-sp-list-method-pull'>        /**
 </span>         * Executes an asynchronous read-query from the server to pull in 
          * fresh data. It is important to note, when using this function, that
          * any subsequent or chained functions will likely execute before this
@@ -292,7 +292,9 @@ js.extend.fn(&quot;sp&quot;, function () {
          *      [sender, args] as the parameters.  This function will be 
          *      executed instead of the failure function identified in the
          *      constructor.
-         * *******************************************************************/
+         * 
+         * @async
+         */
         pull: function (success, failure) {
             var ctx = new window.SP.ClientContext(this._url),
                 list = ctx.get_web().get_lists().getByTitle(this._name),
@@ -308,23 +310,24 @@ js.extend.fn(&quot;sp&quot;, function () {
             var listItems = list.getItems(caml);
 
             ctx.load(listItems);
+            
             ctx.executeQueryAsync(
                 js.alg.bindFn(this, __successParse, [listItems, successFn]),
                 js.alg.bindFn(this, __failureParse, [listItems, failureFn]));
             return this;
         },
         
-<span id='jspyder-sp-list-method-query'>        /** *******************************************************************
+<span id='jspyder-sp-list-method-query'>        /**
 </span>         * Creates a new query object. This function is synchronous, and 
          * executes data currently residing in the cache.
          * 
          * @param {Array} criteria
-         *      A list of criteria to run against the list reference&#39;s cache.
+         *      A list of criteria to run against the list reference's cache.
          *      Expected as an array of query objects.  See jspyder.sp.query.filter
          * 
          * @return {Object}
          *      [Query Reference]{#sp.query}
-         * *******************************************************************/
+         */
         query: function (criteria) {
             var query = sp.query(this).reset();
             return (criteria instanceof Array
@@ -332,14 +335,13 @@ js.extend.fn(&quot;sp&quot;, function () {
                 : query.filter(criteria));
         },
 
-<span id='jspyder-sp-list-method-clearData'>        /** *******************************************************************
+<span id='jspyder-sp-list-method-clearData'>        /**
 </span>         * Clears all cached data within the list reference.  This is function
          * is automatically called when pulling data from the SharePoint List,
          * and should not be necessary for most implementations.
-         * *******************************************************************/
+         */
         clearData: function () {
             this._rows = [];
-            // this._dirtyRows = [];
             while(this._dirtyRows.pop()) {
                 // nothing
             }
@@ -350,7 +352,7 @@ js.extend.fn(&quot;sp&quot;, function () {
             return this;
         },
         
-<span id='jspyder-sp-list-method-push'>        /** *******************************************************************
+<span id='jspyder-sp-list-method-push'>        /**
 </span>         * Pushes changed data to the server.
          * 
          * !TODO: Implement the logic for this:
@@ -361,13 +363,13 @@ js.extend.fn(&quot;sp&quot;, function () {
          *  5: Push
          * 
          * Alternatively, I could cache the changed values when I mark them as
-         * &quot;dirty&quot;. 
-         * *******************************************************************/
+         * &quot;dirty&quot;.
+         *  
+         * @async
+         */
         push: function(success, failure) {
             var ctx = new window.SP.ClientContext(this._url),
                 list = ctx.get_web().get_lists().getByTitle(this._name),
-                itemInfo = null,
-                listItem = null,
                 data = {
                     clientContext: ctx,
                     items: [],
@@ -438,6 +440,9 @@ js.extend.fn(&quot;sp&quot;, function () {
             
             return;
         },
+<span id='jspyder-sp-list-method-createRow'>        /**
+</span>         * @method
+         */
         createRow: function(values) {
             var columns = this._columns,
                 data = {
@@ -474,6 +479,45 @@ js.extend.fn(&quot;sp&quot;, function () {
                 colValue = (typeof value !== &quot;undefined&quot; ? value : colData.default || null);
             
             row[colData.name] = cell;
+        },
+        
+<span id='jspyder-sp-list-method-getPermissions'>        /**
+</span>         * @method
+         * 
+         * Retrieves the permission levels for the current user in the
+         * associated list.
+         * 
+         * @async
+         */
+        getPermissions: function (success, failure) {
+            var ctx = new window.SP.ClientContext(this._url),
+                web = ctx.get_web(),
+                data = {
+                    currentUser: web.get_currentUser(),
+                    web: web
+                };
+                
+            ctx.load(data.currentUser);
+            ctx.load(web, &quot;EffectiveBasePermissions&quot;);
+            ctx.executeQueryAsync(
+                js.alg.bindFn(this, this._getPermissionsSuccess, [data, success]),
+                js.alg.bindFn(this, this._getPermissionsSuccess, [null, failure]));
+                
+            return this;
+        },
+        _getPermissionsSuccess: function (data, callback) {
+            var permissions = this._permissions = {};
+            
+            if (data) {
+                var perm = data.web.get_effectiveBasePermissions();
+
+                js.alg.each(window.SP.PermissionKind, function (value, pName) {
+                    permissions[pName] = js.alg.bool(perm.has(pName));
+                });
+            }
+            
+            js.alg.use(this, callback, [this._permissions]);
+            return;
         }
     };
 
@@ -547,7 +591,7 @@ js.extend.fn(&quot;sp&quot;, function () {
      *      Individual column template (based on sp.column.fn)
      * 
      * @param {String} colName
-     *      Column&#39;s internal reference ID, defined in constructor
+     *      Column's internal reference ID, defined in constructor
      * 
      * @param {Object} columns
      *      Collection of js column references
@@ -556,7 +600,7 @@ js.extend.fn(&quot;sp&quot;, function () {
      *      Collection of relevant loop data, pushed in my js.alg.each.
      *      Includes data.item (sharepoint row reference), data.id (value of
      *      associated row ID in sharepoint), and data._row (reference to
-     *      list reference&#39;s row getting pushed into the stack).  
+     *      list reference's row getting pushed into the stack).  
      * ***********************************************************************/
     function __pushRow(colData, colName, columns, data) {
         var rowID = data.id,
@@ -686,7 +730,7 @@ js.extend.fn(&quot;sp&quot;, function () {
         
 <span id='jspyder-sp-query-method-reset'>        /** *******************************************************************
 </span>         * Resets the query object to include all of the available rows in the
-         * associated list&#39;s cache.
+         * associated list's cache.
          * *******************************************************************/
         reset: function() {
             this._rows = this._list._rows.slice(0);
@@ -711,9 +755,9 @@ js.extend.fn(&quot;sp&quot;, function () {
          * *******************************************************************/
         filter: function(filterData) {
             if(filterData) {
-                js.alg.each(this._rows, __parseRows, [filterData]);
+                js.alg.arrEach(this._rows, __parseRows, [filterData]);
             }
-            return this._cleanRows();
+            return this;
         },
         
 <span id='jspyder-sp-query-method-filters'>        /** *******************************************************************
@@ -727,7 +771,6 @@ js.extend.fn(&quot;sp&quot;, function () {
          * *******************************************************************/
         filters: function(filterArray) {
             js.alg.arrEach(this._rows, __parseRows, filterArray);
-            // return this._cleanRows();
             return this;
         },
         
@@ -824,6 +867,32 @@ js.extend.fn(&quot;sp&quot;, function () {
             }
         },
         
+<span id='jspyder-sp-query-method-getValues'>        /**
+</span>         * Copies all of the values from the rows in the query into the object 
+         * provided.
+         */
+        getValues: function (columns, fn) {
+            // initializes [columns] variable
+            js.alg.each(columns, function(v, k, columns) {
+                columns[k] = {};
+            });
+            // iterates the rows
+            this.each(function(row) {
+                js.alg.each(columns, __copyColumn, row);
+            });
+            function __copyColumn(arr, key, columns, row) {
+                arr[row[key].value] = true;
+            }
+            // sort the results
+            js.alg.each(columns, function(obj, k, columns) {
+                columns[k] = Object.keys(obj).sort();
+            });
+            
+            js.alg.use(this, fn, [columns]);
+            
+            return this;
+        },
+        
 <span id='jspyder-sp-query-method-clone'>        /** *******************************************************************
 </span>         * Creates a copy of the jspyder.sp.query object; pointing to the same
          * jspyder.sp.list object, but with its own context of data copied from
@@ -859,7 +928,7 @@ js.extend.fn(&quot;sp&quot;, function () {
             return;
         }
         
-        var f, filter, drop, value;
+        var f, filter, drop, value, orDrop;
         
         drop = false;
         
@@ -871,23 +940,121 @@ js.extend.fn(&quot;sp&quot;, function () {
             if(typeof row[filter.column] === &quot;undefined&quot;) { continue; }
             
             value = row[filter.column].value;
+            orDrop = true;
             
-            if(!drop &amp;&amp; (typeof filter.gt  !== &quot;undefined&quot;)) { drop = !(value &gt;   filter.gt ); } 
-            if(!drop &amp;&amp; (typeof filter.geq !== &quot;undefined&quot;)) { drop = !(value &gt;=  filter.geq); } 
-            if(!drop &amp;&amp; (typeof filter.leq !== &quot;undefined&quot;)) { drop = !(value &lt;=  filter.leq); } 
-            if(!drop &amp;&amp; (typeof filter.lt  !== &quot;undefined&quot;)) { drop = !(value &lt;   filter.lt ); }
-            if(!drop &amp;&amp; (typeof filter.eq  !== &quot;undefined&quot;)) { drop = !(value ==  filter.eq ); }
-            if(!drop &amp;&amp; (typeof filter.seq !== &quot;undefined&quot;)) { drop = !(value === filter.seq); }
-            if(!drop &amp;&amp; (typeof filter.neq !== &quot;undefined&quot;)) { drop = !(value !=  filter.neq); }
-            if(!drop &amp;&amp; (typeof filter.snq !== &quot;undefined&quot;)) { drop = !(value !== filter.snq); }
+            if(!drop &amp;&amp; (typeof filter.gt  !== &quot;undefined&quot;)) {
+                if(filter.gt &amp;&amp; typeof filter.gt === &quot;object&quot;) {
+                    js.alg.each(filter.gt, function(or) {
+                        orDrop = orDrop &amp;&amp; !(value &gt; or);
+                        orDrop || this.stop();
+                    });
+                    drop = orDrop;
+                }
+                else { drop = !(value &gt; filter.gt ); } 
+            } 
+            if(!drop &amp;&amp; (typeof filter.geq !== &quot;undefined&quot;)) {
+                if(filter.geq &amp;&amp; typeof filter.geq === &quot;object&quot;) {
+                    js.alg.each(filter.geq, function(or) {
+                        orDrop = orDrop &amp;&amp; !(value &gt;= or);
+                        orDrop || this.stop();
+                    });
+                    drop = orDrop;
+                } 
+                else { drop = !(value &gt;= filter.geq); } 
+            } 
+            if(!drop &amp;&amp; (typeof filter.leq !== &quot;undefined&quot;)) {
+                if(filter.leq &amp;&amp; typeof filter.leq === &quot;object&quot;) {
+                    js.alg.each(filter.leq, function(or) {
+                        orDrop = orDrop &amp;&amp; !(value &lt;= or);
+                        orDrop || this.stop();
+                    });
+                    drop = orDrop;
+                } 
+                else { drop = !(value &lt;= filter.leq); } 
+            } 
+            if(!drop &amp;&amp; (typeof filter.lt  !== &quot;undefined&quot;)) {
+                if(filter.lt &amp;&amp; typeof filter.lt === &quot;object&quot;) {
+                    js.alg.each(filter.lt, function(or) {
+                        orDrop = orDrop &amp;&amp; !(value &lt; or);
+                        orDrop || this.stop();
+                    });
+                    drop = orDrop;
+                } 
+                else { drop = !(value &lt; filter.lt ); } 
+            }
+            if(!drop &amp;&amp; (typeof filter.eq  !== &quot;undefined&quot;)) {
+                if(filter.eq &amp;&amp; typeof filter.eq === &quot;object&quot;) {
+                    js.alg.each(filter.eq, function(or) {
+                        orDrop = orDrop &amp;&amp; !(value == or);
+                        orDrop || this.stop();
+                    });
+                    drop = orDrop;
+                } 
+                else { drop = !(value == filter.eq ); } 
+            }
+            if(!drop &amp;&amp; (typeof filter.seq !== &quot;undefined&quot;)) {
+                if(filter.seq &amp;&amp; typeof filter.seq === &quot;object&quot;) {
+                    js.alg.each(filter.seq, function(or) {
+                        orDrop = orDrop &amp;&amp; !(value === or);
+                        orDrop || this.stop();
+                    });
+                    drop = orDrop;
+                } 
+                else { drop = !(value === filter.seq); } 
+            }
+            if(!drop &amp;&amp; (typeof filter.neq !== &quot;undefined&quot;)) {
+                if(filter.neq &amp;&amp; typeof filter.neq === &quot;object&quot;) {
+                    js.alg.each(filter.neq, function(or) {
+                        orDrop = orDrop &amp;&amp; !(value != or);
+                        orDrop || this.stop();
+                    });
+                    drop = orDrop;
+                } 
+                else { drop = !(value != filter.neq); } 
+            }
+            if(!drop &amp;&amp; (typeof filter.snq !== &quot;undefined&quot;)) {
+                if(filter.snq &amp;&amp; typeof filter.snq === &quot;object&quot;) {
+                    js.alg.each(filter.snq, function(or) {
+                        orDrop = orDrop &amp;&amp; !(value !== or);
+                        orDrop || this.stop();
+                    });
+                    drop = orDrop;
+                } 
+                else { drop = !(value !== filter.snq); } 
+            }
             // binary
-            if(!drop &amp;&amp; (typeof filter.and !== &quot;undefined&quot;)) { drop = !((value &amp; filter.and) === filter.and); }
-            if(!drop &amp;&amp; (typeof filter.not !== &quot;undefined&quot;)) { drop = !((value &amp; filter.not) !== filter.not); }
+            if(!drop &amp;&amp; (typeof filter.and !== &quot;undefined&quot;)) {
+                if(filter.and &amp;&amp; typeof filter.and === &quot;object&quot;) {
+                    js.alg.each(filter.and, function(or) {
+                        orDrop = orDrop &amp;&amp; !((value &amp; or) === or);
+                        orDrop || this.stop();
+                    });
+                    drop = orDrop;
+                }
+                else { drop = !((value &amp; filter.and) === filter.and); }
+            }
+            if(!drop &amp;&amp; (typeof filter.not !== &quot;undefined&quot;)) {
+                if(filter.not &amp;&amp; typeof filter.not === &quot;object&quot;) {
+                    js.alg.each(filter.not, function(or) {
+                        orDrop = orDrop &amp;&amp; !((value &amp; or) !== or);
+                        orDrop || this.stop();
+                    });
+                    drop = orDrop;
+                }
+                else { drop = !((value &amp; filter.not) !== filter.not); }
+            }
             
             if(!drop &amp;&amp; (typeof filter.test !== &quot;undefined&quot;)) { 
                 // prevent invalid regexp values from breaking our query
                 if(filter.test instanceof RegExp) { 
                     drop = !(filter.test.test(value));
+                }
+                else if(filter.test &amp;&amp; typeof filter.test === &quot;object&quot;) {
+                    js.alg.each(filter.test, function(or) {
+                        orDrop = orDrop &amp;&amp; !(or.test(value));
+                        orDrop || this.stop();
+                    });
+                    drop = orDrop;
                 }
             }
         }

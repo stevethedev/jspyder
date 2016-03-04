@@ -1,3 +1,12 @@
+            .signature .async {
+                color: #1b5e20;
+                background: #a5d6a7;
+                border: 1px solid #1b5e20;
+            }
+            .async-box {
+                border-color: #1b5e20;
+            }
+
 .signature .chainable { background-color: #00aa00 }
         .signature .deprecated {
           background-color: #aa0000;

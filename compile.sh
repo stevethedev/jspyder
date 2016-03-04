@@ -38,7 +38,7 @@ function generate_docs {
     fi
 
     echo " > Writing New Documentation..."
-    jsduck --title "JSpyder" ./js --output ./docs
+    jsduck --title "JSpyder" --tags ./jsduck-data/tags.rb ./js --output ./docs
 }
 
 test $# -eq "0" && help

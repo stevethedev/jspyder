@@ -26,58 +26,17 @@ js.extend.fn("sp", function () {
     /** @ignore */
     var js = window.jspyder;
     
-    /** ***********************************************************************
+    /**
      * @class jspyder.sp
      * @member jspyder
      * 
      * # Managed Objects:
      * ## JSpyder SharePoint List Reference (jspyder.sp.list)
      * ## JSpyder SharePoint Query Reference (jspyder.sp.query)
-     * ***********************************************************************/
+     */
     function sp() { };
     
     /**
-     * 
-     */
-    sp.permissions = {
-        emptyMask: 0,
-        viewListItems: 1,
-        addListItems: 2,
-        editListItems: 4,
-        deleteListItems: 8,
-        approveItems: 16,
-        openItems: 32,
-        viewVersions: 64,
-        deleteVersions: 128,
-        cancelCheckout: 256,
-        managePersonalViews: 512,
-        manageLists: 2048,
-        viewFormPages: 4096,
-        open: 65536,
-        viewPages: 131072,
-        addAndCustomizePages: 262144,
-        applyThemeAndBorder: 524288,
-        applyStyleSheets: 1048576,
-        viewUsageData: 2097152,
-        createSSCSite: 4194304,
-        manageSubwebs: 8388608,
-        createGroups: 16777216,
-        managePermissions: 33554432,
-        browseDirectories: 67108864,
-        browseUserInfo: 134217728,
-        addDelPrivateWebParts: 268435456,
-        updatePersonalWebParts: 536870912,
-        manageWeb: 1073741824,
-        useClientIntegration: 68719476736,
-        useRemoteAPIs: 137438953472,
-        manageAlerts: 274877906944,
-        createAlerts: 549755813888,
-        editMyUserInfo: 1099511627776,
-        enumeratePermissions: 4611686018427387904,
-        fullMask: 9223372036854775807
-    };
-    
-    /** ***********************************************************************
      * @class jspyder.sp.list
      * @extends jspyder.sp
      * 
@@ -107,7 +66,7 @@ js.extend.fn("sp", function () {
      * 
      * @return {Object} 
      *      A JSpyder SharePoint List Reference Object ([sp.list]{#sp.list})
-     * ***********************************************************************/
+     */
     sp.list =  function spList(config, fn) {
          
         if (!window.SP) {
@@ -164,7 +123,7 @@ js.extend.fn("sp", function () {
             return this._rows.length;
         },
         
-        /** *******************************************************************
+        /**
          * Adds a single column to the SP List proxy
          * 
          * @param {String} name
@@ -198,7 +157,7 @@ js.extend.fn("sp", function () {
          *              Defines a custom value lookup.  This will override (and
          *              not consider) any values found if a data.internal parameter
          *              is provided.
-         * *******************************************************************/
+         */
         addColumn: function(name, data) {
             var column = Object.create(sp.column.fn, {
                 list: { value: this },
@@ -211,13 +170,13 @@ js.extend.fn("sp", function () {
             
             return this;
         },
-        /** *******************************************************************
+        /**
          * Adds a group of columns to the SP List proxy, via this.addColumn,
          * where keys correspond to the [name] parameter, and values correspond
          * to the [data] parameter.
          * 
          * @param {Object} dataObj
-         * *******************************************************************/
+         */
         addColumns: function(dataObj) {
             js.alg.each(dataObj, function(data, name, dataObj, list) {
                 list.addColumn(name, data);
@@ -225,14 +184,14 @@ js.extend.fn("sp", function () {
             return this;
         },
         
-        /** *******************************************************************
+        /**
          * Gets the column template by name, as identified in js.sp.list.addColumn
          * 
          * @param {String} name
          *      The name of the field to retrieve the template for. Note that
          *      any changes to the template will change the template for all
          *      of the derived values within the table.
-         * *******************************************************************/
+         */
         getColumn: function(name) {
             return (this._columns[name]
                 ? this._columns[name] 
@@ -241,14 +200,14 @@ js.extend.fn("sp", function () {
                     name: { value: name }}));
         },
         
-        /** *******************************************************************
+        /**
          * Gets the row number from the cache of stored values.  Note that this
          * number does not necessarily correspond to the row ID within 
          * SharePoint.
          * 
          * @param {Number} n
          *      The row number to retrieve from the cache.
-         * *******************************************************************/
+         */
         getRow: function(n) {
             return this._rows[js.alg.number(n, 0)] || null;
         },
@@ -290,16 +249,16 @@ js.extend.fn("sp", function () {
             
         },
         
-        /** *******************************************************************
+        /**
          * Retrieves the number of rows within the cache.
          * 
          * @return {Number}
-         * *******************************************************************/
+         */
         getRowCount: function(n) {
             return this._rows.length;
         },
         
-        /** *******************************************************************
+        /**
          * Executes an asynchronous read-query from the server to pull in 
          * fresh data. It is important to note, when using this function, that
          * any subsequent or chained functions will likely execute before this
@@ -316,11 +275,12 @@ js.extend.fn("sp", function () {
          *      [sender, args] as the parameters.  This function will be 
          *      executed instead of the failure function identified in the
          *      constructor.
-         * *******************************************************************/
+         * 
+         * @async
+         */
         pull: function (success, failure) {
             var ctx = new window.SP.ClientContext(this._url),
-                web = ctx.get_web(),
-                list = web.get_lists().getByTitle(this._name),
+                list = ctx.get_web().get_lists().getByTitle(this._name),
                 caml = new window.SP.CamlQuery(),
                 successFn = (typeof success === "function"
                     ? success
@@ -340,7 +300,7 @@ js.extend.fn("sp", function () {
             return this;
         },
         
-        /** *******************************************************************
+        /**
          * Creates a new query object. This function is synchronous, and 
          * executes data currently residing in the cache.
          * 
@@ -350,7 +310,7 @@ js.extend.fn("sp", function () {
          * 
          * @return {Object}
          *      [Query Reference]{#sp.query}
-         * *******************************************************************/
+         */
         query: function (criteria) {
             var query = sp.query(this).reset();
             return (criteria instanceof Array
@@ -358,14 +318,13 @@ js.extend.fn("sp", function () {
                 : query.filter(criteria));
         },
 
-        /** *******************************************************************
+        /**
          * Clears all cached data within the list reference.  This is function
          * is automatically called when pulling data from the SharePoint List,
          * and should not be necessary for most implementations.
-         * *******************************************************************/
+         */
         clearData: function () {
             this._rows = [];
-            // this._dirtyRows = [];
             while(this._dirtyRows.pop()) {
                 // nothing
             }
@@ -376,7 +335,7 @@ js.extend.fn("sp", function () {
             return this;
         },
         
-        /** *******************************************************************
+        /**
          * Pushes changed data to the server.
          * 
          * !TODO: Implement the logic for this:
@@ -387,8 +346,10 @@ js.extend.fn("sp", function () {
          *  5: Push
          * 
          * Alternatively, I could cache the changed values when I mark them as
-         * "dirty". 
-         * *******************************************************************/
+         * "dirty".
+         *  
+         * @async
+         */
         push: function(success, failure) {
             var ctx = new window.SP.ClientContext(this._url),
                 list = ctx.get_web().get_lists().getByTitle(this._name),
@@ -462,6 +423,9 @@ js.extend.fn("sp", function () {
             
             return;
         },
+        /**
+         * @method
+         */
         createRow: function(values) {
             var columns = this._columns,
                 data = {
@@ -505,6 +469,14 @@ js.extend.fn("sp", function () {
          * 
          * Retrieves the permission levels for the current user in the
          * associated list.
+         * 
+         * @param {Function} success
+         *      The function to execute if the permissions were successfully retrieved.
+         * 
+         * @param {Function} failure
+         *      The function to execute if the permissions failed to retrieve.
+         * 
+         * @async
          */
         getPermissions: function (success, failure) {
             var ctx = new window.SP.ClientContext(this._url),
@@ -522,7 +494,7 @@ js.extend.fn("sp", function () {
                 
             return this;
         },
-        _getPermissionsSuccess(data, callback) {
+        _getPermissionsSuccess: function (data, callback, sender, args) {
             var permissions = this._permissions = {};
             
             if (data) {
@@ -531,9 +503,11 @@ js.extend.fn("sp", function () {
                 js.alg.each(window.SP.PermissionKind, function (value, pName) {
                     permissions[pName] = js.alg.bool(perm.has(pName));
                 });
+                js.alg.use(this, callback, [this._permissions]);
+                return;
             }
             
-            js.alg.use(this, callback, [this._permissions]);
+            js.alg.use(this, callback, [sender, args]);
             return;
         }
     };
