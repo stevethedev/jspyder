@@ -895,6 +895,14 @@ js.extend.fn("sp", function () {
             var clone = sp.query(this._list);
             clone._rows = this._rows.slice(0);
             return clone;
+        },
+        
+        toExcelString: function(name, columns) {
+            return __generateXML(name, this._rows, columns);
+        },
+        
+        toCsvString: function(columns) {
+            return __generateCSV(this._rows, columns);
         }
     };
 
@@ -1051,7 +1059,6 @@ js.extend.fn("sp", function () {
         }
         
         if(drop) {
-            // _rows[id] = null;
             this.drop();
         }
         
@@ -1111,6 +1118,95 @@ js.extend.fn("sp", function () {
          */
         valueOf: function() { return this.value; }
     };
+    
+    function __generateXML (name, rows, columns, styles) {
+        var xml = [
+            "<?xml version=\"1.0\"?>",
+            "<?mso-application progid=\"Excel.Sheet\"?>",
+            __workbook(name, rows, columns)];
+            
+        function __workbook(name, rows, columns) {
+            return [
+                "<ss:Workbook xmlns:ss=\"urn:schemas-microsoft-com:office:spreadsheet\">",
+                    __styles(),
+                    __worksheet(name, rows, columns),
+                "</ss:Workbook>"
+            ].join('');
+        }
+        
+        function __styles(styles) {
+            return [
+                "<ss:Styles>",
+                    "<ss:Style ss:ID=\"1\">",
+                        "<ss:Font ss:Bold=\"1\" />",
+                    "</ss:Style>",
+                "</ss:Styles>"
+            ].join('');
+        }
+        
+        function __worksheet(name, rows, columns) {
+            return [
+                "<ss:Worksheet ss:Name=\"", name, "\">",
+                    "<ss:Table>",
+                        __rows(rows, columns),
+                    "</ss:Table>",
+                "</ss:Worksheet>"
+            ].join('');
+        }
+        
+        function __rows(rows, columns) {
+            var __rows = [];
+            
+            __rows.push("<ss:Row ss:StyleID=\"1\">");
+            js.alg.arrEach(columns, __pushRow, "text");
+            __rows.push("</ss:Row>");
+            
+            js.alg.arrEach(rows, function(row, i) {
+                __rows.push("<ss:Row>");
+                js.alg.arrEach(columns, __pushRow, "value");
+                __rows.push("</ss:Row>");
+            });
+            
+            function __pushRow (col, i, cols, data) {
+                __rows.push([
+                    "<ss:Cell><ss:Data ss:Type=\"String\">", rows[col][data], "</ss:Data></ss:Cell>"
+                ].join(''))
+            }
+            
+            return __rows.join('');
+        }
+        
+        return xml.join('');
+    }
+    
+    function __generateCSV (rows, columns) {
+        var csv = [
+            "\uFEFF",
+            __rows(rows, columns)];
+        
+        function __rows(rows, columns) {
+            var __rows = [],
+                __oneRow = [];
+                
+            js.alg.arrEach(columns, __pushRow, { row: rows[0], type: "text" });
+            __rows.push(__oneRow.join(','));
+            __oneRow = [];
+            
+            js.alg.arrEach(rows, function(row, i) {
+                js.alg.arrEach(columns, __pushRow, { row: row, type: "value", r: [] });
+                __rows.push(__oneRow.join(','));
+                __oneRow = [];
+            });
+            
+            function __pushRow (col, i, cols, data) {
+                __oneRow.push([ "\"", (data.row[col] || {})[data.type] || "", "\"" ].join(''))
+            }
+            
+            return __rows.join('\r\n');
+        }
+        
+        return csv.join('');
+    }
 
     return sp;
 });

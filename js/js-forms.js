@@ -1695,7 +1695,10 @@ jspyder.extend.fn("form", function () {
                         return;
                     })
                     .on("blur", function (event) {
-                        if (config["strict"]) {
+                        if(this.value === ""){ 
+                            js.dom(this).setAttrs({ "data-value": "" });
+                        }
+                        else if (config["strict"]) {
                             var match = searchValue(config, this.value, true);
                             if(!match) {
                                 this.value = "";
@@ -1742,9 +1745,7 @@ jspyder.extend.fn("form", function () {
                         }
                     },
                     hide: function () {
-                        // setTimeout(function () {
                         found.remove();
-                        // }, 100);
                     },
                     getFirst: function () {
                         
