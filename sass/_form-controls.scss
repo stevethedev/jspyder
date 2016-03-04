@@ -1,0 +1,385 @@
+/** FORM ELEMENTS ************************************************************/
+
+label {
+    display: block;
+}
+
+.js-control {
+    &.js-control-button {
+        padding: .3em .5em;
+        display: inline-block;
+        border-radius: $input-border-radius;
+        border: $px solid $color-grey-900;
+        background-color: lighten($color-divider, 20);
+        box-shadow: 0 0 $px rgba($color-secondary, .6) inset;
+        cursor: pointer;
+        
+        &.js-buttonset {
+            display: inline-block;
+            border-radius: 0;
+            
+            &[data-checked] {
+                background-color: $color-info-background;
+                color: $color-info-text;
+            }
+            
+            &:first-of-type {
+                border-radius: $input-border-radius 0 0 $input-border-radius;
+            }
+            &:nth-of-type(n+2) {
+                border-left: none;
+            }
+            &:last-of-type {
+                border-radius: 0 $input-border-radius $input-border-radius 0;
+            }
+        }
+        
+        .button-text {
+            color: $color-grey-900;
+            vertical-align: middle;
+            text-align: left;
+            
+            &[data-buttontext=""]:after {
+                margin-left: 0;
+            }
+            
+            &:after {
+                content: attr(data-buttontext);
+                display: inline;
+                margin-left: .5em;
+            }
+        }
+        
+        &>i {
+            // margin: -.1em -.15em -.1em -.15em;
+            margin: -.15em;
+            
+            &[class=""] {
+                display: none;
+                
+                & + .button-text:after {
+                    margin-left: 0;
+                }
+            }
+        }
+        
+        &:hover {
+            background-color: lighten($color-divider, 40);
+            box-shadow: 0 0 .4em rgba($color-secondary, .4);
+        }
+    }
+    
+    &.js-control-currency-prefix {
+        position: absolute;
+        margin: .334em;
+        width: 0 !important;
+    }
+    
+    &.js-control-dropdown {
+        cursor: pointer;
+        position: relative;
+        
+        .dropdown-text {
+            color: $color-grey-900;
+            text-align: left;
+            font-size: 1em;
+            display: inline-block;
+            // line-height: (23em / 16);
+        }
+        
+        i.dropdown-arrow {
+            vertical-align: middle;
+            float: right;
+            margin: -.08em -.22em;
+        }
+        
+        &:hover {
+            i.dropdown-arrow {
+                display: initial;
+                color: $color-info-background;
+            }
+        }
+        
+        &:active, &:focus {
+            @include transform(none);
+        }
+        
+        .dropdown-selection {
+            @include calc("width", "100% - " 2 * $input-border-radius);
+            margin: 0;
+            padding: 0;
+            text-decoration: none;
+            list-style: outside none none;
+            border: $px solid $color-divider;
+            border-top: $px solid transparent;
+            border-radius: 0 0 $input-border-radius $input-border-radius;
+            position: absolute;
+            margin-left: $px;
+            margin-top: .2em;
+            overflow: hidden;
+            left: 0;
+            z-index: 2;
+            
+            &:hover {
+                border-color: $color-info-background;
+                box-shadow: 0 $px .16em $color-info-background;
+                border-top-color: transparent;
+            }
+            
+            li.item {
+                padding: .08em .3em;
+                background-color: $color-white;
+                border-top: $px solid transparent;
+                border-bottom: $px solid transparent;
+                width: 100%;
+                text-overflow: ellipsis;
+                overflow: hidden;
+                white-space: nowrap;
+                
+                &:before {
+                    content: "";
+                    display: inline-block;
+                    background-color: $color-divider;
+                    position: absolute;
+                    left: 0;
+                    width: .2em;
+                    height: 1.5em;
+                    margin-top: -.14em;
+                }
+                
+                &:hover {
+                    &:before {
+                        background-color: $color-info-background;
+                    }
+                    border-top: $px solid $color-divider;
+                    border-bottom: $px solid $color-divider;
+                }
+            }
+        }
+    }
+    
+    &.js-autocomplete-search {
+        @include calc("width", "100% - " 2 * $input-border-radius);
+        margin: 0;
+        padding: 0;
+        text-decoration: none;
+        list-style: outside none none;
+        border: $px solid $color-divider;
+        border-top: $px solid transparent;
+        border-radius: 0 0 $input-border-radius $input-border-radius;
+        margin-left: $px;
+        margin-top: .2em;
+        overflow: hidden;
+        z-index: 2;
+        margin-left: -0.5 * $px;
+        margin-top: -$px;
+        position: absolute;
+        
+        &:hover {
+            border-color: $color-info-background;
+            box-shadow: 0 $px .16em $color-info-background;
+            border-top-color: transparent;
+        }
+        
+        li.search-item {
+            padding: .08em .3em;
+            background-color: $color-white;
+            border-top: $px solid transparent;
+            border-bottom: $px solid transparent;
+            width: 100%;
+            height: 1.5em;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+            
+            &:before {
+                content: "\0020";
+                display: inline-block;
+                background-color: $color-divider;
+                position: absolute;
+                left: 0;
+                width: .2em;
+                margin-top: -.14em;
+                vertical-align: middle;
+                height: 1.5em; 
+            }
+            
+            &:hover, &.selected {
+                &:before {
+                    background-color: $color-info-background;
+                }
+                border-top: $px solid $color-divider;
+                border-bottom: $px solid $color-divider;
+            }
+        }
+    }
+    
+    &.js-control-date-picker {
+        display: block;
+        width: 12.5em;
+        border: $px solid $color-grey-900;
+        position: absolute;
+        box-shadow: 0 0 $shadow-size-color;
+        z-index: 1000;
+        background-color: $color-white;
+        border-radius: $input-border-radius;
+        
+        .date-picker-header {
+            position: relative;
+            border-bottom: $px solid $color-grey-900;
+            
+            .date-picker-prev, .date-picker-next {
+                position: absolute;
+                top: 0;
+                transition: color .2s;
+                cursor: pointer;
+                
+                &:hover {
+                    color: $color-primary;
+                }
+            }
+            
+            .date-picker-prev { left: 0;  }
+            .date-picker-next { right: 0; }
+            
+            .date-picker-title {
+                display: inline-block;
+                width: 100%;
+                text-align: center;
+                vertical-align: middle;
+                line-height: 1.5em;
+                
+                margin: 0;
+                padding: 0;
+            }
+        }
+        
+        .calendar-tiles {
+            display: block;
+            width: 100%;
+            
+            .month {
+                width: 25%;
+                padding: .6em;
+            }
+            
+            .date-title {
+                background-color: rgba($color-divider, .3);
+            }
+            
+            .month, .date, .date-title {
+                border: $px solid transparent;
+                transition: border-color .2s, color .2s;
+                display: inline-block;
+                text-align: center;
+                cursor: pointer;
+                
+                &:hover {
+                    border-color: $color-primary;
+                    color: $color-primary;
+                }
+                
+                &.active {
+                    background-color: rgba($color-info-background, .3);
+                }
+                &.today {
+                    border-color: $color-info-background;
+                }
+            }
+            
+        }
+    }
+    
+    &.js-control-autosize {
+        resize: none;
+        transition: height .1s;
+        vertical-align: top;
+    }
+}
+
+textarea {
+    min-height: 3em;
+}
+input, textarea, .input {
+    border: $px solid $color-divider;
+    padding: .2em .4em;
+    border-radius: $input-border-radius;
+    box-shadow: 0 0 .05em rgba($color-grey-900, .15) inset;
+    display: block;
+    width: 100%;
+    font-size: 1em;
+    background-color: $color-white;
+    transition: $transition-transform-scale;
+    
+    &:hover {
+        border-color: $color-info-background;
+        box-shadow: 0 0 .16em $color-info-background inset;
+    }
+    
+    &[readonly] {
+        &:active, &:focus {
+            @include transform(none);
+        }
+    }
+    
+    &:active, &:focus {
+        border-color:  $color-info-background;
+        box-shadow: 0 0 .16em $color-info-background;
+        z-index: 2;
+        @include transform(scale(1.02, 1.02));
+    }
+    
+    &.data-currency {
+        text-align: right;
+        padding-left: .84em;
+    }
+}
+
+input[type="checkbox"], input[type="radio"] {
+    vertical-align: middle;
+    width: 1em;
+    text-align: left;
+    display: inline-block;
+    
+    &+label {
+        display: inline-block;
+        vertical-align: middle;
+        margin-left: .2em;
+    }
+    
+    &[readonly] {
+        &:active, &:focus {
+            @include transform(none);
+        }
+    }
+    
+    &:active, &:focus {
+        @include transform(scale(1.2, 1.2));
+    }
+}
+
+fieldset {
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    margin: 0 (5em/4) .5em;
+    vertical-align: top;
+    display: inline;
+    text-align: left;
+    
+    & > legend {
+        display: block;
+        width: 100%;
+        padding: 0;
+        margin: (5em/8) 0;
+        font-size: (21em/16);
+        line-height: inherit;
+        color: $color-secondary;
+        border-width: 0 0 $px;
+        border-style: none none solid;
+        border-color: $color-divider;
+        text-align: left;
+    }
+    
+    & > div { margin-bottom: .5em; }
+}
