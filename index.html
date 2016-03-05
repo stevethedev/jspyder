@@ -30,7 +30,7 @@
                     });
                 });
             })
-            // prepares teh links
+            // prepares the links
             .register("init-links", function() {
                 js.dom("#main-page-links .main-page-link-item")
                     .on("click", function(event) {
@@ -39,6 +39,7 @@
                         js.lib("link-click", [attrs]);
                     });
             })
+            // processes link clicks
             .register("link-click", function(linkAttrs) {
                 switch(linkAttrs["data-link"]) {
                     case "github":
