@@ -30,6 +30,7 @@
                     js.template(data).compile("main-page", null, function(html) {
                         js.dom(document.body).append(html);
                         js.lib("init-header-links");
+                        js.dom("#main-page-header .main-page-link-item[data-url=home]").trigger("click");
                     });
                 });
             })
@@ -103,7 +104,7 @@
             
         js.registry.stash("js-pages", {
             "home": function() {
-                js.lib("set-html", ["Hello, World"]);
+                js.lib("set-html", ["Hello, World!  This is my JSpyder Page"]);
                 return;
             },
             "canvas": function() {
