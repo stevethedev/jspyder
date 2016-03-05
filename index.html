@@ -24,7 +24,7 @@
             .register("init-links", function() {
                 js.dom("#main-page-links .main-page-link-item")
                     .on("click", function(event) {
-                        js.dom(this).getAttrs({ "data-link" }, function(attrs) {
+                        js.dom(this).getAttrs({ "data-link": null }, function(attrs) {
                             js.dialog.alert({
                                 title: "Alert",
                                 message: attrs["data-link"]
