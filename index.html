@@ -62,7 +62,6 @@
             })
             // overwrites the current content area
             .register("set-html", function(html) {
-                js.lib("erase-content");
                 js.dom("#main-page-content").setHtml(html);
             })
             // overwrites the current content area
