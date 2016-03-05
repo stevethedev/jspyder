@@ -9,9 +9,18 @@
 </head>
 
 <body><script type="text/javascript">
-    js.template.storeTemplateXml("./template/templates.xml", function () { 
-        js.template().compile("main-page", null, function(html) {
-            js.dom(document.body).append(html);
+    js.alg.run(function() {
+        var links = [
+                { text: "Home", url: "home" }
+            ],
+            data = {
+                links: links
+            };
+        
+        js.template.storeTemplateXml("./template/templates.xml", function () { 
+            js.template(data).compile("main-page", null, function(html) {
+                js.dom(document.body).append(html);
+            });
         });
     });
 </script></body>
