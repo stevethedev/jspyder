@@ -1,0 +1,15 @@
+@import "../sass/colors.scss";
+
+body {
+    padding: 0;
+    margin: 0;
+}
+.main-page-link-list {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    background-color: $color-indigo;
+    padding: 0;
+    margin: 0;
+}
