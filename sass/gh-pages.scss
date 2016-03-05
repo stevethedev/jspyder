@@ -17,6 +17,10 @@ body {
     height: $header-height;
     background-color: $color-indigo-900;
     color: $color-white;
+    
+    h1 {
+        line-height: 1.5em;
+    }
 }
 
 .main-page-link-list {
