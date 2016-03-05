@@ -46,4 +46,7 @@ body {
     left: $menu-width;
     right: 0;
     bottom: 0;
+    padding: .2em .4em;
+    height: calc(100% - $header-height);
+    overflow: auto;
 }
