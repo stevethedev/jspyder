@@ -6,6 +6,10 @@
     <link type="text/css" rel="stylesheet" href="css/jspyder.css" />
     <link type="text/css" rel="stylesheet" href="css/material-icons.css" />
     <script type="text/javascript" src="js/jspyder.js"></script>
+    
+    <style type="text/css">
+        
+    </style>
 </head>
 
 <body><script type="text/javascript">
@@ -18,12 +22,20 @@
             };
         
         js.lib
+            // initializes the main page
             .register("init", function() {
-                js.lib("load");
+                js.template.storeTemplateXml("./template/templates.xml", function () { 
+                    js.template(data).compile("main-page", null, function(html) {
+                        js.dom(document.body).append(html);
+                        js.lib("init-links");
+                    });
+                });
             })
+            // prepares teh links
             .register("init-links", function() {
                 js.dom("#main-page-links .main-page-link-item")
                     .on("click", function(event) {
+                        js.lib("link-click", [js.dom(this)]);
                         js.dom(this).getAttrs({ "data-link": null }, function(attrs) {
                             js.dialog.alert({
                                 title: "Alert",
@@ -32,14 +44,16 @@
                         });
                     });
             })
-            // loads the page
-            .register("load", function() {
-                js.template.storeTemplateXml("./template/templates.xml", function () { 
-                    js.template(data).compile("main-page", null, function(html) {
-                        js.dom(document.body).append(html);
-                        js.lib("init-links");
-                    });
-                });
+            .register("link-click", function(link) {
+                switch(link) {
+                    case "github":
+                        window.open("https://www.github.com/theorphan/jspyder/");
+                        break;
+                    case "docs":
+                        window.open("http://theorphan.github.io/jspyder/docs/index.html");
+                        break;
+                }
+                return;
             });
             
         js.lib("init");
