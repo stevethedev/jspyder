@@ -21,6 +21,28 @@ body {
     h1 {
         line-height: 1.5em;
     }
+    
+    .main-page-header-links {
+        position: fixed;
+        top: 0;
+        right: 0;
+        margin: 0;
+        list-style: none;
+        
+        .main-page-link-item {
+            cursor: pointer;
+            padding: .2em .4em;
+            border: $px solid transparent;
+            border-radius: 2 * $px;
+            display: inline-block;
+            margin-right: .5em;
+            
+            &:hover {
+                border-color: $color-white;
+                box-shadow: (2 * $px) (2 * $px) ($px) rgba($color-black, 0.2); 
+            }
+        }
+    }
 }
 
 .main-page-link-list {
@@ -33,6 +55,7 @@ body {
     margin: 0;
     width: $menu-width;
     max-width: $menu-width;
+    list-style: none;
     
     .main-page-link-item {
         cursor: pointer;

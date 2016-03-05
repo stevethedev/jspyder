@@ -11,7 +11,7 @@
     
     <template name="main-page-header-title"><h1>JSpyder ${version}</h1></template>
     <template name="main-page-header-links"><!--
-        --><ul>@each("header_links","link","@insert_template(`main-page-link-item`)")</ul><!--
+        --><ul class="main-page-header-links">@each("header_links","link","@insert_template(`main-page-link-item`)")</ul><!--
     --></template>
     
     <template name="main-page-link-list"><!-- 
