@@ -1,59 +1,57 @@
-body {
-  padding: 0;
-  margin: 0; }
+/*
+Error: Invalid CSS after "            &": expected ";", was ":hover {"
+        on line 41 of ./gh-pages/sass/gh-pages.scss
 
-#main-page-header {
-  position: fixed;
-  left: 0;
-  right: 0;
-  top: 0;
-  height: 3em;
-  background-color: #1a237e;
-  color: #FFFFFF; }
-  #main-page-header h1 {
-    line-height: 1.5em; }
-  #main-page-header .main-page-header-links {
-    position: fixed;
-    top: 0;
-    right: 0;
-    margin: 0;
-    list-style: none; }
-    #main-page-header .main-page-header-links .main-page-link-item {
-      cursor: pointer;
-      padding: .2em .4em;
-      border: 0.0625em solid transparent;
-      border-radius: 0.125em;
-      display: inline-block;
-      margin-right: .5em; }
-      #main-page-header .main-page-header-links .main-page-link-item:hover {
-        border-color: #FFFFFF;
-        box-shadow: 0.125em 0.125em 0.0625em rgba(0, 0, 0, 0.2); }
+36:             border-radius: 2 * $px;
+37:             display: inline-block;
+38:             margin-right: .5em;
+39:             margin-top: ($header-height - 1em)/2
+40:             
+41:             &:hover {
+42:                 border-color: $color-white;
+43:                 box-shadow: (2 * $px) (2 * $px) ($px) rgba($color-black, 0.2); 
+44:             }
+45:         }
+46:     }
 
-.main-page-link-list {
-  position: fixed;
-  left: 0;
-  top: 3em;
-  bottom: 0;
-  background-color: #7986cb;
-  padding: 0;
-  margin: 0;
-  width: 150px;
-  max-width: 150px;
-  list-style: none; }
-  .main-page-link-list .main-page-link-item {
-    cursor: pointer;
-    padding: .2em .4em; }
-    .main-page-link-list .main-page-link-item:hover {
-      background-color: #c5cae9; }
-
-#main-page-content-area {
-  position: fixed;
-  top: 3em;
-  left: 150px;
-  right: 0;
-  bottom: 0;
-  padding: .2em .4em;
-  height: calc(100% - $header-height);
-  overflow: auto; }
-
-/*# sourceMappingURL=gh-pages.css.map */
+Backtrace:
+./gh-pages/sass/gh-pages.scss:41
+C:/Ruby22-x64/lib/ruby/gems/2.2.0/gems/sass-3.4.21/lib/sass/scss/parser.rb:1179:in `expected'
+C:/Ruby22-x64/lib/ruby/gems/2.2.0/gems/sass-3.4.21/lib/sass/scss/parser.rb:1115:in `expected'
+C:/Ruby22-x64/lib/ruby/gems/2.2.0/gems/sass-3.4.21/lib/sass/scss/parser.rb:1110:in `tok!'
+C:/Ruby22-x64/lib/ruby/gems/2.2.0/gems/sass-3.4.21/lib/sass/scss/parser.rb:775:in `block in try_declaration'
+C:/Ruby22-x64/lib/ruby/gems/2.2.0/gems/sass-3.4.21/lib/sass/scss/parser.rb:1155:in `call'
+C:/Ruby22-x64/lib/ruby/gems/2.2.0/gems/sass-3.4.21/lib/sass/scss/parser.rb:1155:in `rethrow'
+C:/Ruby22-x64/lib/ruby/gems/2.2.0/gems/sass-3.4.21/lib/sass/scss/parser.rb:780:in `try_declaration'
+C:/Ruby22-x64/lib/ruby/gems/2.2.0/gems/sass-3.4.21/lib/sass/scss/parser.rb:709:in `declaration_or_ruleset'
+C:/Ruby22-x64/lib/ruby/gems/2.2.0/gems/sass-3.4.21/lib/sass/scss/parser.rb:674:in `block_child'
+C:/Ruby22-x64/lib/ruby/gems/2.2.0/gems/sass-3.4.21/lib/sass/scss/parser.rb:666:in `block_contents'
+C:/Ruby22-x64/lib/ruby/gems/2.2.0/gems/sass-3.4.21/lib/sass/scss/parser.rb:655:in `block'
+C:/Ruby22-x64/lib/ruby/gems/2.2.0/gems/sass-3.4.21/lib/sass/scss/parser.rb:724:in `declaration_or_ruleset'
+C:/Ruby22-x64/lib/ruby/gems/2.2.0/gems/sass-3.4.21/lib/sass/scss/parser.rb:674:in `block_child'
+C:/Ruby22-x64/lib/ruby/gems/2.2.0/gems/sass-3.4.21/lib/sass/scss/parser.rb:666:in `block_contents'
+C:/Ruby22-x64/lib/ruby/gems/2.2.0/gems/sass-3.4.21/lib/sass/scss/parser.rb:655:in `block'
+C:/Ruby22-x64/lib/ruby/gems/2.2.0/gems/sass-3.4.21/lib/sass/scss/parser.rb:724:in `declaration_or_ruleset'
+C:/Ruby22-x64/lib/ruby/gems/2.2.0/gems/sass-3.4.21/lib/sass/scss/parser.rb:674:in `block_child'
+C:/Ruby22-x64/lib/ruby/gems/2.2.0/gems/sass-3.4.21/lib/sass/scss/parser.rb:666:in `block_contents'
+C:/Ruby22-x64/lib/ruby/gems/2.2.0/gems/sass-3.4.21/lib/sass/scss/parser.rb:655:in `block'
+C:/Ruby22-x64/lib/ruby/gems/2.2.0/gems/sass-3.4.21/lib/sass/scss/parser.rb:647:in `ruleset'
+C:/Ruby22-x64/lib/ruby/gems/2.2.0/gems/sass-3.4.21/lib/sass/scss/parser.rb:673:in `block_child'
+C:/Ruby22-x64/lib/ruby/gems/2.2.0/gems/sass-3.4.21/lib/sass/scss/parser.rb:666:in `block_contents'
+C:/Ruby22-x64/lib/ruby/gems/2.2.0/gems/sass-3.4.21/lib/sass/scss/parser.rb:123:in `stylesheet'
+C:/Ruby22-x64/lib/ruby/gems/2.2.0/gems/sass-3.4.21/lib/sass/scss/parser.rb:39:in `parse'
+C:/Ruby22-x64/lib/ruby/gems/2.2.0/gems/sass-3.4.21/lib/sass/engine.rb:403:in `_to_tree'
+C:/Ruby22-x64/lib/ruby/gems/2.2.0/gems/sass-3.4.21/lib/sass/engine.rb:378:in `_render_with_sourcemap'
+C:/Ruby22-x64/lib/ruby/gems/2.2.0/gems/sass-3.4.21/lib/sass/engine.rb:295:in `render_with_sourcemap'
+C:/Ruby22-x64/lib/ruby/gems/2.2.0/gems/sass-3.4.21/lib/sass/exec/sass_scss.rb:414:in `run'
+C:/Ruby22-x64/lib/ruby/gems/2.2.0/gems/sass-3.4.21/lib/sass/exec/sass_scss.rb:63:in `process_result'
+C:/Ruby22-x64/lib/ruby/gems/2.2.0/gems/sass-3.4.21/lib/sass/exec/base.rb:52:in `parse'
+C:/Ruby22-x64/lib/ruby/gems/2.2.0/gems/sass-3.4.21/lib/sass/exec/base.rb:19:in `parse!'
+C:/Ruby22-x64/lib/ruby/gems/2.2.0/gems/sass-3.4.21/bin/sass:13:in `<top (required)>'
+C:/Ruby22-x64/bin/sass:23:in `load'
+C:/Ruby22-x64/bin/sass:23:in `<main>'
+*/
+body:before {
+  white-space: pre;
+  font-family: monospace;
+  content: "Error: Invalid CSS after \"            &\": expected \";\", was \":hover {\"\A         on line 41 of ./gh-pages/sass/gh-pages.scss\A \A 36:             border-radius: 2 * $px;\A 37:             display: inline-block;\A 38:             margin-right: .5em;\A 39:             margin-top: ($header-height - 1em)/2\A 40:             \A 41:             &:hover {\A 42:                 border-color: $color-white;\A 43:                 box-shadow: (2 * $px) (2 * $px) ($px) rgba($color-black, 0.2); \A 44:             }\A 45:         }\A 46:     }"; }
