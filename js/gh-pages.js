@@ -98,7 +98,7 @@ js.alg.run(function() {
                 
                 
             js.lib("set-html", [html])
-                .lib("set-navbar-links", [links]);
+                .lib("set-navbar-links", [{ links: links }]);
             return;
         },
         "canvas": function() {
