@@ -122,13 +122,14 @@ js.alg.run(function() {
                     ]
                 },
                 canvas = js.canvas(canvasDef),
-                template = js.dom(js.template(templateDef).compile("canvas-page").output());
+                template = js.template(templateDef).compile("canvas-page").output(),
+                nodes = js.dom(template);
                 
             canvas.attach(template)
                 .draw("barchart", data)
                 .render();
                 
-            js.lib("set-content", [template]);
+            js.lib("set-content", [nodes]);
             
             return;
         }
