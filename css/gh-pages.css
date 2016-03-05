@@ -9,8 +9,7 @@ body {
   top: 0;
   height: 3em;
   background-color: #1a237e;
-  color: #FFFFFF;
-  box-shadow: 0 0.1875em 0 rgba(0, 0, 0, 0.3); }
+  color: #FFFFFF; }
   #main-page-header h1 {
     line-height: 1.5em; }
   #main-page-header .main-page-header-links {
@@ -28,8 +27,7 @@ body {
       margin-right: .5em;
       margin-top: .6em; }
       #main-page-header .main-page-header-links .main-page-link-item:hover {
-        border-color: #FFFFFF;
-        box-shadow: 0.125em 0.125em 0.0625em rgba(0, 0, 0, 0.2); }
+        border-color: #FFFFFF; }
 
 .main-page-link-list {
   position: fixed;
@@ -41,8 +39,7 @@ body {
   margin: 0;
   width: 150px;
   max-width: 150px;
-  list-style: none;
-  box-shadow: 0.125em 0 0.0625em rgba(0, 0, 0, 0.3); }
+  list-style: none; }
   .main-page-link-list .main-page-link-item {
     cursor: pointer;
     padding: .2em .4em; }
