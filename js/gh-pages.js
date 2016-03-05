@@ -42,7 +42,7 @@ js.alg.run(function() {
         })
         // pushes content into the document area
         .register("push-content", function(html) {
-            js.dom("#main-page-content").append(html);
+            js.dom("#main-page-content-area").append(html);
         })
         // erases content from the document area
         .register("erase-content", function() {
@@ -50,7 +50,7 @@ js.alg.run(function() {
         })
         // overwrites the current content area
         .register("set-html", function(html) {
-            js.dom("#main-page-content").setHtml(html);
+            js.dom("#main-page-content-area").setHtml(html);
         })
         // overwrites the current content area
         .register("set-content", function(content) {
