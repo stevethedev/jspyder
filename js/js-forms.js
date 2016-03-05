@@ -561,6 +561,7 @@ jspyder.extend.fn("form", function () {
         },
         
         compileDom: function (dom, data, fn) {
+            dom = js.dom(dom);
             if (dom && dom.getHtml) {
                 var form = this;
                 dom.getHtml(function (html) {
@@ -914,6 +915,25 @@ jspyder.extend.fn("form", function () {
             }
             
             return button;
+        })
+        /**
+         * @method buttonset
+         * @member jspyder.form.templates
+         */
+        .registerControlFn("buttonset", function () {
+            var __override = {
+                type: "button"
+            };
+            
+            return function (cfg) {
+                var buttons = js.dom();
+                for (var i = 0; i < cfg.buttons.length; i++) {
+                    var option = js.alg.mergeObj({}, cfg.buttons[i], __override);
+                    option.class += ' js-buttonset';
+                    buttons.and(this.buildControl(option, true));
+                }
+                return buttons;
+            };
         })
         /**
          * @method submit
