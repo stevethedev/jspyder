@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <templates>
     <template name="main-page">
-        Hello, World!
+        <div>Hello, World!</div>
     </template>
 </templates>
