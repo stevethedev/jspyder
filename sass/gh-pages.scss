@@ -1,7 +1,7 @@
 @import "../sass/colors.scss";
 
 $px: (1em / 16);
-$header-height: 0;
+$header-height: 3em;
 $menu-width: 150px;
 
 body {
@@ -9,8 +9,18 @@ body {
     margin: 0;
 }
 
+#main-page-header {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: $header-height;
+    background-color: $color-indigo-900;
+    color: $color-white;
+}
+
 .main-page-link-list {
-    position: absolute;
+    position: fixed;
     left: 0;
     top: $header-height;
     bottom: 0;
@@ -30,7 +40,7 @@ body {
     }
 }
 
-.main-page-content-area {
+#main-page-content-area {
     position: fixed;
     top: $header-height;
     left: $menu-width;
