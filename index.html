@@ -14,7 +14,8 @@
         var links = [
                 { text: "Home", url: "home" },
                 { text: "Documentation", url: "docs" },
-                { text: "GitHub", url: "github" }
+                { text: "GitHub", url: "github" },
+                { text: "Waffle", url: "waffle" }
             ],
             data = {
                 links: links,
@@ -60,6 +61,9 @@
                         break;
                     case "docs":
                         window.open("http://theorphan.github.io/jspyder/docs/index.html");
+                        break;
+                    case "waffle":
+                        window.open("https://waffle.io/theorphan/jspyder");
                         break;
                 }
                 return;
