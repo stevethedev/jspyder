@@ -10,8 +10,8 @@ body {
   background-color: #7986cb;
   padding: 0;
   margin: 0;
-  width: 200px;
-  max-width: 200px; }
+  width: 150px;
+  max-width: 150px; }
   .main-page-link-list .main-page-link-item {
     cursor: pointer;
     padding: .2em .4em; }
@@ -21,7 +21,7 @@ body {
 .main-page-content-area {
   position: fixed;
   top: 0;
-  left: 200px;
+  left: 150px;
   right: 0;
   bottom: 0; }
 
