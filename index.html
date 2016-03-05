@@ -29,12 +29,20 @@
                 js.template.storeTemplateXml("./template/templates.xml", function () { 
                     js.template(data).compile("main-page", null, function(html) {
                         js.dom(document.body).append(html);
-                        js.lib("init-links");
+                        js.lib("init-header-links");
                     });
                 });
             })
+            .register("init-header-links", function() {
+                js.dom("#main-page-header .main-page-link-item")
+                    .on("click", function(event) {
+                        var attrs = { "data-link": null };
+                        js.dom(this).getAttrs(attrs);
+                        js.lib("link-click", [attrs]);
+                    })
+            })
             // prepares the links
-            .register("init-links", function() {
+            .register("init-navbar-links", function() {
                 js.dom("#main-page-links .main-page-link-item")
                     .on("click", function(event) {
                         var attrs = { "data-link": null };
