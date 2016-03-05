@@ -1,8 +1,9 @@
 <?xml version="1.0"?>
 <templates>
-    <template name="main-page">
-        <div>Hello, World!</div><!--
+    <template name="main-page"><!--
+        --><div id="main-page-header">JSpyder ${version}</div><!--
         --><div id="main-page-links">@insert_template("main-page-link-list")</div><!--
+        --><div id="main-page-content">Hello, World</div><!--
     --></template>
     
     <template name="main-page-link-list"><!-- 

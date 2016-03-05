@@ -17,7 +17,8 @@
                 { text: "GitHub", url: "github" }
             ],
             data = {
-                links: links
+                links: links,
+                version: js.env.version
             };
         
         js.lib
@@ -38,6 +39,18 @@
                         js.dom(this).getAttrs(attrs);
                         js.lib("link-click", [attrs]);
                     });
+            })
+            // pushes content into the document area
+            .register("push-content", function(html) {
+                js.dom("#main-page-content").append(html);
+            })
+            // erases content from the document area
+            .register("erase-content", function() {
+                js.lib("set-content", [""]);
+            })
+            // overwrites the current content area
+            .register("set-content", function(html) {
+                js.dom("#main-page-content").setHtml(html);
             })
             // processes link clicks
             .register("link-click", function(linkAttrs) {
