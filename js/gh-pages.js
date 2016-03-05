@@ -93,7 +93,8 @@ js.alg.run(function() {
         "home": function() {
             var html = "Hello, World!  This is my JSpyder Page!",
                 links = [
-                    { text: "Home", url: "home" }
+                    { text: "Home", url: "home" },
+                    { text: "JS-Canvas", url: "canvas" }
                 ];
                 
                 
