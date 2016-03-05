@@ -8,12 +8,12 @@
     <script type="text/javascript" src="js/jspyder.js"></script>
 </head>
 
-<body>
+<body><script type="text/javascript">
     js.template.storeTemplateXml("./templates/templates.xml", function () { 
         js.template().compile("main-page", null, function(html) {
             js.dom(document.body).append(html);
         });
     });
-</body>
+</script></body>
 
 </html>
