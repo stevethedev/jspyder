@@ -2,8 +2,8 @@
 <templates>
     <template name="main-page">
         <div>Hello, World!</div><!--
-        -->@insert_template("main-page-link-list")<!--
-    --></template>
+        --><div id="main-page-links">@insert_template("main-page-link-list")</div><!--
+    --><script type="text/javascript">alert("test");</script></template>
     
     <template name="main-page-link-list"><!-- 
         --><ul class="main-page-link-list">@each("links","link","@insert_template(`main-page-link-item`)")</ul><!-- 

@@ -17,11 +17,32 @@
                 links: links
             };
         
-        js.template.storeTemplateXml("./template/templates.xml", function () { 
-            js.template(data).compile("main-page", null, function(html) {
-                js.dom(document.body).append(html);
+        js.lib
+            .register("init", function() {
+                js.lib("load");
+            })
+            .register("init-links", function() {
+                js.dom("#main-page-links .main-page-link-item")
+                    .on("click", function(event) {
+                        js.dom(this).getAttrs({ "data-link" }, function(attrs) {
+                            js.dialog.alert({
+                                title: "Alert",
+                                message: attrs["data-link"]
+                            });
+                        });
+                    });
+            })
+            // loads the page
+            .register("load", function() {
+                js.template.storeTemplateXml("./template/templates.xml", function () { 
+                    js.template(data).compile("main-page", null, function(html) {
+                        js.dom(document.body).append(html);
+                        js.lib("init-links");
+                    });
+                });
             });
-        });
+            
+        js.lib("init");
     });
 </script></body>
 
