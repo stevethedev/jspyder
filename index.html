@@ -18,7 +18,7 @@
                 { text: "Waffle", url: "waffle" }
             ],
             data = {
-                links: links,
+                links: [],
                 header_links: links,
                 version: js.env.version
             };
@@ -33,6 +33,7 @@
                     });
                 });
             })
+            // initializes the links on the left side of the page
             .register("init-header-links", function() {
                 js.dom("#main-page-header .main-page-link-item")
                     .on("click", function(event) {
@@ -66,6 +67,16 @@
             // overwrites the current content area
             .register("set-content", function(content) {
                 js.lib("erase-content").lib("push-content", [content]);
+            })
+            // pushes new links onto the page
+            .register("push-links", function(links) {
+                js.template({ links: links })
+                    .compile("main-page-link-list", null, function(html) {
+                        js.dom("#main-page-header")
+                            .setHtml(html);
+                    });
+                
+                js.lib("init-navbar-links");
             })
             // processes link clicks
             .register("link-click", function(linkAttrs) {
