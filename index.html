@@ -91,7 +91,11 @@
             });
             
         js.registry.stash("js-pages", {
-            "canvas": function(data) {
+            "home": function() {
+                js.lib("set-html", ["Hello, World"]);
+                return;
+            },
+            "canvas": function() {
                 var canvasDef = {
                         css: { "border": "1px solid black" },
                         height: 500,
@@ -119,6 +123,8 @@
                     .render();
                     
                 js.lib("set-content", [template]);
+                
+                return;
             }
         });
             
