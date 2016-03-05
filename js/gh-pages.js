@@ -125,7 +125,7 @@ js.alg.run(function() {
                 template = js.template(templateDef).compile("canvas-page").output(),
                 nodes = js.dom(template);
                 
-            canvas.attach(template)
+            canvas.attach(nodes)
                 .draw("barchart", data)
                 .render();
                 
