@@ -17,8 +17,8 @@ js.alg.run(function() {
             js.template.storeTemplateXml("./template/templates.xml", function () { 
                 js.template(data).compile("main-page", null, function(html) {
                     js.dom(document.body).append(html);
-                    js.lib("init-header-links");
-                    js.dom("#main-page-header .main-page-link-item[data-url=home]").trigger("click");
+                    js.lib("init-header-links")
+                        .lib("link-click", ["home"]);
                 });
             });
         })
@@ -28,7 +28,7 @@ js.alg.run(function() {
                 .on("click", function(event) {
                     var attrs = { "data-link": null };
                     js.dom(this).getAttrs(attrs);
-                    js.lib("link-click", [attrs]);
+                    js.lib("link-click", [attrs["data-link"]]);
                 })
         })
         // prepares the links
@@ -37,7 +37,7 @@ js.alg.run(function() {
                 .on("click", function(event) {
                     var attrs = { "data-link": null };
                     js.dom(this).getAttrs(attrs);
-                    js.lib("link-click", [attrs]);
+                    js.lib("link-click", [attrs["data-link"]]);
                 });
         })
         // pushes content into the document area
@@ -67,9 +67,8 @@ js.alg.run(function() {
             js.lib("init-navbar-links");
         })
         // processes link clicks
-        .register("link-click", function(linkAttrs) {
-            var link = linkAttrs["data-link"],
-                page = js.registry.fetch("js-pages")[link];
+        .register("link-click", function(link) {
+            var page = js.registry.fetch("js-pages")[link];
                 
             switch(link) {
                 case "github":
