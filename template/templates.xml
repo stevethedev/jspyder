@@ -1,6 +1,15 @@
 <?xml version="1.0"?>
 <templates>
     <template name="main-page">
-        <div>Hello, World!</div>
-    </template>
+        <div>Hello, World!</div><!--
+        -->@insert_template("main-page-link-list")<!--
+    --></template>
+    
+    <template name="main-page-link-list"><!-- 
+        --><ul class=\"main-page-link-list">@each("links","link","@insert_template(`main-page-link-item`)")</ul><!-- 
+    --></template>
+    
+    <template name="main-page-link-item"><!--
+        --><li data-link="@map(`link`,`url`)">@map("link","text")</li><!--
+    --></template>
 </templates>
