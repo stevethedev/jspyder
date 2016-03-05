@@ -21,4 +21,8 @@
     <template name="main-page-link-item"><!--
         --><li class="main-page-link-item" data-link="@map_item(`link`,`url`)">@map_item("link","text")</li><!--
     --></template>
+    
+    <template name="chart-page"><!--
+        --><div class="chart-page">${canvas}</div><!--
+    --></template>
 </templates>

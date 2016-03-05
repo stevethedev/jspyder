@@ -56,15 +56,23 @@
             })
             // erases content from the document area
             .register("erase-content", function() {
-                js.lib("set-content", [""]);
+                js.lib("set-html", [""]);
             })
             // overwrites the current content area
-            .register("set-content", function(html) {
+            .register("set-html", function(html) {
+                js.lib("erase-content");
                 js.dom("#main-page-content").setHtml(html);
+            })
+            // overwrites the current content area
+            .register("set-content", function(content) {
+                js.lib("erase-content").lib("push-content", [content]);
             })
             // processes link clicks
             .register("link-click", function(linkAttrs) {
-                switch(linkAttrs["data-link"]) {
+                var link = linkAttrs["data-link"],
+                    page = js.registry.fetch("js-pages")[link];
+                    
+                switch(link) {
                     case "github":
                         window.open("https://www.github.com/theorphan/jspyder/");
                         break;
@@ -75,8 +83,44 @@
                         window.open("https://waffle.io/theorphan/jspyder");
                         break;
                 }
+                
+                if(page) {
+                    page();
+                }
                 return;
             });
+            
+        js.registry.stash("js-pages", {
+            "canvas": function(data) {
+                var canvasDef = {
+                        css: { "border": "1px solid black" },
+                        height: 500,
+                        width: 800
+                    },
+                    templateDef = {
+                        canvas: "Canvas"
+                    },
+                    data = {
+                        borderWidth: 0,
+                        max: 10000,
+                        labelSize: 12,
+                        labels: ["Group #1", "Group #2", "Group #3", "Group #4"],
+                        sections: [
+                            { fill: "#FBB", border: "#D00", borderWidth: 1, values: [Math.random() * 10000,Math.random() * 10000,Math.random() * 10000,Math.random() * 10000] },
+                            { fill: "#BFB", border: "#0D0", borderWidth: 1, values: [Math.random() * 10000,Math.random() * 10000,Math.random() * 10000,Math.random() * 10000] },
+                            { fill: "#BBF", border: "#00D", borderWidth: 1, values: [Math.random() * 10000,Math.random() * 10000,Math.random() * 10000,Math.random() * 10000] }
+                        ]
+                    },
+                    canvas = js.canvas(canvasDef),
+                    template = js.dom(js.template(templateDef).compile("canvas-page").output());
+                    
+                canvas.attach(template)
+                    .draw("barchart", data)
+                    .render();
+                    
+                js.lib("set-content", [template]);
+            }
+        });
             
         js.lib("init");
     });
