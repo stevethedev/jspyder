@@ -69,7 +69,7 @@
                 js.lib("erase-content").lib("push-content", [content]);
             })
             // pushes new links onto the page
-            .register("push-links", function(links) {
+            .register("set-navbar-links", function(links) {
                 js.template({ links: links })
                     .compile("main-page-link-list", null, function(html) {
                         js.dom("#main-page-header")
@@ -103,7 +103,14 @@
             
         js.registry.stash("js-pages", {
             "home": function() {
-                js.lib("set-html", ["Hello, World!  This is my JSpyder Page"]);
+                var html = "Hello, World!  This is my JSpyder Page!",
+                    links = [
+                        { text: "Home", url: "home" }
+                    ];
+                    
+                    
+                js.lib("set-html", [html])
+                    .lib("set-navbar-links", [links]);
                 return;
             },
             "canvas": function() {
