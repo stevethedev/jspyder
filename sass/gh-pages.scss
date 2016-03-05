@@ -17,6 +17,7 @@ body {
     height: $header-height;
     background-color: $color-indigo-900;
     color: $color-white;
+    box-shadow: 0 3 * $px 0 rgba($color-black, 0.3);
     
     h1 {
         line-height: 1.5em;
@@ -57,6 +58,7 @@ body {
     width: $menu-width;
     max-width: $menu-width;
     list-style: none;
+    box-shadow: 2 * $px 0 $px rgba($color-black, 0.3);
     
     .main-page-link-item {
         cursor: pointer;
