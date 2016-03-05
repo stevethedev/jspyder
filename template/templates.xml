@@ -10,6 +10,6 @@
     --></template>
     
     <template name="main-page-link-item"><!--
-        --><li class="main-page-link-item" data-link="@map(`link`,`url`)">@map("link","text")</li><!--
+        --><li class="main-page-link-item" data-link="@map_item(`link`,`url`)">@map_item("link","text")</li><!--
     --></template>
 </templates>
