@@ -3,7 +3,7 @@
     <template name="main-page"><!--
         --><div id="main-page-header">JSpyder ${version}</div><!--
         --><div id="main-page-links">@insert_template("main-page-link-list")</div><!--
-        --><div id="main-page-content">Hello, World</div><!--
+        --><div id="main-page-content-area">Hello, World</div><!--
     --></template>
     
     <template name="main-page-link-list"><!-- 
