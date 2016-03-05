@@ -60,7 +60,7 @@ js.alg.run(function() {
         .register("set-navbar-links", function(links) {
             js.template({ links: links })
                 .compile("main-page-link-list", null, function(html) {
-                    js.dom("#main-page-header")
+                    js.dom("#main-page-links")
                         .setHtml(html);
                 });
             
@@ -98,7 +98,7 @@ js.alg.run(function() {
                 
                 
             js.lib("set-html", [html])
-                .lib("set-navbar-links", [{ links: links }]);
+                .lib("set-navbar-links", [links]);
             return;
         },
         "canvas": function() {
