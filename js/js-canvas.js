@@ -255,7 +255,7 @@ jspyder.extend.fn("canvas", function () {
                     cols, 
                     columnSplit,
                     colWidth,
-                    offsetY = 50,
+                    offsetY = labelSize * 1.1,
                     offsetX = 50;
                     
                 self.cmd.rectangle.call(this, {
@@ -392,7 +392,7 @@ jspyder.extend.fn("canvas", function () {
                     max = js.alg.number(settings.max, -Infinity), 
                     cols,
                     offsetX = 50,
-                    offsetY = 50;
+                    offsetY = labelSize * 1.1;
                     
                 self.cmd.rectangle.call(this, {
                     width: width,

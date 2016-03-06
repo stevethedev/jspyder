@@ -245,7 +245,7 @@ jspyder.extend.fn("template", function () {
             if (typeof template === "undefined") {
                 template = "";
             }
-            template = template.replace(/[\n\r\f\s]+/gi, " ");
+            // template = template.replace(/[\n\r\f\s]+/gi, " ");
             var o = Object.create(this._data);
             js.alg.each(data || {}, function (v, k, _, o) {
                 o[k] = v;
@@ -513,6 +513,26 @@ jspyder.extend.fn("template", function () {
         html: function(str) {
             js.dom("<div>" + str + "</div>").getText(function(v) { str = v; });
             return str;
+        },
+        
+        escape: function (str) {
+            var ret = [];
+            str = str.split(/\r?\n/);
+            js.alg.arrEach(str, function (str) {
+                var t = [];
+                js.alg.iterate(0, str.length, function (i) {
+                    t.push("&#", str.charCodeAt(i), ";");
+                });
+                ret.push(t.join(''));
+            });
+            return ret.join('<br />');
+        },
+        
+        tag: function (tag, props) {
+            tag = js.alg.string(tag, "br");
+            props = js.alg.string(props, "");
+            var voidElement = /^(area|base|br|col|embed|hr|img|input|keygen|link|menuitem|meta|param|source|track|wbr)\b/i.test(tag);
+            return "<" + tag + " " + props + (voidElement ? " /" : "></" + tag ) + ">";
         }
     });
     

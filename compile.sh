@@ -12,8 +12,7 @@ function help {
     echo "-d, --docs                 generate documentation"
     echo "-i, --icons                generate icon css"
     echo "-c, --css                  generate jspyder css"
-    echo "-h, --html                 generate github html pages"
-    echo "-p, --push-html            install html pages"
+    echo "-p, --package              packages jspyder for deployment"
     echo "-j, --compile-javascript   runs closure-compiler against jspyder" 
 }
 
@@ -48,40 +47,28 @@ function closure_compiler {
     java -jar ./closure-compiler/compiler.jar --language_out=ES5 --js ./js/jspyder.js --js ./js/js-**.js --js_output_file ./js-compiled/jspyder.js
 }
 
-function install_html {
-    echo "Installing HTML Files for GitHub Pages Site"
+function package_jspyder {
+    echo "Packaging JSpyder..."
     
-    if [ -d "./gh-pages/docs" ] ; then
-        echo " > Clearing GitHub Site Documentation Files..."
-        rm -d -r ./gh-pages/docs
+    if [ -d "./jspyder" ] ; then
+        rm -d -r ./jspyder/*
+    else
+        mkdir ./jspyder
     fi
-
-    echo " > Installing new documentation"
-    cp -r ./docs ./gh-pages/docs
     
-    if [ -d "./gh-pages/js" ] ; then
-        echo " > Clearing GitHub Site JavaScript..."
-        rm ./gh-pages/js/jspyder.js
-    fi
+    echo " > Packaging JavaScript Files..."
+    cp -r ./js-compiled ./jspyder/js
+    
+    echo " > Packaging SASS..."
+    cp -r ./sass ./jspyder/sass
 
-    echo " > Installing new JavaScript..."
-    cp ./js-compiled/jspyder.js ./gh-pages/js/jspyder.js
-
-    if [ -d "./gh-pages/css" ] ; then
-        echo " > Clearing GitHub Site CSS..."
-    rm -d -r ./gh-pages/css
-    fi
-    echo " > Installing new CSS files..."
-    cp -r ./css ./gh-pages/css
-    sass -I ./sass ./gh-pages/sass/gh-pages.scss ./gh-pages/css/gh-pages.css
-}
-
-function push_html {
-    cd ./gh-pages
-    git add --all
-    git commit -m "Automatic update pushed to GitHub Site by JSpyder Compiler script"
-    git push origin gh-pages:gh-pages-deploy
-    cd ..
+    echo " > Packaging CSS..."
+    cp -r ./css ./jspyder/css
+    
+    echo " > Packaging Documentation..."
+    cp -r ./docs ./jspyder/docs
+    
+    echo "JSpyder packaged into ./jspyder/"
 }
 
 test $# -eq "0" && help
@@ -89,9 +76,8 @@ test $# -eq "0" && help
 DO_DOCS=0
 DO_ICONS=0
 DO_CSS=0
-DO_HTML=0
-DO_INSTALL_HTML=0
 DO_COMPILE_JS=0
+DO_PACKAGE_JS=0
 
 while test $# -gt 0; do
     case "$1" in
@@ -110,29 +96,23 @@ while test $# -gt 0; do
             DO_CSS=1
             ;;
 
-        -p|--push-html)
-            shift
-            DO_INSTALL_HTML=1
-            ;;
-
-        -h|--html)
-            shift
-            DO_HTML=1
-            ;;
-
         -j|--compile-javascript)
             shift
             DO_COMPILE_JS=1
             ;;
+            
+        -p|--package)
+            shift
+            DO_PACKAGE_JS=1
+            ;;
 
         -a|--all)
             shift
-            DO_HTML=1
-            DO_INSTALL_HTML=1
             DO_ICONS=1
             DO_CSS=1
             DO_DOCS=1
             DO_COMPILE_JS=1
+            DO_PACKAGE_JS=1
             ;;
             
         -?|--help)
@@ -149,5 +129,4 @@ done
 (test "$DO_ICONS" -eq "1" || test "$DO_CSS" -eq "1") && (sass_fn)
 (test "$DO_DOCS" -eq "1") && (generate_docs)
 (test "$DO_COMPILE_JS" -eq "1") && (closure_compiler)
-(test "$DO_HTML" -eq "1") && (install_html)
-(test "$DO_INSTALL_HTML" -eq "1") && (push_html)
+(test "$DO_PACKAGE_JS" -eq "1") && (package_jspyder)
