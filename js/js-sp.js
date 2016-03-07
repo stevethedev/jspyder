@@ -165,6 +165,11 @@ js.extend.fn("sp", function () {
             });
             
             js.alg.mergeObj(column, data);
+            if(typeof data["default"] === "undefined") {
+                if(column.type === "number") {
+                    column["default"] = 0;
+                }
+            }
             
             this._columns[name] = column;
             
@@ -235,8 +240,7 @@ js.extend.fn("sp", function () {
          * Gets the dirty rows
          */
         eachDirtyRow: function(fn, data) {
-            var list = this,
-                dirty = this._dirtyRows;
+            var dirty = this._dirtyRows;
                 
             if(typeof fn === "function") {
                 js.alg.each(dirty, fn, data);
@@ -746,7 +750,7 @@ js.extend.fn("sp", function () {
          * *******************************************************************/
         filter: function(filterData) {
             if(filterData) {
-                js.alg.arrEach(this._rows, __parseRows, [filterData]);
+                js.alg.arrEach(this._rows, __parseRows, { filterArray: [filterData], exclude: false });
             }
             return this;
         },
@@ -761,7 +765,12 @@ js.extend.fn("sp", function () {
          *      Array of filter collections
          * *******************************************************************/
         filters: function(filterArray) {
-            js.alg.arrEach(this._rows, __parseRows, filterArray);
+            js.alg.arrEach(this._rows, __parseRows, { filterArray: filterArray, exclude: false });
+            return this;
+        },
+        
+        excludes: function(filterArray) {
+            js.alg.arrEach(this._rows, __parseRows, { filterArray: filterArray, exclude: true });
             return this;
         },
         
@@ -922,12 +931,14 @@ js.extend.fn("sp", function () {
      * @param {Object} filterData
      *      Collection of filters.  See jspyder.sp.query.filter
      * *******************************************************************/
-    function __parseRows(row, id, _rows, filterData) {
-        if(!row || !filterData || !filterData.length) { // catch null values
+    function __parseRows(row, id, _rows, data) {
+        if(!row || !data || !data.filterArray || !data.filterArray.length) { // catch null values
             return;
         }
         
-        var f, filter, drop, value, orDrop;
+        var filterData = data.filterArray,
+            exclude = data.exclude,
+            f, filter, drop, value, orDrop;
         
         drop = false;
         
@@ -1035,12 +1046,12 @@ js.extend.fn("sp", function () {
             if(!drop && (typeof filter.not !== "undefined")) {
                 if(filter.not && typeof filter.not === "object") {
                     js.alg.each(filter.not, function(or) {
-                        orDrop = orDrop && !((value & or) !== or);
+                        orDrop = orDrop && !((value & or) === 0);
                         orDrop || this.stop();
                     });
                     drop = orDrop;
                 }
-                else { drop = !((value & filter.not) !== filter.not); }
+                else { drop = !((value & filter.not) === 0); }
             }
             
             if(!drop && (typeof filter.test !== "undefined")) { 
@@ -1058,7 +1069,7 @@ js.extend.fn("sp", function () {
             }
         }
         
-        if(drop) {
+        if((!exclude && drop) || (exclude && !drop)) {
             this.drop();
         }
         

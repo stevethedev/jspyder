@@ -53,10 +53,10 @@ js.extend.fn("download", function () {
         saveText: function(def) {
             def = def || {};
             var name = (def.name || this._name),
-                data = (def.data || this._name),
+                data = (def.data || this._data),
                 charset = (def.charset || this._charset);
                 
-            __saveText(name, charset, data);
+            __saveText(data, name, charset);
             return this;
         },
         saveMime: function(def) {
@@ -139,7 +139,7 @@ js.extend.fn("download", function () {
         "UTF-1": "\xF7\x64\x4C"
     }
     
-    function __saveTextWithMime(content, filename, extension, dataType, charset) {
+    var __saveTextWithMime = function(content, filename, extension, dataType, charset) {
         if(window.Blob) {
             __saveTextWithMime = function(content, filename, extension, dataType, charset) {
                 charset = js.alg.string(charset, "UTF-8");
@@ -187,12 +187,12 @@ js.extend.fn("download", function () {
         return __saveTextWithMime.apply(this, arguments);
     }
     
-    function __saveText(content, name, charset) {
+    var __saveText = function(content, name, charset) {
         content = content.replace(/\r?\n/g, "\r\n");
         if(window.Blob) {
             __saveText = function(content, name, charset) {
                 charset = js.alg.string(charset, "UTF-8");
-                filename = js.alg.string(filename, "download");
+                name = js.alg.string(name, "download");
                 content = content || '';
                 
                 var blob = new Blob([content], { type: "text/plain;charset=" + charset });
@@ -203,7 +203,7 @@ js.extend.fn("download", function () {
         else {
             __saveText = function(content, name, charset) {
                 charset = js.alg.string(charset, "UTF-8");
-                filename = js.alg.string(filename, "download");
+                name = js.alg.string(name, "download");
                 content = content || '';
                 
                 var ret = "";
