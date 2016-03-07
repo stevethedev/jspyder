@@ -427,8 +427,15 @@ jspyder.extend.fn("template", function () {
                 o[arguments[i]] = o[arguments[++i]];
             }
             
+            o.arguments = js.alg.sliceArray(arguments, 1);
+            
             js_template(o).compile(name, function (v) { tmp = v; });
             return tmp; 
+        },
+        
+        arguments: function (n) {
+            n = js.alg.number(n);
+            return (this.arguments ? this.arguments[n] || "" : "");
         },
         
         // branching logic.  If [test] is true, then inserts [pass],

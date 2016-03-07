@@ -25,8 +25,8 @@
 js.extend.fn("download", function () {
     
     /**
-     * @class download
-     * 
+     * @class jspyder.download
+     * @member jspyder
      */
     function download(def) {
         var dl = Object.create(download.fn);

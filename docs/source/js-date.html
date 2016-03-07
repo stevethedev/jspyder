@@ -54,7 +54,55 @@ jspyder.extend.fn(&quot;date&quot;, function () {
      * @param {String} [format]
      *      A string to use with a String value parameter in order to 
      *      understand the date value; and to use when formatting strings 
-     *      from the date value.
+     *      from the date value.  The supported formatting characters are:
+     * 
+     * ## Year ##
+     * - YYYY: 4-digit year
+     * - yyyy: 4-digit year
+     * - YY: 2-digit year
+     * - yy: 2-digit year
+     * 
+     * ## Month ##
+     * - MMMM: Month name, ALL CAPS (JANUARY)
+     * - mmmm: Month name, Title Case (January)
+     * - MMM: Month 3-letter abbreviation, ALL CAPS (JAN)
+     * - mmm: Month 3-letter abbreviation, Title Case (Jan)
+     * - MM: Month number, 0-padded (01)
+     * - mm: Month number, 0-padded (01)
+     * - M: Month number, standard (1)
+     * - m: Month number, standard (1)
+     * 
+     * ## Day ##
+     * - ddth: Date Number, 0-padded Nth (01st) 
+     * - dth: Date Number, Nth (1st) 
+     * - dd: Date Number, 0-padded (01)
+     * - d: Date Number, standard (1)
+     *
+     * ## Weekday ##
+     * - DDDD: Weekday Name, ALL CAPS (SUNDAY)
+     * - dddd: Weekday Name, Title Case (Sunday)
+     * - DDD: Weekday Name 3-letter abbreviation, ALL CAPS (SUN)
+     * - ddd: Weekday Name 3-letter abbreviation, Title Case (Sun)
+     * - DD: Weekday Name, 2-letter abbreviation, Title Case (Su)
+     * - D: Weekday Name, 1-letter abbreviation, Capital (S)
+     * 
+     * ## Meridiem ##
+     * - AM: Meridiem, ALL CAPS (AM/PM)
+     * - am: Meridiem, lower case (am/pm)
+     * 
+     * ## Hours ##
+     * - HH: Hours, 24-hour clock, 0-padded (01)
+     * - hh: Hours, 12-hour clock, 0-padded (01)
+     * - H: Hours, 24-hour clock, standard (13)
+     * - h: Hours, 12-hour clock, standard (1)
+     * 
+     * ## Minutes ##
+     * - nn: minutes, 0-padded (01)
+     * - n: Minutes, standard (1)
+     *      
+     * ## Seconds ##
+     * - ss: Seconds, 0-padded (00)
+     * - s: Seconds, standard (0)
      * 
      * @param {Boolean} [utc=false]
      *      Whether to default to using UTC when getting formatted values.
@@ -187,6 +235,8 @@ jspyder.extend.fn(&quot;date&quot;, function () {
          * @param {Boolean} [useUtc=this._useUTC]
          * 
          * @param {Boolean} [defaultText=&quot;&quot;]
+         * 
+         * @return {String}
          */
         asString: function (format, useUtc, defaultText) {
             if( this.isValid() ) {
@@ -195,6 +245,36 @@ jspyder.extend.fn(&quot;date&quot;, function () {
                 return __formatDate(this._value, format, useUtc);
             }
             return js.alg.string(defaultText, &quot;&quot;);
+        },
+        
+<span id='jspyder-date-method-toString'>        /**
+</span>         * @method
+         * 
+         * Ensures that the object automatically converts to a string
+         * in the appropriate context.
+         */
+        toString: function () {
+            return Date.prototype.toString.apply(this._value, arguments);
+        },
+        
+<span id='jspyder-date-method-getTime'>        /**
+</span>         * @method
+         * 
+         * Converts the stored date to a numerical value.
+         */
+        getTime: function (year, month, date, hour, minute, second, ms) {
+            var v = this._value;
+            year = js.alg.bool(year, true) * v.getFullYear();
+            month = js.alg.bool(month, true) * v.getMonth();
+            date = js.alg.bool(date, true) * v.getDate();
+            hour = js.alg.bool(hour, true) * v.getHours();
+            minute = js.alg.bool(minute, true) * v.getMinutes();
+            second = js.alg.bool(second, true) * v.getSeconds();
+            ms = js.alg.bool(ms, true) * v.getMilliseconds();
+            
+            var d = new Date(year, month, date, hour, minute, second, ms);
+            
+            return Date.prototype.getTime.call(d);
         },
         
         isValid: function() {
@@ -393,17 +473,18 @@ jspyder.extend.fn(&quot;date&quot;, function () {
             &quot;yyyy&quot;, &quot;yy&quot;,
             &quot;MMMM&quot;, &quot;MMM&quot;, &quot;MM&quot;, &quot;M&quot;, 
             &quot;mmmm&quot;, &quot;mmm&quot;, &quot;mm&quot;, &quot;m&quot;,
-            &quot;dddd&quot;, &quot;ddd&quot;, &quot;dd&quot;, &quot;d&quot;,
-            &quot;DDDD&quot;, &quot;DDD&quot;, &quot;DD&quot;, &quot;D&quot;, &quot;W&quot;,
+            &quot;dddd&quot;, &quot;ddd&quot;, &quot;ddth&quot;,&quot;dth&quot;, &quot;dd&quot;, &quot;d&quot;,
+            &quot;DDDD&quot;, &quot;DDD&quot;, &quot;DD&quot;, &quot;D&quot;,
             &quot;AM&quot;, &quot;am&quot;, 
             &quot;HH&quot;, &quot;H&quot;, &quot;hh&quot;, &quot;h&quot;, 
-            &quot;NN&quot;, &quot;N&quot;, &quot;nn&quot;, &quot;n&quot;, 
-            &quot;SS&quot;, &quot;S&quot;, &quot;ss&quot;, &quot;s&quot;
+            &quot;nn&quot;, &quot;n&quot;, 
+            &quot;ss&quot;, &quot;s&quot;,
+            &quot;xxx&quot;, &quot;xx&quot;, &quot;x&quot;
         ],
 <span id='global-property-'>        /**
 </span>         * @ignore
          */
-        __reSearch = new RegExp(&quot;(&quot; + __reSearchStrings.join(&quot;|&quot;) + &quot;)&quot;, &quot;g&quot;),
+        __reSearch = new RegExp(&quot;(\\[[^\\]]*\\]|&quot; + __reSearchStrings.join(&quot;|&quot;) + &quot;)&quot;, &quot;g&quot;),
 <span id='global-property-'>        /**
 </span>         * @ignore
          */
@@ -439,14 +520,37 @@ jspyder.extend.fn(&quot;date&quot;, function () {
 </span>         * @ignore
          */
         __days = [
-            { d:  &quot;1&quot;, dd: &quot;01&quot; }, { d:  &quot;2&quot;, dd: &quot;02&quot; }, { d:  &quot;3&quot;, dd: &quot;03&quot; }, { d:  &quot;4&quot;, dd: &quot;04&quot; },
-            { d:  &quot;5&quot;, dd: &quot;05&quot; }, { d:  &quot;6&quot;, dd: &quot;06&quot; }, { d:  &quot;7&quot;, dd: &quot;07&quot; }, { d:  &quot;8&quot;, dd: &quot;08&quot; },
-            { d:  &quot;9&quot;, dd: &quot;09&quot; }, { d: &quot;10&quot;, dd: &quot;10&quot; }, { d: &quot;11&quot;, dd: &quot;11&quot; }, { d: &quot;12&quot;, dd: &quot;12&quot; },
-            { d: &quot;13&quot;, dd: &quot;13&quot; }, { d: &quot;14&quot;, dd: &quot;14&quot; }, { d: &quot;15&quot;, dd: &quot;15&quot; }, { d: &quot;16&quot;, dd: &quot;16&quot; },
-            { d: &quot;17&quot;, dd: &quot;17&quot; }, { d: &quot;18&quot;, dd: &quot;18&quot; }, { d: &quot;19&quot;, dd: &quot;19&quot; }, { d: &quot;20&quot;, dd: &quot;20&quot; },
-            { d: &quot;21&quot;, dd: &quot;21&quot; }, { d: &quot;22&quot;, dd: &quot;22&quot; }, { d: &quot;23&quot;, dd: &quot;23&quot; }, { d: &quot;24&quot;, dd: &quot;24&quot; },
-            { d: &quot;25&quot;, dd: &quot;25&quot; }, { d: &quot;26&quot;, dd: &quot;26&quot; }, { d: &quot;27&quot;, dd: &quot;27&quot; }, { d: &quot;28&quot;, dd: &quot;28&quot; },
-            { d: &quot;29&quot;, dd: &quot;29&quot; }, { d: &quot;30&quot;, dd: &quot;30&quot; }, { d: &quot;31&quot;, dd: &quot;31&quot; },
+            { d:  &quot;1&quot;, dd: &quot;01&quot;, dth:  &quot;1st&quot;, ddth: &quot;01st&quot; }, 
+            { d:  &quot;2&quot;, dd: &quot;02&quot;, dth:  &quot;2nd&quot;, ddth: &quot;02nd&quot; }, 
+            { d:  &quot;3&quot;, dd: &quot;03&quot;, dth:  &quot;3rd&quot;, ddth: &quot;03th&quot; }, 
+            { d:  &quot;4&quot;, dd: &quot;04&quot;, dth:  &quot;4th&quot;, ddth: &quot;04th&quot; },
+            { d:  &quot;5&quot;, dd: &quot;05&quot;, dth:  &quot;5th&quot;, ddth: &quot;05th&quot; }, 
+            { d:  &quot;6&quot;, dd: &quot;06&quot;, dth:  &quot;6th&quot;, ddth: &quot;06th&quot; }, 
+            { d:  &quot;7&quot;, dd: &quot;07&quot;, dth:  &quot;7th&quot;, ddth: &quot;07th&quot; }, 
+            { d:  &quot;8&quot;, dd: &quot;08&quot;, dth:  &quot;8th&quot;, ddth: &quot;08th&quot; },
+            { d:  &quot;9&quot;, dd: &quot;09&quot;, dth:  &quot;9th&quot;, ddth: &quot;09rd&quot; }, 
+            { d: &quot;10&quot;, dd: &quot;10&quot;, dth: &quot;10th&quot;, ddth: &quot;10th&quot; }, 
+            { d: &quot;11&quot;, dd: &quot;11&quot;, dth: &quot;11th&quot;, ddth: &quot;11st&quot; }, 
+            { d: &quot;12&quot;, dd: &quot;12&quot;, dth: &quot;12th&quot;, ddth: &quot;12th&quot; },
+            { d: &quot;13&quot;, dd: &quot;13&quot;, dth: &quot;13th&quot;, ddth: &quot;13th&quot; }, 
+            { d: &quot;14&quot;, dd: &quot;14&quot;, dth: &quot;14th&quot;, ddth: &quot;14th&quot; }, 
+            { d: &quot;15&quot;, dd: &quot;15&quot;, dth: &quot;15th&quot;, ddth: &quot;15th&quot; }, 
+            { d: &quot;16&quot;, dd: &quot;16&quot;, dth: &quot;16th&quot;, ddth: &quot;16th&quot; },
+            { d: &quot;17&quot;, dd: &quot;17&quot;, dth: &quot;17th&quot;, ddth: &quot;17th&quot; }, 
+            { d: &quot;18&quot;, dd: &quot;18&quot;, dth: &quot;18th&quot;, ddth: &quot;18th&quot; }, 
+            { d: &quot;19&quot;, dd: &quot;19&quot;, dth: &quot;19th&quot;, ddth: &quot;19th&quot; }, 
+            { d: &quot;20&quot;, dd: &quot;20&quot;, dth: &quot;20th&quot;, ddth: &quot;20th&quot; },
+            { d: &quot;21&quot;, dd: &quot;21&quot;, dth: &quot;21st&quot;, ddth: &quot;21th&quot; }, 
+            { d: &quot;22&quot;, dd: &quot;22&quot;, dth: &quot;22nd&quot;, ddth: &quot;22nd&quot; }, 
+            { d: &quot;23&quot;, dd: &quot;23&quot;, dth: &quot;23rd&quot;, ddth: &quot;23th&quot; }, 
+            { d: &quot;24&quot;, dd: &quot;24&quot;, dth: &quot;24th&quot;, ddth: &quot;24th&quot; },
+            { d: &quot;25&quot;, dd: &quot;25&quot;, dth: &quot;25th&quot;, ddth: &quot;25th&quot; }, 
+            { d: &quot;26&quot;, dd: &quot;26&quot;, dth: &quot;26th&quot;, ddth: &quot;26th&quot; }, 
+            { d: &quot;27&quot;, dd: &quot;27&quot;, dth: &quot;27th&quot;, ddth: &quot;27th&quot; }, 
+            { d: &quot;28&quot;, dd: &quot;28&quot;, dth: &quot;28th&quot;, ddth: &quot;28th&quot; },
+            { d: &quot;29&quot;, dd: &quot;29&quot;, dth: &quot;29th&quot;, ddth: &quot;29rd&quot; }, 
+            { d: &quot;30&quot;, dd: &quot;30&quot;, dth: &quot;30th&quot;, ddth: &quot;30th&quot; }, 
+            { d: &quot;31&quot;, dd: &quot;31&quot;, dth: &quot;31st&quot;, ddth: &quot;31st&quot; },
         ],
 <span id='global-property-'>        /**
 </span>         * @ignore
@@ -557,6 +661,8 @@ jspyder.extend.fn(&quot;date&quot;, function () {
             // days
             &quot;d&quot;:    __buildFormatRegexStringFrom(__days,     &quot;d&quot;   ),
             &quot;dd&quot;:   __buildFormatRegexStringFrom(__days,     &quot;dd&quot;  ),
+            &quot;dth&quot;:  __buildFormatRegexStringFrom(__days,     &quot;dth&quot; ),
+            &quot;ddth&quot;: __buildFormatRegexStringFrom(__days,     &quot;ddth&quot;),
             
             // weekdays
             &quot;D&quot;:    __buildFormatRegexStringFrom(__weekdays, &quot;D&quot;   ),
@@ -579,14 +685,15 @@ jspyder.extend.fn(&quot;date&quot;, function () {
             // minutes
             &quot;n&quot;:    __buildFormatRegexStringFrom(__minutes, &quot;n&quot;    ),
             &quot;nn&quot;:   __buildFormatRegexStringFrom(__minutes, &quot;nn&quot;   ),
-            &quot;N&quot;:    __buildFormatRegexStringFrom(__minutes, &quot;N&quot;    ),
-            &quot;NN&quot;:   __buildFormatRegexStringFrom(__minutes, &quot;NN&quot;   ),
             
             // seconds
             &quot;s&quot;:    __buildFormatRegexStringFrom(__seconds, &quot;s&quot;    ),
             &quot;ss&quot;:   __buildFormatRegexStringFrom(__seconds, &quot;ss&quot;   ),
-            &quot;S&quot;:    __buildFormatRegexStringFrom(__seconds, &quot;S&quot;    ),
-            &quot;SS&quot;:   __buildFormatRegexStringFrom(__seconds, &quot;SS&quot;   )
+            
+            // milliseconds
+            &quot;xxx&quot;:  true,
+            &quot;xx&quot;:   true,
+            &quot;x&quot;:    true
         };
     
 <span id='global-method-__buildFormatRegexStringFrom'>    /**
@@ -644,7 +751,7 @@ jspyder.extend.fn(&quot;date&quot;, function () {
 </span>    function __parseString(v, f) {
         v = js.alg.string(v, &quot;&quot;);
         var format = js.alg.string(f),
-            d = { y: 0, m: 0, d: 1, h: 0, n: 0, s: 0, a: 0 };
+            d = { y: 0, m: 0, d: 1, h: 0, n: 0, s: 0, x: 0, a: 0 };
         
         js.alg.arrEach(format.match(__reSearch), function(match) {
             // get the collection
@@ -661,7 +768,7 @@ jspyder.extend.fn(&quot;date&quot;, function () {
                 start = v.indexOf(value);
             
             v = v.substring(start + len);
-            
+                            
             switch (match) {
                 // year
                 case &quot;yy&quot;:
@@ -686,6 +793,10 @@ jspyder.extend.fn(&quot;date&quot;, function () {
                     break;
                 
                 // date
+                case &quot;ddth&quot;:
+                case &quot;dth&quot;:
+                    value = value.substr(0, value.length - 2);
+                
                 case &quot;dd&quot;:
                 case &quot;d&quot;:
                     d[&quot;d&quot;] = js.alg.number(value) || 1;
@@ -695,7 +806,7 @@ jspyder.extend.fn(&quot;date&quot;, function () {
                 case &quot;h&quot;:
                 case &quot;HH&quot;:
                 case &quot;H&quot;:
-                    d[&quot;h&quot;] = js.alg.number(value);
+                    d[&quot;h&quot;] = js.alg.number(value, 0);
                     break;
                     
                 case &quot;am&quot;:
@@ -704,33 +815,51 @@ jspyder.extend.fn(&quot;date&quot;, function () {
                         ? 12
                         : 0);
                     break;
+                    
+                case &quot;nn&quot;:
+                case &quot;n&quot;:
+                    d[&quot;n&quot;] = js.alg.number(value, 0);
+                    break;
+                
+                case &quot;ss&quot;:
+                case &quot;s&quot;:
+                    d[&quot;s&quot;] = js.alg.number(value, 0);
+                    break;
+                    
+                case &quot;xxx&quot;:
+                    d[&quot;x&quot;] = js.alg.number(value, 0);
+                    break;
+                case &quot;xx&quot;:
+                    d[&quot;x&quot;] = js.alg.number(value, 0) * 10;
+                    break;
+                case &quot;x&quot;:
+                    d[&quot;x&quot;] = js.alg.number(value, 0) * 100;
             }
         });
-        return new Date(d.y, d.m, d.d, d.h + d.a, d.n, d.s);
+        return new Date(d.y, d.m, d.d, d.h + d.a, d.n, d.s, d.x);
     }
     
 <span id='global-method-__formatDate'>    /** @ignore */
 </span>    function __formatDate(date, format, useUTC) {
         var d = {
-            y: useUTC ? date.getUTCFullYear() : date.getFullYear(),
-            m: useUTC ? date.getUTCMonth()    : date.getMonth(),
-            d: useUTC ? date.getUTCDate()     : date.getDate(),
-            h: useUTC ? date.getUTCHours()    : date.getHours(),
-            n: useUTC ? date.getUTCMinutes()  : date.getMinutes(),
-            s: useUTC ? date.getUTCSeconds()  : date.getSeconds(),
-            w: useUTC ? date.getUTCDay()      : date.getDay()
+            y: useUTC ? date.getUTCFullYear()     : date.getFullYear(),
+            m: useUTC ? date.getUTCMonth()        : date.getMonth(),
+            d: useUTC ? date.getUTCDate()         : date.getDate(),
+            h: useUTC ? date.getUTCHours()        : date.getHours(),
+            n: useUTC ? date.getUTCMinutes()      : date.getMinutes(),
+            s: useUTC ? date.getUTCSeconds()      : date.getSeconds(),
+            w: useUTC ? date.getUTCDay()          : date.getDay(),
+            x: useUTC ? date.getUTCMilliseconds() : date.getMilliseconds()
         };
         
         var left = &quot;&quot;, right = format;
         js.alg.arrEach(format.match(__reSearch), function(match) {
             // get the collection
-            var collection = __formatCollection[match];
+            var collection = __formatCollection[match] || /\[[^\\]*\]/g.test(match);
             if(!collection) { return match; }
             
             // get the regexp
-            var regexp = collection.regexp,
-                values = collection.values,
-                len = match.length,
+            var len = match.length,
                 start = right.indexOf(match),
                 value = &quot;&quot;;
                 
@@ -759,6 +888,8 @@ jspyder.extend.fn(&quot;date&quot;, function () {
                     value = collection.lookup[d.m];
                     break;
                     
+                case &quot;dth&quot;:
+                case &quot;ddth&quot;:
                 case &quot;dd&quot;:
                 case &quot;d&quot;:
                     value = collection.lookup[d.d - 1];
@@ -785,28 +916,36 @@ jspyder.extend.fn(&quot;date&quot;, function () {
                     value = collection.lookup[d.h];
                     break;
                     
-                case &quot;NN&quot;:
-                case &quot;N&quot;:
                 case &quot;nn&quot;:
                 case &quot;n&quot;:
                     value = collection.lookup[d.n];
                     break;
                     
-                case &quot;SS&quot;:
-                case &quot;S&quot;:
                 case &quot;ss&quot;:
                 case &quot;s&quot;:
                     value = collection.lookup[d.s];
                     break;
+                
+                case &quot;xxx&quot;:
+                    value = (js.alg.string(d.x) + &quot;00&quot;).substr(0, 3);
+                    break;
+                    
+                case &quot;xx&quot;:
+                    value = (js.alg.string(d.x) + &quot;0&quot;).substr(0, 2);
+                    break;
+                    
+                case &quot;x&quot;:
+                    value = (js.alg.string(d.x)).substr(0, 1);
+                    break;
                     
                 default:
-                    console.log(collection);
+                    value = match.substring(1, match.length - 1);
             }
             
             left += js.alg.string(value, &quot;&quot;);
         });
         
-        return left + right;
+        return (left + right);
     }
     
 <span id='global-method-__getTimezoneOffset'>    /** @ignore */

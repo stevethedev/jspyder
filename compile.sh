@@ -13,7 +13,7 @@ function help {
     echo "-i, --icons                generate icon css"
     echo "-c, --css                  generate jspyder css"
     echo "-p, --package              packages jspyder for deployment"
-    echo "-j, --compile-javascript   runs closure-compiler against jspyder" 
+    echo "-j, --compile-javascript   runs closure-compiler against jspyder"
 }
 
 function sass_fn {
@@ -44,7 +44,13 @@ function generate_docs {
 }
 
 function closure_compiler {
+    echo "Compiling JavaScript..."
     java -jar ./closure-compiler/compiler.jar --language_out=ES5 --js ./js/jspyder.js --js ./js/js-**.js --js_output_file ./js-compiled/jspyder.js
+}
+
+function closure_compiler_debug {
+    echo "Compiling Debug JavaScript..."
+    java -jar ./closure-compiler/compiler.jar --language_out=ES5 --formatting PRETTY_PRINT --debug true --js ./js/jspyder.js --js ./js/js-**.js --js_output_file ./js-compiled/jspyder.debug.js
 }
 
 function package_jspyder {
@@ -77,6 +83,7 @@ DO_DOCS=0
 DO_ICONS=0
 DO_CSS=0
 DO_COMPILE_JS=0
+DO_COMPILE_JS_DEBUG=0
 DO_PACKAGE_JS=0
 
 while test $# -gt 0; do
@@ -128,5 +135,5 @@ done
 
 (test "$DO_ICONS" -eq "1" || test "$DO_CSS" -eq "1") && (sass_fn)
 (test "$DO_DOCS" -eq "1") && (generate_docs)
-(test "$DO_COMPILE_JS" -eq "1") && (closure_compiler)
+(test "$DO_COMPILE_JS" -eq "1") && (closure_compiler) && (closure_compiler_debug)
 (test "$DO_PACKAGE_JS" -eq "1") && (package_jspyder)
