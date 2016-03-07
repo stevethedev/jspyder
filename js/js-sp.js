@@ -898,11 +898,11 @@ js.extend.fn("sp", function () {
         },
         
         toExcelString: function(name, columns) {
-            return __generateXML(name, this._rows, columns);
+            return __generateXML(name, this._list, this._rows, columns);
         },
         
         toCsvString: function(columns) {
-            return __generateCSV(this._rows, columns);
+            return __generateCSV(this._list, this._rows, columns);
         }
     };
 
@@ -1119,7 +1119,7 @@ js.extend.fn("sp", function () {
         valueOf: function() { return this.value; }
     };
     
-    function __generateXML (name, rows, columns, styles) {
+    function __generateXML (name, table, rows, columns, styles) {
         var xml = [
             "<?xml version=\"1.0\"?>",
             "<?mso-application progid=\"Excel.Sheet\"?>",
@@ -1179,27 +1179,33 @@ js.extend.fn("sp", function () {
         return xml.join('');
     }
     
-    function __generateCSV (rows, columns) {
+    function __generateCSV (table, rows, columns) {
         var csv = [
             "\uFEFF",
+            __headers(table, columns),
+            "\r\n",
             __rows(rows, columns)];
+        
+        function __headers(table, columns) {
+            var __headers = [];
+            js.alg.arrEach(columns, function(column) {
+                __headers.push(["\"", table.getColumn(column).text || " ", "\""].join(''));
+            });
+            return __headers.join(',');
+        }
         
         function __rows(rows, columns) {
             var __rows = [],
-                __oneRow = [];
-                
-            js.alg.arrEach(columns, __pushRow, { row: rows[0], type: "text" });
-            __rows.push(__oneRow.join(','));
-            __oneRow = [];
+                __oneRow = null;
             
             js.alg.arrEach(rows, function(row, i) {
+                __oneRow = [];
                 js.alg.arrEach(columns, __pushRow, { row: row, type: "value", r: [] });
                 __rows.push(__oneRow.join(','));
-                __oneRow = [];
             });
             
             function __pushRow (col, i, cols, data) {
-                __oneRow.push([ "\"", (data.row[col] || {})[data.type] || "", "\"" ].join(''))
+                data.row && __oneRow.push([ "\"", (data.row[col] || {})[data.type] || "", "\"" ].join(''));
             }
             
             return __rows.join('\r\n');
