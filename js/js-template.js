@@ -403,7 +403,7 @@ jspyder.extend.fn("template", function () {
     js_template.registerSet({
         // matches an array [frm] in data
         // pushes results tp [push] in [template]
-        each: function (frm, push, template) {
+        "each": function (frm, push, template) {
             var data = this[frm] || {},
                 pushObj = Object.create(this),
                 ret = "",
@@ -419,7 +419,7 @@ jspyder.extend.fn("template", function () {
         
         // fetches the template by [name], compiles it, and inserts
         // it into the calling template.
-        insert_template: function (name) {
+        "insert_template": function (name) {
             var tmp = "";
             var o = Object.create(this);
             
@@ -433,7 +433,7 @@ jspyder.extend.fn("template", function () {
             return tmp; 
         },
         
-        arguments: function (n) {
+        "arguments": function (n) {
             n = js.alg.number(n);
             return (this.arguments ? this.arguments[n] || "" : "");
         },
@@ -443,7 +443,7 @@ jspyder.extend.fn("template", function () {
         // TODO: Make this native support, so that it won't have
         // to parse both paths ad infinitum before executing the
         // function.
-        iif: function (test, pass, fail) {
+        "iif": function (test, pass, fail) {
             var $t = js_template(this);
             
             if (typeof test === "string") {
@@ -459,7 +459,7 @@ jspyder.extend.fn("template", function () {
         },
         
         // gets the size of an array
-        size: function (arrayName) {
+        "map_size": function (arrayName) {
             var data = this[arrayName];
             
             return (data && data.length
@@ -470,7 +470,7 @@ jspyder.extend.fn("template", function () {
         },
         
         // adds two numbers together
-        add: function (n, a) {
+        "add": function (n, a) {
             return js.alg.number(js.alg.number(n) + js.alg.number(a));
         },
         
@@ -483,7 +483,7 @@ jspyder.extend.fn("template", function () {
         },
         
         // @map("myMap", "key", "value", "key", "value", ...)
-        map: function (name) {
+        "map": function (name) {
             var map = {};
             
             for (var i = 1; i < arguments.length; i += 2) {
@@ -494,35 +494,35 @@ jspyder.extend.fn("template", function () {
             return "";
         },
         
-        map_item: function (map, id) {
+        "map_item": function (map, id) {
             map = this[map];
             return (map ? map[id] : id);
         },
         
         
-        js_registry: function (key) {
+        "js_registry": function (key) {
             var data = js.registry.fetch(key);
             return (data === null || typeof data === "undefined"
                 ? "" : data);
         },
         
-        js_log: function (data) {
+        "js_log": function (data) {
             console.log(data);
         },
         
-        concat: function(str) {
+        "concat": function(str) {
             for(var i = 1; i < arguments.length; i++) {
                 str += arguments[i];
             }
             return str;
         },
         
-        html: function(str) {
+        "html": function(str) {
             js.dom("<div>" + str + "</div>").getText(function(v) { str = v; });
             return str;
         },
         
-        escape: function (str) {
+        "escape": function (str) {
             var ret = [];
             str = str.split(/\r?\n/);
             js.alg.arrEach(str, function (str) {
@@ -535,7 +535,7 @@ jspyder.extend.fn("template", function () {
             return ret.join('<br />');
         },
         
-        tag: function (tag, props) {
+        "tag": function (tag, props) {
             tag = js.alg.string(tag, "br");
             props = js.alg.string(props, "");
             var voidElement = /^(area|base|br|col|embed|hr|img|input|keygen|link|menuitem|meta|param|source|track|wbr)\b/i.test(tag);

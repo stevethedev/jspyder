@@ -111,7 +111,7 @@ sup {
     background-color: $bg-color !important;
     color: $text-color !important;
     
-    &:hover {
+    &:not([readonly]):hover {
         border-color: lighten($border-color, 10) !important;
         background-color: lighten($bg-color, 10) !important;
     }

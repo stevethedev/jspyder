@@ -1573,8 +1573,8 @@ jspyder.extend.fn("canvas", function() {
     $max$$ = 1.1 * $js$$.alg.magnitude($max$$);
     $js$$.alg.iterate(0, 5, function($i$$) {
       $self$$.cmd.line.call($self$$, {x:$chartX$$, y:$height$$ * (5 - $i$$) / 5, width:$width$$ + $chartX$$, height:0, color:$lineColor$$});
-      $self$$.cmd.text.call($self$$, {x:$labelSize$$ / 3, y:$height$$ * (5 - $i$$) / 5 - $labelSize$$ / 3, size:$labelSize$$, font:"Arial", text:$i$$ / 5 * $max$$, textalign:"left"});
-      $self$$.cmd.text.call($self$$, {x:$width$$ - $labelSize$$ / 3, y:$height$$ * (5 - $i$$) / 5 - $labelSize$$ / 3, size:$labelSize$$, font:"Arial", text:$i$$ / 5 * $max$$, textalign:"right"});
+      $self$$.cmd.text.call($self$$, {x:$labelSize$$ / 3, y:$height$$ * (5 - $i$$) / 5 - $labelSize$$ / 3, size:$labelSize$$, font:"Arial", text:$i$$ / 5 * $max$$ | 0, textalign:"left"});
+      $self$$.cmd.text.call($self$$, {x:$width$$ - $labelSize$$ / 3, y:$height$$ * (5 - $i$$) / 5 - $labelSize$$ / 3, size:$labelSize$$, font:"Arial", text:$i$$ / 5 * $max$$ | 0, textalign:"right"});
     });
     $width$$ -= 50;
     $chartX$$ += 50;
@@ -1614,8 +1614,8 @@ jspyder.extend.fn("canvas", function() {
     $max$$ = 1.1 * $js$$.alg.magnitude($max$$);
     $js$$.alg.iterate(0, 5, function($i$$) {
       $self$$.cmd.line.call($self$$, {x:$chartX$$, y:$height$$ * (5 - $i$$) / 5, width:$width$$ + $chartX$$, height:0, color:$lineColor$$0$$});
-      $self$$.cmd.text.call($self$$, {x:$labelSize$$ / 3, y:$height$$ * (5 - $i$$) / 5 - $labelSize$$ / 3, size:$labelSize$$, font:"Arial", text:$i$$ / 5 * $max$$, textalign:"left"});
-      $self$$.cmd.text.call($self$$, {x:$width$$ - $labelSize$$ / 3, y:$height$$ * (5 - $i$$) / 5 - $labelSize$$ / 3, size:$labelSize$$, font:"Arial", text:$i$$ / 5 * $max$$, textalign:"right"});
+      $self$$.cmd.text.call($self$$, {x:$labelSize$$ / 3, y:$height$$ * (5 - $i$$) / 5 - $labelSize$$ / 3, size:$labelSize$$, font:"Arial", text:$i$$ / 5 * $max$$ | 0, textalign:"left"});
+      $self$$.cmd.text.call($self$$, {x:$width$$ - $labelSize$$ / 3, y:$height$$ * (5 - $i$$) / 5 - $labelSize$$ / 3, size:$labelSize$$, font:"Arial", text:$i$$ / 5 * $max$$ | 0, textalign:"right"});
     });
     var $width$$ = $width$$ - 50, $JSCompiler_object_inline_x_47$$ = $chartX$$ += 50, $JSCompiler_object_inline_y_48$$ = $chartY$$1_size$$, $JSCompiler_object_inline_height_49$$ = $height$$ - $chartY$$1_size$$, $JSCompiler_object_inline_vertWidth_51$$ = ($width$$ - $chartX$$) / ($cols$$ - 1);
     $js$$.alg.iterate(0, $cols$$, function($i$$) {
@@ -2081,64 +2081,22 @@ js.extend.fn("download", function() {
     window.open($url$$, "_blank");
     $URL$$.revokeObjectURL($url$$);
   }
-  function $__saveTextWithMime$$($content$$, $filename$$0$$, $extension$$, $dataType$$, $charset$$) {
-    $__saveTextWithMime$$ = window.Blob ? function($blob$$6_content$$, $filename$$, $extension$$, $dataType$$, $charset$$) {
-      $charset$$ = js.alg.string($charset$$, "UTF-8");
-      $filename$$ = js.alg.string($filename$$, "download");
-      $blob$$6_content$$ = new window.Blob([($__encoding$$[$charset$$] || "") + ($blob$$6_content$$ || "")], {type:$dataType$$ + ";charset=" + $charset$$});
-      $__save$$($filename$$, $dataType$$, $blob$$6_content$$);
-    } : "IE" === js.env.browser && 9 >= js.env.browserVersion ? function($content$$, $filename$$, $extension$$, $dataType$$, $charset$$) {
-      $charset$$ = js.alg.string($charset$$, "UTF-8");
-      $filename$$ = js.alg.string($filename$$, "download");
-      $content$$ = $content$$ || "";
-      js.dialog.alert({title:"Alert", message:["Because you are using Internet Explorer ", js.env.browserVersion, ', your download "', $filename$$, ".", $extension$$, '" has been changed to "', $filename$$, '.txt".  It is recommended that this value be changed in the save menu, or after the file has been downloaded.'].join("")});
-      $__saveText$$($content$$, $filename$$, $charset$$);
-    } : function($content$$, $filename$$, $extension$$, $dataType$$, $charset$$) {
-      $charset$$ = js.alg.string($charset$$, "UTF-8");
-      $filename$$ = js.alg.string($filename$$, "download");
-      $__saveText$$($content$$ || "", $filename$$ + "." + $extension$$, $charset$$);
-    };
-    return $__saveTextWithMime$$.apply(this, arguments);
-  }
-  function $__saveText$$($content$$0$$, $name$$0$$, $charset$$0$$) {
-    $content$$0$$ = $content$$0$$.replace(/\r?\n/g, "\r\n");
-    $__saveText$$ = window.Blob ? function($blob$$7_content$$, $name$$, $charset$$) {
-      $charset$$ = js.alg.string($charset$$, "UTF-8");
-      filename = js.alg.string(filename, "download");
-      $blob$$7_content$$ = new Blob([$blob$$7_content$$ || ""], {type:"text/plain;charset=" + $charset$$});
-      $__save$$($name$$, "text/text", $blob$$7_content$$);
-    } : function($content$$, $name$$, $charset$$) {
-      $charset$$ = js.alg.string($charset$$, "UTF-8");
-      filename = js.alg.string(filename, "download");
-      $content$$ = $content$$ || "";
-      var $ret$$ = "";
-      js.dom("<iframe></iframe>").setCss({display:"none"}).attach(document.body).element(0, function($el$$) {
-        $el$$.document.open("text/html", "replace");
-        $el$$.document.charset = $charset$$;
-        /(.html|.htm)$/i.test($name$$) ? ($el$$.document.close(), $el$$.document.body.innerHTML = "\r\n" + $content$$ + "\r\n") : (/.txt$/i.test($name$$) || ($name$$ += ".txt"), $el$$.document.write($content$$), $el$$.document.close());
-        $ret$$ = $el$$.document.execCommand("SaveAs", null, $name$$);
-        $el$$.close();
-      });
-      return $ret$$;
-    };
-    return $__saveText$$.apply(this, arguments);
-  }
   $download$$.fn = {save:function $$download$$$fn$save$($def$$) {
     $def$$ = $def$$ || {};
     $__save$$($def$$.name || this._name, $def$$.type || this._type, $def$$.data || this._data);
     return this;
   }, saveText:function $$download$$$fn$saveText$($def$$) {
     $def$$ = $def$$ || {};
-    $__saveText$$($def$$.name || this._name, $def$$.charset || this._charset, $def$$.data || this._name);
+    $__saveText$$($def$$.data || this._data, $def$$.name || this._name, $def$$.charset || this._charset);
     return this;
-  }, saveMime:function $$download$$$fn$saveMime$($charset$$8_def$$) {
-    $charset$$8_def$$ = $charset$$8_def$$ || {};
-    var $name$$ = ($charset$$8_def$$.name || this._name).split("."), $data$$ = $charset$$8_def$$.data || this._data, $type$$ = $charset$$8_def$$.type || this._type;
-    $charset$$8_def$$ = $charset$$8_def$$.charset || this._charset;
+  }, saveMime:function $$download$$$fn$saveMime$($charset$$1_def$$) {
+    $charset$$1_def$$ = $charset$$1_def$$ || {};
+    var $name$$ = ($charset$$1_def$$.name || this._name).split("."), $data$$ = $charset$$1_def$$.data || this._data, $type$$ = $charset$$1_def$$.type || this._type;
+    $charset$$1_def$$ = $charset$$1_def$$.charset || this._charset;
     var $extension$$ = ".txt";
     1 < $name$$.length && ($extension$$ = $name$$.pop());
     $name$$ = $name$$.join("");
-    $__saveTextWithMime$$($data$$, $name$$, $extension$$, $type$$, $charset$$8_def$$);
+    $__saveTextWithMime$$($data$$, $name$$, $extension$$, $type$$, $charset$$1_def$$);
     return this;
   }, setName:function $$download$$$fn$setName$($name$$) {
     this._name = js.alg.string($name$$, "download");
@@ -2161,7 +2119,47 @@ js.extend.fn("download", function() {
   }, getCharset:function $$download$$$fn$getCharset$() {
     return this._charset;
   }};
-  var $doc$$ = window.document, $URL$$ = window.URL || window.webkitURL || window, $safeType$$ = "application/octet-stream", $sliceBlob$$ = Blob.prototype.slice || Blob.prototype.webkitSlice, $__encoding$$ = {"UTF-8":"", "UTF-16":"\ufeff", "UTF-32":"\x00\ufeff", "UTF-7":"+/v8", "UTF-1":"\u00f7dL"};
+  var $doc$$ = window.document, $URL$$ = window.URL || window.webkitURL || window, $safeType$$ = "application/octet-stream", $sliceBlob$$ = Blob.prototype.slice || Blob.prototype.webkitSlice, $__encoding$$ = {"UTF-8":"", "UTF-16":"\ufeff", "UTF-32":"\x00\ufeff", "UTF-7":"+/v8", "UTF-1":"\u00f7dL"}, $__saveTextWithMime$$ = function $$__saveTextWithMime$$$($content$$, $filename$$, $extension$$0$$, $dataType$$, $charset$$0$$) {
+    $__saveTextWithMime$$ = window.Blob ? function($blob$$7_content$$, $filename$$, $extension$$, $dataType$$, $charset$$) {
+      $charset$$ = js.alg.string($charset$$, "UTF-8");
+      $filename$$ = js.alg.string($filename$$, "download");
+      $blob$$7_content$$ = new window.Blob([($__encoding$$[$charset$$] || "") + ($blob$$7_content$$ || "")], {type:$dataType$$ + ";charset=" + $charset$$});
+      $__save$$($filename$$, $dataType$$, $blob$$7_content$$);
+    } : "IE" === js.env.browser && 9 >= js.env.browserVersion ? function($content$$, $filename$$, $extension$$, $dataType$$, $charset$$) {
+      $charset$$ = js.alg.string($charset$$, "UTF-8");
+      $filename$$ = js.alg.string($filename$$, "download");
+      $content$$ = $content$$ || "";
+      js.dialog.alert({title:"Alert", message:["Because you are using Internet Explorer ", js.env.browserVersion, ', your download "', $filename$$, ".", $extension$$, '" has been changed to "', $filename$$, '.txt".  It is recommended that this value be changed in the save menu, or after the file has been downloaded.'].join("")});
+      $__saveText$$($content$$, $filename$$, $charset$$);
+    } : function($content$$, $filename$$, $extension$$, $dataType$$, $charset$$) {
+      $charset$$ = js.alg.string($charset$$, "UTF-8");
+      $filename$$ = js.alg.string($filename$$, "download");
+      $__saveText$$($content$$ || "", $filename$$ + "." + $extension$$, $charset$$);
+    };
+    return $__saveTextWithMime$$.apply(this, arguments);
+  }, $__saveText$$ = function $$__saveText$$$($content$$0$$, $name$$0$$, $charset$$0$$) {
+    $content$$0$$ = $content$$0$$.replace(/\r?\n/g, "\r\n");
+    $__saveText$$ = window.Blob ? function($blob$$8_content$$, $name$$, $charset$$) {
+      $charset$$ = js.alg.string($charset$$, "UTF-8");
+      $name$$ = js.alg.string($name$$, "download");
+      $blob$$8_content$$ = new Blob([$blob$$8_content$$ || ""], {type:"text/plain;charset=" + $charset$$});
+      $__save$$($name$$, "text/text", $blob$$8_content$$);
+    } : function($content$$, $name$$, $charset$$) {
+      $charset$$ = js.alg.string($charset$$, "UTF-8");
+      $name$$ = js.alg.string($name$$, "download");
+      $content$$ = $content$$ || "";
+      var $ret$$ = "";
+      js.dom("<iframe></iframe>").setCss({display:"none"}).attach(document.body).element(0, function($el$$) {
+        $el$$.document.open("text/html", "replace");
+        $el$$.document.charset = $charset$$;
+        /(.html|.htm)$/i.test($name$$) ? ($el$$.document.close(), $el$$.document.body.innerHTML = "\r\n" + $content$$ + "\r\n") : (/.txt$/i.test($name$$) || ($name$$ += ".txt"), $el$$.document.write($content$$), $el$$.document.close());
+        $ret$$ = $el$$.document.execCommand("SaveAs", null, $name$$);
+        $el$$.close();
+      });
+      return $ret$$;
+    };
+    return $__saveText$$.apply(this, arguments);
+  };
   return $download$$;
 });
 jspyder.extend.fn("dtype", function() {
@@ -2516,20 +2514,16 @@ jspyder.extend.fn("form", function() {
     var $__override$$ = {type:"input"};
     return function($cfg$$) {
       var $$datepicker$$ = this.buildControl($js$$.alg.mergeObj({}, $cfg$$, $__override$$), !0), $calStruct$$ = $__calStructFactory$$($cfg$$);
-      $$datepicker$$.filter("input").on("click", function($dateVal_event$$) {
-        $dateVal_event$$ = this.value || $cfg$$.value || $cfg$$.default || new Date;
-        $calStruct$$.clear();
-        $calStruct$$.input = $js$$.dom(this);
-        $calStruct$$.date.setDate($dateVal_event$$, $calStruct$$.format);
-        $calStruct$$.load().preventClose();
-        $js$$.dom(this.parentNode).append($calStruct$$.dom);
-        $calStruct$$.DOCDOM.on("click", function __docClick($event$$) {
+      $$datepicker$$.filter("input").on("click", function($attrs$$7_dateVal_event$$) {
+        $attrs$$7_dateVal_event$$ = {readonly:null};
+        $js$$.dom(this).getAttrs($attrs$$7_dateVal_event$$);
+        $attrs$$7_dateVal_event$$.readonly || ($attrs$$7_dateVal_event$$ = this.value || $cfg$$.value || $cfg$$.default || new Date, $calStruct$$.clear(), $calStruct$$.input = $js$$.dom(this), $calStruct$$.date.setDate($attrs$$7_dateVal_event$$, $calStruct$$.format), $calStruct$$.load().preventClose(), $js$$.dom(this.parentNode).append($calStruct$$.dom), $calStruct$$.DOCDOM.on("click", function __docClick($event$$) {
           if ($calStruct$$.pause) {
             return $calStruct$$.enableClose();
           }
           $calStruct$$.clear();
           $calStruct$$.DOCDOM.off("click", __docClick);
-        });
+        }));
       });
       $cfg$$.exportValue = function $$cfg$$$exportValue$() {
         return $$datepicker$$.exportValue() ? $calStruct$$.date.asDate() : null;
@@ -2543,19 +2537,22 @@ jspyder.extend.fn("form", function() {
   }).registerControlFn("button", function() {
     function $__clickFactory$$($form$$, $fn$$) {
       return function($event$$) {
-        $js$$.alg.use(this, $fn$$, [$event$$, $form$$]);
+        var $attrs$$ = {readonly:null};
+        $js$$.dom(this).getAttrs($attrs$$);
+        $attrs$$.readonly || $js$$.alg.use(this, $fn$$, [$event$$, $form$$]);
       };
     }
     return function button($cfg$$) {
       $cfg$$.nolabel = !0;
-      var $btnclass_html$$ = $js$$.alg.string($cfg$$.class, ""), $btnicon$$ = $js$$.alg.string($cfg$$.icon, ""), $btntext$$ = $js$$.alg.string($cfg$$.text, ""), $btnname$$ = $js$$.alg.string($cfg$$.name, ""), $btnvalue$$ = $js$$.alg.string($cfg$$.value, ""), $btnclass_html$$ = ['<div class="js-control js-control-button ', $btnclass_html$$, '" name="', $btnname$$, '">', '<i class="' + $btnicon$$ + '"></i>', '<span class="button-text" data-buttontext="' + $btntext$$ + '"></span>', "</div>"].join("");
+      var $btnclass_html$$ = $js$$.alg.string($cfg$$.class, ""), $btnicon$$ = $js$$.alg.string($cfg$$.icon, ""), $btntext$$ = $js$$.alg.string($cfg$$.text, ""), $btnname$$ = $js$$.alg.string($cfg$$.name, ""), $btnvalue$$ = $js$$.alg.string($cfg$$.value, ""), $btnclass_html$$ = ['<div class="js-control js-control-button ', $btnclass_html$$, '"', $cfg$$.readonly ? ' readonly="true"' : "", ' name="', $btnname$$, '">', '<i class="' + $btnicon$$ + '"></i>', '<span class="button-text" data-buttontext="' + 
+      $btntext$$ + '"></span>', "</div>"].join("");
       return $js$$.dom($btnclass_html$$).setValue($btnvalue$$).on("click", $__clickFactory$$(this, $cfg$$.click));
     };
   }).registerControlFn("buttonset", function() {
     var $__override$$ = {type:"button"};
     return function($cfg$$) {
       for (var $buttons$$ = $js$$.dom(), $i$$ = 0;$i$$ < $cfg$$.buttons.length;$i$$++) {
-        var $option$$ = $js$$.alg.mergeObj({}, $cfg$$.buttons[$i$$], $__override$$);
+        var $option$$ = $js$$.alg.mergeObj({readonly:$cfg$$.readonly}, $cfg$$.buttons[$i$$], $__override$$);
         $option$$.class += " js-buttonset";
         $buttons$$.and(this.buildControl($option$$, !0));
       }
@@ -2563,8 +2560,10 @@ jspyder.extend.fn("form", function() {
     };
   }).registerControlFn("submit", function() {
     function $__submitClickFactory$$($form$$) {
-      return function __submitClick($event$$) {
-        $form$$.submit();
+      return function __submitClick($attrs$$9_event$$) {
+        $attrs$$9_event$$ = {readonly:null};
+        $js$$.dom(this).getAttrs($attrs$$9_event$$);
+        $attrs$$9_event$$.readonly || $form$$.submit();
       };
     }
     var $__override$$ = {type:"button", nolabel:!0};
@@ -2575,8 +2574,10 @@ jspyder.extend.fn("form", function() {
     };
   }).registerControlFn("reset", function() {
     function $__resetClickFactory$$($form$$) {
-      return function __resetClick($event$$) {
-        $form$$.reset();
+      return function __resetClick($attrs$$10_event$$) {
+        $attrs$$10_event$$ = {readonly:null};
+        $js$$.dom(this).getAttrs($attrs$$10_event$$);
+        $attrs$$10_event$$.readonly || $form$$.reset();
       };
     }
     var $__override$$ = {type:"button", nolabel:!0};
@@ -2589,7 +2590,9 @@ jspyder.extend.fn("form", function() {
     function $__dropdownClickFactory$$($cfg$$) {
       return function __dropdownClick($$dropdown_event$$) {
         $$dropdown_event$$ = $js$$.dom(this);
-        $__createPopout$$($$dropdown_event$$, $cfg$$);
+        var $attrs$$ = {readonly:null};
+        $$dropdown_event$$.getAttrs($attrs$$);
+        $attrs$$.readonly || $__createPopout$$($$dropdown_event$$, $cfg$$);
       };
     }
     function $__createPopout$$($$dropdown$$, $cfg$$) {
@@ -2628,8 +2631,8 @@ jspyder.extend.fn("form", function() {
     }
     var $$DOC$$ = $js$$.dom(document.documentElement);
     return function dropdown($cfg$$) {
-      var $$dropdown$$2_cfgname_html$$ = $js$$.alg.string($cfg$$.name, ""), $cfgclass$$ = $js$$.alg.string($cfg$$.class, ""), $cfgvalue$$ = $js$$.alg.string($cfg$$.value, ""), $cfgdefault$$ = $js$$.alg.string($cfg$$.default, ""), $$dropdown$$2_cfgname_html$$ = ['<div name="', $$dropdown$$2_cfgname_html$$, '" tabindex="0" class="input js-control js-control-dropdown ', $cfgclass$$, '"><i class="dropdown-arrow arrow-drop-down"></i><span class="dropdown-text">', $cfgvalue$$ || $cfgdefault$$ || "&nbsp;", 
-      "</span></div>"].join(""), $$dropdown$$2_cfgname_html$$ = $js$$.dom($$dropdown$$2_cfgname_html$$);
+      var $$dropdown$$2_cfgname_html$$ = $js$$.alg.string($cfg$$.name, ""), $cfgclass$$ = $js$$.alg.string($cfg$$.class, ""), $cfgvalue$$ = $js$$.alg.string($cfg$$.value, ""), $cfgdefault$$ = $js$$.alg.string($cfg$$.default, ""), $$dropdown$$2_cfgname_html$$ = ['<div name="', $$dropdown$$2_cfgname_html$$, '" tabindex="0"', $cfg$$.readonly ? ' readonly="true"' : "", ' class="input js-control js-control-dropdown ', $cfgclass$$, '"><i class="dropdown-arrow arrow-drop-down"></i><span class="dropdown-text">', 
+      $cfgvalue$$ || $cfgdefault$$ || "&nbsp;", "</span></div>"].join(""), $$dropdown$$2_cfgname_html$$ = $js$$.dom($$dropdown$$2_cfgname_html$$);
       $$dropdown$$2_cfgname_html$$.on("click", $__dropdownClickFactory$$($cfg$$));
       $cfg$$.setValue = $setValue$$;
       return $$dropdown$$2_cfgname_html$$;
@@ -2640,7 +2643,7 @@ jspyder.extend.fn("form", function() {
       this.setValue($v$$);
     }
     return function($cfg$$) {
-      var $cfgname$$1_html$$ = $js$$.alg.string($cfg$$.name, ""), $cfgclass$$ = $js$$.alg.string($cfg$$.class, ""), $cfgname$$1_html$$ = ['<textarea name="', $cfgname$$1_html$$, '" class="input ', $cfgclass$$, '"></textarea>'].join("");
+      var $cfgname$$1_html$$ = $js$$.alg.string($cfg$$.name, ""), $cfgclass$$ = $js$$.alg.string($cfg$$.class, ""), $cfgname$$1_html$$ = ['<textarea name="', $cfgname$$1_html$$, '"', $cfg$$.readonly ? ' readonly="true"' : "", ' class="input ', $cfgclass$$, '"></textarea>'].join("");
       $cfg$$.setValue = $setValue$$;
       return $js$$.dom($cfgname$$1_html$$);
     };
@@ -2649,21 +2652,25 @@ jspyder.extend.fn("form", function() {
       $v$$ = $js$$.alg.string($v$$, "");
       this.setValue($v$$);
     }
-    function $input$$($css$$6_event$$) {
-      div = document.createElement("div");
-      $css$$6_event$$ = {"font-family":null, "font-size":null, "font-weight":null, "padding-left":null, "padding-right":null, "padding-bottom":null, "padding-top":null, "border-left":null, "border-right":null, "border-top":null, "border-bottom":null, "line-height":null, "word-wrap":null};
-      div.style.position = "fixed";
-      div.style.left = "-65535px";
-      div.style["white-space"] = "pre-wrap";
-      div.style["white-space"] = "-moz-pre-wrap";
-      div.style["white-space"] = "-pre-wrap";
-      div.style["white-space"] = "-o-pre-wrap";
-      div.style.width = div.style["min-width"] = div.style["max-width"] = this.clientWidth + "px";
-      document.body.appendChild(div);
-      var $textarea$$ = $js$$.dom(this).getCss($css$$6_event$$);
-      $js$$.dom(div).setText(this.value).setCss($css$$6_event$$).getPosition(function($pos$$) {
-        $textarea$$.setCss({height:$pos$$.height + 20 + "px"});
-      }).remove();
+    function $input$$($attrs$$12_css$$6_event$$) {
+      $attrs$$12_css$$6_event$$ = {readonly:null};
+      $js$$.dom(this).getAttrs($attrs$$12_css$$6_event$$);
+      if (!$attrs$$12_css$$6_event$$.readonly) {
+        div = document.createElement("div");
+        $attrs$$12_css$$6_event$$ = {"font-family":null, "font-size":null, "font-weight":null, "padding-left":null, "padding-right":null, "padding-bottom":null, "padding-top":null, "border-left":null, "border-right":null, "border-top":null, "border-bottom":null, "line-height":null, "word-wrap":null};
+        div.style.position = "fixed";
+        div.style.left = "-65535px";
+        div.style["white-space"] = "pre-wrap";
+        div.style["white-space"] = "-moz-pre-wrap";
+        div.style["white-space"] = "-pre-wrap";
+        div.style["white-space"] = "-o-pre-wrap";
+        div.style.width = div.style["min-width"] = div.style["max-width"] = this.clientWidth + "px";
+        document.body.appendChild(div);
+        var $textarea$$ = $js$$.dom(this).getCss($attrs$$12_css$$6_event$$);
+        $js$$.dom(div).setText(this.value).setCss($attrs$$12_css$$6_event$$).getPosition(function($pos$$) {
+          $textarea$$.setCss({height:$pos$$.height + 20 + "px"});
+        }).remove();
+      }
     }
     return function($cfg$$15_textarea$$) {
       var $cfgname$$2_html$$ = $js$$.alg.string($cfg$$15_textarea$$.name, ""), $cfgclass$$ = $js$$.alg.string($cfg$$15_textarea$$.class, ""), $cfgname$$2_html$$ = ['<textarea name="', $cfgname$$2_html$$, '" class="input js-control js-control-autosize ', $cfgclass$$, '"></textarea>'].join("");
@@ -2673,11 +2680,10 @@ jspyder.extend.fn("form", function() {
       return $cfg$$15_textarea$$;
     };
   }).registerControlFn("radio", function() {
-    function $single$$($cfg$$16_cfgclass$$) {
-      var $cfgtext$$ = $js$$.alg.string($cfg$$16_cfgclass$$.text, ""), $cfgvalue$$1_html$$ = $js$$.alg.string($cfg$$16_cfgclass$$.value, ""), $cfgname$$ = $js$$.alg.string($cfg$$16_cfgclass$$.name, "");
-      $cfg$$16_cfgclass$$ = $js$$.alg.string($cfg$$16_cfgclass$$.class, "");
-      $cfgvalue$$1_html$$ = ['<input value="', $cfgvalue$$1_html$$, '" name="', $cfgname$$, '" type="radio" class="', $cfg$$16_cfgclass$$, '"></input>'].join("");
-      return $js$$.dom($cfgvalue$$1_html$$).and($js$$.form.fn.buildLabel($cfgname$$, $cfgtext$$, $cfg$$16_cfgclass$$));
+    function $single$$($cfg$$16_html$$) {
+      var $cfgtext$$ = $js$$.alg.string($cfg$$16_html$$.text, ""), $cfgvalue$$ = $js$$.alg.string($cfg$$16_html$$.value, ""), $cfgname$$ = $js$$.alg.string($cfg$$16_html$$.name, ""), $cfgclass$$ = $js$$.alg.string($cfg$$16_html$$.class, "");
+      $cfg$$16_html$$ = ['<input value="', $cfgvalue$$, '" name="', $cfgname$$, '" type="radio"', $cfg$$16_html$$.readonly ? ' readonly="true"' : "", ' class="', $cfgclass$$, '"></input>'].join("");
+      return $js$$.dom($cfg$$16_html$$).and($js$$.form.fn.buildLabel($cfgname$$, $cfgtext$$, $cfgclass$$));
     }
     function $exportValue$$($data$$) {
       return $data$$.config["data-value"] || null;
@@ -2696,10 +2702,14 @@ jspyder.extend.fn("form", function() {
       var $cfgname$$ = $js$$.alg.string($cfg$$.name, ""), $cfgclass$$ = $js$$.alg.string($cfg$$.class, ""), $options$$ = $cfg$$.values || [], $$option_option$$ = null, $$option_option$$ = null, $$radio$$ = $js$$.dom(), $i$$;
       $cfg$$["data-values"] = {};
       for ($i$$ = 0;$i$$ < $options$$.length;$i$$++) {
-        $$option_option$$ = $js$$.alg.mergeObj({name:$cfgname$$, "class":$cfgclass$$}, $options$$[$i$$]), $$option_option$$.class = $cfgclass$$ + $js$$.alg.string($options$$[$i$$].class), $$option_option$$ = $js$$.dom("<div></div>").append($single$$($$option_option$$)), $$radio$$.and($$option_option$$);
+        $$option_option$$ = $js$$.alg.mergeObj({name:$cfgname$$, "class":$cfgclass$$, readonly:$cfg$$.readonly}, $options$$[$i$$]), $$option_option$$.class = $cfgclass$$ + $js$$.alg.string($options$$[$i$$].class), $$option_option$$ = $js$$.dom("<div></div>").append($single$$($$option_option$$)), $$radio$$.and($$option_option$$);
       }
-      $$radio$$.find("input").on("change", function($event$$) {
-        $js$$.dom(this).getValue(function($v$$) {
+      var $form$$ = this;
+      $$radio$$.find("input").on("change", function($attrs$$15_event$$) {
+        $attrs$$15_event$$ = {readonly:null};
+        var $$me$$ = $js$$.dom(this);
+        $$me$$.getAttrs($attrs$$15_event$$);
+        $attrs$$15_event$$.readonly ? $form$$.setFieldValue($cfgname$$, $form$$.exportFieldValue($cfgname$$)) : $$me$$.getValue(function($v$$) {
           $cfg$$["data-value"] = $v$$;
         });
       });
@@ -2726,21 +2736,23 @@ jspyder.extend.fn("form", function() {
       });
       return this;
     }
-    function $checkbox$$($cfg$$18_cfgclass$$) {
-      var $cfgtext$$ = $js$$.alg.string($cfg$$18_cfgclass$$.text, ""), $cfgvalue$$2_html$$ = $js$$.alg.string($cfg$$18_cfgclass$$.value, ""), $cfgname$$ = $js$$.alg.string($cfg$$18_cfgclass$$.name, "");
-      $cfg$$18_cfgclass$$ = $js$$.alg.string($cfg$$18_cfgclass$$.class, "");
-      $cfgvalue$$2_html$$ = ['<input value="', $cfgvalue$$2_html$$, '" name="', $cfgname$$, '" type="checkbox" class="', $cfg$$18_cfgclass$$, '"></input>'].join("");
-      return $js$$.dom($cfgvalue$$2_html$$).and($js$$.form.fn.buildLabel($cfgname$$, $cfgtext$$, $cfg$$18_cfgclass$$));
+    function $checkbox$$($cfg$$18_html$$) {
+      var $cfgtext$$ = $js$$.alg.string($cfg$$18_html$$.text, ""), $cfgvalue$$ = $js$$.alg.string($cfg$$18_html$$.value, ""), $cfgname$$ = $js$$.alg.string($cfg$$18_html$$.name, ""), $cfgclass$$ = $js$$.alg.string($cfg$$18_html$$.class, "");
+      $cfg$$18_html$$ = ['<input value="', $cfgvalue$$, '" name="', $cfgname$$, '" type="checkbox"', $cfg$$18_html$$.readonly ? ' readonly="true"' : "", ' class="', $cfgclass$$, '"></input>'].join("");
+      return $js$$.dom($cfg$$18_html$$).and($js$$.form.fn.buildLabel($cfgname$$, $cfgtext$$, $cfgclass$$));
     }
     return function($cfg$$) {
       var $cfgname$$ = $js$$.alg.string($cfg$$.name, ""), $cfgclass$$ = $js$$.alg.string($cfg$$.class, ""), $options$$ = $cfg$$.values || [], $$option$$1_option$$ = null, $$option$$1_option$$ = null, $$checkbox$$ = $js$$.dom(), $i$$;
       $cfg$$["data-values"] = {};
       for ($i$$ = 0;$i$$ < $options$$.length;$i$$++) {
-        $$option$$1_option$$ = $js$$.alg.mergeObj({name:$cfgname$$}, $options$$[$i$$]), $$option$$1_option$$.class = $cfgclass$$ + $js$$.alg.string($options$$[$i$$].class), $$option$$1_option$$ = $js$$.dom("<div></div>").append($checkbox$$($$option$$1_option$$)), $$checkbox$$.and($$option$$1_option$$);
+        $$option$$1_option$$ = $js$$.alg.mergeObj({name:$cfgname$$, readonly:$cfg$$.readonly}, $options$$[$i$$]), $$option$$1_option$$.class = $cfgclass$$ + $js$$.alg.string($options$$[$i$$].class), $$option$$1_option$$ = $js$$.dom("<div></div>").append($checkbox$$($$option$$1_option$$)), $$checkbox$$.and($$option$$1_option$$);
       }
-      $$checkbox$$.find("input").on("change", function($event$$) {
+      $$checkbox$$.find("input").on("change", function($event$$26_self$$) {
         var $checked$$ = this.checked;
-        $js$$.dom(this).getValue(function($v$$) {
+        $event$$26_self$$ = $js$$.dom(this);
+        var $attrs$$ = {readonly:null};
+        $event$$26_self$$.getAttrs($attrs$$);
+        $attrs$$.readonly ? this.checked = !$checked$$ : $event$$26_self$$.getValue(function($v$$) {
           $cfg$$["data-values"]["val-" + $js$$.alg.string($v$$)] = $checked$$;
         });
       });
@@ -2768,13 +2780,11 @@ jspyder.extend.fn("form", function() {
       });
       return this;
     }
-    function $checkbox$$($cfg$$20_cfgclass$$) {
-      var $cfgtext$$ = $js$$.alg.string($cfg$$20_cfgclass$$.text, ""), $cfgvalue$$ = $js$$.alg.string($cfg$$20_cfgclass$$.value, "");
-      $cfg$$20_cfgclass$$ = $js$$.alg.string($cfg$$20_cfgclass$$.class, "");
-      return $js$$.form.fn.buildControl({type:"button", text:$cfgtext$$, class:$cfg$$20_cfgclass$$ + " js-buttonset", click:function($data$$, $event$$) {
-        $js$$.dom(this).getAttrs({"data-checked":!1}, function($attrs$$) {
-          $attrs$$["data-checked"] = $js$$.alg.bool($attrs$$["data-checked"]) ? null : !0;
-          this.setAttrs($attrs$$);
+    function $checkbox$$($cfg$$) {
+      var $cfgtext$$ = $js$$.alg.string($cfg$$.text, ""), $cfgvalue$$ = $js$$.alg.string($cfg$$.value, ""), $cfgclass$$ = $js$$.alg.string($cfg$$.class, "");
+      return $js$$.form.fn.buildControl({type:"button", text:$cfgtext$$, class:$cfgclass$$ + " js-buttonset", readonly:$cfg$$.readonly, click:function($data$$, $event$$) {
+        $js$$.dom(this).getAttrs({"data-checked":!1, readonly:!1}, function($attrs$$) {
+          $attrs$$.readonly || ($attrs$$["data-checked"] = $js$$.alg.bool($attrs$$["data-checked"]) ? null : !0, this.setAttrs($attrs$$));
         });
       }}).setAttrs({"data-checked":null, "data-value":$cfgvalue$$});
     }
@@ -2782,7 +2792,7 @@ jspyder.extend.fn("form", function() {
       var $cfgname$$ = $js$$.alg.string($cfg$$.name, ""), $cfgclass$$ = $js$$.alg.string($cfg$$.class, ""), $options$$ = $cfg$$.values || [], $$option$$2_option$$ = null, $$option$$2_option$$ = null, $$checkbox$$ = $js$$.dom(), $i$$;
       $cfg$$["data-values"] = {};
       for ($i$$ = 0;$i$$ < $options$$.length;$i$$++) {
-        $$option$$2_option$$ = $js$$.alg.mergeObj({name:$cfgname$$}, $options$$[$i$$]), $$option$$2_option$$.class = $cfgclass$$ + $js$$.alg.string($options$$[$i$$].class), $$option$$2_option$$ = $js$$.dom($checkbox$$($$option$$2_option$$)), $$checkbox$$.and($$option$$2_option$$);
+        $$option$$2_option$$ = $js$$.alg.mergeObj({name:$cfgname$$, readonly:$cfg$$.readonly}, $options$$[$i$$]), $$option$$2_option$$.class = $cfgclass$$ + " " + $js$$.alg.string($options$$[$i$$].class), $$option$$2_option$$ = $js$$.dom($checkbox$$($$option$$2_option$$)), $$checkbox$$.and($$option$$2_option$$);
       }
       $cfg$$.exportValue = $exportValue$$;
       $cfg$$.setValue = $setValue$$;
@@ -2807,8 +2817,8 @@ jspyder.extend.fn("form", function() {
       $$checkbox$$3_tmp$$.on("click", function($event$$) {
         var $self$$ = $js$$.dom(this);
         $js$$.alg.each($cfg$$.values, function($valObj$$) {
-          $self$$.getAttrs({"data-value":null}, function($attrs$$) {
-            $form$$.setFieldValue($cfg$$.name, $attrs$$["data-value"]);
+          $self$$.getAttrs({"data-value":null, readonly:null}, function($attrs$$) {
+            $attrs$$.readonly || $form$$.setFieldValue($cfg$$.name, $attrs$$["data-value"]);
           });
         });
       });
@@ -2890,27 +2900,31 @@ jspyder.extend.fn("form", function() {
       }
       var $found$$ = $js$$.dom('<ul class="js-control js-autocomplete-search"></ul>');
       $autocomplete$$.on("keydown", function($event$$) {
-        var $up$$ = !1;
-        switch($event$$.keyCode) {
-          case $js$$.alg.keycodes.KC_UpArrow:
-            $up$$ = !0;
-          case $js$$.alg.keycodes.KC_DownArrow:
-            var $selId$$ = -1;
-            $found$$.find(".search-item").each(function($item$$, $i$$) {
-              var $cls$$ = {selected:!1};
-              $js$$.dom($item$$).getClasses($cls$$);
-              $cls$$.selected && ($selId$$ = $i$$);
-            });
-            $found$$.find(".search-item").setClasses({selected:!1}).at($selId$$ + ($up$$ ? -1 : 1)).setClasses({selected:!0});
-            break;
-          case $js$$.alg.keycodes.KC_Tab:
-          ;
-          case $js$$.alg.keycodes.KC_Enter:
-            $found$$.find(".search-item.selected").trigger("mousedown");
+        var $attrs$$ = {readonly:null};
+        $js$$.dom(this).getAttrs($attrs$$);
+        if (!$attrs$$.readonly) {
+          switch($attrs$$ = !1, $event$$.keyCode) {
+            case $js$$.alg.keycodes.KC_UpArrow:
+              $attrs$$ = !0;
+            case $js$$.alg.keycodes.KC_DownArrow:
+              var $selId$$ = -1;
+              $found$$.find(".search-item").each(function($item$$, $i$$) {
+                var $cls$$ = {selected:!1};
+                $js$$.dom($item$$).getClasses($cls$$);
+                $cls$$.selected && ($selId$$ = $i$$);
+              });
+              $found$$.find(".search-item").setClasses({selected:!1}).at($selId$$ + ($attrs$$ ? -1 : 1)).setClasses({selected:!0});
+              break;
+            case $js$$.alg.keycodes.KC_Tab:
+            ;
+            case $js$$.alg.keycodes.KC_Enter:
+              $found$$.find(".search-item.selected").trigger("mousedown");
+          }
         }
-      }).on("blur", function($event$$31_match$$) {
-        "" === this.value ? $js$$.dom(this).setAttrs({"data-value":""}) : $config$$.strict && (($event$$31_match$$ = $searchValue$$($config$$, this.value, !0)) ? (this.value = $event$$31_match$$.text, $js$$.dom(this).setAttrs({"data-value":$event$$31_match$$.value})) : (this.value = "", $js$$.dom(this).setAttrs({"data-value":""})));
-        $fns$$.hide();
+      }).on("blur", function($attrs$$31_event$$31_match$$) {
+        $attrs$$31_event$$31_match$$ = {readonly:null};
+        $js$$.dom(this).getAttrs($attrs$$31_event$$31_match$$);
+        $attrs$$31_event$$31_match$$.readonly || ("" === this.value ? $js$$.dom(this).setAttrs({"data-value":""}) : $config$$.strict && (($attrs$$31_event$$31_match$$ = $searchValue$$($config$$, this.value, !0)) ? (this.value = $attrs$$31_event$$31_match$$.text, $js$$.dom(this).setAttrs({"data-value":$attrs$$31_event$$31_match$$.value})) : (this.value = "", $js$$.dom(this).setAttrs({"data-value":""}))), $fns$$.hide());
       });
       var $fns$$ = {show:function search($css$$7_value$$) {
         var $values$$ = $config$$.values || [], $minlen$$ = $js$$.alg.number($config$$.minlen, 3), $data$$ = {match:[], regexp:new RegExp($js$$.alg.escapeString($css$$7_value$$), "i"), depth:$js$$.alg.number($config$$.length, 5)};
@@ -2958,23 +2972,25 @@ jspyder.extend.fn("form", function() {
       $cfg$$.setValue = $setValue$$;
       $cfg$$.exportValue = $exportValue$$;
       $search$$ = $buildFunctions$$(this, $$autocomplete$$, $cfg$$);
-      $$autocomplete$$.on("focus input", function($event$$) {
-        $$autocomplete$$.getValue($search$$.show);
+      $$autocomplete$$.on("focus input", function($attrs$$34_event$$) {
+        $attrs$$34_event$$ = {readonly:null};
+        $js$$.dom(this).getAttrs($attrs$$34_event$$);
+        $attrs$$34_event$$.readonly || $$autocomplete$$.getValue($search$$.show);
       });
       return $$autocomplete$$;
     };
   }).registerControlFn("number", function() {
     function $setValue$$($data$$, $v$$) {
       $v$$ = $js$$.alg.string($v$$, "");
-      $data$$.field.filter("input").getAttrs({"data-focus":!1}, function($attrs$$24_c$$) {
-        if ($attrs$$24_c$$["data-focus"]) {
+      $data$$.field.filter("input").getAttrs({"data-focus":!1}, function($attrs$$35_c$$) {
+        if ($attrs$$35_c$$["data-focus"]) {
           $v$$ = $toNumber$$($v$$, $data$$.config.acc);
         } else {
           var $n$$inline_16_part$$ = $v$$;
-          $attrs$$24_c$$ = $data$$.config.tsep;
+          $attrs$$35_c$$ = $data$$.config.tsep;
           var $d$$ = $data$$.config.dec, $a$$inline_19_num$$ = $data$$.config.acc;
-          "" === $js$$.alg.string($n$$inline_16_part$$, "") ? $v$$ = $n$$inline_16_part$$ : ($n$$inline_16_part$$ = $js$$.alg.number($n$$inline_16_part$$, 0), $attrs$$24_c$$ = $js$$.alg.string($attrs$$24_c$$, ","), $d$$ = $js$$.alg.string($d$$, "."), "undefined" !== typeof $a$$inline_19_num$$ && ($n$$inline_16_part$$ = $n$$inline_16_part$$.toFixed($a$$inline_19_num$$)), $n$$inline_16_part$$ = $js$$.alg.string($n$$inline_16_part$$, "").split("."), $a$$inline_19_num$$ = [], $a$$inline_19_num$$[0] = 
-          ($n$$inline_16_part$$[0] || "").replace(/\B(?=(\d{3})+(?!\d))/g, $attrs$$24_c$$), $n$$inline_16_part$$[1] && $a$$inline_19_num$$.push($n$$inline_16_part$$[1]), $v$$ = $a$$inline_19_num$$.join($d$$));
+          "" === $js$$.alg.string($n$$inline_16_part$$, "") ? $v$$ = $n$$inline_16_part$$ : ($n$$inline_16_part$$ = $js$$.alg.number($n$$inline_16_part$$, 0), $attrs$$35_c$$ = $js$$.alg.string($attrs$$35_c$$, ","), $d$$ = $js$$.alg.string($d$$, "."), "undefined" !== typeof $a$$inline_19_num$$ && ($n$$inline_16_part$$ = $n$$inline_16_part$$.toFixed($a$$inline_19_num$$)), $n$$inline_16_part$$ = $js$$.alg.string($n$$inline_16_part$$, "").split("."), $a$$inline_19_num$$ = [], $a$$inline_19_num$$[0] = 
+          ($n$$inline_16_part$$[0] || "").replace(/\B(?=(\d{3})+(?!\d))/g, $attrs$$35_c$$), $n$$inline_16_part$$[1] && $a$$inline_19_num$$.push($n$$inline_16_part$$[1]), $v$$ = $a$$inline_19_num$$.join($d$$));
         }
         this.setValue($v$$);
       });
@@ -3000,9 +3016,10 @@ jspyder.extend.fn("form", function() {
       $$input_cfg2$$.filter("input").on("blur", function($$input$$1_event$$) {
         $$input$$1_event$$ = $js$$.dom(this).setAttrs({"data-focus":null});
         $form$$.setFieldValue($cfg$$.name, $$input$$1_event$$.exportValue());
-      }).on("focus", function($$input$$2_event$$) {
-        $$input$$2_event$$ = $js$$.dom(this).setAttrs({"data-focus":!0});
-        $form$$.setFieldValue($cfg$$.name, $$input$$2_event$$.exportValue());
+      }).on("focus", function($$input$$2_attrs$$36_event$$) {
+        $$input$$2_attrs$$36_event$$ = {readonly:null};
+        $js$$.dom(this).getAttrs($$input$$2_attrs$$36_event$$);
+        $$input$$2_attrs$$36_event$$.readonly || ($$input$$2_attrs$$36_event$$ = $js$$.dom(this).setAttrs({"data-focus":!0}), $form$$.setFieldValue($cfg$$.name, $$input$$2_attrs$$36_event$$.exportValue()));
       });
       return $$input_cfg2$$;
     };
@@ -3080,40 +3097,42 @@ js.extend.fn("sp", function() {
   function $__failureParse$$($listItems$$, $failureFn$$, $sender$$, $args$$) {
     $failureFn$$($sender$$, $args$$);
   }
-  function $__parseRows$$($row$$, $f$$2_id$$, $_rows_filter$$, $filterData$$) {
-    if ($row$$ && $filterData$$ && $filterData$$.length) {
-      var $drop$$, $value$$, $orDrop$$;
+  function $__parseRows$$($row$$, $filterData_id$$, $_rows_f$$, $data$$) {
+    if ($row$$ && $data$$ && $data$$.filterArray && $data$$.filterArray.length) {
+      $filterData_id$$ = $data$$.filterArray;
+      $data$$ = $data$$.exclude;
+      var $filter$$, $drop$$, $value$$, $orDrop$$;
       $drop$$ = !1;
-      for ($f$$2_id$$ = 0;!$drop$$ && $f$$2_id$$ < $filterData$$.length;$f$$2_id$$++) {
-        ($_rows_filter$$ = $filterData$$[$f$$2_id$$]) && $_rows_filter$$.column && "undefined" !== typeof $row$$[$_rows_filter$$.column] && ($value$$ = $row$$[$_rows_filter$$.column].value, $orDrop$$ = !0, $drop$$ || "undefined" === typeof $_rows_filter$$.gt || ($_rows_filter$$.gt && "object" === typeof $_rows_filter$$.gt ? ($js$$.alg.each($_rows_filter$$.gt, function($or$$) {
+      for ($_rows_f$$ = 0;!$drop$$ && $_rows_f$$ < $filterData_id$$.length;$_rows_f$$++) {
+        ($filter$$ = $filterData_id$$[$_rows_f$$]) && $filter$$.column && "undefined" !== typeof $row$$[$filter$$.column] && ($value$$ = $row$$[$filter$$.column].value, $orDrop$$ = !0, $drop$$ || "undefined" === typeof $filter$$.gt || ($filter$$.gt && "object" === typeof $filter$$.gt ? ($js$$.alg.each($filter$$.gt, function($or$$) {
           ($orDrop$$ = $orDrop$$ && !($value$$ > $or$$)) || this.stop();
-        }), $drop$$ = $orDrop$$) : $drop$$ = !($value$$ > $_rows_filter$$.gt)), $drop$$ || "undefined" === typeof $_rows_filter$$.geq || ($_rows_filter$$.geq && "object" === typeof $_rows_filter$$.geq ? ($js$$.alg.each($_rows_filter$$.geq, function($or$$) {
+        }), $drop$$ = $orDrop$$) : $drop$$ = !($value$$ > $filter$$.gt)), $drop$$ || "undefined" === typeof $filter$$.geq || ($filter$$.geq && "object" === typeof $filter$$.geq ? ($js$$.alg.each($filter$$.geq, function($or$$) {
           ($orDrop$$ = $orDrop$$ && !($value$$ >= $or$$)) || this.stop();
-        }), $drop$$ = $orDrop$$) : $drop$$ = !($value$$ >= $_rows_filter$$.geq)), $drop$$ || "undefined" === typeof $_rows_filter$$.leq || ($_rows_filter$$.leq && "object" === typeof $_rows_filter$$.leq ? ($js$$.alg.each($_rows_filter$$.leq, function($or$$) {
+        }), $drop$$ = $orDrop$$) : $drop$$ = !($value$$ >= $filter$$.geq)), $drop$$ || "undefined" === typeof $filter$$.leq || ($filter$$.leq && "object" === typeof $filter$$.leq ? ($js$$.alg.each($filter$$.leq, function($or$$) {
           ($orDrop$$ = $orDrop$$ && !($value$$ <= $or$$)) || this.stop();
-        }), $drop$$ = $orDrop$$) : $drop$$ = !($value$$ <= $_rows_filter$$.leq)), $drop$$ || "undefined" === typeof $_rows_filter$$.lt || ($_rows_filter$$.lt && "object" === typeof $_rows_filter$$.lt ? ($js$$.alg.each($_rows_filter$$.lt, function($or$$) {
+        }), $drop$$ = $orDrop$$) : $drop$$ = !($value$$ <= $filter$$.leq)), $drop$$ || "undefined" === typeof $filter$$.lt || ($filter$$.lt && "object" === typeof $filter$$.lt ? ($js$$.alg.each($filter$$.lt, function($or$$) {
           ($orDrop$$ = $orDrop$$ && !($value$$ < $or$$)) || this.stop();
-        }), $drop$$ = $orDrop$$) : $drop$$ = !($value$$ < $_rows_filter$$.lt)), $drop$$ || "undefined" === typeof $_rows_filter$$.eq || ($_rows_filter$$.eq && "object" === typeof $_rows_filter$$.eq ? ($js$$.alg.each($_rows_filter$$.eq, function($or$$) {
+        }), $drop$$ = $orDrop$$) : $drop$$ = !($value$$ < $filter$$.lt)), $drop$$ || "undefined" === typeof $filter$$.eq || ($filter$$.eq && "object" === typeof $filter$$.eq ? ($js$$.alg.each($filter$$.eq, function($or$$) {
           ($orDrop$$ = $orDrop$$ && $value$$ != $or$$) || this.stop();
-        }), $drop$$ = $orDrop$$) : $drop$$ = $value$$ != $_rows_filter$$.eq), $drop$$ || "undefined" === typeof $_rows_filter$$.seq || ($_rows_filter$$.seq && "object" === typeof $_rows_filter$$.seq ? ($js$$.alg.each($_rows_filter$$.seq, function($or$$) {
+        }), $drop$$ = $orDrop$$) : $drop$$ = $value$$ != $filter$$.eq), $drop$$ || "undefined" === typeof $filter$$.seq || ($filter$$.seq && "object" === typeof $filter$$.seq ? ($js$$.alg.each($filter$$.seq, function($or$$) {
           ($orDrop$$ = $orDrop$$ && $value$$ !== $or$$) || this.stop();
-        }), $drop$$ = $orDrop$$) : $drop$$ = $value$$ !== $_rows_filter$$.seq), $drop$$ || "undefined" === typeof $_rows_filter$$.neq || ($_rows_filter$$.neq && "object" === typeof $_rows_filter$$.neq ? ($js$$.alg.each($_rows_filter$$.neq, function($or$$) {
+        }), $drop$$ = $orDrop$$) : $drop$$ = $value$$ !== $filter$$.seq), $drop$$ || "undefined" === typeof $filter$$.neq || ($filter$$.neq && "object" === typeof $filter$$.neq ? ($js$$.alg.each($filter$$.neq, function($or$$) {
           ($orDrop$$ = $orDrop$$ && $value$$ == $or$$) || this.stop();
-        }), $drop$$ = $orDrop$$) : $drop$$ = $value$$ == $_rows_filter$$.neq), $drop$$ || "undefined" === typeof $_rows_filter$$.snq || ($_rows_filter$$.snq && "object" === typeof $_rows_filter$$.snq ? ($js$$.alg.each($_rows_filter$$.snq, function($or$$) {
+        }), $drop$$ = $orDrop$$) : $drop$$ = $value$$ == $filter$$.neq), $drop$$ || "undefined" === typeof $filter$$.snq || ($filter$$.snq && "object" === typeof $filter$$.snq ? ($js$$.alg.each($filter$$.snq, function($or$$) {
           ($orDrop$$ = $orDrop$$ && $value$$ === $or$$) || this.stop();
-        }), $drop$$ = $orDrop$$) : $drop$$ = $value$$ === $_rows_filter$$.snq), $drop$$ || "undefined" === typeof $_rows_filter$$.and || ($_rows_filter$$.and && "object" === typeof $_rows_filter$$.and ? ($js$$.alg.each($_rows_filter$$.and, function($or$$) {
+        }), $drop$$ = $orDrop$$) : $drop$$ = $value$$ === $filter$$.snq), $drop$$ || "undefined" === typeof $filter$$.and || ($filter$$.and && "object" === typeof $filter$$.and ? ($js$$.alg.each($filter$$.and, function($or$$) {
           ($orDrop$$ = $orDrop$$ && ($value$$ & $or$$) !== $or$$) || this.stop();
-        }), $drop$$ = $orDrop$$) : $drop$$ = ($value$$ & $_rows_filter$$.and) !== $_rows_filter$$.and), $drop$$ || "undefined" === typeof $_rows_filter$$.not || ($_rows_filter$$.not && "object" === typeof $_rows_filter$$.not ? ($js$$.alg.each($_rows_filter$$.not, function($or$$) {
-          ($orDrop$$ = $orDrop$$ && ($value$$ & $or$$) === $or$$) || this.stop();
-        }), $drop$$ = $orDrop$$) : $drop$$ = ($value$$ & $_rows_filter$$.not) === $_rows_filter$$.not), $drop$$ || "undefined" === typeof $_rows_filter$$.test || ($_rows_filter$$.test instanceof RegExp ? $drop$$ = !$_rows_filter$$.test.test($value$$) : $_rows_filter$$.test && "object" === typeof $_rows_filter$$.test && ($js$$.alg.each($_rows_filter$$.test, function($or$$) {
+        }), $drop$$ = $orDrop$$) : $drop$$ = ($value$$ & $filter$$.and) !== $filter$$.and), $drop$$ || "undefined" === typeof $filter$$.not || ($filter$$.not && "object" === typeof $filter$$.not ? ($js$$.alg.each($filter$$.not, function($or$$) {
+          ($orDrop$$ = $orDrop$$ && 0 !== ($value$$ & $or$$)) || this.stop();
+        }), $drop$$ = $orDrop$$) : $drop$$ = 0 !== ($value$$ & $filter$$.not)), $drop$$ || "undefined" === typeof $filter$$.test || ($filter$$.test instanceof RegExp ? $drop$$ = !$filter$$.test.test($value$$) : $filter$$.test && "object" === typeof $filter$$.test && ($js$$.alg.each($filter$$.test, function($or$$) {
           ($orDrop$$ = $orDrop$$ && !$or$$.test($value$$)) || this.stop();
         }), $drop$$ = $orDrop$$)));
       }
-      $drop$$ && this.drop();
+      (!$data$$ && $drop$$ || $data$$ && !$drop$$) && this.drop();
       return this;
     }
   }
-  function $__generateXML$$($name$$, $rows$$, $columns$$0$$, $styles$$) {
+  function $__generateXML$$($name$$, $table$$, $rows$$, $columns$$0$$, $styles$$) {
     return ['<?xml version="1.0"?><?mso-application progid="Excel.Sheet"?>', ['<ss:Workbook xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"><ss:Styles><ss:Style ss:ID="1"><ss:Font ss:Bold="1" /></ss:Style></ss:Styles>', ['<ss:Worksheet ss:Name="', $name$$, '"><ss:Table>', function __rows($rows$$, $columns$$) {
       function $__pushRow$$($col$$, $i$$, $cols$$, $data$$) {
         __rows.push(['<ss:Cell><ss:Data ss:Type="String">', $rows$$[$col$$][$data$$], "</ss:Data></ss:Cell>"].join(""));
@@ -3130,19 +3149,22 @@ js.extend.fn("sp", function() {
       return __rows.join("");
     }($rows$$, $columns$$0$$), "</ss:Table></ss:Worksheet>"].join(""), "</ss:Workbook>"].join("")].join("");
   }
-  function $__generateCSV$$($rows$$0$$, $columns$$0$$) {
-    return ["\ufeff", function __rows$$0($rows$$, $columns$$) {
+  function $__generateCSV$$($table$$0$$, $rows$$0$$, $columns$$0$$) {
+    return ["\ufeff", function __headers($table$$, $columns$$) {
+      var __headers = [];
+      $js$$.alg.arrEach($columns$$, function($column$$) {
+        __headers.push(['"', $table$$.getColumn($column$$).text || " ", '"'].join(""));
+      });
+      return __headers.join(",");
+    }($table$$0$$, $columns$$0$$), "\r\n", function __rows$$0($rows$$, $columns$$) {
       function $__pushRow$$($col$$, $i$$, $cols$$, $data$$) {
-        $__oneRow$$.push(['"', ($data$$.row[$col$$] || {})[$data$$.type] || "", '"'].join(""));
+        $data$$.row && $__oneRow$$.push(['"', ($data$$.row[$col$$] || {})[$data$$.type] || "", '"'].join(""));
       }
-      var $__rows$$ = [], $__oneRow$$ = [];
-      $js$$.alg.arrEach($columns$$, $__pushRow$$, {row:$rows$$[0], type:"text"});
-      $__rows$$.push($__oneRow$$.join(","));
-      $__oneRow$$ = [];
+      var $__rows$$ = [], $__oneRow$$ = null;
       $js$$.alg.arrEach($rows$$, function($row$$, $i$$) {
+        $__oneRow$$ = [];
         $js$$.alg.arrEach($columns$$, $__pushRow$$, {row:$row$$, type:"value", r:[]});
         $__rows$$.push($__oneRow$$.join(","));
-        $__oneRow$$ = [];
       });
       return $__rows$$.join("\r\n");
     }($rows$$0$$, $columns$$0$$)].join("");
@@ -3165,6 +3187,7 @@ js.extend.fn("sp", function() {
   }, addColumn:function $$sp$$$list$fn$addColumn$($name$$, $data$$) {
     var $column$$ = Object.create($sp$$.column.fn, {list:{value:this}, name:{value:$name$$}});
     $js$$.alg.mergeObj($column$$, $data$$);
+    "undefined" === typeof $data$$["default"] && "number" === $column$$.type && ($column$$["default"] = 0);
     this._columns[$name$$] = $column$$;
     return this;
   }, addColumns:function $$sp$$$list$fn$addColumns$($dataObj$$) {
@@ -3192,11 +3215,11 @@ js.extend.fn("sp", function() {
   }, getRowCount:function $$sp$$$list$fn$getRowCount$($n$$) {
     return this._rows.length;
   }, pull:function $$sp$$$list$fn$pull$($success$$, $failure$$) {
-    var $ctx$$ = new window.SP.ClientContext(this._url), $list$$8_listItems$$ = $ctx$$.get_web().get_lists().getByTitle(this._name), $caml$$ = new window.SP.CamlQuery, $successFn$$ = "function" === typeof $success$$ ? $success$$ : this._success, $failureFn$$ = "function" === typeof $failure$$ ? $failure$$ : this._failure;
+    var $ctx$$ = new window.SP.ClientContext(this._url), $list$$7_listItems$$ = $ctx$$.get_web().get_lists().getByTitle(this._name), $caml$$ = new window.SP.CamlQuery, $successFn$$ = "function" === typeof $success$$ ? $success$$ : this._success, $failureFn$$ = "function" === typeof $failure$$ ? $failure$$ : this._failure;
     $caml$$.set_viewXml(this.caml);
-    $list$$8_listItems$$ = $list$$8_listItems$$.getItems($caml$$);
-    $ctx$$.load($list$$8_listItems$$);
-    $ctx$$.executeQueryAsync($js$$.alg.bindFn(this, $__successParse$$, [$list$$8_listItems$$, $successFn$$]), $js$$.alg.bindFn(this, $__failureParse$$, [$list$$8_listItems$$, $failureFn$$]));
+    $list$$7_listItems$$ = $list$$7_listItems$$.getItems($caml$$);
+    $ctx$$.load($list$$7_listItems$$);
+    $ctx$$.executeQueryAsync($js$$.alg.bindFn(this, $__successParse$$, [$list$$7_listItems$$, $successFn$$]), $js$$.alg.bindFn(this, $__failureParse$$, [$list$$7_listItems$$, $failureFn$$]));
     return this;
   }, query:function $$sp$$$list$fn$query$($criteria$$) {
     var $query$$ = $sp$$.query(this).reset();
@@ -3210,9 +3233,9 @@ js.extend.fn("sp", function() {
     });
     return this;
   }, push:function $$sp$$$list$fn$push$($success$$, $failure$$) {
-    var $ctx$$ = new window.SP.ClientContext(this._url), $data$$101_list$$ = $ctx$$.get_web().get_lists().getByTitle(this._name), $data$$101_list$$ = {clientContext:$ctx$$, items:[], list:$data$$101_list$$, self:this};
-    this.eachDirtyRow(this._pushLoopDirtyRows, $data$$101_list$$);
-    $ctx$$.executeQueryAsync($js$$.alg.bindFn(this, $__successPush$$, [$data$$101_list$$.items, $success$$]), $js$$.alg.bindFn(this, $__failurePush$$, [$data$$101_list$$.items, $failure$$]));
+    var $ctx$$ = new window.SP.ClientContext(this._url), $data$$102_list$$ = $ctx$$.get_web().get_lists().getByTitle(this._name), $data$$102_list$$ = {clientContext:$ctx$$, items:[], list:$data$$102_list$$, self:this};
+    this.eachDirtyRow(this._pushLoopDirtyRows, $data$$102_list$$);
+    $ctx$$.executeQueryAsync($js$$.alg.bindFn(this, $__successPush$$, [$data$$102_list$$.items, $success$$]), $js$$.alg.bindFn(this, $__failurePush$$, [$data$$102_list$$.items, $failure$$]));
     return this;
   }, _pushLoopDirtyRows:function $$sp$$$list$fn$_pushLoopDirtyRows$($row$$, $i$$50_rowID$$, $itemInfo_listItem_rows$$, $data$$) {
     $i$$50_rowID$$ = $row$$.ID.value;
@@ -3233,12 +3256,12 @@ js.extend.fn("sp", function() {
     $colName$$1_value$$ = $data$$[$colData$$.name];
     $row$$ = $colName$$1_value$$ !== $colData$$.value;
     "undefined" !== typeof $colName$$1_value$$ && $row$$ && ($colData$$.value = $colName$$1_value$$);
-  }, createRow:function $$sp$$$list$fn$createRow$($data$$106_values$$) {
+  }, createRow:function $$sp$$$list$fn$createRow$($data$$107_values$$) {
     var $columns$$ = this._columns;
-    $data$$106_values$$ = {row:{}, rowID:-1, values:$js$$.alg.mergeObj({}, $data$$106_values$$)};
-    $js$$.alg.each($columns$$, this._createRowEach, $data$$106_values$$);
-    $data$$106_values$$.row.ID.value = $data$$106_values$$.rowID;
-    this._dirtyRows.push($data$$106_values$$.row);
+    $data$$107_values$$ = {row:{}, rowID:-1, values:$js$$.alg.mergeObj({}, $data$$107_values$$)};
+    $js$$.alg.each($columns$$, this._createRowEach, $data$$107_values$$);
+    $data$$107_values$$.row.ID.value = $data$$107_values$$.rowID;
+    this._dirtyRows.push($data$$107_values$$.row);
     return this;
   }, _createRowEach:function $$sp$$$list$fn$_createRowEach$($colData$$, $colName$$2_value$$, $column$$, $cell$$1_data$$) {
     var $row$$ = $cell$$1_data$$.row;
@@ -3281,10 +3304,13 @@ js.extend.fn("sp", function() {
     this._rows = this._list._rows.slice(0);
     return this;
   }, filter:function $$sp$$$query$fn$filter$($filterData$$) {
-    $filterData$$ && $js$$.alg.arrEach(this._rows, $__parseRows$$, [$filterData$$]);
+    $filterData$$ && $js$$.alg.arrEach(this._rows, $__parseRows$$, {filterArray:[$filterData$$], exclude:!1});
     return this;
   }, filters:function $$sp$$$query$fn$filters$($filterArray$$) {
-    $js$$.alg.arrEach(this._rows, $__parseRows$$, $filterArray$$);
+    $js$$.alg.arrEach(this._rows, $__parseRows$$, {filterArray:$filterArray$$, exclude:!1});
+    return this;
+  }, excludes:function $$sp$$$query$fn$excludes$($filterArray$$) {
+    $js$$.alg.arrEach(this._rows, $__parseRows$$, {filterArray:$filterArray$$, exclude:!0});
     return this;
   }, _cleanRows:function $$sp$$$query$fn$_cleanRows$() {
     this._rows.sort();
@@ -3337,9 +3363,9 @@ js.extend.fn("sp", function() {
     $clone$$._rows = this._rows.slice(0);
     return $clone$$;
   }, toExcelString:function $$sp$$$query$fn$toExcelString$($name$$, $columns$$) {
-    return $__generateXML$$($name$$, this._rows, $columns$$);
+    return $__generateXML$$($name$$, this._list, this._rows, $columns$$);
   }, toCsvString:function $$sp$$$query$fn$toCsvString$($columns$$) {
-    return $__generateCSV$$(this._rows, $columns$$);
+    return $__generateCSV$$(this._list, this._rows, $columns$$);
   }};
   $sp$$.column = function $$sp$$$column$() {
   };
@@ -3469,7 +3495,7 @@ jspyder.extend.fn("template", function() {
     var $$t$$ = $js_template$$(this);
     "string" === typeof $test$$ && ($test$$ = $$t$$.compileExplicit($test$$).output());
     return $test$$ ? $$t$$.compileExplicit($pass$$).output() : $$t$$.compileExplicit($fail$$).output();
-  }, size:function($arrayName_data$$) {
+  }, map_size:function($arrayName_data$$) {
     return ($arrayName_data$$ = this[$arrayName_data$$]) && $arrayName_data$$.length ? $arrayName_data$$.length : "undefined" === typeof $arrayName_data$$ ? 0 : 1;
   }, add:function($n$$, $a$$) {
     return $js$$.alg.number($js$$.alg.number($n$$) + $js$$.alg.number($a$$));
@@ -3487,9 +3513,9 @@ jspyder.extend.fn("template", function() {
     return "";
   }, map_item:function($map$$, $id$$) {
     return ($map$$ = this[$map$$]) ? $map$$[$id$$] : $id$$;
-  }, js_registry:function($data$$120_key$$) {
-    $data$$120_key$$ = $js$$.registry.fetch($data$$120_key$$);
-    return null === $data$$120_key$$ || "undefined" === typeof $data$$120_key$$ ? "" : $data$$120_key$$;
+  }, js_registry:function($data$$121_key$$) {
+    $data$$121_key$$ = $js$$.registry.fetch($data$$121_key$$);
+    return null === $data$$121_key$$ || "undefined" === typeof $data$$121_key$$ ? "" : $data$$121_key$$;
   }, js_log:function($data$$) {
     console.log($data$$);
   }, concat:function($str$$) {

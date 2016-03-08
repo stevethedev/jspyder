@@ -303,7 +303,7 @@ jspyder.extend.fn("canvas", function () {
                         y: ((height * (5 - i)) / 5) - (labelSize / 3),
                         size: labelSize,
                         font: "Arial",
-                        text: (i / 5) * max,
+                        text: ((i / 5) * max)|0,
                         textalign: "left"
                     });
                     self.cmd.text.call(self, {
@@ -311,7 +311,7 @@ jspyder.extend.fn("canvas", function () {
                         y: ((height * (5 - i)) / 5) - (labelSize / 3),
                         size: labelSize,
                         font: "Arial",
-                        text: (i / 5) * max,
+                        text: ((i / 5) * max)|0,
                         textalign: "right"
                     });
                 });
@@ -438,7 +438,7 @@ jspyder.extend.fn("canvas", function () {
                         y: ((height * (5 - i)) / 5) - (labelSize / 3),
                         size: labelSize,
                         font: "Arial",
-                        text: (i / 5) * max,
+                        text: ((i / 5) * max)|0,
                         textalign: "left"
                     });
                     self.cmd.text.call(self, {
@@ -446,7 +446,7 @@ jspyder.extend.fn("canvas", function () {
                         y: ((height * (5 - i)) / 5) - (labelSize / 3),
                         size: labelSize,
                         font: "Arial",
-                        text: (i / 5) * max,
+                        text: ((i / 5) * max)|0,
                         textalign: "right"
                     });
                 });
