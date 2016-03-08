@@ -1096,6 +1096,7 @@ jspyder.extend.fn("form", function () {
                 
                     html = [
                         "<div name=\"", cfgname, "\" tabindex=\"0\"",
+                            (cfg.readonly ? " readonly=\"true\"" : ""),
                             " class=\"input js-control js-control-dropdown ", cfgclass, "\">",
                             "<i class=\"dropdown-arrow arrow-drop-down\"></i>",
                             "<span class=\"dropdown-text\">", (cfgvalue || cfgdefault || "&nbsp;"), "</span>",
@@ -1458,6 +1459,7 @@ jspyder.extend.fn("form", function () {
                         type: "button",
                         text: cfgtext,
                         class: cfgclass + " js-buttonset",
+                        readonly: cfg.readonly,
                         click: function (data, event) {
                             js.dom(this)
                                 .getAttrs({ "data-checked": false, "readonly": false }, function (attrs) {
@@ -1487,8 +1489,10 @@ jspyder.extend.fn("form", function () {
                     
                 for(i = 0; i < options.length; i++) {
                     option = js.alg.mergeObj({ 
-                        "name": cfgname }, options[i]);
-                    option.class = cfgclass + js.alg.string(options[i].class);
+                        "name": cfgname,
+                        "readonly": cfg.readonly 
+                    }, options[i]);
+                    option.class = cfgclass + " " + js.alg.string(options[i].class);
                     $option = js.dom(checkbox(option));
                     $checkbox.and($option);
                 }
