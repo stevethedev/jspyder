@@ -2288,15 +2288,15 @@ jspyder.extend.fn("form", function() {
   }, registerControlFn:function $$js_form$$$fn$registerControlFn$($typename$$, $preconstructor$$) {
     return this.registerControl($typename$$, $js$$.alg.use(this, $preconstructor$$));
   }, buildControl:function $$js_form$$$fn$buildControl$($config$$, $nolabel$$) {
-    var $ctl$$ = (this.templates[$config$$.type] || this.templates.input).apply(this, [$config$$]), $fieldname_lbl$$ = $js$$.alg.string($config$$.name), $labeltext$$ = $js$$.alg.string($config$$.text), $uselabel$$ = !$js$$.alg.bool($config$$.nolabel, $nolabel$$), $fieldname_lbl$$ = this.buildLabel($uselabel$$ && $fieldname_lbl$$, $uselabel$$ && $labeltext$$, $config$$.class), $form$$ = this;
+    var $ctl$$ = (this.templates[$config$$.type] || this.templates.input).apply(this, [$config$$]), $fieldname_lbl$$ = $js$$.alg.string($config$$.name), $labeltext$$ = $js$$.alg.string($config$$.text), $uselabel$$ = !$js$$.alg.bool($config$$.nolabel, $nolabel$$), $fieldname_lbl$$ = this.buildLabel($uselabel$$ && $fieldname_lbl$$, $uselabel$$ && $labeltext$$, $config$$.class, $config$$.tooltip), $form$$ = this;
     $js$$.alg.each($config$$.events, function($callback$$, $event$$0$$) {
       $ctl$$.on($event$$0$$, function($event$$) {
         $js$$.alg.use(this, $callback$$, [$event$$, $form$$]);
       });
     });
     return $fieldname_lbl$$.and($ctl$$);
-  }, buildLabel:function $$js_form$$$fn$buildLabel$($fieldname$$1_html$$, $labeltext$$, $labelclass$$) {
-    $fieldname$$1_html$$ = $fieldname$$1_html$$ && $labeltext$$ ? ['<label for="', $fieldname$$1_html$$, '" class="', $labelclass$$, '">', $labeltext$$, "</label>"].join("") : "";
+  }, buildLabel:function $$js_form$$$fn$buildLabel$($fieldname$$1_html$$, $labeltext$$, $labelclass$$, $tooltip$$) {
+    $fieldname$$1_html$$ = $fieldname$$1_html$$ && $labeltext$$ ? ['<label for="', $fieldname$$1_html$$, '" class="', $labelclass$$, '"', $tooltip$$ ? 'title="' + $tooltip$$ + '"' : "", ">", $labeltext$$, "</label>"].join("") : "";
     return $js$$.dom($fieldname$$1_html$$);
   }, getField:function $$js_form$$$fn$getField$($name$$, $fn$$) {
     var $field$$ = this.exportField($name$$);

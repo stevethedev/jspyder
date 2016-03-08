@@ -266,7 +266,7 @@ jspyder.extend.fn("form", function () {
                 fieldname = js.alg.string(config.name),
                 labeltext = js.alg.string(config.text),
                 uselabel = !js.alg.bool(config.nolabel, nolabel),
-                lbl = this.buildLabel(uselabel && fieldname, uselabel && labeltext, config.class),
+                lbl = this.buildLabel(uselabel && fieldname, uselabel && labeltext, config.class, config.tooltip),
                 form = this;
                 
             js.alg.each(config["events"], function(callback, event) { 
@@ -277,9 +277,9 @@ jspyder.extend.fn("form", function () {
                 
             return lbl.and(ctl);
         },
-        buildLabel: function(fieldname, labeltext, labelclass) {
+        buildLabel: function(fieldname, labeltext, labelclass, tooltip) {
             var html = (fieldname && labeltext
-                    ? ["<label for=\"", fieldname, "\" class=\"", labelclass, "\">", labeltext, "</label>"].join('')
+                    ? ["<label for=\"", fieldname, "\" class=\"", labelclass, "\"", (tooltip ? "title=\"" + tooltip + "\"" : ""), ">", labeltext, "</label>"].join('')
                     : "");
                     
             return js.dom(html);

@@ -2,6 +2,11 @@
 
 label {
     display: block;
+    
+    &[title] {
+        cursor: help;
+        border-bottom: $px solid $color-grey-300;
+    }
 }
 
 .js-control {

@@ -1622,6 +1622,9 @@ html {
 /** FORM ELEMENTS ************************************************************/
 label {
   display: block; }
+  label[title] {
+    cursor: help;
+    border-bottom: 0.0625em solid #e0e0e0; }
 
 .js-control.js-control-button {
   padding: .3em .5em;
