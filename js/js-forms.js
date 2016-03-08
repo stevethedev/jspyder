@@ -840,26 +840,30 @@ jspyder.extend.fn("form", function () {
                     calStruct = __calStructFactory(cfg);
                 
                 $datepicker.filter("input").on("click", function(event) {
-                    var dateVal = this.value || cfg.value || cfg.default || new Date();
+                    var attrs = { "readonly": null };
+                    js.dom(this).getAttrs(attrs);
                     
-                    calStruct.clear();
-                    calStruct.input = js.dom(this);
-                    
-                    calStruct.date.setDate(dateVal, calStruct.format);
-                    
-                    calStruct
-                        .load()
-                        .preventClose();
-                    
-                    js.dom(this.parentNode)
-                        .append(calStruct.dom);
-                    
-                    calStruct.DOCDOM.on("click", function __docClick(event) {
-                        if(calStruct.pause) { return calStruct.enableClose(); }
+                    if(!attrs["readonly"]) {
+                        var dateVal = this.value || cfg.value || cfg.default || new Date();
+                         
                         calStruct.clear();
-                        calStruct.DOCDOM.off("click", __docClick);
-                    });
+                        calStruct.input = js.dom(this);
                         
+                        calStruct.date.setDate(dateVal, calStruct.format);
+                        
+                        calStruct
+                            .load()
+                            .preventClose();
+                        
+                        js.dom(this.parentNode)
+                            .append(calStruct.dom);
+                        
+                        calStruct.DOCDOM.on("click", function __docClick(event) {
+                            if(calStruct.pause) { return calStruct.enableClose(); }
+                            calStruct.clear();
+                            calStruct.DOCDOM.off("click", __docClick);
+                        });
+                    }
                     return;
                 });
                 
@@ -885,7 +889,9 @@ jspyder.extend.fn("form", function () {
             
             function __clickFactory(form, fn) {
                 return function(event) {
-                    js.alg.use(this, fn, [event, form]);
+                    var attrs = { "readonly": null };
+                    js.dom(this).getAttrs(attrs);
+                    attrs["readonly"] || js.alg.use(this, fn, [event, form]);
                     return;
                 }
             }
@@ -901,7 +907,7 @@ jspyder.extend.fn("form", function () {
                 
                 var html = [
                         "<div class=\"js-control js-control-button ", btnclass, "\"",
-                            " name=\"", btnname, "\">",
+                            (cfg.readonly ? " readonly=\"true\"" : ""), " name=\"", btnname, "\">",
                                 "<i class=\"" + btnicon + "\"></i>",
                                 "<span class=\"button-text\" data-buttontext=\"" + btntext + "\"></span>",
                         "</div>"
@@ -928,7 +934,7 @@ jspyder.extend.fn("form", function () {
             return function (cfg) {
                 var buttons = js.dom();
                 for (var i = 0; i < cfg.buttons.length; i++) {
-                    var option = js.alg.mergeObj({}, cfg.buttons[i], __override);
+                    var option = js.alg.mergeObj({ "readonly": cfg["readonly"] }, cfg.buttons[i], __override);
                     option.class += ' js-buttonset';
                     buttons.and(this.buildControl(option, true));
                 }
@@ -943,7 +949,9 @@ jspyder.extend.fn("form", function () {
             
             function __submitClickFactory(form) {
                 return function __submitClick(event) {
-                    form.submit();
+                    var attrs = { "readonly": null };
+                    js.dom(this).getAttrs(attrs);
+                    attrs["readonly"] || form.submit();
                     return;
                 }
             }
@@ -969,7 +977,9 @@ jspyder.extend.fn("form", function () {
             
             function __resetClickFactory(form) {
                 return function __resetClick(event) {
-                    form.reset();
+                    var attrs = { "readonly": null };
+                    js.dom(this).getAttrs(attrs);
+                    attrs["readonly"] || form.reset();
                     return;
                 }
             }
@@ -995,10 +1005,14 @@ jspyder.extend.fn("form", function () {
             var $DOC = js.dom(document.documentElement);
             
             function __dropdownClickFactory(cfg) {
-                function __dropdownClick(event) {
-                    var $dropdown = js.dom(this);
-                    
-                    __createPopout($dropdown, cfg);
+                function __dropdownClick(event) {                    
+                    var $dropdown = js.dom(this),
+                        attrs = { "readonly": null };
+                        
+                    $dropdown.getAttrs(attrs);
+                    if(!attrs["readonly"]) {
+                        __createPopout($dropdown, cfg);
+                    }
                     
                     $dropdown = null;
                 }
@@ -1113,6 +1127,7 @@ jspyder.extend.fn("form", function () {
                     cfgclass = js.alg.string(cfg.class, ""),
                     html = [
                         "<textarea name=\"", cfgname, "\"",
+                            (cfg.readonly ? " readonly=\"true\"" : ""),
                             " class=\"input ", cfgclass, "\">",
                         "</textarea>"
                     ].join('');
@@ -1135,41 +1150,45 @@ jspyder.extend.fn("form", function () {
             }
             
             function input(event) {
-                div = document.createElement("div");
-                var css = {
-                    "font-family": null,
-                    "font-size": null,
-                    "font-weight": null,
-                    "padding-left": null,
-                    "padding-right": null,
-                    "padding-bottom": null,
-                    "padding-top": null,
-                    "border-left": null,
-                    "border-right": null,
-                    "border-top": null,
-                    "border-bottom": null,
-                    "line-height": null,
-                    "word-wrap": null
-                };
+                var attrs = { "readonly": null };
+                js.dom(this).getAttrs(attrs);
+                if(!attrs["readonly"]) {
+                    div = document.createElement("div");
+                    var css = {
+                        "font-family": null,
+                        "font-size": null,
+                        "font-weight": null,
+                        "padding-left": null,
+                        "padding-right": null,
+                        "padding-bottom": null,
+                        "padding-top": null,
+                        "border-left": null,
+                        "border-right": null,
+                        "border-top": null,
+                        "border-bottom": null,
+                        "line-height": null,
+                        "word-wrap": null
+                    };
 
-                div.style["position"] = "fixed";
-                div.style["left"] = -0xFFFF + "px";
-                div.style["white-space"] = "pre-wrap";
-                div.style["white-space"] = "-moz-pre-wrap";
-                div.style["white-space"] = "-pre-wrap";
-                div.style["white-space"] = "-o-pre-wrap";
-                div.style["width"] = div.style["min-width"] = div.style["max-width"] = this.clientWidth + "px";
-                document.body.appendChild(div);
-                
-                var textarea = js.dom(this).getCss(css);
-                js.dom(div)
-                    .setText(this.value)
-                    .setCss(css)
-                    .getPosition(function(pos) {
-                        textarea.setCss({
-                            "height": (pos.height + 20) + "px"
-                        });
-                    }).remove();
+                    div.style["position"] = "fixed";
+                    div.style["left"] = -0xFFFF + "px";
+                    div.style["white-space"] = "pre-wrap";
+                    div.style["white-space"] = "-moz-pre-wrap";
+                    div.style["white-space"] = "-pre-wrap";
+                    div.style["white-space"] = "-o-pre-wrap";
+                    div.style["width"] = div.style["min-width"] = div.style["max-width"] = this.clientWidth + "px";
+                    document.body.appendChild(div);
+                    
+                    var textarea = js.dom(this).getCss(css);
+                    js.dom(div)
+                        .setText(this.value)
+                        .setCss(css)
+                        .getPosition(function(pos) {
+                            textarea.setCss({
+                                "height": (pos.height + 20) + "px"
+                            });
+                        }).remove();
+                }
                 return;
             }
             
@@ -1205,6 +1224,7 @@ jspyder.extend.fn("form", function () {
                         "<input value=\"", cfgvalue, "\"",
                             " name=\"", cfgname, "\"",
                             " type=\"radio\"",
+                            (cfg["readonly"] ? " readonly=\"true\"" : ""),
                             " class=\"", cfgclass, "\">",
                         "</input>"
                     ].join('');
@@ -1254,7 +1274,8 @@ jspyder.extend.fn("form", function () {
                 for(i = 0; i < options.length; i++) {
                     option = js.alg.mergeObj({ 
                         "name": cfgname, 
-                        "class": cfgclass }, options[i]);
+                        "class": cfgclass,
+                        "readonly": cfg.readonly }, options[i]);
                     option.class = cfgclass + js.alg.string(options[i].class);
                     $option = js.dom("<div></div>").append(single(option));
                     $radio.and($option);
@@ -1263,9 +1284,14 @@ jspyder.extend.fn("form", function () {
                 $radio
                     .find("input")
                         .on("change", function (event) {
-                            js.dom(this).getValue(function(v) {
-                                cfg["data-value"] = v;
-                            });
+                            var attrs = { "readonly": null };
+                            var $me = js.dom(this);
+                            $me.getAttrs(attrs);
+                            if(!attrs["readonly"]) {
+                                $me.getValue(function(v) {
+                                    cfg["data-value"] = v;
+                                });
+                            }
                         });
                 
                 cfg.exportValue = exportValue;
@@ -1326,6 +1352,7 @@ jspyder.extend.fn("form", function () {
                         "<input value=\"", cfgvalue, "\"",
                             " name=\"", cfgname, "\"",
                             " type=\"checkbox\"",
+                            (cfg.readonly ? " readonly=\"true\"" : ""),
                             " class=\"", cfgclass, "\">",
                         "</input>"
                     ].join(''),
@@ -1347,7 +1374,7 @@ jspyder.extend.fn("form", function () {
                     
                 for(i = 0; i < options.length; i++) {
                     option = js.alg.mergeObj({ 
-                        "name": cfgname }, options[i]);
+                        "name": cfgname, readonly: cfg.readonly }, options[i]);
                     option.class = cfgclass + js.alg.string(options[i].class);
                     $option = js.dom("<div></div>").append(checkbox(option));
                     $checkbox.and($option);                    
@@ -1356,10 +1383,20 @@ jspyder.extend.fn("form", function () {
                 $checkbox
                     .find("input")
                         .on("change", function (event) {
-                            var checked = this.checked;
-                            js.dom(this).getValue(function(v) {
-                                cfg["data-values"]["val-" + js.alg.string(v)] = checked;
-                            });
+                            var checked = this.checked,
+                                self = js.dom(this),
+                                attrs = { "readonly": null };
+                            
+                            self.getAttrs(attrs);
+                            
+                            if(attrs["readonly"]) {
+                                this.checked = !checked;
+                            }
+                            else {
+                                self.getValue(function(v) {
+                                    cfg["data-values"]["val-" + js.alg.string(v)] = checked;
+                                });
+                            }
                         });
                 
                 cfg.exportValue = exportValue;
@@ -1423,9 +1460,12 @@ jspyder.extend.fn("form", function () {
                         class: cfgclass + " js-buttonset",
                         click: function (data, event) {
                             js.dom(this)
-                                .getAttrs({ "data-checked": false }, function (attrs) {
-                                    attrs["data-checked"] = (js.alg.bool(attrs["data-checked"]) ? null : true);
-                                    this.setAttrs(attrs);
+                                .getAttrs({ "data-checked": false, "readonly": false }, function (attrs) {
+                                    if(!attrs["readonly"]) {
+                                        attrs["data-checked"] = (js.alg.bool(attrs["data-checked"]) ? null : true);
+                                        this.setAttrs(attrs);
+                                    }
+                                    return;
                                 });
                             return;
                         }
@@ -1501,8 +1541,8 @@ jspyder.extend.fn("form", function () {
                 $checkbox.on("click", function (event) {
                     var self = js.dom(this);
                     js.alg.each(cfg.values, function (valObj) {
-                        self.getAttrs({ "data-value": null }, function (attrs) {
-                            form.setFieldValue(cfg.name, attrs["data-value"]);
+                        self.getAttrs({ "data-value": null, "readonly": null }, function (attrs) {
+                            attrs["readonly"] || form.setFieldValue(cfg.name, attrs["data-value"]);
                         });
                         return;
                     });
@@ -1685,6 +1725,9 @@ jspyder.extend.fn("form", function () {
                 
                 autocomplete
                     .on("keydown", function (event) {
+                        var attrs = { "readonly": null };
+                        js.dom(this).getAttrs(attrs);
+                        if(attrs["readonly"]) { return ; }
                         var up = false;
                         switch (event.keyCode) {
                             case js.alg.keycodes.KC_UpArrow:
@@ -1717,6 +1760,9 @@ jspyder.extend.fn("form", function () {
                         return;
                     })
                     .on("blur", function (event) {
+                        var attrs = { "readonly": null };
+                        js.dom(this).getAttrs(attrs);
+                        if(attrs["readonly"]) { return ; }
                         if(this.value === ""){ 
                             js.dom(this).setAttrs({ "data-value": "" });
                         }
@@ -1731,12 +1777,8 @@ jspyder.extend.fn("form", function () {
                                 this.value = match.text;
                                 js.dom(this).setAttrs({ "data-value": match.value });
                             }
-                            // check if anything matches this value
-                            // form.setFieldValue(config.name, this.value);
-                            // found.find(".search-item").at(0, function () { this.trigger(".click"); });
                         }
                         fns.hide();
-                        // found.remove();
                         return;
                     });
                 
@@ -1873,7 +1915,9 @@ jspyder.extend.fn("form", function () {
                 
                 $autocomplete
                     .on("focus input", function (event) {
-                        $autocomplete.getValue(search.show);
+                        var attrs = { "readonly": null };
+                        js.dom(this).getAttrs(attrs);
+                        attrs["readonly"] || $autocomplete.getValue(search.show);
                     });
                 
                 return $autocomplete;
@@ -1983,8 +2027,14 @@ jspyder.extend.fn("form", function () {
                         return;
                     })
                     .on("focus", function (event) {
-                        var $input = js.dom(this).setAttrs({ "data-focus": true });
-                        form.setFieldValue(cfg.name, $input.exportValue());
+                        var attrs = { "readonly": null };
+                        js.dom(this).getAttrs(attrs);
+                        
+                        if(!attrs["readonly"]) {
+                            var $input = js.dom(this).setAttrs({ "data-focus": true });
+                            form.setFieldValue(cfg.name, $input.exportValue());
+                        }
+                        
                         return;
                     });
                     
