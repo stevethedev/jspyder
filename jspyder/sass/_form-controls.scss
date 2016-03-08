@@ -65,9 +65,14 @@ label {
             }
         }
         
-        &:hover {
+        &:not([readonly]):hover {
             background-color: lighten($color-divider, 40);
             box-shadow: 0 0 .4em rgba($color-secondary, .4);
+        }
+        
+        &[readonly] {
+            opacity: .5;
+            cursor: not-allowed;
         }
     }
     

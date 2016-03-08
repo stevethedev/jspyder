@@ -1661,9 +1661,12 @@ label {
       display: none; }
       .js-control.js-control-button > i[class=""] + .button-text:after {
         margin-left: 0; }
-  .js-control.js-control-button:hover {
+  .js-control.js-control-button:not([readonly]):hover {
     background-color: white;
     box-shadow: 0 0 0.4em rgba(97, 97, 97, 0.4); }
+  .js-control.js-control-button[readonly] {
+    opacity: .5;
+    cursor: not-allowed; }
 .js-control.js-control-currency-prefix {
   position: absolute;
   margin: .334em;
@@ -1967,7 +1970,7 @@ sup {
   border-color: #303f9f !important;
   background-color: #3f51b5 !important;
   color: #FFFFFF !important; }
-  .color-primary:hover {
+  .color-primary:not([readonly]):hover {
     border-color: #3d50c5 !important;
     background-color: #606fc7 !important; }
 
@@ -1975,7 +1978,7 @@ sup {
   border-color: #4caf50 !important;
   background-color: #a5d6a7 !important;
   color: #1b5e20 !important; }
-  .color-success:hover {
+  .color-success:not([readonly]):hover {
     border-color: #6ec071 !important;
     background-color: #c8e6c9 !important; }
 
@@ -1983,7 +1986,7 @@ sup {
   border-color: #42a5f5 !important;
   background-color: #90caf9 !important;
   color: #0d47a1 !important; }
-  .color-info:hover {
+  .color-info:not([readonly]):hover {
     border-color: #72bcf8 !important;
     background-color: #c0e1fc !important; }
 
@@ -1991,7 +1994,7 @@ sup {
   border-color: #ffb74d !important;
   background-color: #ffe0b2 !important;
   color: #e65100 !important; }
-  .color-warning:hover {
+  .color-warning:not([readonly]):hover {
     border-color: #ffcc80 !important;
     background-color: #fff5e5 !important; }
 
@@ -1999,7 +2002,7 @@ sup {
   border-color: #e53935 !important;
   background-color: #ef9a9a !important;
   color: #b71c1c !important; }
-  .color-danger:hover {
+  .color-danger:not([readonly]):hover {
     border-color: #eb6562 !important;
     background-color: #f6c6c6 !important; }
 

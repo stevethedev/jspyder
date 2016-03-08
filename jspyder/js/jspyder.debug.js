@@ -1573,8 +1573,8 @@ jspyder.extend.fn("canvas", function() {
     $max$$ = 1.1 * $js$$.alg.magnitude($max$$);
     $js$$.alg.iterate(0, 5, function($i$$) {
       $self$$.cmd.line.call($self$$, {x:$chartX$$, y:$height$$ * (5 - $i$$) / 5, width:$width$$ + $chartX$$, height:0, color:$lineColor$$});
-      $self$$.cmd.text.call($self$$, {x:$labelSize$$ / 3, y:$height$$ * (5 - $i$$) / 5 - $labelSize$$ / 3, size:$labelSize$$, font:"Arial", text:$i$$ / 5 * $max$$, textalign:"left"});
-      $self$$.cmd.text.call($self$$, {x:$width$$ - $labelSize$$ / 3, y:$height$$ * (5 - $i$$) / 5 - $labelSize$$ / 3, size:$labelSize$$, font:"Arial", text:$i$$ / 5 * $max$$, textalign:"right"});
+      $self$$.cmd.text.call($self$$, {x:$labelSize$$ / 3, y:$height$$ * (5 - $i$$) / 5 - $labelSize$$ / 3, size:$labelSize$$, font:"Arial", text:$i$$ / 5 * $max$$ | 0, textalign:"left"});
+      $self$$.cmd.text.call($self$$, {x:$width$$ - $labelSize$$ / 3, y:$height$$ * (5 - $i$$) / 5 - $labelSize$$ / 3, size:$labelSize$$, font:"Arial", text:$i$$ / 5 * $max$$ | 0, textalign:"right"});
     });
     $width$$ -= 50;
     $chartX$$ += 50;
@@ -1614,8 +1614,8 @@ jspyder.extend.fn("canvas", function() {
     $max$$ = 1.1 * $js$$.alg.magnitude($max$$);
     $js$$.alg.iterate(0, 5, function($i$$) {
       $self$$.cmd.line.call($self$$, {x:$chartX$$, y:$height$$ * (5 - $i$$) / 5, width:$width$$ + $chartX$$, height:0, color:$lineColor$$0$$});
-      $self$$.cmd.text.call($self$$, {x:$labelSize$$ / 3, y:$height$$ * (5 - $i$$) / 5 - $labelSize$$ / 3, size:$labelSize$$, font:"Arial", text:$i$$ / 5 * $max$$, textalign:"left"});
-      $self$$.cmd.text.call($self$$, {x:$width$$ - $labelSize$$ / 3, y:$height$$ * (5 - $i$$) / 5 - $labelSize$$ / 3, size:$labelSize$$, font:"Arial", text:$i$$ / 5 * $max$$, textalign:"right"});
+      $self$$.cmd.text.call($self$$, {x:$labelSize$$ / 3, y:$height$$ * (5 - $i$$) / 5 - $labelSize$$ / 3, size:$labelSize$$, font:"Arial", text:$i$$ / 5 * $max$$ | 0, textalign:"left"});
+      $self$$.cmd.text.call($self$$, {x:$width$$ - $labelSize$$ / 3, y:$height$$ * (5 - $i$$) / 5 - $labelSize$$ / 3, size:$labelSize$$, font:"Arial", text:$i$$ / 5 * $max$$ | 0, textalign:"right"});
     });
     var $width$$ = $width$$ - 50, $JSCompiler_object_inline_x_47$$ = $chartX$$ += 50, $JSCompiler_object_inline_y_48$$ = $chartY$$1_size$$, $JSCompiler_object_inline_height_49$$ = $height$$ - $chartY$$1_size$$, $JSCompiler_object_inline_vertWidth_51$$ = ($width$$ - $chartX$$) / ($cols$$ - 1);
     $js$$.alg.iterate(0, $cols$$, function($i$$) {
@@ -2631,8 +2631,8 @@ jspyder.extend.fn("form", function() {
     }
     var $$DOC$$ = $js$$.dom(document.documentElement);
     return function dropdown($cfg$$) {
-      var $$dropdown$$2_cfgname_html$$ = $js$$.alg.string($cfg$$.name, ""), $cfgclass$$ = $js$$.alg.string($cfg$$.class, ""), $cfgvalue$$ = $js$$.alg.string($cfg$$.value, ""), $cfgdefault$$ = $js$$.alg.string($cfg$$.default, ""), $$dropdown$$2_cfgname_html$$ = ['<div name="', $$dropdown$$2_cfgname_html$$, '" tabindex="0" class="input js-control js-control-dropdown ', $cfgclass$$, '"><i class="dropdown-arrow arrow-drop-down"></i><span class="dropdown-text">', $cfgvalue$$ || $cfgdefault$$ || "&nbsp;", 
-      "</span></div>"].join(""), $$dropdown$$2_cfgname_html$$ = $js$$.dom($$dropdown$$2_cfgname_html$$);
+      var $$dropdown$$2_cfgname_html$$ = $js$$.alg.string($cfg$$.name, ""), $cfgclass$$ = $js$$.alg.string($cfg$$.class, ""), $cfgvalue$$ = $js$$.alg.string($cfg$$.value, ""), $cfgdefault$$ = $js$$.alg.string($cfg$$.default, ""), $$dropdown$$2_cfgname_html$$ = ['<div name="', $$dropdown$$2_cfgname_html$$, '" tabindex="0"', $cfg$$.readonly ? ' readonly="true"' : "", ' class="input js-control js-control-dropdown ', $cfgclass$$, '"><i class="dropdown-arrow arrow-drop-down"></i><span class="dropdown-text">', 
+      $cfgvalue$$ || $cfgdefault$$ || "&nbsp;", "</span></div>"].join(""), $$dropdown$$2_cfgname_html$$ = $js$$.dom($$dropdown$$2_cfgname_html$$);
       $$dropdown$$2_cfgname_html$$.on("click", $__dropdownClickFactory$$($cfg$$));
       $cfg$$.setValue = $setValue$$;
       return $$dropdown$$2_cfgname_html$$;
@@ -2704,13 +2704,13 @@ jspyder.extend.fn("form", function() {
       for ($i$$ = 0;$i$$ < $options$$.length;$i$$++) {
         $$option_option$$ = $js$$.alg.mergeObj({name:$cfgname$$, "class":$cfgclass$$, readonly:$cfg$$.readonly}, $options$$[$i$$]), $$option_option$$.class = $cfgclass$$ + $js$$.alg.string($options$$[$i$$].class), $$option_option$$ = $js$$.dom("<div></div>").append($single$$($$option_option$$)), $$radio$$.and($$option_option$$);
       }
-      var $lastvalue$$ = $$radio$$.exportValue();
+      var $form$$ = this;
       $$radio$$.find("input").on("change", function($attrs$$15_event$$) {
         $attrs$$15_event$$ = {readonly:null};
         var $$me$$ = $js$$.dom(this);
         $$me$$.getAttrs($attrs$$15_event$$);
-        $attrs$$15_event$$.readonly ? $$radio$$.setValue($lastvalue$$) : $$me$$.getValue(function($v$$) {
-          $lastvalue$$ = $cfg$$["data-value"] = $v$$;
+        $attrs$$15_event$$.readonly ? $form$$.setFieldValue($cfgname$$, $form$$.exportFieldValue($cfgname$$)) : $$me$$.getValue(function($v$$) {
+          $cfg$$["data-value"] = $v$$;
         });
       });
       $cfg$$.exportValue = $exportValue$$;
@@ -2780,10 +2780,9 @@ jspyder.extend.fn("form", function() {
       });
       return this;
     }
-    function $checkbox$$($cfg$$20_cfgclass$$) {
-      var $cfgtext$$ = $js$$.alg.string($cfg$$20_cfgclass$$.text, ""), $cfgvalue$$ = $js$$.alg.string($cfg$$20_cfgclass$$.value, "");
-      $cfg$$20_cfgclass$$ = $js$$.alg.string($cfg$$20_cfgclass$$.class, "");
-      return $js$$.form.fn.buildControl({type:"button", text:$cfgtext$$, class:$cfg$$20_cfgclass$$ + " js-buttonset", click:function($data$$, $event$$) {
+    function $checkbox$$($cfg$$) {
+      var $cfgtext$$ = $js$$.alg.string($cfg$$.text, ""), $cfgvalue$$ = $js$$.alg.string($cfg$$.value, ""), $cfgclass$$ = $js$$.alg.string($cfg$$.class, "");
+      return $js$$.form.fn.buildControl({type:"button", text:$cfgtext$$, class:$cfgclass$$ + " js-buttonset", readonly:$cfg$$.readonly, click:function($data$$, $event$$) {
         $js$$.dom(this).getAttrs({"data-checked":!1, readonly:!1}, function($attrs$$) {
           $attrs$$.readonly || ($attrs$$["data-checked"] = $js$$.alg.bool($attrs$$["data-checked"]) ? null : !0, this.setAttrs($attrs$$));
         });
@@ -2793,7 +2792,7 @@ jspyder.extend.fn("form", function() {
       var $cfgname$$ = $js$$.alg.string($cfg$$.name, ""), $cfgclass$$ = $js$$.alg.string($cfg$$.class, ""), $options$$ = $cfg$$.values || [], $$option$$2_option$$ = null, $$option$$2_option$$ = null, $$checkbox$$ = $js$$.dom(), $i$$;
       $cfg$$["data-values"] = {};
       for ($i$$ = 0;$i$$ < $options$$.length;$i$$++) {
-        $$option$$2_option$$ = $js$$.alg.mergeObj({name:$cfgname$$}, $options$$[$i$$]), $$option$$2_option$$.class = $cfgclass$$ + $js$$.alg.string($options$$[$i$$].class), $$option$$2_option$$ = $js$$.dom($checkbox$$($$option$$2_option$$)), $$checkbox$$.and($$option$$2_option$$);
+        $$option$$2_option$$ = $js$$.alg.mergeObj({name:$cfgname$$, readonly:$cfg$$.readonly}, $options$$[$i$$]), $$option$$2_option$$.class = $cfgclass$$ + " " + $js$$.alg.string($options$$[$i$$].class), $$option$$2_option$$ = $js$$.dom($checkbox$$($$option$$2_option$$)), $$checkbox$$.and($$option$$2_option$$);
       }
       $cfg$$.exportValue = $exportValue$$;
       $cfg$$.setValue = $setValue$$;
@@ -3496,7 +3495,7 @@ jspyder.extend.fn("template", function() {
     var $$t$$ = $js_template$$(this);
     "string" === typeof $test$$ && ($test$$ = $$t$$.compileExplicit($test$$).output());
     return $test$$ ? $$t$$.compileExplicit($pass$$).output() : $$t$$.compileExplicit($fail$$).output();
-  }, size:function($arrayName_data$$) {
+  }, map_size:function($arrayName_data$$) {
     return ($arrayName_data$$ = this[$arrayName_data$$]) && $arrayName_data$$.length ? $arrayName_data$$.length : "undefined" === typeof $arrayName_data$$ ? 0 : 1;
   }, add:function($n$$, $a$$) {
     return $js$$.alg.number($js$$.alg.number($n$$) + $js$$.alg.number($a$$));

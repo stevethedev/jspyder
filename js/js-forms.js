@@ -1282,6 +1282,8 @@ jspyder.extend.fn("form", function () {
                     $radio.and($option);
                 }
                 
+                var form = this;
+                
                 $radio
                     .find("input")
                         .on("change", function (event) {
@@ -1292,6 +1294,9 @@ jspyder.extend.fn("form", function () {
                                 $me.getValue(function(v) {
                                     cfg["data-value"] = v;
                                 });
+                            }
+                            else {
+                                form.setFieldValue(cfgname, form.exportFieldValue(cfgname));
                             }
                         });
                 
