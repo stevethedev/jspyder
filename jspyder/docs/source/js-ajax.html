@@ -84,7 +84,7 @@ jspyder.extend.fn(&quot;ajax&quot;, function () {
             
         xhttp.onreadystatechange = function xhttp_onreadystatechange() {
             if ((this.readyState === 4) &amp;&amp; (typeof fn === &quot;function&quot;)){
-                fn.apply(js, [this, context]);
+                js.alg.use(js, fn, [this, context]);
             }
             return null;
         };

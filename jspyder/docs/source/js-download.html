@@ -40,6 +40,8 @@
  * ***************************************************************************/
  
 js.extend.fn(&quot;download&quot;, function () {
+<span id='global-property-js'>    /** @ignore */
+</span>    var js = window[&quot;jspyder&quot;];
     
 <span id='jspyder-download'>    /**
 </span>     * @class jspyder.download
@@ -78,7 +80,7 @@ js.extend.fn(&quot;download&quot;, function () {
         },
         saveMime: function(def) {
             def = def || {};
-            var name = (def.name || this._name).split(&#39;.&#39;),
+            var name = (def.name || this._name).split('.'),
                 data = (def.data || this._data),
                 type = (def.type || this._type),
                 charset = (def.charset || this._charset),
@@ -87,7 +89,7 @@ js.extend.fn(&quot;download&quot;, function () {
             if(name.length &gt; 1) {
                 extension = name.pop();
             }
-            name = name.join(&#39;&#39;);
+            name = name.join('');
             
             __saveTextWithMime(data, name, extension, type, charset);
             return this;
@@ -107,18 +109,19 @@ js.extend.fn(&quot;download&quot;, function () {
     }
     
     var win = window,
-        doc = win.document,
+        // doc = win.document,
         safeType = &quot;application/octet-stream&quot;,
         URL = (window.URL || window.webkitURL || window),
         getObjUrl = function(blob) { return URL.createObjectURL(blob); },
-        killObjUrl = function(url) { return URL.revokeObjectURL(url); },
-        sliceBlob = Blob.prototype.slice || Blob.prototype.webkitSlice,
-        reqFilesystem = window.requestFileSystem || window.webkitRequestFileSystem || window.mozRequestFileSystem,
-        Blob = (win.Blob || win.MozBlob || win.WebKitBlob),
+        killObjUrl = function(url) { setTimeout(js.alg.bindFn(URL, URL.revokeObjectURL, [url]), 300000 /* 5 minutes */); },
+        Blob = (win.Blob || win.MozBlob || win.WebKitBlob || null),
+        sliceBlob = Blob &amp;&amp; (Blob.prototype.slice || Blob.prototype.webkitSlice),
+        __reDataUrl = /^data\:[\w+\-]+\/[\w+\-]+[,;]/,
         saveBlob = (win[&quot;navigator&quot;][&quot;msSaveOrOpenBlob&quot;] || win[&quot;navigator&quot;][&quot;msSaveBlob&quot;])
             ? function() { 
-                var fn = win[&quot;navigator&quot;][&quot;msSaveOrOpenBlob&quot;] || win[&quot;navigator&quot;][&quot;msSaveBlob&quot;];
-                return js.alg.use(win[&quot;navigator&quot;], fn, arguments);
+                var nav = win[&quot;navigator&quot;],
+                    fn = nav[&quot;msSaveOrOpenBlob&quot;] || nav[&quot;msSaveBlob&quot;];
+                return js.alg.use(nav, fn, arguments);
             }
             : null;
     
@@ -139,10 +142,10 @@ js.extend.fn(&quot;download&quot;, function () {
         return __decode(text);
     }
     
-    var __encode = function(data, type) {
+    var __encode = function(data, name) {
         var p = data.split(/[:;,]/),
             type = p[1],
-            toBinary = p[2] === &quot;base64&quot; ? atob : decodeURIComponent, //&lt; if we can&#39;t handle atob then there should be a fallback
+            toBinary = p[2] === &quot;base64&quot; ? atob : decodeURIComponent, //&lt; if we can't handle atob then there should be a fallback
             binary = toBinary(p.pop()),
             size = binary.length,
             arr = new Uint8Array(size);
@@ -154,7 +157,6 @@ js.extend.fn(&quot;download&quot;, function () {
         return new Blob([arr], { type: type });
     }
     
-    var __reDataUrl = /^data\:[\w+\-]+\/[\w+\-]+[,;]/;
     function __save(name, type, blob) {
         &quot;use strict&quot;;
         
@@ -171,12 +173,9 @@ js.extend.fn(&quot;download&quot;, function () {
             return saveBlob(blob, name);
         }
         else if (URL) {
-            if(js.env.browser === &quot;Chrome&quot;){
+            if(js.env.browser.name === &quot;Chrome&quot;){
                 if(type !== safeType) {
                     blob = sliceBlob.call(blob, 0, blob.size, safeType);
-                }
-                if(name !== &quot;download&quot;) {
-                    name += &quot;.download&quot;;
                 }
             }
             return __triggerSave(name, getObjUrl(blob));
@@ -199,13 +198,13 @@ js.extend.fn(&quot;download&quot;, function () {
         var props = { &quot;download&quot;: null },
             attrs = { &quot;href&quot;: url, &quot;download&quot;: filename },
             $a = js.dom(&quot;&lt;a&gt;&lt;/a&gt;&quot;).getProps(props),
-            altUrl = &quot;data:&quot; + url.replace(__replaceUrl, saveLink);
+            altUrl = &quot;data:&quot; + url.replace(__replaceUrl, safeType);
             
         if(props[&quot;download&quot;] !== null) {
             $a.setAttrs(attrs)
-                .on(&quot;click&quot;, function(event) { this.click(); $a.remove(); killObjUrl(url); })
+                .on(&quot;send-click&quot;, function(event) { this.click(); $a.remove(); killObjUrl(url); })
                 .attach(document.body)
-                .trigger(&quot;click&quot;);
+                .trigger(&quot;send-click&quot;);
             return true;
         }
         else if(js.env.browser.name === &quot;Safari&quot;) {
@@ -219,7 +218,7 @@ js.extend.fn(&quot;download&quot;, function () {
             js.dom(&quot;&lt;iframe&gt;&lt;/iframe&gt;&quot;)
                 .setCss({ &quot;position&quot;: &quot;fixed&quot;, &quot;left&quot;: &quot;-9000000px&quot;, &quot;width&quot;: &quot;1em&quot;, &quot;height&quot;: &quot;1em&quot; })
                 .setProps({ &quot;src&quot;: altUrl })
-                .on(&quot;load&quot;, function(event) { $frame.remove(); killObjUrl(url); })
+                .on(&quot;load&quot;, function(event) { this.remove(); killObjUrl(url); })
                 .attach(document.body);
                 
             return true;
@@ -240,7 +239,12 @@ js.extend.fn(&quot;download&quot;, function () {
             __saveTextWithMime = function(content, filename, extension, dataType, charset) {
                 charset = js.alg.string(charset, &quot;UTF-8&quot;);
                 filename = js.alg.string(filename, &quot;download&quot;);
-                content = content || &#39;&#39;;
+                content = content || '';
+                extension = js.alg.string(extension, &quot;&quot;);
+                
+                if(extension) {
+                    filename += &quot;.&quot; + extension;
+                }
                 
                 var blobData = { type: dataType + &quot;;charset=&quot; + charset }, 
                     blobPrefix = (__encoding[charset]||&quot;&quot;), 
@@ -255,14 +259,14 @@ js.extend.fn(&quot;download&quot;, function () {
             __saveTextWithMime = function (content, filename, extension, dataType, charset) {
                 charset = js.alg.string(charset, &quot;UTF-8&quot;);
                 filename = js.alg.string(filename, &quot;download&quot;);
-                content = content || &#39;&#39;;
+                content = content || '';
                 
                 js.dialog.alert({
                     title: &quot;Alert&quot;,
                     message: [&quot;Because you are using Internet Explorer &quot;, js.env.browserVersion,
                         &quot;, your download \&quot;&quot;, filename,&quot;.&quot;,extension, &quot;\&quot; has been changed to \&quot;&quot;, 
                         filename,&quot;.txt\&quot;.  It is recommended that this value be changed in the&quot;,
-                        &quot; save menu, or after the file has been downloaded.&quot;].join(&#39;&#39;)
+                        &quot; save menu, or after the file has been downloaded.&quot;].join('')
                 });
                 
                 __saveText(content, filename, charset);
@@ -273,8 +277,8 @@ js.extend.fn(&quot;download&quot;, function () {
             __saveTextWithMime = function (content, filename, extension, dataType, charset) {
                 charset = js.alg.string(charset, &quot;UTF-8&quot;);
                 filename = js.alg.string(filename, &quot;download&quot;);
-                content = content || &#39;&#39;;
-                filename = filename + &#39;.&#39; + extension;
+                content = content || '';
+                filename = filename + '.' + extension;
                 __saveText(content, filename, charset);
                 return;
             };
@@ -289,7 +293,7 @@ js.extend.fn(&quot;download&quot;, function () {
             __saveText = function(content, name, charset) {
                 charset = js.alg.string(charset, &quot;UTF-8&quot;);
                 name = js.alg.string(name, &quot;download&quot;);
-                content = content || &#39;&#39;;
+                content = content || '';
                 
                 var blob = new Blob([content], { type: &quot;text/plain;charset=&quot; + charset });
                 __save(name, &quot;text/text&quot;, blob);
@@ -300,32 +304,44 @@ js.extend.fn(&quot;download&quot;, function () {
             __saveText = function(content, name, charset) {
                 charset = js.alg.string(charset, &quot;UTF-8&quot;);
                 name = js.alg.string(name, &quot;download&quot;);
-                content = content || &#39;&#39;;
+                content = content || '';
                 
                 var ret = &quot;&quot;;
                 
-                js.dom(&quot;&lt;iframe&gt;&lt;/iframe&gt;&quot;)
-                    .setCss({&quot;display&quot;: &quot;none&quot;})
-                    .attach(document.body)
-                    .element(0, function(el) {
-                        el.document.open(&quot;text/html&quot;, &quot;replace&quot;);
-                        el.document.charset = charset;
-                        if(/(.html|.htm)$/i.test(name)) {
-                            el.document.close();
-                            el.document.body.innerHTML = &quot;\r\n&quot; + content + &quot;\r\n&quot;;
+                var saveTxtWindow = window.frames.saveTxtWindow;
+                if (!saveTxtWindow) {
+                    saveTxtWindow = document.createElement('iframe');
+                    saveTxtWindow.id = 'saveTxtWindow';
+                    saveTxtWindow.style.display = 'none';
+                    document.body.insertBefore(saveTxtWindow, null);
+                    saveTxtWindow = window.frames.saveTxtWindow;
+                    if (!saveTxtWindow) {
+                        saveTxtWindow = window.open('', '_temp', 'width=100,height=100');
+                        if (!saveTxtWindow) {
+                            window.alert('Sorry, download file could not be created.');
+                            return false;
                         }
-                        else {
-                            if(!/.txt$/i.test(name)) {
-                                name += &quot;.txt&quot;;
-                            }
-                            
-                            el.document.write(content);
-                            el.document.close();
-                        }
-                        
-                        ret = el.document.execCommand(&quot;SaveAs&quot;, null, name);
-                        el.close();
-                    });
+                    }
+                }
+
+                var doc = saveTxtWindow.document;
+                doc.open('text/html', 'replace');
+                doc.charset = charset;
+                if (/\.htm(l)?$/i.test(name)) {
+                    doc.close();
+                    doc.body.innerHTML = '\r\n' + content + '\r\n';
+                }
+                else
+                {
+                    if (!/\.txt$/i.test(name)) { 
+                        name += '.txt';
+                    }
+                    doc.write(content);
+                    doc.close();
+                }
+
+                ret = doc.execCommand('SaveAs', null, name);
+                saveTxtWindow.close();
                     
                 return ret;
             }

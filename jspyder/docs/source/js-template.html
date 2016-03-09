@@ -105,8 +105,8 @@ jspyder.extend.fn(&quot;template&quot;, function () {
         resFuncArgs = &quot;\\s*(&quot; + resCommandLiteral + &quot;|&quot; + resString + &quot;|&quot; + resNumber + &quot;|&quot; + resVariable + &quot;)&quot; + resFuncSep,
         resFunction = [resFuncName, &quot;\\((?:&quot;,
             resFuncArgs,
-            &quot;)*\\)&quot;].join(&#39;&#39;),
-        resSymbol = &#39;(&#39; + resFunction + &#39;|&#39; + resVariable + &#39;)&#39;,
+            &quot;)*\\)&quot;].join(''),
+        resSymbol = '(' + resFunction + '|' + resVariable + ')',
 
         // reIdentifier = new RegExp(resIdentifier, &quot;i&quot;),
         reFuncArgs = new RegExp(resFuncArgs, &quot;i&quot;),
@@ -342,9 +342,52 @@ jspyder.extend.fn(&quot;template&quot;, function () {
         
 <span id='jspyder-template-method-_storeTemplateXml_ajax'>        /** @private */
 </span>        _storeTemplateXml_ajax: function (xhttp, data) {
-            var $xml = js.dom(xhttp.responseXML.firstChild);
-            $xml.children(js_template.fn._storeTemplateXml_children, data);
-            js.alg.run(data.fn);
+            if(js.env.browser.name === &quot;IE&quot; &amp;&amp; js.env.browser.version &lt;= 9) {
+                js_template.fn._storeTemplateXml_ajax = function(xhttp, data) {
+                    var xml = js_template.fn._storeTemplateXml_parseXml(xhttp.responseText),
+                        $xml = js.dom(xml.firstChild);
+                        
+                    $xml.children(js_template.fn._storeTemplateXml_children, data);
+                    js.alg.run(data.fn);
+                }
+            }
+            else {
+                js_template.fn._storeTemplateXml_ajax = function(xhttp, data) {
+                    var $xml = js.dom(xhttp.responseXML.firstChild);
+                        
+                    $xml.children(js_template.fn._storeTemplateXml_children, data);
+                    js.alg.run(data.fn);
+                }
+            }
+            
+            return js_template.fn._storeTemplateXml_ajax.apply(this, arguments);
+        },
+        _storeTemplateXml_parseXml: function parseXml(xmlText){
+            try{
+                var text = xmlText;
+                if (typeof DOMParser != &quot;undefined&quot;) { 
+                    var parser=new DOMParser();
+                    var doc=parser.parseFromString(text,&quot;text/xml&quot;);
+                    return doc; 
+                }
+                else if (typeof ActiveXObject != &quot;undefined&quot;) { 
+                    // Internet Explorer. 
+                    var doc = new ActiveXObject(&quot;Microsoft.XMLDOM&quot;);  // Create an empty document 
+                    doc.loadXML(text);            // Parse text into it 
+                    return doc;                   // Return it 
+                } 
+                else { 
+                    var url = &quot;data:text/xml;charset=utf-8,&quot; + encodeURIComponent(text); 
+                    var request = new XMLHttpRequest(); 
+                    request.open(&quot;GET&quot;, url, false); 
+                    request.send(null); 
+                    return request.responseXML; 
+                }
+            }
+            catch(err){
+                js.log.error(&quot;There was a problem parsing the xml: &quot; + err.message);
+            }
+            return &quot;&lt;templates&gt;&lt;/templates&gt;&quot;;
         },
         
 <span id='jspyder-template-method-_storeTemplateXml_children'>        /** @private */
@@ -398,7 +441,7 @@ jspyder.extend.fn(&quot;template&quot;, function () {
          * Registers a set of functions through js.template.register()
          * 
          * @param {Object} o
-         *      Registers o&#39;s keys as function names, and o&#39;s values as
+         *      Registers o's keys as function names, and o's values as
          *      the functions to execute when @key() is invoked within a
          *      template.
          */
@@ -457,7 +500,7 @@ jspyder.extend.fn(&quot;template&quot;, function () {
         
         // branching logic.  If [test] is true, then inserts [pass],
         // else inserts [fail].
-        // TODO: Make this native support, so that it won&#39;t have
+        // TODO: Make this native support, so that it won't have
         // to parse both paths ad infinitum before executing the
         // function.
         &quot;iif&quot;: function (test, pass, fail) {
@@ -547,9 +590,9 @@ jspyder.extend.fn(&quot;template&quot;, function () {
                 js.alg.iterate(0, str.length, function (i) {
                     t.push(&quot;&amp;#&quot;, str.charCodeAt(i), &quot;;&quot;);
                 });
-                ret.push(t.join(&#39;&#39;));
+                ret.push(t.join(''));
             });
-            return ret.join(&#39;&lt;br /&gt;&#39;);
+            return ret.join('&lt;br /&gt;');
         },
         
         &quot;tag&quot;: function (tag, props) {

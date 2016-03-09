@@ -950,21 +950,9 @@ $jscomp.string.endsWith$install = function $$jscomp$string$endsWith$install$() {
   function $_bootstrapDom$$($js$$) {
     function $js_dom$$($el_element$$, $fn$$, $args$$) {
       var $s$$ = $el_element$$ = $el_element$$ || [];
-      if (!$js_dom$$.fn.isPrototypeOf($el_element$$)) {
-        if ("string" === typeof $s$$) {
-          try {
-            $el_element$$ = $document$$.querySelectorAll($s$$);
-          } catch ($e$$) {
-            $el_element$$ = $_parseHtml$$($s$$);
-          }
-        }
-        $__isElement$$($el_element$$) && ($el_element$$ = [$el_element$$]);
-        $el_element$$ = Array.prototype.slice.call($el_element$$, 0);
-        $el_element$$ = Object.create($js_dom$$.fn, {_element:{value:$el_element$$}});
-        $el_element$$.each(function($v$$) {
-          $v$$.__jspyder || ($v$$.__jspyder = $_createRegistry$$());
-        });
-      }
+      $js_dom$$.fn.isPrototypeOf($el_element$$) || ("string" === typeof $s$$ && ($el_element$$ = -1 === ($s$$.match(/(^\\\<|\<)/g) || []).indexOf("<") ? $document$$.querySelectorAll($s$$) : $_parseHtml$$($s$$)), $__isElement$$($el_element$$) && ($el_element$$ = [$el_element$$]), $el_element$$ = Array.prototype.slice.call($el_element$$, 0), $el_element$$ = Object.create($js_dom$$.fn, {_element:{value:$el_element$$}}), $el_element$$.each(function($v$$) {
+        $v$$.__jspyder || ($v$$.__jspyder = $_createRegistry$$());
+      }));
       $el_element$$.use($fn$$, $args$$);
       return $el_element$$;
     }
@@ -1202,18 +1190,20 @@ $jscomp.string.endsWith$install = function $$jscomp$string$endsWith$install$() {
     }, trigger:function $$js_dom$$$fn$trigger$($event$$) {
       $event$$ = ($event$$ || "").toString().split(/\s+/);
       for (var $e$$, $i$$ = 0;$i$$ < $event$$.length;$i$$++) {
-        if ($event$$[$i$$]) {
-          try {
-            $e$$ = new Event($event$$[$i$$], {bubbles:!0, cancelable:!1});
-          } catch ($_$$) {
-            $e$$ = $document$$.createEvent("Event"), $e$$.initEvent($event$$[$i$$], !0, !0);
-          }
-          this.each(function($el$$) {
-            $el$$.dispatchEvent($e$$);
-          });
-        }
+        $event$$[$i$$] && ($e$$ = this._eventConstructor($event$$[$i$$], !0, !0), this.each(function($el$$) {
+          $el$$.dispatchEvent($e$$);
+        }));
       }
       return this;
+    }, _eventConstructor:function $$js_dom$$$fn$_eventConstructor$($type$$0$$, $bubbles$$0$$, $cancelable$$0$$) {
+      $js_dom$$.fn._eventConstructor = "function" === typeof window.Event ? function($type$$, $bubbles$$, $cancelable$$) {
+        return new Event($type$$, {bubbles:$bubbles$$, cancelable:$cancelable$$});
+      } : function($type$$, $bubbles$$, $cancelable$$) {
+        var $e$$ = window.document.createEvent("Event");
+        $e$$.initEvent($type$$, $bubbles$$, $cancelable$$);
+        return $e$$;
+      };
+      return $js_dom$$.fn._eventConstructor.apply(this, arguments);
     }, setHtml:function $$js_dom$$$fn$setHtml$($html$$) {
       this.each(function($element$$) {
         $element$$.innerHTML = $html$$ || "";
@@ -1390,7 +1380,7 @@ jspyder.extend.fn("ajax", function() {
     }
     var $xhttp$$ = new XMLHttpRequest;
     $xhttp$$.onreadystatechange = function xhttp_onreadystatechange() {
-      4 === this.readyState && "function" === typeof $fn$$ && $fn$$.apply($js$$, [this, $context$$]);
+      4 === this.readyState && "function" === typeof $fn$$ && $js$$.alg.use($js$$, $fn$$, [this, $context$$]);
       return null;
     };
     $xhttp$$.open($method$$, $url$$, !0);
@@ -2070,8 +2060,8 @@ js.extend.fn("download", function() {
     return $dl$$;
   }
   function $__save$$($filereader_name$$, $type$$, $blob$$) {
-    $type$$ = js.alg.string($type$$, $safeType$$);
-    $filereader_name$$ = js.alg.string($filereader_name$$, "download.txt");
+    $type$$ = $js$$.alg.string($type$$, $safeType$$);
+    $filereader_name$$ = $js$$.alg.string($filereader_name$$, "download.txt");
     if ($__reDataUrl$$.test($blob$$)) {
       return $saveBlob$$ ? $saveBlob$$($__encode$$($blob$$), $filereader_name$$) : $__triggerSave$$($blob$$);
     }
@@ -2080,7 +2070,7 @@ js.extend.fn("download", function() {
       return $saveBlob$$($blob$$, $filereader_name$$);
     }
     if ($URL$$) {
-      return "Chrome" === js.env.browser && ($type$$ !== $safeType$$ && ($blob$$ = $sliceBlob$$.call($blob$$, 0, $blob$$.size, $safeType$$)), "download" !== $filereader_name$$ && ($filereader_name$$ += ".download")), $__triggerSave$$($filereader_name$$, $URL$$.createObjectURL($blob$$));
+      return "Chrome" === $js$$.env.browser.name && $type$$ !== $safeType$$ && ($blob$$ = $sliceBlob$$.call($blob$$, 0, $blob$$.size, $safeType$$)), $__triggerSave$$($filereader_name$$, $URL$$.createObjectURL($blob$$));
     }
     if ("string" === typeof $blob$$ || $blob$$ instanceof String) {
       return $__triggerSave$$("data:" + $type$$ + $__decode$$($blob$$));
@@ -2093,17 +2083,18 @@ js.extend.fn("download", function() {
     return !0;
   }
   function $__triggerSave$$($filename$$, $url$$) {
-    var $props$$ = {download:null}, $attrs$$ = {href:$url$$, download:$filename$$}, $$a$$ = js.dom("<a></a>").getProps($props$$), $altUrl$$ = "data:" + $url$$.replace($__replaceUrl$$, saveLink);
-    null !== $props$$.download ? $$a$$.setAttrs($attrs$$).on("click", function($event$$) {
+    var $props$$ = {download:null}, $attrs$$ = {href:$url$$, download:$filename$$}, $$a$$ = $js$$.dom("<a></a>").getProps($props$$), $altUrl$$ = "data:" + $url$$.replace($__replaceUrl$$, $safeType$$);
+    null !== $props$$.download ? $$a$$.setAttrs($attrs$$).on("send-click", function($event$$) {
       this.click();
       $$a$$.remove();
-      $URL$$.revokeObjectURL($url$$);
-    }).attach(document.body).trigger("click") : "Safari" === js.env.browser.name ? window.open($altUrl$$) || (location.href = $altUrl$$, $URL$$.revokeObjectURL($url$$)) : js.dom("<iframe></iframe>").setCss({position:"fixed", left:"-9000000px", width:"1em", height:"1em"}).setProps({src:$altUrl$$}).on("load", function($event$$) {
-      $frame.remove();
-      $URL$$.revokeObjectURL($url$$);
+      $killObjUrl$$($url$$);
+    }).attach(document.body).trigger("send-click") : "Safari" === $js$$.env.browser.name ? window.open($altUrl$$) || (location.href = $altUrl$$, $killObjUrl$$($url$$)) : $js$$.dom("<iframe></iframe>").setCss({position:"fixed", left:"-9000000px", width:"1em", height:"1em"}).setProps({src:$altUrl$$}).on("load", function($event$$) {
+      this.remove();
+      $killObjUrl$$($url$$);
     }).attach(document.body);
     return !0;
   }
+  var $js$$ = window.jspyder;
   $download$$.fn = {save:function $$download$$$fn$save$($def$$) {
     $def$$ = $def$$ || {};
     $__save$$($def$$.name || this._name, $def$$.type || this._type, $def$$.data || this._data);
@@ -2122,12 +2113,12 @@ js.extend.fn("download", function() {
     $__saveTextWithMime$$($data$$, $name$$, $extension$$, $type$$, $charset$$1_def$$);
     return this;
   }, setName:function $$download$$$fn$setName$($name$$) {
-    this._name = js.alg.string($name$$, "download");
+    this._name = $js$$.alg.string($name$$, "download");
     return this;
   }, getName:function $$download$$$fn$getName$() {
     return this._name;
   }, setType:function $$download$$$fn$setType$($type$$) {
-    this._type = js.alg.string($type$$, $safeType$$);
+    this._type = $js$$.alg.string($type$$, $safeType$$);
     return this;
   }, getType:function $$download$$$fn$getType$() {
     return this._type;
@@ -2142,8 +2133,11 @@ js.extend.fn("download", function() {
   }, getCharset:function $$download$$$fn$getCharset$() {
     return this._charset;
   }};
-  var $win$$ = window, $safeType$$ = "application/octet-stream", $URL$$ = window.URL || window.webkitURL || window, $sliceBlob$$ = $Blob$$.prototype.slice || $Blob$$.prototype.webkitSlice, $Blob$$ = $win$$.Blob || $win$$.MozBlob || $win$$.WebKitBlob, $saveBlob$$ = $win$$.navigator.msSaveOrOpenBlob || $win$$.navigator.msSaveBlob ? function() {
-    return js.alg.use($win$$.navigator, $win$$.navigator.msSaveOrOpenBlob || $win$$.navigator.msSaveBlob, arguments);
+  var $win$$ = window, $safeType$$ = "application/octet-stream", $URL$$ = window.URL || window.webkitURL || window, $killObjUrl$$ = function $$killObjUrl$$$($url$$) {
+    setTimeout($js$$.alg.bindFn($URL$$, $URL$$.revokeObjectURL, [$url$$]), 3E5);
+  }, $Blob$$ = $win$$.Blob || $win$$.MozBlob || $win$$.WebKitBlob || null, $sliceBlob$$ = $Blob$$ && ($Blob$$.prototype.slice || $Blob$$.prototype.webkitSlice), $__reDataUrl$$ = /^data\:[\w+\-]+\/[\w+\-]+[,;]/, $saveBlob$$ = $win$$.navigator.msSaveOrOpenBlob || $win$$.navigator.msSaveBlob ? function() {
+    var $nav$$ = $win$$.navigator;
+    return $js$$.alg.use($nav$$, $nav$$.msSaveOrOpenBlob || $nav$$.msSaveBlob, arguments);
   } : null, $__decode$$ = function $$__decode$$$($text$$0$$) {
     var $btoa$$ = $win$$.btoa;
     $__decode$$ = $win$$.btoa ? function($text$$) {
@@ -2152,52 +2146,54 @@ js.extend.fn("download", function() {
       return "," + encodeURIComponent($text$$);
     };
     return $__decode$$($text$$0$$);
-  }, $__encode$$ = function $$__encode$$$($data$$, $type$$) {
-    var $p$$5_size$$ = $data$$.split(/[:;,]/);
-    $type$$ = $p$$5_size$$[1];
-    var $binary$$ = ("base64" === $p$$5_size$$[2] ? atob : decodeURIComponent)($p$$5_size$$.pop()), $p$$5_size$$ = $binary$$.length, $arr$$ = new Uint8Array($p$$5_size$$);
-    js.alg.iterate(0, $p$$5_size$$, function($i$$) {
+  }, $__encode$$ = function $$__encode$$$($data$$, $name$$) {
+    var $p$$5_size$$ = $data$$.split(/[:;,]/), $type$$ = $p$$5_size$$[1], $binary$$ = ("base64" === $p$$5_size$$[2] ? atob : decodeURIComponent)($p$$5_size$$.pop()), $p$$5_size$$ = $binary$$.length, $arr$$ = new Uint8Array($p$$5_size$$);
+    $js$$.alg.iterate(0, $p$$5_size$$, function($i$$) {
       $arr$$[$i$$] = $binary$$.charCodeAt($i$$);
     });
     return new $Blob$$([$arr$$], {type:$type$$});
-  }, $__reDataUrl$$ = /^data\:[\w+\-]+\/[\w+\-]+[,;]/, $__replaceUrl$$ = /^data:([\w\/\-\+]+)/, $__encoding$$ = {"UTF-8":"", "UTF-16":"\ufeff", "UTF-32":"\x00\ufeff", "UTF-7":"+/v8", "UTF-1":"\u00f7dL"}, $__saveTextWithMime$$ = function $$__saveTextWithMime$$$($content$$, $filename$$0$$, $extension$$0$$, $dataType$$, $charset$$0$$) {
+  }, $__replaceUrl$$ = /^data:([\w\/\-\+]+)/, $__encoding$$ = {"UTF-8":"", "UTF-16":"\ufeff", "UTF-32":"\x00\ufeff", "UTF-7":"+/v8", "UTF-1":"\u00f7dL"}, $__saveTextWithMime$$ = function $$__saveTextWithMime$$$($content$$, $filename$$0$$, $extension$$0$$, $dataType$$, $charset$$0$$) {
     $__saveTextWithMime$$ = window.Blob ? function($blob$$7_content$$, $filename$$, $extension$$, $dataType$$, $charset$$) {
-      $charset$$ = js.alg.string($charset$$, "UTF-8");
-      $filename$$ = js.alg.string($filename$$, "download");
-      $blob$$7_content$$ = new window.Blob([($__encoding$$[$charset$$] || "") + ($blob$$7_content$$ || "")], {type:$dataType$$ + ";charset=" + $charset$$});
+      $charset$$ = $js$$.alg.string($charset$$, "UTF-8");
+      $filename$$ = $js$$.alg.string($filename$$, "download");
+      $blob$$7_content$$ = $blob$$7_content$$ || "";
+      ($extension$$ = $js$$.alg.string($extension$$, "")) && ($filename$$ += "." + $extension$$);
+      $blob$$7_content$$ = new window.Blob([($__encoding$$[$charset$$] || "") + $blob$$7_content$$], {type:$dataType$$ + ";charset=" + $charset$$});
       $__save$$($filename$$, $dataType$$, $blob$$7_content$$);
-    } : "IE" === js.env.browser && 9 >= js.env.browserVersion ? function($content$$, $filename$$, $extension$$, $dataType$$, $charset$$) {
-      $charset$$ = js.alg.string($charset$$, "UTF-8");
-      $filename$$ = js.alg.string($filename$$, "download");
+    } : "IE" === $js$$.env.browser && 9 >= $js$$.env.browserVersion ? function($content$$, $filename$$, $extension$$, $dataType$$, $charset$$) {
+      $charset$$ = $js$$.alg.string($charset$$, "UTF-8");
+      $filename$$ = $js$$.alg.string($filename$$, "download");
       $content$$ = $content$$ || "";
-      js.dialog.alert({title:"Alert", message:["Because you are using Internet Explorer ", js.env.browserVersion, ', your download "', $filename$$, ".", $extension$$, '" has been changed to "', $filename$$, '.txt".  It is recommended that this value be changed in the save menu, or after the file has been downloaded.'].join("")});
+      $js$$.dialog.alert({title:"Alert", message:["Because you are using Internet Explorer ", $js$$.env.browserVersion, ', your download "', $filename$$, ".", $extension$$, '" has been changed to "', $filename$$, '.txt".  It is recommended that this value be changed in the save menu, or after the file has been downloaded.'].join("")});
       $__saveText$$($content$$, $filename$$, $charset$$);
     } : function($content$$, $filename$$, $extension$$, $dataType$$, $charset$$) {
-      $charset$$ = js.alg.string($charset$$, "UTF-8");
-      $filename$$ = js.alg.string($filename$$, "download");
+      $charset$$ = $js$$.alg.string($charset$$, "UTF-8");
+      $filename$$ = $js$$.alg.string($filename$$, "download");
       $__saveText$$($content$$ || "", $filename$$ + "." + $extension$$, $charset$$);
     };
     return $__saveTextWithMime$$.apply(this, arguments);
   }, $__saveText$$ = function $$__saveText$$$($content$$0$$, $name$$0$$, $charset$$0$$) {
     $content$$0$$ = $content$$0$$.replace(/\r?\n/g, "\r\n");
     $__saveText$$ = window.Blob ? function($blob$$8_content$$, $name$$, $charset$$) {
-      $charset$$ = js.alg.string($charset$$, "UTF-8");
-      $name$$ = js.alg.string($name$$, "download");
+      $charset$$ = $js$$.alg.string($charset$$, "UTF-8");
+      $name$$ = $js$$.alg.string($name$$, "download");
       $blob$$8_content$$ = new $Blob$$([$blob$$8_content$$ || ""], {type:"text/plain;charset=" + $charset$$});
       $__save$$($name$$, "text/text", $blob$$8_content$$);
     } : function($content$$, $name$$, $charset$$) {
-      $charset$$ = js.alg.string($charset$$, "UTF-8");
-      $name$$ = js.alg.string($name$$, "download");
+      $charset$$ = $js$$.alg.string($charset$$, "UTF-8");
+      $name$$ = $js$$.alg.string($name$$, "download");
       $content$$ = $content$$ || "";
-      var $ret$$ = "";
-      js.dom("<iframe></iframe>").setCss({display:"none"}).attach(document.body).element(0, function($el$$) {
-        $el$$.document.open("text/html", "replace");
-        $el$$.document.charset = $charset$$;
-        /(.html|.htm)$/i.test($name$$) ? ($el$$.document.close(), $el$$.document.body.innerHTML = "\r\n" + $content$$ + "\r\n") : (/.txt$/i.test($name$$) || ($name$$ += ".txt"), $el$$.document.write($content$$), $el$$.document.close());
-        $ret$$ = $el$$.document.execCommand("SaveAs", null, $name$$);
-        $el$$.close();
-      });
-      return $ret$$;
+      var $doc$$9_ret$$ = "", $saveTxtWindow$$ = window.frames.saveTxtWindow;
+      if (!$saveTxtWindow$$ && ($saveTxtWindow$$ = document.createElement("iframe"), $saveTxtWindow$$.id = "saveTxtWindow", $saveTxtWindow$$.style.display = "none", document.body.insertBefore($saveTxtWindow$$, null), $saveTxtWindow$$ = window.frames.saveTxtWindow, !$saveTxtWindow$$ && ($saveTxtWindow$$ = window.open("", "_temp", "width=100,height=100"), !$saveTxtWindow$$))) {
+        return window.alert("Sorry, download file could not be created."), !1;
+      }
+      $doc$$9_ret$$ = $saveTxtWindow$$.document;
+      $doc$$9_ret$$.open("text/html", "replace");
+      $doc$$9_ret$$.charset = $charset$$;
+      /\.htm(l)?$/i.test($name$$) ? ($doc$$9_ret$$.close(), $doc$$9_ret$$.body.innerHTML = "\r\n" + $content$$ + "\r\n") : (/\.txt$/i.test($name$$) || ($name$$ += ".txt"), $doc$$9_ret$$.write($content$$), $doc$$9_ret$$.close());
+      $doc$$9_ret$$ = $doc$$9_ret$$.execCommand("SaveAs", null, $name$$);
+      $saveTxtWindow$$.close();
+      return $doc$$9_ret$$;
     };
     return $__saveText$$.apply(this, arguments);
   };
@@ -3457,9 +3453,9 @@ jspyder.extend.fn("template", function() {
   }
   var $_templates$$ = $js$$.createRegistry(), $_library$$ = $js$$.createRegistry(), $__master_key$$ = (4294967295 * Math.random() | 0).toString(32), $reFuncArgs$$ = /\s*(`(?:[^`\\]|\\.)*`|"(?:[^"\\]|\\.)*"|\d+(?:\.\d+)?|\$\{\D[a-z0-9_]*\})(?:\s*,\s*(?!\)))?/i, $reString$$ = /"(?:[^"\\]|\\.)*"/i, $reCommandLiteral$$ = /`(?:[^`\\]|\\.)*`/i, $reNumber$$ = /\d+(?:\.\d+)?/, $reVariable$$ = /\$\{\D[a-z0-9_]*\}/i, $reFuncName$$ = /\@\D[a-z0-9_]*/i, $reFunction$$ = /\@\D[a-z0-9_]*\((?:\s*(`(?:[^`\\]|\\.)*`|"(?:[^"\\]|\\.)*"|\d+(?:\.\d+)?|\$\{\D[a-z0-9_]*\})(?:\s*,\s*(?!\)))?)*\)/i, 
   $reSymbol$$ = /(\@\D[a-z0-9_]*\((?:\s*(`(?:[^`\\]|\\.)*`|"(?:[^"\\]|\\.)*"|\d+(?:\.\d+)?|\$\{\D[a-z0-9_]*\})(?:\s*,\s*(?!\)))?)*\)|\$\{\D[a-z0-9_]*\})/i;
-  $js_template$$.fn = {compile:function $$js_template$$$fn$compile$($name$$107_template$$, $data$$, $fn$$) {
-    $name$$107_template$$ = $_templates$$.fetch($name$$107_template$$);
-    return this.compileExplicit($name$$107_template$$, $data$$, $fn$$);
+  $js_template$$.fn = {compile:function $$js_template$$$fn$compile$($name$$108_template$$, $data$$, $fn$$) {
+    $name$$108_template$$ = $_templates$$.fetch($name$$108_template$$);
+    return this.compileExplicit($name$$108_template$$, $data$$, $fn$$);
   }, compileExplicit:function $$js_template$$$fn$compileExplicit$($template$$4_tmp$$, $data$$, $fn$$) {
     "function" !== typeof $data$$ || $fn$$ || ($fn$$ = $data$$, $data$$ = null);
     "undefined" === typeof $template$$4_tmp$$ && ($template$$4_tmp$$ = "");
@@ -3487,9 +3483,33 @@ jspyder.extend.fn("template", function() {
       $js$$.log.error("Attempted to call jspyder.template.storeTemplateXml() without loading jspyder.ajax module!");
     }
     return this;
-  }, _storeTemplateXml_ajax:function $$js_template$$$fn$_storeTemplateXml_ajax$($xhttp$$, $data$$) {
-    $js$$.dom($xhttp$$.responseXML.firstChild).children($js_template$$.fn._storeTemplateXml_children, $data$$);
-    $js$$.alg.run($data$$.fn);
+  }, _storeTemplateXml_ajax:function $$js_template$$$fn$_storeTemplateXml_ajax$($xhttp$$0$$, $data$$0$$) {
+    $js_template$$.fn._storeTemplateXml_ajax = "IE" === $js$$.env.browser.name && 9 >= $js$$.env.browser.version ? function($xhttp$$, $data$$) {
+      var $xml$$ = $js_template$$.fn._storeTemplateXml_parseXml($xhttp$$.responseText);
+      $js$$.dom($xml$$.firstChild).children($js_template$$.fn._storeTemplateXml_children, $data$$);
+      $js$$.alg.run($data$$.fn);
+    } : function($xhttp$$, $data$$) {
+      $js$$.dom($xhttp$$.responseXML.firstChild).children($js_template$$.fn._storeTemplateXml_children, $data$$);
+      $js$$.alg.run($data$$.fn);
+    };
+    return $js_template$$.fn._storeTemplateXml_ajax.apply(this, arguments);
+  }, _storeTemplateXml_parseXml:function parseXml($xmlText$$) {
+    try {
+      if ("undefined" != typeof DOMParser) {
+        var $doc$$ = (new DOMParser).parseFromString($xmlText$$, "text/xml");
+        return $doc$$;
+      }
+      if ("undefined" != typeof ActiveXObject) {
+        return $doc$$ = new ActiveXObject("Microsoft.XMLDOM"), $doc$$.loadXML($xmlText$$), $doc$$;
+      }
+      var $url$$ = "data:text/xml;charset=utf-8," + encodeURIComponent($xmlText$$), $request$$ = new XMLHttpRequest;
+      $request$$.open("GET", $url$$, !1);
+      $request$$.send(null);
+      return $request$$.responseXML;
+    } catch ($err$$) {
+      $js$$.log.error("There was a problem parsing the xml: " + $err$$.message);
+    }
+    return "<templates></templates>";
   }, _storeTemplateXml_children:function $$js_template$$$fn$_storeTemplateXml_children$($child$$, $data$$) {
     $js_template$$.fn.storeTemplate($child$$.getAttribute("name"), $data$$.xmls.serializeToString($child$$).replace(/\<[\/]?template[^\>]*\>/g, ""));
   }, getTemplate:function $$js_template$$$fn$getTemplate$($name$$, $fn$$) {
@@ -3554,9 +3574,9 @@ jspyder.extend.fn("template", function() {
     return "";
   }, map_item:function($map$$, $id$$) {
     return ($map$$ = this[$map$$]) ? $map$$[$id$$] : $id$$;
-  }, js_registry:function($data$$122_key$$) {
-    $data$$122_key$$ = $js$$.registry.fetch($data$$122_key$$);
-    return null === $data$$122_key$$ || "undefined" === typeof $data$$122_key$$ ? "" : $data$$122_key$$;
+  }, js_registry:function($data$$124_key$$) {
+    $data$$124_key$$ = $js$$.registry.fetch($data$$124_key$$);
+    return null === $data$$124_key$$ || "undefined" === typeof $data$$124_key$$ ? "" : $data$$124_key$$;
   }, js_log:function($data$$) {
     console.log($data$$);
   }, concat:function($str$$) {
