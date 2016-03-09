@@ -997,9 +997,10 @@
             if (!(js_dom.fn.isPrototypeOf(element))) {
 
                 if (typeof s === "string") {
-                    try {
+                    if((s.match(/(^\\\<|\<)/g) || []).indexOf('<') === -1) {
                         element = document.querySelectorAll(s);
-                    } catch (e) {
+                    }
+                    else {
                         element = _parseHtml(s);
                     }
                 }
@@ -1635,19 +1636,21 @@
                 var e;
                 for (var i = 0; i < event.length; i++) {
                     if(!event[i]) { continue; }
-                    try {
-                        e = new Event(event[i], { "bubbles": true, "cancelable": false });
-                    }
-                    catch (_) {
-                        e = document.createEvent("Event");
-                        e.initEvent(event[i], true, true);
-                    }
+                    e = this._eventConstructor(event[i], true, true);
                     this.each(function (el) {
                         el.dispatchEvent(e);
                     });
                 }
 
                 return this;
+            },
+            
+            _eventConstructor: function(type, bubbles, cancelable) {
+                js_dom.fn._eventConstructor = ("function" === typeof window.Event
+                    ? function(type, bubbles, cancelable) { return new Event(type, { "bubbles": bubbles, "cancelable": cancelable }); }
+                    : function(type, bubbles, cancelable) { var e = window.document.createEvent("Event"); e.initEvent(type, bubbles, cancelable); return e; });
+                    
+                return js_dom.fn._eventConstructor.apply(this, arguments);
             },
 
             /**

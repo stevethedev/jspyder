@@ -325,9 +325,52 @@ jspyder.extend.fn("template", function () {
         
         /** @private */
         _storeTemplateXml_ajax: function (xhttp, data) {
-            var $xml = js.dom(xhttp.responseXML.firstChild);
-            $xml.children(js_template.fn._storeTemplateXml_children, data);
-            js.alg.run(data.fn);
+            if(js.env.browser.name === "IE" && js.env.browser.version <= 9) {
+                js_template.fn._storeTemplateXml_ajax = function(xhttp, data) {
+                    var xml = js_template.fn._storeTemplateXml_parseXml(xhttp.responseText),
+                        $xml = js.dom(xml.firstChild);
+                        
+                    $xml.children(js_template.fn._storeTemplateXml_children, data);
+                    js.alg.run(data.fn);
+                }
+            }
+            else {
+                js_template.fn._storeTemplateXml_ajax = function(xhttp, data) {
+                    var $xml = js.dom(xhttp.responseXML.firstChild);
+                        
+                    $xml.children(js_template.fn._storeTemplateXml_children, data);
+                    js.alg.run(data.fn);
+                }
+            }
+            
+            return js_template.fn._storeTemplateXml_ajax.apply(this, arguments);
+        },
+        _storeTemplateXml_parseXml: function parseXml(xmlText){
+            try{
+                var text = xmlText;
+                if (typeof DOMParser != "undefined") { 
+                    var parser=new DOMParser();
+                    var doc=parser.parseFromString(text,"text/xml");
+                    return doc; 
+                }
+                else if (typeof ActiveXObject != "undefined") { 
+                    // Internet Explorer. 
+                    var doc = new ActiveXObject("Microsoft.XMLDOM");  // Create an empty document 
+                    doc.loadXML(text);            // Parse text into it 
+                    return doc;                   // Return it 
+                } 
+                else { 
+                    var url = "data:text/xml;charset=utf-8," + encodeURIComponent(text); 
+                    var request = new XMLHttpRequest(); 
+                    request.open("GET", url, false); 
+                    request.send(null); 
+                    return request.responseXML; 
+                }
+            }
+            catch(err){
+                js.log.error("There was a problem parsing the xml: " + err.message);
+            }
+            return "<templates></templates>";
         },
         
         /** @private */

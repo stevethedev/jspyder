@@ -23,6 +23,8 @@
  * ***************************************************************************/
  
 js.extend.fn("download", function () {
+    /** @ignore */
+    var js = window["jspyder"];
     
     /**
      * @class jspyder.download
@@ -90,18 +92,19 @@ js.extend.fn("download", function () {
     }
     
     var win = window,
-        doc = win.document,
+        // doc = win.document,
         safeType = "application/octet-stream",
         URL = (window.URL || window.webkitURL || window),
         getObjUrl = function(blob) { return URL.createObjectURL(blob); },
-        killObjUrl = function(url) { return URL.revokeObjectURL(url); },
-        sliceBlob = Blob.prototype.slice || Blob.prototype.webkitSlice,
-        reqFilesystem = window.requestFileSystem || window.webkitRequestFileSystem || window.mozRequestFileSystem,
-        Blob = (win.Blob || win.MozBlob || win.WebKitBlob),
+        killObjUrl = function(url) { setTimeout(js.alg.bindFn(URL, URL.revokeObjectURL, [url]), 300000 /* 5 minutes */); },
+        Blob = (win.Blob || win.MozBlob || win.WebKitBlob || null),
+        sliceBlob = Blob && (Blob.prototype.slice || Blob.prototype.webkitSlice),
+        __reDataUrl = /^data\:[\w+\-]+\/[\w+\-]+[,;]/,
         saveBlob = (win["navigator"]["msSaveOrOpenBlob"] || win["navigator"]["msSaveBlob"])
             ? function() { 
-                var fn = win["navigator"]["msSaveOrOpenBlob"] || win["navigator"]["msSaveBlob"];
-                return js.alg.use(win["navigator"], fn, arguments);
+                var nav = win["navigator"],
+                    fn = nav["msSaveOrOpenBlob"] || nav["msSaveBlob"];
+                return js.alg.use(nav, fn, arguments);
             }
             : null;
     
@@ -122,7 +125,7 @@ js.extend.fn("download", function () {
         return __decode(text);
     }
     
-    var __encode = function(data, type) {
+    var __encode = function(data, name) {
         var p = data.split(/[:;,]/),
             type = p[1],
             toBinary = p[2] === "base64" ? atob : decodeURIComponent, //< if we can't handle atob then there should be a fallback
@@ -137,7 +140,6 @@ js.extend.fn("download", function () {
         return new Blob([arr], { type: type });
     }
     
-    var __reDataUrl = /^data\:[\w+\-]+\/[\w+\-]+[,;]/;
     function __save(name, type, blob) {
         "use strict";
         
@@ -154,12 +156,9 @@ js.extend.fn("download", function () {
             return saveBlob(blob, name);
         }
         else if (URL) {
-            if(js.env.browser === "Chrome"){
+            if(js.env.browser.name === "Chrome"){
                 if(type !== safeType) {
                     blob = sliceBlob.call(blob, 0, blob.size, safeType);
-                }
-                if(name !== "download") {
-                    name += ".download";
                 }
             }
             return __triggerSave(name, getObjUrl(blob));
@@ -182,13 +181,13 @@ js.extend.fn("download", function () {
         var props = { "download": null },
             attrs = { "href": url, "download": filename },
             $a = js.dom("<a></a>").getProps(props),
-            altUrl = "data:" + url.replace(__replaceUrl, saveLink);
+            altUrl = "data:" + url.replace(__replaceUrl, safeType);
             
         if(props["download"] !== null) {
             $a.setAttrs(attrs)
-                .on("click", function(event) { this.click(); $a.remove(); killObjUrl(url); })
+                .on("send-click", function(event) { this.click(); $a.remove(); killObjUrl(url); })
                 .attach(document.body)
-                .trigger("click");
+                .trigger("send-click");
             return true;
         }
         else if(js.env.browser.name === "Safari") {
@@ -202,7 +201,7 @@ js.extend.fn("download", function () {
             js.dom("<iframe></iframe>")
                 .setCss({ "position": "fixed", "left": "-9000000px", "width": "1em", "height": "1em" })
                 .setProps({ "src": altUrl })
-                .on("load", function(event) { $frame.remove(); killObjUrl(url); })
+                .on("load", function(event) { this.remove(); killObjUrl(url); })
                 .attach(document.body);
                 
             return true;
@@ -224,6 +223,11 @@ js.extend.fn("download", function () {
                 charset = js.alg.string(charset, "UTF-8");
                 filename = js.alg.string(filename, "download");
                 content = content || '';
+                extension = js.alg.string(extension, "");
+                
+                if(extension) {
+                    filename += "." + extension;
+                }
                 
                 var blobData = { type: dataType + ";charset=" + charset }, 
                     blobPrefix = (__encoding[charset]||""), 
@@ -287,28 +291,40 @@ js.extend.fn("download", function () {
                 
                 var ret = "";
                 
-                js.dom("<iframe></iframe>")
-                    .setCss({"display": "none"})
-                    .attach(document.body)
-                    .element(0, function(el) {
-                        el.document.open("text/html", "replace");
-                        el.document.charset = charset;
-                        if(/(.html|.htm)$/i.test(name)) {
-                            el.document.close();
-                            el.document.body.innerHTML = "\r\n" + content + "\r\n";
+                var saveTxtWindow = window.frames.saveTxtWindow;
+                if (!saveTxtWindow) {
+                    saveTxtWindow = document.createElement('iframe');
+                    saveTxtWindow.id = 'saveTxtWindow';
+                    saveTxtWindow.style.display = 'none';
+                    document.body.insertBefore(saveTxtWindow, null);
+                    saveTxtWindow = window.frames.saveTxtWindow;
+                    if (!saveTxtWindow) {
+                        saveTxtWindow = window.open('', '_temp', 'width=100,height=100');
+                        if (!saveTxtWindow) {
+                            window.alert('Sorry, download file could not be created.');
+                            return false;
                         }
-                        else {
-                            if(!/.txt$/i.test(name)) {
-                                name += ".txt";
-                            }
-                            
-                            el.document.write(content);
-                            el.document.close();
-                        }
-                        
-                        ret = el.document.execCommand("SaveAs", null, name);
-                        el.close();
-                    });
+                    }
+                }
+
+                var doc = saveTxtWindow.document;
+                doc.open('text/html', 'replace');
+                doc.charset = charset;
+                if (/\.htm(l)?$/i.test(name)) {
+                    doc.close();
+                    doc.body.innerHTML = '\r\n' + content + '\r\n';
+                }
+                else
+                {
+                    if (!/\.txt$/i.test(name)) { 
+                        name += '.txt';
+                    }
+                    doc.write(content);
+                    doc.close();
+                }
+
+                ret = doc.execCommand('SaveAs', null, name);
+                saveTxtWindow.close();
                     
                 return ret;
             }
