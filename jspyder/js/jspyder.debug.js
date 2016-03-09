@@ -2071,6 +2071,7 @@ js.extend.fn("download", function() {
   }
   function $__save$$($filereader_name$$, $type$$, $blob$$) {
     $type$$ = js.alg.string($type$$, $safeType$$);
+    $filereader_name$$ = js.alg.string($filereader_name$$, "download.txt");
     if ($__reDataUrl$$.test($blob$$)) {
       return $saveBlob$$ ? $saveBlob$$($__encode$$($blob$$), $filereader_name$$) : $__triggerSave$$($blob$$);
     }
@@ -2079,7 +2080,7 @@ js.extend.fn("download", function() {
       return $saveBlob$$($blob$$, $filereader_name$$);
     }
     if ($URL$$) {
-      return $__triggerSave$$($filereader_name$$, $URL$$.createObjectURL($blob$$));
+      return "Chrome" === js.env.browser && ($type$$ !== $safeType$$ && ($blob$$ = $sliceBlob$$.call($blob$$, 0, $blob$$.size, $safeType$$)), "download" !== $filereader_name$$ && ($filereader_name$$ += ".download")), $__triggerSave$$($filereader_name$$, $URL$$.createObjectURL($blob$$));
     }
     if ("string" === typeof $blob$$ || $blob$$ instanceof String) {
       return $__triggerSave$$("data:" + $type$$ + $__decode$$($blob$$));
@@ -2092,13 +2093,15 @@ js.extend.fn("download", function() {
     return !0;
   }
   function $__triggerSave$$($filename$$, $url$$) {
-    var $props$$ = {download:null}, $attrs$$ = {href:$url$$, download:$filename$$}, $$a$$ = js.dom("<a></a>").getProps($props$$);
+    var $props$$ = {download:null}, $attrs$$ = {href:$url$$, download:$filename$$}, $$a$$ = js.dom("<a></a>").getProps($props$$), $altUrl$$ = "data:" + $url$$.replace($__replaceUrl$$, saveLink);
     null !== $props$$.download ? $$a$$.setAttrs($attrs$$).on("click", function($event$$) {
       this.click();
       $$a$$.remove();
-    }).attach(document.body).trigger("click") : "Safari" === js.env.browser.name ? ($url$$ = "data:" + $url$$.replace($__replaceUrl$$, saveLink), window.open($url$$) || (location.href = $url$$)) : ($url$$ = "data:" + $url$$.replace($__replaceUrl$$, saveLink), js.dom("<iframe></iframe>").setCss({position:"fixed", left:"-9000000px", width:"1em", height:"1em"}).setProps({src:$url$$}).on("load", function($event$$) {
+      $URL$$.revokeObjectURL($url$$);
+    }).attach(document.body).trigger("click") : "Safari" === js.env.browser.name ? window.open($altUrl$$) || (location.href = $altUrl$$, $URL$$.revokeObjectURL($url$$)) : js.dom("<iframe></iframe>").setCss({position:"fixed", left:"-9000000px", width:"1em", height:"1em"}).setProps({src:$altUrl$$}).on("load", function($event$$) {
       $frame.remove();
-    }).attach(document.body));
+      $URL$$.revokeObjectURL($url$$);
+    }).attach(document.body);
     return !0;
   }
   $download$$.fn = {save:function $$download$$$fn$save$($def$$) {
@@ -2139,7 +2142,7 @@ js.extend.fn("download", function() {
   }, getCharset:function $$download$$$fn$getCharset$() {
     return this._charset;
   }};
-  var $win$$ = window, $safeType$$ = "application/octet-stream", $URL$$ = window.URL || window.webkitURL || window, $Blob$$ = $win$$.Blob || $win$$.MozBlob || $win$$.WebKitBlob, $saveBlob$$ = $win$$.navigator.msSaveOrOpenBlob || $win$$.navigator.msSaveBlob ? function() {
+  var $win$$ = window, $safeType$$ = "application/octet-stream", $URL$$ = window.URL || window.webkitURL || window, $sliceBlob$$ = $Blob$$.prototype.slice || $Blob$$.prototype.webkitSlice, $Blob$$ = $win$$.Blob || $win$$.MozBlob || $win$$.WebKitBlob, $saveBlob$$ = $win$$.navigator.msSaveOrOpenBlob || $win$$.navigator.msSaveBlob ? function() {
     return js.alg.use($win$$.navigator, $win$$.navigator.msSaveOrOpenBlob || $win$$.navigator.msSaveBlob, arguments);
   } : null, $__decode$$ = function $$__decode$$$($text$$0$$) {
     var $btoa$$ = $win$$.btoa;

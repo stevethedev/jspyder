@@ -182,6 +182,11 @@ js.extend.fn(&quot;sp&quot;, function () {
             });
             
             js.alg.mergeObj(column, data);
+            if(typeof data[&quot;default&quot;] === &quot;undefined&quot;) {
+                if(column.type === &quot;number&quot;) {
+                    column[&quot;default&quot;] = 0;
+                }
+            }
             
             this._columns[name] = column;
             
@@ -252,8 +257,7 @@ js.extend.fn(&quot;sp&quot;, function () {
 </span>         * Gets the dirty rows
          */
         eachDirtyRow: function(fn, data) {
-            var list = this,
-                dirty = this._dirtyRows;
+            var dirty = this._dirtyRows;
                 
             if(typeof fn === &quot;function&quot;) {
                 js.alg.each(dirty, fn, data);
@@ -763,7 +767,7 @@ js.extend.fn(&quot;sp&quot;, function () {
          * *******************************************************************/
         filter: function(filterData) {
             if(filterData) {
-                js.alg.arrEach(this._rows, __parseRows, [filterData]);
+                js.alg.arrEach(this._rows, __parseRows, { filterArray: [filterData], exclude: false });
             }
             return this;
         },
@@ -778,7 +782,12 @@ js.extend.fn(&quot;sp&quot;, function () {
          *      Array of filter collections
          * *******************************************************************/
         filters: function(filterArray) {
-            js.alg.arrEach(this._rows, __parseRows, filterArray);
+            js.alg.arrEach(this._rows, __parseRows, { filterArray: filterArray, exclude: false });
+            return this;
+        },
+        
+        excludes: function(filterArray) {
+            js.alg.arrEach(this._rows, __parseRows, { filterArray: filterArray, exclude: true });
             return this;
         },
         
@@ -915,11 +924,11 @@ js.extend.fn(&quot;sp&quot;, function () {
         },
         
         toExcelString: function(name, columns) {
-            return __generateXML(name, this._rows, columns);
+            return __generateXML(name, this._list, this._rows, columns);
         },
         
         toCsvString: function(columns) {
-            return __generateCSV(this._rows, columns);
+            return __generateCSV(this._list, this._rows, columns);
         }
     };
 
@@ -939,12 +948,14 @@ js.extend.fn(&quot;sp&quot;, function () {
      * @param {Object} filterData
      *      Collection of filters.  See jspyder.sp.query.filter
      * *******************************************************************/
-    function __parseRows(row, id, _rows, filterData) {
-        if(!row || !filterData || !filterData.length) { // catch null values
+    function __parseRows(row, id, _rows, data) {
+        if(!row || !data || !data.filterArray || !data.filterArray.length) { // catch null values
             return;
         }
         
-        var f, filter, drop, value, orDrop;
+        var filterData = data.filterArray,
+            exclude = data.exclude,
+            f, filter, drop, value, orDrop;
         
         drop = false;
         
@@ -1052,12 +1063,12 @@ js.extend.fn(&quot;sp&quot;, function () {
             if(!drop &amp;&amp; (typeof filter.not !== &quot;undefined&quot;)) {
                 if(filter.not &amp;&amp; typeof filter.not === &quot;object&quot;) {
                     js.alg.each(filter.not, function(or) {
-                        orDrop = orDrop &amp;&amp; !((value &amp; or) !== or);
+                        orDrop = orDrop &amp;&amp; !((value &amp; or) === 0);
                         orDrop || this.stop();
                     });
                     drop = orDrop;
                 }
-                else { drop = !((value &amp; filter.not) !== filter.not); }
+                else { drop = !((value &amp; filter.not) === 0); }
             }
             
             if(!drop &amp;&amp; (typeof filter.test !== &quot;undefined&quot;)) { 
@@ -1075,7 +1086,7 @@ js.extend.fn(&quot;sp&quot;, function () {
             }
         }
         
-        if(drop) {
+        if((!exclude &amp;&amp; drop) || (exclude &amp;&amp; !drop)) {
             this.drop();
         }
         
@@ -1136,7 +1147,7 @@ js.extend.fn(&quot;sp&quot;, function () {
         valueOf: function() { return this.value; }
     };
     
-    function __generateXML (name, rows, columns, styles) {
+    function __generateXML (name, table, rows, columns, styles) {
         var xml = [
             &quot;&lt;?xml version=\&quot;1.0\&quot;?&gt;&quot;,
             &quot;&lt;?mso-application progid=\&quot;Excel.Sheet\&quot;?&gt;&quot;,
@@ -1196,27 +1207,33 @@ js.extend.fn(&quot;sp&quot;, function () {
         return xml.join(&#39;&#39;);
     }
     
-    function __generateCSV (rows, columns) {
+    function __generateCSV (table, rows, columns) {
         var csv = [
             &quot;\uFEFF&quot;,
+            __headers(table, columns),
+            &quot;\r\n&quot;,
             __rows(rows, columns)];
+        
+        function __headers(table, columns) {
+            var __headers = [];
+            js.alg.arrEach(columns, function(column) {
+                __headers.push([&quot;\&quot;&quot;, table.getColumn(column).text || &quot; &quot;, &quot;\&quot;&quot;].join(&#39;&#39;));
+            });
+            return __headers.join(&#39;,&#39;);
+        }
         
         function __rows(rows, columns) {
             var __rows = [],
-                __oneRow = [];
-                
-            js.alg.arrEach(columns, __pushRow, { row: rows[0], type: &quot;text&quot; });
-            __rows.push(__oneRow.join(&#39;,&#39;));
-            __oneRow = [];
+                __oneRow = null;
             
             js.alg.arrEach(rows, function(row, i) {
+                __oneRow = [];
                 js.alg.arrEach(columns, __pushRow, { row: row, type: &quot;value&quot;, r: [] });
                 __rows.push(__oneRow.join(&#39;,&#39;));
-                __oneRow = [];
             });
             
             function __pushRow (col, i, cols, data) {
-                __oneRow.push([ &quot;\&quot;&quot;, (data.row[col] || {})[data.type] || &quot;&quot;, &quot;\&quot;&quot; ].join(&#39;&#39;))
+                data.row &amp;&amp; __oneRow.push([ &quot;\&quot;&quot;, (data.row[col] || {})[data.type] || &quot;&quot;, &quot;\&quot;&quot; ].join(&#39;&#39;));
             }
             
             return __rows.join(&#39;\r\n&#39;);
