@@ -70,10 +70,10 @@ js.extend.fn(&quot;download&quot;, function () {
         saveText: function(def) {
             def = def || {};
             var name = (def.name || this._name),
-                data = (def.data || this._name),
+                data = (def.data || this._data),
                 charset = (def.charset || this._charset);
                 
-            __saveText(name, charset, data);
+            __saveText(data, name, charset);
             return this;
         },
         saveMime: function(def) {
@@ -106,45 +106,124 @@ js.extend.fn(&quot;download&quot;, function () {
         getCharset: function() { return this._charset; }
     }
     
-    var doc = window.document,
-        URL = window.URL || window.webkitURL || window,
+    var win = window,
+        doc = win.document,
+        safeType = &quot;application/octet-stream&quot;,
+        URL = (window.URL || window.webkitURL || window),
         getObjUrl = function(blob) { return URL.createObjectURL(blob); },
         killObjUrl = function(url) { return URL.revokeObjectURL(url); },
-        safeType = &quot;application/octet-stream&quot;,
         sliceBlob = Blob.prototype.slice || Blob.prototype.webkitSlice,
-        reqFilesystem = window.requestFileSystem || window.webkitRequestFileSystem || window.mozRequestFileSystem;
+        reqFilesystem = window.requestFileSystem || window.webkitRequestFileSystem || window.mozRequestFileSystem,
+        Blob = (win.Blob || win.MozBlob || win.WebKitBlob),
+        saveBlob = (win[&quot;navigator&quot;][&quot;msSaveOrOpenBlob&quot;] || win[&quot;navigator&quot;][&quot;msSaveBlob&quot;])
+            ? function() { 
+                var fn = win[&quot;navigator&quot;][&quot;msSaveOrOpenBlob&quot;] || win[&quot;navigator&quot;][&quot;msSaveBlob&quot;];
+                return js.alg.use(win[&quot;navigator&quot;], fn, arguments);
+            }
+            : null;
     
+    var __decode = function(text) {
+        var btoa = win.btoa;
+        
+        if(win.btoa) {
+            __decode = function(text) {
+                return &quot;;base64,&quot; + btoa(text);
+            }
+        } 
+        else {
+            __decode = function(text) {
+                return &quot;,&quot; + encodeURIComponent(text);
+            }
+        }
+        
+        return __decode(text);
+    }
+    
+    var __encode = function(data, type) {
+        var p = data.split(/[:;,]/),
+            type = p[1],
+            toBinary = p[2] === &quot;base64&quot; ? atob : decodeURIComponent, //&lt; if we can&#39;t handle atob then there should be a fallback
+            binary = toBinary(p.pop()),
+            size = binary.length,
+            arr = new Uint8Array(size);
+
+        js.alg.iterate(0, size, function(i) {
+            arr[i] = binary.charCodeAt(i);
+        });
+
+        return new Blob([arr], { type: type });
+    }
+    
+    var __reDataUrl = /^data\:[\w+\-]+\/[\w+\-]+[,;]/;
     function __save(name, type, blob) {
         &quot;use strict&quot;;
-        name = js.alg.string(name, &quot;download&quot;);
+        
         type = js.alg.string(type, safeType);
+        name = js.alg.string(name, &quot;download.txt&quot;);
         
-        var saveLink = js.dom(doc.createElementNS(&quot;http://w3.org/19999/xhtml&quot;, &quot;a&quot;)),
-            props = { &quot;download&quot;: null },
-            url = getObjUrl(blob),
-            changed = false;
-            saveLink.getProps(props);
+        if(__reDataUrl.test(blob)) {
+            return saveBlob ? saveBlob(__encode(blob), name) : __triggerSave(blob);
+        }
+        
+        blob = (blob instanceof Blob ? blob : new Blob([blob], { type: type }));
+        
+        if (saveBlob) {
+            return saveBlob(blob, name);
+        }
+        else if (URL) {
+            if(js.env.browser === &quot;Chrome&quot;){
+                if(type !== safeType) {
+                    blob = sliceBlob.call(blob, 0, blob.size, safeType);
+                }
+                if(name !== &quot;download&quot;) {
+                    name += &quot;.download&quot;;
+                }
+            }
+            return __triggerSave(name, getObjUrl(blob));
+        }
+        else {
+            if(typeof blob === &quot;string&quot; || blob instanceof String) {
+                return __triggerSave( &quot;data:&quot; + type + __decode(blob) );
+            }
             
-        if(window.externalHost &amp;&amp; typeof props.download !== &quot;undefined&quot;) {
-            saveLink
-                .setProps({ href: url, download: name })
-                .on(&quot;click&quot;, function(event) { killObjUrl(url); })
-                .trigger(&quot;click&quot;);
+            var filereader = new FileReader();
+            filereader.onload = function(e) { __triggerSave(this.result); };
+            filereader.readAsDataURL(blob);
         }
         
-        if(js.env.browser === &quot;Chrome&quot;){
-            if(type !== safeType) {
-                blob = sliceBlob.call(blob, 0, blob.size, safeType);
-                killObjUrl(url);
-                getObjUrl(blob);
-            }
-            if(name !== &quot;download&quot;) {
-                name += &quot;.download&quot;;
-            }
+        return true;
+    }
+    
+    var __replaceUrl = /^data:([\w\/\-\+]+)/;
+    function __triggerSave(filename, url) {
+        var props = { &quot;download&quot;: null },
+            attrs = { &quot;href&quot;: url, &quot;download&quot;: filename },
+            $a = js.dom(&quot;&lt;a&gt;&lt;/a&gt;&quot;).getProps(props),
+            altUrl = &quot;data:&quot; + url.replace(__replaceUrl, saveLink);
+            
+        if(props[&quot;download&quot;] !== null) {
+            $a.setAttrs(attrs)
+                .on(&quot;click&quot;, function(event) { this.click(); $a.remove(); killObjUrl(url); })
+                .attach(document.body)
+                .trigger(&quot;click&quot;);
+            return true;
         }
-
-        window.open(url, &quot;_blank&quot;);
-        killObjUrl(url);
+        else if(js.env.browser.name === &quot;Safari&quot;) {
+            if(!window.open(altUrl)) {
+                location.href = altUrl;
+                killObjUrl(url);
+            }
+            return true;
+        }
+        else {
+            js.dom(&quot;&lt;iframe&gt;&lt;/iframe&gt;&quot;)
+                .setCss({ &quot;position&quot;: &quot;fixed&quot;, &quot;left&quot;: &quot;-9000000px&quot;, &quot;width&quot;: &quot;1em&quot;, &quot;height&quot;: &quot;1em&quot; })
+                .setProps({ &quot;src&quot;: altUrl })
+                .on(&quot;load&quot;, function(event) { $frame.remove(); killObjUrl(url); })
+                .attach(document.body);
+                
+            return true;
+        }
     }
     
     // helps with endian-ness
@@ -156,7 +235,7 @@ js.extend.fn(&quot;download&quot;, function () {
         &quot;UTF-1&quot;: &quot;\xF7\x64\x4C&quot;
     }
     
-    function __saveTextWithMime(content, filename, extension, dataType, charset) {
+    var __saveTextWithMime = function(content, filename, extension, dataType, charset) {
         if(window.Blob) {
             __saveTextWithMime = function(content, filename, extension, dataType, charset) {
                 charset = js.alg.string(charset, &quot;UTF-8&quot;);
@@ -204,12 +283,12 @@ js.extend.fn(&quot;download&quot;, function () {
         return __saveTextWithMime.apply(this, arguments);
     }
     
-    function __saveText(content, name, charset) {
+    var __saveText = function(content, name, charset) {
         content = content.replace(/\r?\n/g, &quot;\r\n&quot;);
         if(window.Blob) {
             __saveText = function(content, name, charset) {
                 charset = js.alg.string(charset, &quot;UTF-8&quot;);
-                filename = js.alg.string(filename, &quot;download&quot;);
+                name = js.alg.string(name, &quot;download&quot;);
                 content = content || &#39;&#39;;
                 
                 var blob = new Blob([content], { type: &quot;text/plain;charset=&quot; + charset });
@@ -220,7 +299,7 @@ js.extend.fn(&quot;download&quot;, function () {
         else {
             __saveText = function(content, name, charset) {
                 charset = js.alg.string(charset, &quot;UTF-8&quot;);
-                filename = js.alg.string(filename, &quot;download&quot;);
+                name = js.alg.string(name, &quot;download&quot;);
                 content = content || &#39;&#39;;
                 
                 var ret = &quot;&quot;;

@@ -420,7 +420,7 @@ jspyder.extend.fn(&quot;template&quot;, function () {
     js_template.registerSet({
         // matches an array [frm] in data
         // pushes results tp [push] in [template]
-        each: function (frm, push, template) {
+        &quot;each&quot;: function (frm, push, template) {
             var data = this[frm] || {},
                 pushObj = Object.create(this),
                 ret = &quot;&quot;,
@@ -436,7 +436,7 @@ jspyder.extend.fn(&quot;template&quot;, function () {
         
         // fetches the template by [name], compiles it, and inserts
         // it into the calling template.
-        insert_template: function (name) {
+        &quot;insert_template&quot;: function (name) {
             var tmp = &quot;&quot;;
             var o = Object.create(this);
             
@@ -450,7 +450,7 @@ jspyder.extend.fn(&quot;template&quot;, function () {
             return tmp; 
         },
         
-        arguments: function (n) {
+        &quot;arguments&quot;: function (n) {
             n = js.alg.number(n);
             return (this.arguments ? this.arguments[n] || &quot;&quot; : &quot;&quot;);
         },
@@ -460,7 +460,7 @@ jspyder.extend.fn(&quot;template&quot;, function () {
         // TODO: Make this native support, so that it won&#39;t have
         // to parse both paths ad infinitum before executing the
         // function.
-        iif: function (test, pass, fail) {
+        &quot;iif&quot;: function (test, pass, fail) {
             var $t = js_template(this);
             
             if (typeof test === &quot;string&quot;) {
@@ -476,7 +476,7 @@ jspyder.extend.fn(&quot;template&quot;, function () {
         },
         
         // gets the size of an array
-        size: function (arrayName) {
+        &quot;map_size&quot;: function (arrayName) {
             var data = this[arrayName];
             
             return (data &amp;&amp; data.length
@@ -487,7 +487,7 @@ jspyder.extend.fn(&quot;template&quot;, function () {
         },
         
         // adds two numbers together
-        add: function (n, a) {
+        &quot;add&quot;: function (n, a) {
             return js.alg.number(js.alg.number(n) + js.alg.number(a));
         },
         
@@ -500,7 +500,7 @@ jspyder.extend.fn(&quot;template&quot;, function () {
         },
         
         // @map(&quot;myMap&quot;, &quot;key&quot;, &quot;value&quot;, &quot;key&quot;, &quot;value&quot;, ...)
-        map: function (name) {
+        &quot;map&quot;: function (name) {
             var map = {};
             
             for (var i = 1; i &lt; arguments.length; i += 2) {
@@ -511,35 +511,35 @@ jspyder.extend.fn(&quot;template&quot;, function () {
             return &quot;&quot;;
         },
         
-        map_item: function (map, id) {
+        &quot;map_item&quot;: function (map, id) {
             map = this[map];
             return (map ? map[id] : id);
         },
         
         
-        js_registry: function (key) {
+        &quot;js_registry&quot;: function (key) {
             var data = js.registry.fetch(key);
             return (data === null || typeof data === &quot;undefined&quot;
                 ? &quot;&quot; : data);
         },
         
-        js_log: function (data) {
+        &quot;js_log&quot;: function (data) {
             console.log(data);
         },
         
-        concat: function(str) {
+        &quot;concat&quot;: function(str) {
             for(var i = 1; i &lt; arguments.length; i++) {
                 str += arguments[i];
             }
             return str;
         },
         
-        html: function(str) {
+        &quot;html&quot;: function(str) {
             js.dom(&quot;&lt;div&gt;&quot; + str + &quot;&lt;/div&gt;&quot;).getText(function(v) { str = v; });
             return str;
         },
         
-        escape: function (str) {
+        &quot;escape&quot;: function (str) {
             var ret = [];
             str = str.split(/\r?\n/);
             js.alg.arrEach(str, function (str) {
@@ -552,7 +552,7 @@ jspyder.extend.fn(&quot;template&quot;, function () {
             return ret.join(&#39;&lt;br /&gt;&#39;);
         },
         
-        tag: function (tag, props) {
+        &quot;tag&quot;: function (tag, props) {
             tag = js.alg.string(tag, &quot;br&quot;);
             props = js.alg.string(props, &quot;&quot;);
             var voidElement = /^(area|base|br|col|embed|hr|img|input|keygen|link|menuitem|meta|param|source|track|wbr)\b/i.test(tag);
