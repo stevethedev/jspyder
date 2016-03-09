@@ -98,7 +98,12 @@ js.extend.fn("download", function () {
         sliceBlob = Blob.prototype.slice || Blob.prototype.webkitSlice,
         reqFilesystem = window.requestFileSystem || window.webkitRequestFileSystem || window.mozRequestFileSystem,
         Blob = (win.Blob || win.MozBlob || win.WebKitBlob),
-        saveBlob = win["navigator"]["msSaveOrOpenBlob"] || win["navigator"]["msSaveBlob"];
+        saveBlob = (win["navigator"]["msSaveOrOpenBlob"] || win["navigator"]["msSaveBlob"])
+            ? function() { 
+                var fn = win["navigator"]["msSaveOrOpenBlob"] || win["navigator"]["msSaveBlob"];
+                return js.alg.use(win["navigator"], fn, arguments);
+            }
+            : null;
     
     var __decode = function(text) {
         var btoa = win.btoa;
@@ -200,7 +205,10 @@ js.extend.fn("download", function () {
             $a = js.dom("<a></a>").getProps(props);
             
         if(props["download"] !== null) {
-            $a.setAttrs(attrs).trigger("click");
+            $a.setAttrs(attrs)
+                .on("click", function(event) { this.click(); $a.remove(); })
+                .attach(document.body)
+                .trigger("click");
             return true;
         }
         else if(js.env.browser.name === "Safari") {
