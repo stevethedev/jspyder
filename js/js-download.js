@@ -142,6 +142,8 @@ js.extend.fn("download", function () {
         "use strict";
         
         type = js.alg.string(type, safeType);
+        name = js.alg.string(name, "download.txt");
+        
         if(__reDataUrl.test(blob)) {
             return saveBlob ? saveBlob(__encode(blob), name) : __triggerSave(blob);
         }
@@ -152,6 +154,14 @@ js.extend.fn("download", function () {
             return saveBlob(blob, name);
         }
         else if (URL) {
+            if(js.env.browser === "Chrome"){
+                if(type !== safeType) {
+                    blob = sliceBlob.call(blob, 0, blob.size, safeType);
+                }
+                if(name !== "download") {
+                    name += ".download";
+                }
+            }
             return __triggerSave(name, getObjUrl(blob));
         }
         else {
@@ -165,65 +175,34 @@ js.extend.fn("download", function () {
         }
         
         return true;
-        
-        // "use strict";
-        // name = js.alg.string(name, "download");
-        // type = js.alg.string(type, safeType);
-        
-        // var saveLink = js.dom("<a></a>"),
-        //     props = { "download": null },
-        //     url = getObjUrl(blob),
-        //     changed = false;
-        //     saveLink.getProps(props);
-            
-        // if(window.externalHost && typeof props.download !== "undefined") {
-        //     saveLink
-        //         .setProps({ href: url, download: name })
-        //         .on("click", function(event) { killObjUrl(url); })
-        //         .trigger("click");
-        // }
-        
-        // if(js.env.browser === "Chrome"){
-        //     if(type !== safeType) {
-        //         blob = sliceBlob.call(blob, 0, blob.size, safeType);
-        //         killObjUrl(url);
-        //         getObjUrl(blob);
-        //     }
-        //     if(name !== "download") {
-        //         name += ".download";
-        //     }
-        // }
-
-        // window.open(url, "_blank");
-        // killObjUrl(url);
     }
     
     var __replaceUrl = /^data:([\w\/\-\+]+)/;
     function __triggerSave(filename, url) {
         var props = { "download": null },
             attrs = { "href": url, "download": filename },
-            $a = js.dom("<a></a>").getProps(props);
+            $a = js.dom("<a></a>").getProps(props),
+            altUrl = "data:" + url.replace(__replaceUrl, saveLink);
             
         if(props["download"] !== null) {
             $a.setAttrs(attrs)
-                .on("click", function(event) { this.click(); $a.remove(); })
+                .on("click", function(event) { this.click(); $a.remove(); killObjUrl(url); })
                 .attach(document.body)
                 .trigger("click");
             return true;
         }
         else if(js.env.browser.name === "Safari") {
-            url = "data:" + url.replace(__replaceUrl, saveLink);
-            if(!window.open(url)) {
-                location.href = url;
+            if(!window.open(altUrl)) {
+                location.href = altUrl;
+                killObjUrl(url);
             }
             return true;
         }
         else {
-            url = "data:" + url.replace(__replaceUrl, saveLink);
             js.dom("<iframe></iframe>")
                 .setCss({ "position": "fixed", "left": "-9000000px", "width": "1em", "height": "1em" })
-                .setProps({ "src": url })
-                .on("load", function(event) { $frame.remove(); })
+                .setProps({ "src": altUrl })
+                .on("load", function(event) { $frame.remove(); killObjUrl(url); })
                 .attach(document.body);
                 
             return true;
