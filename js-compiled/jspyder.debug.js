@@ -2093,7 +2093,10 @@ js.extend.fn("download", function() {
   }
   function $__triggerSave$$($filename$$, $url$$) {
     var $props$$ = {download:null}, $attrs$$ = {href:$url$$, download:$filename$$}, $$a$$ = js.dom("<a></a>").getProps($props$$);
-    null !== $props$$.download ? $$a$$.setAttrs($attrs$$).trigger("click") : "Safari" === js.env.browser.name ? ($url$$ = "data:" + $url$$.replace($__replaceUrl$$, saveLink), window.open($url$$) || (location.href = $url$$)) : ($url$$ = "data:" + $url$$.replace($__replaceUrl$$, saveLink), js.dom("<iframe></iframe>").setCss({position:"fixed", left:"-9000000px", width:"1em", height:"1em"}).setProps({src:$url$$}).on("load", function($event$$) {
+    null !== $props$$.download ? $$a$$.setAttrs($attrs$$).on("click", function($event$$) {
+      this.click();
+      $$a$$.remove();
+    }).attach(document.body).trigger("click") : "Safari" === js.env.browser.name ? ($url$$ = "data:" + $url$$.replace($__replaceUrl$$, saveLink), window.open($url$$) || (location.href = $url$$)) : ($url$$ = "data:" + $url$$.replace($__replaceUrl$$, saveLink), js.dom("<iframe></iframe>").setCss({position:"fixed", left:"-9000000px", width:"1em", height:"1em"}).setProps({src:$url$$}).on("load", function($event$$) {
       $frame.remove();
     }).attach(document.body));
     return !0;
@@ -2136,7 +2139,9 @@ js.extend.fn("download", function() {
   }, getCharset:function $$download$$$fn$getCharset$() {
     return this._charset;
   }};
-  var $win$$ = window, $safeType$$ = "application/octet-stream", $URL$$ = window.URL || window.webkitURL || window, $Blob$$ = $win$$.Blob || $win$$.MozBlob || $win$$.WebKitBlob, $saveBlob$$ = $win$$.navigator.msSaveOrOpenBlob || $win$$.navigator.msSaveBlob, $__decode$$ = function $$__decode$$$($text$$0$$) {
+  var $win$$ = window, $safeType$$ = "application/octet-stream", $URL$$ = window.URL || window.webkitURL || window, $Blob$$ = $win$$.Blob || $win$$.MozBlob || $win$$.WebKitBlob, $saveBlob$$ = $win$$.navigator.msSaveOrOpenBlob || $win$$.navigator.msSaveBlob ? function() {
+    return js.alg.use($win$$.navigator, $win$$.navigator.msSaveOrOpenBlob || $win$$.navigator.msSaveBlob, arguments);
+  } : null, $__decode$$ = function $$__decode$$$($text$$0$$) {
     var $btoa$$ = $win$$.btoa;
     $__decode$$ = $win$$.btoa ? function($text$$) {
       return ";base64," + $btoa$$($text$$);
@@ -2780,12 +2785,12 @@ jspyder.extend.fn("form", function() {
       for ($i$$ = 0;$i$$ < $options$$.length;$i$$++) {
         $$option$$1_option$$ = $js$$.alg.mergeObj({name:$cfgname$$, readonly:$cfg$$.readonly}, $options$$[$i$$]), $$option$$1_option$$.class = $cfgclass$$ + $js$$.alg.string($options$$[$i$$].class), $$option$$1_option$$ = $js$$.dom("<div></div>").append($checkbox$$($$option$$1_option$$)), $$checkbox$$.and($$option$$1_option$$);
       }
-      $$checkbox$$.find("input").on("change", function($event$$26_self$$) {
+      $$checkbox$$.find("input").on("change", function($event$$27_self$$) {
         var $checked$$ = this.checked;
-        $event$$26_self$$ = $js$$.dom(this);
+        $event$$27_self$$ = $js$$.dom(this);
         var $attrs$$ = {readonly:null};
-        $event$$26_self$$.getAttrs($attrs$$);
-        $attrs$$.readonly ? this.checked = !$checked$$ : $event$$26_self$$.getValue(function($v$$) {
+        $event$$27_self$$.getAttrs($attrs$$);
+        $attrs$$.readonly ? this.checked = !$checked$$ : $event$$27_self$$.getValue(function($v$$) {
           $cfg$$["data-values"]["val-" + $js$$.alg.string($v$$)] = $checked$$;
         });
       });
@@ -2954,10 +2959,10 @@ jspyder.extend.fn("form", function() {
               $found$$.find(".search-item.selected").trigger("mousedown");
           }
         }
-      }).on("blur", function($attrs$$32_event$$31_match$$) {
-        $attrs$$32_event$$31_match$$ = {readonly:null};
-        $js$$.dom(this).getAttrs($attrs$$32_event$$31_match$$);
-        $attrs$$32_event$$31_match$$.readonly || ("" === this.value ? $js$$.dom(this).setAttrs({"data-value":""}) : $config$$.strict && (($attrs$$32_event$$31_match$$ = $searchValue$$($config$$, this.value, !0)) ? (this.value = $attrs$$32_event$$31_match$$.text, $js$$.dom(this).setAttrs({"data-value":$attrs$$32_event$$31_match$$.value})) : (this.value = "", $js$$.dom(this).setAttrs({"data-value":""}))), $fns$$.hide());
+      }).on("blur", function($attrs$$32_event$$32_match$$) {
+        $attrs$$32_event$$32_match$$ = {readonly:null};
+        $js$$.dom(this).getAttrs($attrs$$32_event$$32_match$$);
+        $attrs$$32_event$$32_match$$.readonly || ("" === this.value ? $js$$.dom(this).setAttrs({"data-value":""}) : $config$$.strict && (($attrs$$32_event$$32_match$$ = $searchValue$$($config$$, this.value, !0)) ? (this.value = $attrs$$32_event$$32_match$$.text, $js$$.dom(this).setAttrs({"data-value":$attrs$$32_event$$32_match$$.value})) : (this.value = "", $js$$.dom(this).setAttrs({"data-value":""}))), $fns$$.hide());
       });
       var $fns$$ = {show:function search($css$$7_value$$) {
         var $values$$ = $config$$.values || [], $minlen$$ = $js$$.alg.number($config$$.minlen, 3), $data$$ = {match:[], regexp:new RegExp($js$$.alg.escapeString($css$$7_value$$), "i"), depth:$js$$.alg.number($config$$.length, 5)};
