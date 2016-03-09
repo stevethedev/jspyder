@@ -2069,17 +2069,34 @@ js.extend.fn("download", function() {
     $dl$$.setName($def$$.name).setType($def$$.type).setData($def$$.data).setCharset($def$$.charset);
     return $dl$$;
   }
-  function $__save$$($name$$, $type$$, $blob$$) {
-    $name$$ = js.alg.string($name$$, "download");
+  function $__save$$($filereader_name$$, $type$$, $blob$$) {
     $type$$ = js.alg.string($type$$, $safeType$$);
-    var $saveLink$$ = js.dom($doc$$.createElementNS("http://w3.org/19999/xhtml", "a")), $props$$ = {download:null}, $url$$ = $URL$$.createObjectURL($blob$$);
-    $saveLink$$.getProps($props$$);
-    window.externalHost && "undefined" !== typeof $props$$.download && $saveLink$$.setProps({href:$url$$, download:$name$$}).on("click", function($event$$) {
-      $URL$$.revokeObjectURL($url$$);
-    }).trigger("click");
-    "Chrome" === js.env.browser && ($type$$ !== $safeType$$ && ($blob$$ = $sliceBlob$$.call($blob$$, 0, $blob$$.size, $safeType$$), $URL$$.revokeObjectURL($url$$), $URL$$.createObjectURL($blob$$)), "download" !== $name$$ && ($name$$ += ".download"));
-    window.open($url$$, "_blank");
-    $URL$$.revokeObjectURL($url$$);
+    if ($__reDataUrl$$.test($blob$$)) {
+      return $saveBlob$$ ? $saveBlob$$($__encode$$($blob$$), $filereader_name$$) : $__triggerSave$$($blob$$);
+    }
+    $blob$$ = $blob$$ instanceof $Blob$$ ? $blob$$ : new $Blob$$([$blob$$], {type:$type$$});
+    if ($saveBlob$$) {
+      return $saveBlob$$($blob$$, $filereader_name$$);
+    }
+    if ($URL$$) {
+      return $__triggerSave$$($filereader_name$$, $URL$$.createObjectURL($blob$$));
+    }
+    if ("string" === typeof $blob$$ || $blob$$ instanceof String) {
+      return $__triggerSave$$("data:" + $type$$ + $__decode$$($blob$$));
+    }
+    $filereader_name$$ = new FileReader;
+    $filereader_name$$.onload = function $$filereader_name$$$onload$($e$$) {
+      $__triggerSave$$(this.result);
+    };
+    $filereader_name$$.readAsDataURL($blob$$);
+    return !0;
+  }
+  function $__triggerSave$$($filename$$, $url$$) {
+    var $props$$ = {download:null}, $attrs$$ = {href:$url$$, download:$filename$$}, $$a$$ = js.dom("<a></a>").getProps($props$$);
+    null !== $props$$.download ? $$a$$.setAttrs($attrs$$).trigger("click") : "Safari" === js.env.browser.name ? ($url$$ = "data:" + $url$$.replace($__replaceUrl$$, saveLink), window.open($url$$) || (location.href = $url$$)) : ($url$$ = "data:" + $url$$.replace($__replaceUrl$$, saveLink), js.dom("<iframe></iframe>").setCss({position:"fixed", left:"-9000000px", width:"1em", height:"1em"}).setProps({src:$url$$}).on("load", function($event$$) {
+      $frame.remove();
+    }).attach(document.body));
+    return !0;
   }
   $download$$.fn = {save:function $$download$$$fn$save$($def$$) {
     $def$$ = $def$$ || {};
@@ -2119,7 +2136,23 @@ js.extend.fn("download", function() {
   }, getCharset:function $$download$$$fn$getCharset$() {
     return this._charset;
   }};
-  var $doc$$ = window.document, $URL$$ = window.URL || window.webkitURL || window, $safeType$$ = "application/octet-stream", $sliceBlob$$ = Blob.prototype.slice || Blob.prototype.webkitSlice, $__encoding$$ = {"UTF-8":"", "UTF-16":"\ufeff", "UTF-32":"\x00\ufeff", "UTF-7":"+/v8", "UTF-1":"\u00f7dL"}, $__saveTextWithMime$$ = function $$__saveTextWithMime$$$($content$$, $filename$$, $extension$$0$$, $dataType$$, $charset$$0$$) {
+  var $win$$ = window, $safeType$$ = "application/octet-stream", $URL$$ = window.URL || window.webkitURL || window, $Blob$$ = $win$$.Blob || $win$$.MozBlob || $win$$.WebKitBlob, $saveBlob$$ = $win$$.navigator.msSaveOrOpenBlob || $win$$.navigator.msSaveBlob, $__decode$$ = function $$__decode$$$($text$$0$$) {
+    var $btoa$$ = $win$$.btoa;
+    $__decode$$ = $win$$.btoa ? function($text$$) {
+      return ";base64," + $btoa$$($text$$);
+    } : function($text$$) {
+      return "," + encodeURIComponent($text$$);
+    };
+    return $__decode$$($text$$0$$);
+  }, $__encode$$ = function $$__encode$$$($data$$, $type$$) {
+    var $p$$5_size$$ = $data$$.split(/[:;,]/);
+    $type$$ = $p$$5_size$$[1];
+    var $binary$$ = ("base64" === $p$$5_size$$[2] ? atob : decodeURIComponent)($p$$5_size$$.pop()), $p$$5_size$$ = $binary$$.length, $arr$$ = new Uint8Array($p$$5_size$$);
+    js.alg.iterate(0, $p$$5_size$$, function($i$$) {
+      $arr$$[$i$$] = $binary$$.charCodeAt($i$$);
+    });
+    return new $Blob$$([$arr$$], {type:$type$$});
+  }, $__reDataUrl$$ = /^data\:[\w+\-]+\/[\w+\-]+[,;]/, $__replaceUrl$$ = /^data:([\w\/\-\+]+)/, $__encoding$$ = {"UTF-8":"", "UTF-16":"\ufeff", "UTF-32":"\x00\ufeff", "UTF-7":"+/v8", "UTF-1":"\u00f7dL"}, $__saveTextWithMime$$ = function $$__saveTextWithMime$$$($content$$, $filename$$0$$, $extension$$0$$, $dataType$$, $charset$$0$$) {
     $__saveTextWithMime$$ = window.Blob ? function($blob$$7_content$$, $filename$$, $extension$$, $dataType$$, $charset$$) {
       $charset$$ = js.alg.string($charset$$, "UTF-8");
       $filename$$ = js.alg.string($filename$$, "download");
@@ -2142,7 +2175,7 @@ js.extend.fn("download", function() {
     $__saveText$$ = window.Blob ? function($blob$$8_content$$, $name$$, $charset$$) {
       $charset$$ = js.alg.string($charset$$, "UTF-8");
       $name$$ = js.alg.string($name$$, "download");
-      $blob$$8_content$$ = new Blob([$blob$$8_content$$ || ""], {type:"text/plain;charset=" + $charset$$});
+      $blob$$8_content$$ = new $Blob$$([$blob$$8_content$$ || ""], {type:"text/plain;charset=" + $charset$$});
       $__save$$($name$$, "text/text", $blob$$8_content$$);
     } : function($content$$, $name$$, $charset$$) {
       $charset$$ = js.alg.string($charset$$, "UTF-8");
@@ -2302,8 +2335,8 @@ jspyder.extend.fn("form", function() {
     var $field$$ = this.exportField($name$$);
     $js$$.alg.use(this, $fn$$, [$field$$]);
     return this;
-  }, exportField:function $$js_form$$$fn$exportField$($data$$53_name$$) {
-    return ($data$$53_name$$ = this.exportFieldData($data$$53_name$$)) ? $data$$53_name$$.field : null;
+  }, exportField:function $$js_form$$$fn$exportField$($data$$54_name$$) {
+    return ($data$$54_name$$ = this.exportFieldData($data$$54_name$$)) ? $data$$54_name$$.field : null;
   }, getFieldData:function $$js_form$$$fn$getFieldData$($name$$, $fn$$) {
     var $data$$ = this.exportFieldData($name$$);
     $js$$.alg.use(this, $fn$$, [$data$$]);
@@ -2311,8 +2344,8 @@ jspyder.extend.fn("form", function() {
   }, exportFieldData:function $$js_form$$$fn$exportFieldData$($name$$) {
     return this._fields[$name$$] || null;
   }, resetFieldValue:function $$js_form$$$fn$resetFieldValue$($name$$) {
-    var $data$$55_val$$ = this.exportFieldData($name$$), $dval$$ = $data$$55_val$$.config.default, $data$$55_val$$ = $data$$55_val$$.config.value;
-    this.setFieldValue($name$$, "undefined" !== typeof $data$$55_val$$ ? $data$$55_val$$ : $dval$$);
+    var $data$$56_val$$ = this.exportFieldData($name$$), $dval$$ = $data$$56_val$$.config.default, $data$$56_val$$ = $data$$56_val$$.config.value;
+    this.setFieldValue($name$$, "undefined" !== typeof $data$$56_val$$ ? $data$$56_val$$ : $dval$$);
     return this;
   }, resetFieldValues:function $$js_form$$$fn$resetFieldValues$() {
     this.each(this._resetFieldValues, this);
@@ -2514,10 +2547,10 @@ jspyder.extend.fn("form", function() {
     var $__override$$ = {type:"input"};
     return function($cfg$$) {
       var $$datepicker$$ = this.buildControl($js$$.alg.mergeObj({}, $cfg$$, $__override$$), !0), $calStruct$$ = $__calStructFactory$$($cfg$$);
-      $$datepicker$$.filter("input").on("click", function($attrs$$7_dateVal_event$$) {
-        $attrs$$7_dateVal_event$$ = {readonly:null};
-        $js$$.dom(this).getAttrs($attrs$$7_dateVal_event$$);
-        $attrs$$7_dateVal_event$$.readonly || ($attrs$$7_dateVal_event$$ = this.value || $cfg$$.value || $cfg$$.default || new Date, $calStruct$$.clear(), $calStruct$$.input = $js$$.dom(this), $calStruct$$.date.setDate($attrs$$7_dateVal_event$$, $calStruct$$.format), $calStruct$$.load().preventClose(), $js$$.dom(this.parentNode).append($calStruct$$.dom), $calStruct$$.DOCDOM.on("click", function __docClick($event$$) {
+      $$datepicker$$.filter("input").on("click", function($attrs$$8_dateVal_event$$) {
+        $attrs$$8_dateVal_event$$ = {readonly:null};
+        $js$$.dom(this).getAttrs($attrs$$8_dateVal_event$$);
+        $attrs$$8_dateVal_event$$.readonly || ($attrs$$8_dateVal_event$$ = this.value || $cfg$$.value || $cfg$$.default || new Date, $calStruct$$.clear(), $calStruct$$.input = $js$$.dom(this), $calStruct$$.date.setDate($attrs$$8_dateVal_event$$, $calStruct$$.format), $calStruct$$.load().preventClose(), $js$$.dom(this.parentNode).append($calStruct$$.dom), $calStruct$$.DOCDOM.on("click", function __docClick($event$$) {
           if ($calStruct$$.pause) {
             return $calStruct$$.enableClose();
           }
@@ -2560,10 +2593,10 @@ jspyder.extend.fn("form", function() {
     };
   }).registerControlFn("submit", function() {
     function $__submitClickFactory$$($form$$) {
-      return function __submitClick($attrs$$9_event$$) {
-        $attrs$$9_event$$ = {readonly:null};
-        $js$$.dom(this).getAttrs($attrs$$9_event$$);
-        $attrs$$9_event$$.readonly || $form$$.submit();
+      return function __submitClick($attrs$$10_event$$) {
+        $attrs$$10_event$$ = {readonly:null};
+        $js$$.dom(this).getAttrs($attrs$$10_event$$);
+        $attrs$$10_event$$.readonly || $form$$.submit();
       };
     }
     var $__override$$ = {type:"button", nolabel:!0};
@@ -2574,10 +2607,10 @@ jspyder.extend.fn("form", function() {
     };
   }).registerControlFn("reset", function() {
     function $__resetClickFactory$$($form$$) {
-      return function __resetClick($attrs$$10_event$$) {
-        $attrs$$10_event$$ = {readonly:null};
-        $js$$.dom(this).getAttrs($attrs$$10_event$$);
-        $attrs$$10_event$$.readonly || $form$$.reset();
+      return function __resetClick($attrs$$11_event$$) {
+        $attrs$$11_event$$ = {readonly:null};
+        $js$$.dom(this).getAttrs($attrs$$11_event$$);
+        $attrs$$11_event$$.readonly || $form$$.reset();
       };
     }
     var $__override$$ = {type:"button", nolabel:!0};
@@ -2652,12 +2685,12 @@ jspyder.extend.fn("form", function() {
       $v$$ = $js$$.alg.string($v$$, "");
       this.setValue($v$$);
     }
-    function $input$$($attrs$$12_css$$6_event$$) {
-      $attrs$$12_css$$6_event$$ = {readonly:null};
-      $js$$.dom(this).getAttrs($attrs$$12_css$$6_event$$);
-      if (!$attrs$$12_css$$6_event$$.readonly) {
+    function $input$$($attrs$$13_css$$6_event$$) {
+      $attrs$$13_css$$6_event$$ = {readonly:null};
+      $js$$.dom(this).getAttrs($attrs$$13_css$$6_event$$);
+      if (!$attrs$$13_css$$6_event$$.readonly) {
         div = document.createElement("div");
-        $attrs$$12_css$$6_event$$ = {"font-family":null, "font-size":null, "font-weight":null, "padding-left":null, "padding-right":null, "padding-bottom":null, "padding-top":null, "border-left":null, "border-right":null, "border-top":null, "border-bottom":null, "line-height":null, "word-wrap":null};
+        $attrs$$13_css$$6_event$$ = {"font-family":null, "font-size":null, "font-weight":null, "padding-left":null, "padding-right":null, "padding-bottom":null, "padding-top":null, "border-left":null, "border-right":null, "border-top":null, "border-bottom":null, "line-height":null, "word-wrap":null};
         div.style.position = "fixed";
         div.style.left = "-65535px";
         div.style["white-space"] = "pre-wrap";
@@ -2666,8 +2699,8 @@ jspyder.extend.fn("form", function() {
         div.style["white-space"] = "-o-pre-wrap";
         div.style.width = div.style["min-width"] = div.style["max-width"] = this.clientWidth + "px";
         document.body.appendChild(div);
-        var $textarea$$ = $js$$.dom(this).getCss($attrs$$12_css$$6_event$$);
-        $js$$.dom(div).setText(this.value).setCss($attrs$$12_css$$6_event$$).getPosition(function($pos$$) {
+        var $textarea$$ = $js$$.dom(this).getCss($attrs$$13_css$$6_event$$);
+        $js$$.dom(div).setText(this.value).setCss($attrs$$13_css$$6_event$$).getPosition(function($pos$$) {
           $textarea$$.setCss({height:$pos$$.height + 20 + "px"});
         }).remove();
       }
@@ -2705,11 +2738,11 @@ jspyder.extend.fn("form", function() {
         $$option_option$$ = $js$$.alg.mergeObj({name:$cfgname$$, "class":$cfgclass$$, readonly:$cfg$$.readonly}, $options$$[$i$$]), $$option_option$$.class = $cfgclass$$ + $js$$.alg.string($options$$[$i$$].class), $$option_option$$ = $js$$.dom("<div></div>").append($single$$($$option_option$$)), $$radio$$.and($$option_option$$);
       }
       var $form$$ = this;
-      $$radio$$.find("input").on("change", function($attrs$$15_event$$) {
-        $attrs$$15_event$$ = {readonly:null};
+      $$radio$$.find("input").on("change", function($attrs$$16_event$$) {
+        $attrs$$16_event$$ = {readonly:null};
         var $$me$$ = $js$$.dom(this);
-        $$me$$.getAttrs($attrs$$15_event$$);
-        $attrs$$15_event$$.readonly ? $form$$.setFieldValue($cfgname$$, $form$$.exportFieldValue($cfgname$$)) : $$me$$.getValue(function($v$$) {
+        $$me$$.getAttrs($attrs$$16_event$$);
+        $attrs$$16_event$$.readonly ? $form$$.setFieldValue($cfgname$$, $form$$.exportFieldValue($cfgname$$)) : $$me$$.getValue(function($v$$) {
           $cfg$$["data-value"] = $v$$;
         });
       });
@@ -2718,11 +2751,11 @@ jspyder.extend.fn("form", function() {
       return $$radio$$;
     };
   }).registerControlFn("checkbox", function() {
-    function $exportValue$$($data$$75_values$$) {
+    function $exportValue$$($data$$76_values$$) {
       var $keys$$ = [], $key$$;
-      $data$$75_values$$ = $data$$75_values$$.config["data-values"] = $data$$75_values$$.config["data-values"] || {};
-      for ($key$$ in $data$$75_values$$) {
-        $data$$75_values$$[$key$$] && $keys$$.push($key$$.substring(4));
+      $data$$76_values$$ = $data$$76_values$$.config["data-values"] = $data$$76_values$$.config["data-values"] || {};
+      for ($key$$ in $data$$76_values$$) {
+        $data$$76_values$$[$key$$] && $keys$$.push($key$$.substring(4));
       }
       return $keys$$;
     }
@@ -2921,10 +2954,10 @@ jspyder.extend.fn("form", function() {
               $found$$.find(".search-item.selected").trigger("mousedown");
           }
         }
-      }).on("blur", function($attrs$$31_event$$31_match$$) {
-        $attrs$$31_event$$31_match$$ = {readonly:null};
-        $js$$.dom(this).getAttrs($attrs$$31_event$$31_match$$);
-        $attrs$$31_event$$31_match$$.readonly || ("" === this.value ? $js$$.dom(this).setAttrs({"data-value":""}) : $config$$.strict && (($attrs$$31_event$$31_match$$ = $searchValue$$($config$$, this.value, !0)) ? (this.value = $attrs$$31_event$$31_match$$.text, $js$$.dom(this).setAttrs({"data-value":$attrs$$31_event$$31_match$$.value})) : (this.value = "", $js$$.dom(this).setAttrs({"data-value":""}))), $fns$$.hide());
+      }).on("blur", function($attrs$$32_event$$31_match$$) {
+        $attrs$$32_event$$31_match$$ = {readonly:null};
+        $js$$.dom(this).getAttrs($attrs$$32_event$$31_match$$);
+        $attrs$$32_event$$31_match$$.readonly || ("" === this.value ? $js$$.dom(this).setAttrs({"data-value":""}) : $config$$.strict && (($attrs$$32_event$$31_match$$ = $searchValue$$($config$$, this.value, !0)) ? (this.value = $attrs$$32_event$$31_match$$.text, $js$$.dom(this).setAttrs({"data-value":$attrs$$32_event$$31_match$$.value})) : (this.value = "", $js$$.dom(this).setAttrs({"data-value":""}))), $fns$$.hide());
       });
       var $fns$$ = {show:function search($css$$7_value$$) {
         var $values$$ = $config$$.values || [], $minlen$$ = $js$$.alg.number($config$$.minlen, 3), $data$$ = {match:[], regexp:new RegExp($js$$.alg.escapeString($css$$7_value$$), "i"), depth:$js$$.alg.number($config$$.length, 5)};
@@ -2935,21 +2968,21 @@ jspyder.extend.fn("form", function() {
       }};
       return $fns$$;
     }
-    function $__searchLoop$$($text$$19_valObj$$, $i$$43_value$$, $values$$, $data$$) {
-      $i$$43_value$$ = $js$$.alg.string($text$$19_valObj$$.value);
-      $text$$19_valObj$$ = $js$$.alg.string($text$$19_valObj$$.text, $i$$43_value$$);
-      $data$$.regexp.test($text$$19_valObj$$) && $data$$.match.push('<li class="search-item" data-value="' + $i$$43_value$$ + '" title="' + $text$$19_valObj$$ + '">' + $text$$19_valObj$$ + "</li>");
+    function $__searchLoop$$($text$$22_valObj$$, $i$$44_value$$, $values$$, $data$$) {
+      $i$$44_value$$ = $js$$.alg.string($text$$22_valObj$$.value);
+      $text$$22_valObj$$ = $js$$.alg.string($text$$22_valObj$$.text, $i$$44_value$$);
+      $data$$.regexp.test($text$$22_valObj$$) && $data$$.match.push('<li class="search-item" data-value="' + $i$$44_value$$ + '" title="' + $text$$22_valObj$$ + '">' + $text$$22_valObj$$ + "</li>");
       $data$$.match.length >= $data$$.depth && this.stop();
     }
-    function $__searchValue$$($text$$20_valObj$$, $i$$44_value$$, $values$$, $data$$) {
-      $i$$44_value$$ = $js$$.alg.string($text$$20_valObj$$.value);
-      $text$$20_valObj$$ = $js$$.alg.string($text$$20_valObj$$.text, $i$$44_value$$);
-      $data$$.find.test($data$$.searchText ? $text$$20_valObj$$ : $i$$44_value$$) && ($data$$.match = {value:$i$$44_value$$, text:$text$$20_valObj$$}, this.stop());
+    function $__searchValue$$($text$$23_valObj$$, $i$$45_value$$, $values$$, $data$$) {
+      $i$$45_value$$ = $js$$.alg.string($text$$23_valObj$$.value);
+      $text$$23_valObj$$ = $js$$.alg.string($text$$23_valObj$$.text, $i$$45_value$$);
+      $data$$.find.test($data$$.searchText ? $text$$23_valObj$$ : $i$$45_value$$) && ($data$$.match = {value:$i$$45_value$$, text:$text$$23_valObj$$}, this.stop());
     }
-    function $searchValue$$($config$$, $data$$89_value$$, $searchText$$) {
-      $data$$89_value$$ = {match:null, find:new RegExp("^" + $data$$89_value$$ + "$"), searchText:$searchText$$};
-      $js$$.alg.arrEach($config$$.values, $__searchValue$$, $data$$89_value$$);
-      return $data$$89_value$$.match;
+    function $searchValue$$($config$$, $data$$90_value$$, $searchText$$) {
+      $data$$90_value$$ = {match:null, find:new RegExp("^" + $data$$90_value$$ + "$"), searchText:$searchText$$};
+      $js$$.alg.arrEach($config$$.values, $__searchValue$$, $data$$90_value$$);
+      return $data$$90_value$$.match;
     }
     function $setValue$$($data$$, $value$$) {
       var $field$$ = $data$$.field, $strict$$ = $js$$.alg.bool($data$$.config.strict), $match$$3_text$$ = "", $attrs$$ = {};
@@ -2972,25 +3005,25 @@ jspyder.extend.fn("form", function() {
       $cfg$$.setValue = $setValue$$;
       $cfg$$.exportValue = $exportValue$$;
       $search$$ = $buildFunctions$$(this, $$autocomplete$$, $cfg$$);
-      $$autocomplete$$.on("focus input", function($attrs$$34_event$$) {
-        $attrs$$34_event$$ = {readonly:null};
-        $js$$.dom(this).getAttrs($attrs$$34_event$$);
-        $attrs$$34_event$$.readonly || $$autocomplete$$.getValue($search$$.show);
+      $$autocomplete$$.on("focus input", function($attrs$$35_event$$) {
+        $attrs$$35_event$$ = {readonly:null};
+        $js$$.dom(this).getAttrs($attrs$$35_event$$);
+        $attrs$$35_event$$.readonly || $$autocomplete$$.getValue($search$$.show);
       });
       return $$autocomplete$$;
     };
   }).registerControlFn("number", function() {
     function $setValue$$($data$$, $v$$) {
       $v$$ = $js$$.alg.string($v$$, "");
-      $data$$.field.filter("input").getAttrs({"data-focus":!1}, function($attrs$$35_c$$) {
-        if ($attrs$$35_c$$["data-focus"]) {
+      $data$$.field.filter("input").getAttrs({"data-focus":!1}, function($attrs$$36_c$$) {
+        if ($attrs$$36_c$$["data-focus"]) {
           $v$$ = $toNumber$$($v$$, $data$$.config.acc);
         } else {
           var $n$$inline_16_part$$ = $v$$;
-          $attrs$$35_c$$ = $data$$.config.tsep;
+          $attrs$$36_c$$ = $data$$.config.tsep;
           var $d$$ = $data$$.config.dec, $a$$inline_19_num$$ = $data$$.config.acc;
-          "" === $js$$.alg.string($n$$inline_16_part$$, "") ? $v$$ = $n$$inline_16_part$$ : ($n$$inline_16_part$$ = $js$$.alg.number($n$$inline_16_part$$, 0), $attrs$$35_c$$ = $js$$.alg.string($attrs$$35_c$$, ","), $d$$ = $js$$.alg.string($d$$, "."), "undefined" !== typeof $a$$inline_19_num$$ && ($n$$inline_16_part$$ = $n$$inline_16_part$$.toFixed($a$$inline_19_num$$)), $n$$inline_16_part$$ = $js$$.alg.string($n$$inline_16_part$$, "").split("."), $a$$inline_19_num$$ = [], $a$$inline_19_num$$[0] = 
-          ($n$$inline_16_part$$[0] || "").replace(/\B(?=(\d{3})+(?!\d))/g, $attrs$$35_c$$), $n$$inline_16_part$$[1] && $a$$inline_19_num$$.push($n$$inline_16_part$$[1]), $v$$ = $a$$inline_19_num$$.join($d$$));
+          "" === $js$$.alg.string($n$$inline_16_part$$, "") ? $v$$ = $n$$inline_16_part$$ : ($n$$inline_16_part$$ = $js$$.alg.number($n$$inline_16_part$$, 0), $attrs$$36_c$$ = $js$$.alg.string($attrs$$36_c$$, ","), $d$$ = $js$$.alg.string($d$$, "."), "undefined" !== typeof $a$$inline_19_num$$ && ($n$$inline_16_part$$ = $n$$inline_16_part$$.toFixed($a$$inline_19_num$$)), $n$$inline_16_part$$ = $js$$.alg.string($n$$inline_16_part$$, "").split("."), $a$$inline_19_num$$ = [], $a$$inline_19_num$$[0] = 
+          ($n$$inline_16_part$$[0] || "").replace(/\B(?=(\d{3})+(?!\d))/g, $attrs$$36_c$$), $n$$inline_16_part$$[1] && $a$$inline_19_num$$.push($n$$inline_16_part$$[1]), $v$$ = $a$$inline_19_num$$.join($d$$));
         }
         this.setValue($v$$);
       });
@@ -3016,10 +3049,10 @@ jspyder.extend.fn("form", function() {
       $$input_cfg2$$.filter("input").on("blur", function($$input$$1_event$$) {
         $$input$$1_event$$ = $js$$.dom(this).setAttrs({"data-focus":null});
         $form$$.setFieldValue($cfg$$.name, $$input$$1_event$$.exportValue());
-      }).on("focus", function($$input$$2_attrs$$36_event$$) {
-        $$input$$2_attrs$$36_event$$ = {readonly:null};
-        $js$$.dom(this).getAttrs($$input$$2_attrs$$36_event$$);
-        $$input$$2_attrs$$36_event$$.readonly || ($$input$$2_attrs$$36_event$$ = $js$$.dom(this).setAttrs({"data-focus":!0}), $form$$.setFieldValue($cfg$$.name, $$input$$2_attrs$$36_event$$.exportValue()));
+      }).on("focus", function($$input$$2_attrs$$37_event$$) {
+        $$input$$2_attrs$$37_event$$ = {readonly:null};
+        $js$$.dom(this).getAttrs($$input$$2_attrs$$37_event$$);
+        $$input$$2_attrs$$37_event$$.readonly || ($$input$$2_attrs$$37_event$$ = $js$$.dom(this).setAttrs({"data-focus":!0}), $form$$.setFieldValue($cfg$$.name, $$input$$2_attrs$$37_event$$.exportValue()));
       });
       return $$input_cfg2$$;
     };
@@ -3233,14 +3266,14 @@ js.extend.fn("sp", function() {
     });
     return this;
   }, push:function $$sp$$$list$fn$push$($success$$, $failure$$) {
-    var $ctx$$ = new window.SP.ClientContext(this._url), $data$$102_list$$ = $ctx$$.get_web().get_lists().getByTitle(this._name), $data$$102_list$$ = {clientContext:$ctx$$, items:[], list:$data$$102_list$$, self:this};
-    this.eachDirtyRow(this._pushLoopDirtyRows, $data$$102_list$$);
-    $ctx$$.executeQueryAsync($js$$.alg.bindFn(this, $__successPush$$, [$data$$102_list$$.items, $success$$]), $js$$.alg.bindFn(this, $__failurePush$$, [$data$$102_list$$.items, $failure$$]));
+    var $ctx$$ = new window.SP.ClientContext(this._url), $data$$103_list$$ = $ctx$$.get_web().get_lists().getByTitle(this._name), $data$$103_list$$ = {clientContext:$ctx$$, items:[], list:$data$$103_list$$, self:this};
+    this.eachDirtyRow(this._pushLoopDirtyRows, $data$$103_list$$);
+    $ctx$$.executeQueryAsync($js$$.alg.bindFn(this, $__successPush$$, [$data$$103_list$$.items, $success$$]), $js$$.alg.bindFn(this, $__failurePush$$, [$data$$103_list$$.items, $failure$$]));
     return this;
-  }, _pushLoopDirtyRows:function $$sp$$$list$fn$_pushLoopDirtyRows$($row$$, $i$$50_rowID$$, $itemInfo_listItem_rows$$, $data$$) {
-    $i$$50_rowID$$ = $row$$.ID.value;
+  }, _pushLoopDirtyRows:function $$sp$$$list$fn$_pushLoopDirtyRows$($row$$, $i$$51_rowID$$, $itemInfo_listItem_rows$$, $data$$) {
+    $i$$51_rowID$$ = $row$$.ID.value;
     $itemInfo_listItem_rows$$ = $itemInfo_listItem_rows$$ = null;
-    0 > $row$$.ID.value ? ($itemInfo_listItem_rows$$ = new SP.ListItemCreationInformation, $itemInfo_listItem_rows$$ = $data$$.list.addItem($itemInfo_listItem_rows$$), $data$$.newrow = !0) : ($itemInfo_listItem_rows$$ = $data$$.list.getItemById($i$$50_rowID$$), $data$$.newrow = !1);
+    0 > $row$$.ID.value ? ($itemInfo_listItem_rows$$ = new SP.ListItemCreationInformation, $itemInfo_listItem_rows$$ = $data$$.list.addItem($itemInfo_listItem_rows$$), $data$$.newrow = !0) : ($itemInfo_listItem_rows$$ = $data$$.list.getItemById($i$$51_rowID$$), $data$$.newrow = !1);
     $data$$.listItem = $itemInfo_listItem_rows$$;
     $js$$.alg.each($row$$, $data$$.self._pushLoopDirtyRowColumns, $data$$);
     $data$$.items.push($itemInfo_listItem_rows$$);
@@ -3256,12 +3289,12 @@ js.extend.fn("sp", function() {
     $colName$$1_value$$ = $data$$[$colData$$.name];
     $row$$ = $colName$$1_value$$ !== $colData$$.value;
     "undefined" !== typeof $colName$$1_value$$ && $row$$ && ($colData$$.value = $colName$$1_value$$);
-  }, createRow:function $$sp$$$list$fn$createRow$($data$$107_values$$) {
+  }, createRow:function $$sp$$$list$fn$createRow$($data$$108_values$$) {
     var $columns$$ = this._columns;
-    $data$$107_values$$ = {row:{}, rowID:-1, values:$js$$.alg.mergeObj({}, $data$$107_values$$)};
-    $js$$.alg.each($columns$$, this._createRowEach, $data$$107_values$$);
-    $data$$107_values$$.row.ID.value = $data$$107_values$$.rowID;
-    this._dirtyRows.push($data$$107_values$$.row);
+    $data$$108_values$$ = {row:{}, rowID:-1, values:$js$$.alg.mergeObj({}, $data$$108_values$$)};
+    $js$$.alg.each($columns$$, this._createRowEach, $data$$108_values$$);
+    $data$$108_values$$.row.ID.value = $data$$108_values$$.rowID;
+    this._dirtyRows.push($data$$108_values$$.row);
     return this;
   }, _createRowEach:function $$sp$$$list$fn$_createRowEach$($colData$$, $colName$$2_value$$, $column$$, $cell$$1_data$$) {
     var $row$$ = $cell$$1_data$$.row;
@@ -3513,9 +3546,9 @@ jspyder.extend.fn("template", function() {
     return "";
   }, map_item:function($map$$, $id$$) {
     return ($map$$ = this[$map$$]) ? $map$$[$id$$] : $id$$;
-  }, js_registry:function($data$$121_key$$) {
-    $data$$121_key$$ = $js$$.registry.fetch($data$$121_key$$);
-    return null === $data$$121_key$$ || "undefined" === typeof $data$$121_key$$ ? "" : $data$$121_key$$;
+  }, js_registry:function($data$$122_key$$) {
+    $data$$122_key$$ = $js$$.registry.fetch($data$$122_key$$);
+    return null === $data$$122_key$$ || "undefined" === typeof $data$$122_key$$ ? "" : $data$$122_key$$;
   }, js_log:function($data$$) {
     console.log($data$$);
   }, concat:function($str$$) {

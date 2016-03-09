@@ -89,45 +89,137 @@ js.extend.fn("download", function () {
         getCharset: function() { return this._charset; }
     }
     
-    var doc = window.document,
-        URL = window.URL || window.webkitURL || window,
+    var win = window,
+        doc = win.document,
+        safeType = "application/octet-stream",
+        URL = (window.URL || window.webkitURL || window),
         getObjUrl = function(blob) { return URL.createObjectURL(blob); },
         killObjUrl = function(url) { return URL.revokeObjectURL(url); },
-        safeType = "application/octet-stream",
         sliceBlob = Blob.prototype.slice || Blob.prototype.webkitSlice,
-        reqFilesystem = window.requestFileSystem || window.webkitRequestFileSystem || window.mozRequestFileSystem;
+        reqFilesystem = window.requestFileSystem || window.webkitRequestFileSystem || window.mozRequestFileSystem,
+        Blob = (win.Blob || win.MozBlob || win.WebKitBlob),
+        saveBlob = win["navigator"]["msSaveOrOpenBlob"] || win["navigator"]["msSaveBlob"];
     
+    var __decode = function(text) {
+        var btoa = win.btoa;
+        
+        if(win.btoa) {
+            __decode = function(text) {
+                return ";base64," + btoa(text);
+            }
+        } 
+        else {
+            __decode = function(text) {
+                return "," + encodeURIComponent(text);
+            }
+        }
+        
+        return __decode(text);
+    }
+    
+    var __encode = function(data, type) {
+        var p = data.split(/[:;,]/),
+            type = p[1],
+            toBinary = p[2] === "base64" ? atob : decodeURIComponent, //< if we can't handle atob then there should be a fallback
+            binary = toBinary(p.pop()),
+            size = binary.length,
+            arr = new Uint8Array(size);
+
+        js.alg.iterate(0, size, function(i) {
+            arr[i] = binary.charCodeAt(i);
+        });
+
+        return new Blob([arr], { type: type });
+    }
+    
+    var __reDataUrl = /^data\:[\w+\-]+\/[\w+\-]+[,;]/;
     function __save(name, type, blob) {
         "use strict";
-        name = js.alg.string(name, "download");
+        
         type = js.alg.string(type, safeType);
+        if(__reDataUrl.test(blob)) {
+            return saveBlob ? saveBlob(__encode(blob), name) : __triggerSave(blob);
+        }
         
-        var saveLink = js.dom(doc.createElementNS("http://w3.org/19999/xhtml", "a")),
-            props = { "download": null },
-            url = getObjUrl(blob),
-            changed = false;
-            saveLink.getProps(props);
+        blob = (blob instanceof Blob ? blob : new Blob([blob], { type: type }));
+        
+        if (saveBlob) {
+            return saveBlob(blob, name);
+        }
+        else if (URL) {
+            return __triggerSave(name, getObjUrl(blob));
+        }
+        else {
+            if(typeof blob === "string" || blob instanceof String) {
+                return __triggerSave( "data:" + type + __decode(blob) );
+            }
             
-        if(window.externalHost && typeof props.download !== "undefined") {
-            saveLink
-                .setProps({ href: url, download: name })
-                .on("click", function(event) { killObjUrl(url); })
-                .trigger("click");
+            var filereader = new FileReader();
+            filereader.onload = function(e) { __triggerSave(this.result); };
+            filereader.readAsDataURL(blob);
         }
         
-        if(js.env.browser === "Chrome"){
-            if(type !== safeType) {
-                blob = sliceBlob.call(blob, 0, blob.size, safeType);
-                killObjUrl(url);
-                getObjUrl(blob);
-            }
-            if(name !== "download") {
-                name += ".download";
-            }
-        }
+        return true;
+        
+        // "use strict";
+        // name = js.alg.string(name, "download");
+        // type = js.alg.string(type, safeType);
+        
+        // var saveLink = js.dom("<a></a>"),
+        //     props = { "download": null },
+        //     url = getObjUrl(blob),
+        //     changed = false;
+        //     saveLink.getProps(props);
+            
+        // if(window.externalHost && typeof props.download !== "undefined") {
+        //     saveLink
+        //         .setProps({ href: url, download: name })
+        //         .on("click", function(event) { killObjUrl(url); })
+        //         .trigger("click");
+        // }
+        
+        // if(js.env.browser === "Chrome"){
+        //     if(type !== safeType) {
+        //         blob = sliceBlob.call(blob, 0, blob.size, safeType);
+        //         killObjUrl(url);
+        //         getObjUrl(blob);
+        //     }
+        //     if(name !== "download") {
+        //         name += ".download";
+        //     }
+        // }
 
-        window.open(url, "_blank");
-        killObjUrl(url);
+        // window.open(url, "_blank");
+        // killObjUrl(url);
+    }
+    
+    var __replaceUrl = /^data:([\w\/\-\+]+)/;
+    function __triggerSave(filename, url) {
+        var props = { "download": null },
+            attrs = { "href": url, "download": filename },
+            $a = js.dom("<a></a>").getProps(props);
+            
+        if(props["download"] !== null) {
+            $a.setAttrs(attrs).trigger("click");
+            return true;
+        }
+        else if(js.env.browser.name === "Safari") {
+            url = "data:" + url.replace(__replaceUrl, saveLink);
+            if(!window.open(url)) {
+                location.href = url;
+            }
+            return true;
+        }
+        else {
+            url = "data:" + url.replace(__replaceUrl, saveLink);
+            js.dom("<iframe></iframe>")
+                .setCss({ "position": "fixed", "left": "-9000000px", "width": "1em", "height": "1em" })
+                .setProps({ "src": url })
+                .on("load", function(event) { $frame.remove(); })
+                .attach(document.body);
+                
+            return true;
+        }
     }
     
     // helps with endian-ness
