@@ -302,7 +302,8 @@ jspyder.extend.fn("form", function () {
          *      second parameter to js.form.registerControl
          */
         registerControlFn: function (typename, preconstructor) {
-            return this.registerControl(typename, js.alg.use(this, preconstructor));
+            this.registerControl(typename, js.alg.use(this, preconstructor));
+            return this;
         },
         
         /**
@@ -778,9 +779,6 @@ jspyder.extend.fn("form", function () {
          * @param {Function} fn
          *      The function to execute; the return value will be a JS-DOM
          *      object, containing the generated form elements.
-         * 
-         * @return {Object}
-         *      JS-DOM node, containing the compiled template. 
          */
         compileDom: function (dom, data, fn) {
             dom = js.dom(dom);
@@ -790,8 +788,7 @@ jspyder.extend.fn("form", function () {
                     form._compiler(html, data, fn, dom);
                 });
             }
-            return this;
-            // return this._compiler(dom, data, fn, null);
+            return dom;
         },
         
         /**

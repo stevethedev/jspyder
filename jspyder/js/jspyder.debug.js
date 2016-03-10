@@ -2323,7 +2323,8 @@ jspyder.extend.fn("form", function() {
     $js_form$$.fn.templates[$typename$$] = $constructor$$;
     return this;
   }, registerControlFn:function $$js_form$$$fn$registerControlFn$($typename$$, $preconstructor$$) {
-    return this.registerControl($typename$$, $js$$.alg.use(this, $preconstructor$$));
+    this.registerControl($typename$$, $js$$.alg.use(this, $preconstructor$$));
+    return this;
   }, buildControl:function $$js_form$$$fn$buildControl$($config$$, $nolabel$$) {
     var $ctl$$ = (this.templates[$config$$.type] || this.templates.input).apply(this, [$config$$]), $fieldname_lbl$$ = $js$$.alg.string($config$$.name), $labeltext$$ = $js$$.alg.string($config$$.text), $uselabel$$ = !$js$$.alg.bool($config$$.nolabel, $nolabel$$), $fieldname_lbl$$ = this.buildLabel($uselabel$$ && $fieldname_lbl$$, $uselabel$$ && $labeltext$$, $config$$.class, $config$$.tooltip), $form$$ = this;
     $js$$.alg.each($config$$.events, function($callback$$, $event$$0$$) {
@@ -2426,7 +2427,7 @@ jspyder.extend.fn("form", function() {
         $form$$._compiler($html$$, $data$$, $fn$$, $dom$$);
       });
     }
-    return this;
+    return $dom$$;
   }, _compiler:function $$js_form$$$fn$_compiler$($template$$, $data$$, $fn$$, $compile$$) {
     var $dom$$ = null;
     if ("string" !== typeof $compile$$) {
