@@ -241,7 +241,6 @@ jspyder.extend.fn("form", function () {
             var cfg = Object.create(js_form.fn.fieldTemplate),
                 dval = config.default,
                 val = config.value,
-                form = this,
                 $field = null;
             
             // copy all of the config options over, if they exist.    
@@ -253,16 +252,11 @@ jspyder.extend.fn("form", function () {
             });
 
             $field = this.buildControl(cfg);
-                
-            js.alg.each(config["events"], function(callback, event) { 
-                $field.on(event, function(event) {
-                    js.alg.use(this, callback, [event, form]);
-                });
-            });
 
             if (!this._fields) {
                 this._fields = {};
             }
+            
             this._fields[name] = {
                 type: cfg.type,
                 field: $field,
@@ -273,9 +267,38 @@ jspyder.extend.fn("form", function () {
                 ignore: cfg.ignore,
                 config: cfg };
                 
-            // this.setFieldValue(name, (typeof val !== "undefined" ? val : dval));
             this.resetFieldValue(name);
+            
+            this.bindEvents($field, cfg);
 
+            return this;
+        },
+        
+        /**
+         * @method
+         * Binds the events from the configuration object to the generated
+         * field.
+         * 
+         * @param {Object} control
+         *      JS-DOM node to bind events to
+         * @param {Object} config
+         *      The Configuration object the JS-DOM node was created with.
+         * @param {Object} config.events
+         *      An array of event types, in JS-DOM Event format, where keys
+         *      are event names and values are the event functions.  Note,
+         *      it *is* possible to double-bind a function to a control.
+         *      Any functions bound through this method take the Event object
+         *      as the first parameter, and the JS-Form object as the second.
+         */
+        bindEvents: function(control, config) {
+            var form = this;
+            
+            js.alg.each(config && config["events"], function(callback, event) { 
+                control.on(event, function(event) {
+                    js.alg.use(this, callback, [event, form]);
+                });
+            });
+            
             return this;
         },
         
