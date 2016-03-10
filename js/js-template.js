@@ -245,7 +245,7 @@ jspyder.extend.fn("template", function () {
             if (typeof template === "undefined") {
                 template = "";
             }
-            template = template.replace(/[\n\r\f\s]+/gi, " ");
+            // template = template.replace(/[\n\r\f\s]+/gi, " ");
             var o = Object.create(this._data);
             js.alg.each(data || {}, function (v, k, _, o) {
                 o[k] = v;
@@ -325,9 +325,52 @@ jspyder.extend.fn("template", function () {
         
         /** @private */
         _storeTemplateXml_ajax: function (xhttp, data) {
-            var $xml = js.dom(xhttp.responseXML.firstChild);
-            $xml.children(js_template.fn._storeTemplateXml_children, data);
-            js.alg.run(data.fn);
+            if(js.env.browser.name === "IE" && js.env.browser.version <= 9) {
+                js_template.fn._storeTemplateXml_ajax = function(xhttp, data) {
+                    var xml = js_template.fn._storeTemplateXml_parseXml(xhttp.responseText),
+                        $xml = js.dom(xml.firstChild);
+                        
+                    $xml.children(js_template.fn._storeTemplateXml_children, data);
+                    js.alg.run(data.fn);
+                }
+            }
+            else {
+                js_template.fn._storeTemplateXml_ajax = function(xhttp, data) {
+                    var $xml = js.dom(xhttp.responseXML.firstChild);
+                        
+                    $xml.children(js_template.fn._storeTemplateXml_children, data);
+                    js.alg.run(data.fn);
+                }
+            }
+            
+            return js_template.fn._storeTemplateXml_ajax.apply(this, arguments);
+        },
+        _storeTemplateXml_parseXml: function parseXml(xmlText){
+            try{
+                var text = xmlText;
+                if (typeof DOMParser != "undefined") { 
+                    var parser=new DOMParser();
+                    var doc=parser.parseFromString(text,"text/xml");
+                    return doc; 
+                }
+                else if (typeof ActiveXObject != "undefined") { 
+                    // Internet Explorer. 
+                    var doc = new ActiveXObject("Microsoft.XMLDOM");  // Create an empty document 
+                    doc.loadXML(text);            // Parse text into it 
+                    return doc;                   // Return it 
+                } 
+                else { 
+                    var url = "data:text/xml;charset=utf-8," + encodeURIComponent(text); 
+                    var request = new XMLHttpRequest(); 
+                    request.open("GET", url, false); 
+                    request.send(null); 
+                    return request.responseXML; 
+                }
+            }
+            catch(err){
+                js.log.error("There was a problem parsing the xml: " + err.message);
+            }
+            return "<templates></templates>";
         },
         
         /** @private */
@@ -403,7 +446,7 @@ jspyder.extend.fn("template", function () {
     js_template.registerSet({
         // matches an array [frm] in data
         // pushes results tp [push] in [template]
-        each: function (frm, push, template) {
+        "each": function (frm, push, template) {
             var data = this[frm] || {},
                 pushObj = Object.create(this),
                 ret = "",
@@ -419,7 +462,7 @@ jspyder.extend.fn("template", function () {
         
         // fetches the template by [name], compiles it, and inserts
         // it into the calling template.
-        insert_template: function (name) {
+        "insert_template": function (name) {
             var tmp = "";
             var o = Object.create(this);
             
@@ -427,8 +470,15 @@ jspyder.extend.fn("template", function () {
                 o[arguments[i]] = o[arguments[++i]];
             }
             
+            o.arguments = js.alg.sliceArray(arguments, 1);
+            
             js_template(o).compile(name, function (v) { tmp = v; });
             return tmp; 
+        },
+        
+        "arguments": function (n) {
+            n = js.alg.number(n);
+            return (this.arguments ? this.arguments[n] || "" : "");
         },
         
         // branching logic.  If [test] is true, then inserts [pass],
@@ -436,7 +486,7 @@ jspyder.extend.fn("template", function () {
         // TODO: Make this native support, so that it won't have
         // to parse both paths ad infinitum before executing the
         // function.
-        iif: function (test, pass, fail) {
+        "iif": function (test, pass, fail) {
             var $t = js_template(this);
             
             if (typeof test === "string") {
@@ -452,7 +502,7 @@ jspyder.extend.fn("template", function () {
         },
         
         // gets the size of an array
-        size: function (arrayName) {
+        "map_size": function (arrayName) {
             var data = this[arrayName];
             
             return (data && data.length
@@ -463,7 +513,7 @@ jspyder.extend.fn("template", function () {
         },
         
         // adds two numbers together
-        add: function (n, a) {
+        "add": function (n, a) {
             return js.alg.number(js.alg.number(n) + js.alg.number(a));
         },
         
@@ -476,7 +526,7 @@ jspyder.extend.fn("template", function () {
         },
         
         // @map("myMap", "key", "value", "key", "value", ...)
-        map: function (name) {
+        "map": function (name) {
             var map = {};
             
             for (var i = 1; i < arguments.length; i += 2) {
@@ -487,32 +537,52 @@ jspyder.extend.fn("template", function () {
             return "";
         },
         
-        map_item: function (map, id) {
+        "map_item": function (map, id) {
             map = this[map];
             return (map ? map[id] : id);
         },
         
         
-        js_registry: function (key) {
+        "js_registry": function (key) {
             var data = js.registry.fetch(key);
             return (data === null || typeof data === "undefined"
                 ? "" : data);
         },
         
-        js_log: function (data) {
+        "js_log": function (data) {
             console.log(data);
         },
         
-        concat: function(str) {
+        "concat": function(str) {
             for(var i = 1; i < arguments.length; i++) {
                 str += arguments[i];
             }
             return str;
         },
         
-        html: function(str) {
+        "html": function(str) {
             js.dom("<div>" + str + "</div>").getText(function(v) { str = v; });
             return str;
+        },
+        
+        "escape": function (str) {
+            var ret = [];
+            str = str.split(/\r?\n/);
+            js.alg.arrEach(str, function (str) {
+                var t = [];
+                js.alg.iterate(0, str.length, function (i) {
+                    t.push("&#", str.charCodeAt(i), ";");
+                });
+                ret.push(t.join(''));
+            });
+            return ret.join('<br />');
+        },
+        
+        "tag": function (tag, props) {
+            tag = js.alg.string(tag, "br");
+            props = js.alg.string(props, "");
+            var voidElement = /^(area|base|br|col|embed|hr|img|input|keygen|link|menuitem|meta|param|source|track|wbr)\b/i.test(tag);
+            return "<" + tag + " " + props + (voidElement ? " /" : "></" + tag ) + ">";
         }
     });
     

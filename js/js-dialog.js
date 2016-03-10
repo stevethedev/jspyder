@@ -67,6 +67,8 @@ jspyder.extend.fn("dialog", function () {
             bodyHtml: js.alg.string(cfg.message, ""),
             noclose: true,
             parent: cfg.parent || document.body,
+            height: cfg.height,
+            width: cfg.width,
             buttons: [
                 { 
                     text: "OK", 
@@ -87,6 +89,8 @@ jspyder.extend.fn("dialog", function () {
             bodyHtml: js.alg.string(cfg.message, ""),
             noclose: true,
             parent: cfg.parent || document.body,
+            height: cfg.height,
+            width: cfg.width,
             buttons: [
                 { 
                     text: "OK", 
@@ -115,6 +119,8 @@ jspyder.extend.fn("dialog", function () {
             bodyHtml: js.alg.string(cfg.message, ""),
             noclose: true,
             parent: cfg.parent || document.body,
+            height: cfg.height,
+            width: cfg.width,
             buttons: [
                 { 
                     text: "Yes", 

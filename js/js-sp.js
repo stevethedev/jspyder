@@ -26,17 +26,17 @@ js.extend.fn("sp", function () {
     /** @ignore */
     var js = window.jspyder;
     
-    /** ***********************************************************************
+    /**
      * @class jspyder.sp
      * @member jspyder
      * 
      * # Managed Objects:
      * ## JSpyder SharePoint List Reference (jspyder.sp.list)
      * ## JSpyder SharePoint Query Reference (jspyder.sp.query)
-     * ***********************************************************************/
-    function sp() {};
+     */
+    function sp() { };
     
-    /** ***********************************************************************
+    /**
      * @class jspyder.sp.list
      * @extends jspyder.sp
      * 
@@ -66,7 +66,7 @@ js.extend.fn("sp", function () {
      * 
      * @return {Object} 
      *      A JSpyder SharePoint List Reference Object ([sp.list]{#sp.list})
-     * ***********************************************************************/
+     */
     sp.list =  function spList(config, fn) {
          
         if (!window.SP) {
@@ -123,7 +123,7 @@ js.extend.fn("sp", function () {
             return this._rows.length;
         },
         
-        /** *******************************************************************
+        /**
          * Adds a single column to the SP List proxy
          * 
          * @param {String} name
@@ -157,7 +157,7 @@ js.extend.fn("sp", function () {
          *              Defines a custom value lookup.  This will override (and
          *              not consider) any values found if a data.internal parameter
          *              is provided.
-         * *******************************************************************/
+         */
         addColumn: function(name, data) {
             var column = Object.create(sp.column.fn, {
                 list: { value: this },
@@ -165,18 +165,23 @@ js.extend.fn("sp", function () {
             });
             
             js.alg.mergeObj(column, data);
+            if(typeof data["default"] === "undefined") {
+                if(column.type === "number") {
+                    column["default"] = 0;
+                }
+            }
             
             this._columns[name] = column;
             
             return this;
         },
-        /** *******************************************************************
+        /**
          * Adds a group of columns to the SP List proxy, via this.addColumn,
          * where keys correspond to the [name] parameter, and values correspond
          * to the [data] parameter.
          * 
          * @param {Object} dataObj
-         * *******************************************************************/
+         */
         addColumns: function(dataObj) {
             js.alg.each(dataObj, function(data, name, dataObj, list) {
                 list.addColumn(name, data);
@@ -184,14 +189,14 @@ js.extend.fn("sp", function () {
             return this;
         },
         
-        /** *******************************************************************
+        /**
          * Gets the column template by name, as identified in js.sp.list.addColumn
          * 
          * @param {String} name
          *      The name of the field to retrieve the template for. Note that
          *      any changes to the template will change the template for all
          *      of the derived values within the table.
-         * *******************************************************************/
+         */
         getColumn: function(name) {
             return (this._columns[name]
                 ? this._columns[name] 
@@ -200,14 +205,14 @@ js.extend.fn("sp", function () {
                     name: { value: name }}));
         },
         
-        /** *******************************************************************
+        /**
          * Gets the row number from the cache of stored values.  Note that this
          * number does not necessarily correspond to the row ID within 
          * SharePoint.
          * 
          * @param {Number} n
          *      The row number to retrieve from the cache.
-         * *******************************************************************/
+         */
         getRow: function(n) {
             return this._rows[js.alg.number(n, 0)] || null;
         },
@@ -235,8 +240,7 @@ js.extend.fn("sp", function () {
          * Gets the dirty rows
          */
         eachDirtyRow: function(fn, data) {
-            var list = this,
-                dirty = this._dirtyRows;
+            var dirty = this._dirtyRows;
                 
             if(typeof fn === "function") {
                 js.alg.each(dirty, fn, data);
@@ -249,16 +253,16 @@ js.extend.fn("sp", function () {
             
         },
         
-        /** *******************************************************************
+        /**
          * Retrieves the number of rows within the cache.
          * 
          * @return {Number}
-         * *******************************************************************/
+         */
         getRowCount: function(n) {
             return this._rows.length;
         },
         
-        /** *******************************************************************
+        /**
          * Executes an asynchronous read-query from the server to pull in 
          * fresh data. It is important to note, when using this function, that
          * any subsequent or chained functions will likely execute before this
@@ -275,7 +279,9 @@ js.extend.fn("sp", function () {
          *      [sender, args] as the parameters.  This function will be 
          *      executed instead of the failure function identified in the
          *      constructor.
-         * *******************************************************************/
+         * 
+         * @async
+         */
         pull: function (success, failure) {
             var ctx = new window.SP.ClientContext(this._url),
                 list = ctx.get_web().get_lists().getByTitle(this._name),
@@ -291,13 +297,14 @@ js.extend.fn("sp", function () {
             var listItems = list.getItems(caml);
 
             ctx.load(listItems);
+            
             ctx.executeQueryAsync(
                 js.alg.bindFn(this, __successParse, [listItems, successFn]),
                 js.alg.bindFn(this, __failureParse, [listItems, failureFn]));
             return this;
         },
         
-        /** *******************************************************************
+        /**
          * Creates a new query object. This function is synchronous, and 
          * executes data currently residing in the cache.
          * 
@@ -307,7 +314,7 @@ js.extend.fn("sp", function () {
          * 
          * @return {Object}
          *      [Query Reference]{#sp.query}
-         * *******************************************************************/
+         */
         query: function (criteria) {
             var query = sp.query(this).reset();
             return (criteria instanceof Array
@@ -315,14 +322,13 @@ js.extend.fn("sp", function () {
                 : query.filter(criteria));
         },
 
-        /** *******************************************************************
+        /**
          * Clears all cached data within the list reference.  This is function
          * is automatically called when pulling data from the SharePoint List,
          * and should not be necessary for most implementations.
-         * *******************************************************************/
+         */
         clearData: function () {
             this._rows = [];
-            // this._dirtyRows = [];
             while(this._dirtyRows.pop()) {
                 // nothing
             }
@@ -333,7 +339,7 @@ js.extend.fn("sp", function () {
             return this;
         },
         
-        /** *******************************************************************
+        /**
          * Pushes changed data to the server.
          * 
          * !TODO: Implement the logic for this:
@@ -344,13 +350,13 @@ js.extend.fn("sp", function () {
          *  5: Push
          * 
          * Alternatively, I could cache the changed values when I mark them as
-         * "dirty". 
-         * *******************************************************************/
+         * "dirty".
+         *  
+         * @async
+         */
         push: function(success, failure) {
             var ctx = new window.SP.ClientContext(this._url),
                 list = ctx.get_web().get_lists().getByTitle(this._name),
-                itemInfo = null,
-                listItem = null,
                 data = {
                     clientContext: ctx,
                     items: [],
@@ -421,6 +427,9 @@ js.extend.fn("sp", function () {
             
             return;
         },
+        /**
+         * @method
+         */
         createRow: function(values) {
             var columns = this._columns,
                 data = {
@@ -457,6 +466,53 @@ js.extend.fn("sp", function () {
                 colValue = (typeof value !== "undefined" ? value : colData.default || null);
             
             row[colData.name] = cell;
+        },
+        
+        /**
+         * @method
+         * 
+         * Retrieves the permission levels for the current user in the
+         * associated list.
+         * 
+         * @param {Function} success
+         *      The function to execute if the permissions were successfully retrieved.
+         * 
+         * @param {Function} failure
+         *      The function to execute if the permissions failed to retrieve.
+         * 
+         * @async
+         */
+        getPermissions: function (success, failure) {
+            var ctx = new window.SP.ClientContext(this._url),
+                web = ctx.get_web(),
+                data = {
+                    currentUser: web.get_currentUser(),
+                    web: web
+                };
+                
+            ctx.load(data.currentUser);
+            ctx.load(web, "EffectiveBasePermissions");
+            ctx.executeQueryAsync(
+                js.alg.bindFn(this, this._getPermissionsSuccess, [data, success]),
+                js.alg.bindFn(this, this._getPermissionsSuccess, [null, failure]));
+                
+            return this;
+        },
+        _getPermissionsSuccess: function (data, callback, sender, args) {
+            var permissions = this._permissions = {};
+            
+            if (data) {
+                var perm = data.web.get_effectiveBasePermissions();
+
+                js.alg.each(new window.SP.PermissionKind(), function (pValue, pName) {
+                    permissions[pName] = js.alg.bool(perm.has(pValue));
+                });
+                js.alg.use(this, callback, [this._permissions]);
+                return;
+            }
+            
+            js.alg.use(this, callback, [sender, args]);
+            return;
         }
     };
 
@@ -694,7 +750,7 @@ js.extend.fn("sp", function () {
          * *******************************************************************/
         filter: function(filterData) {
             if(filterData) {
-                js.alg.arrEach(this._rows, __parseRows, [filterData]);
+                js.alg.arrEach(this._rows, __parseRows, { filterArray: [filterData], exclude: false });
             }
             return this;
         },
@@ -709,7 +765,12 @@ js.extend.fn("sp", function () {
          *      Array of filter collections
          * *******************************************************************/
         filters: function(filterArray) {
-            js.alg.arrEach(this._rows, __parseRows, filterArray);
+            js.alg.arrEach(this._rows, __parseRows, { filterArray: filterArray, exclude: false });
+            return this;
+        },
+        
+        excludes: function(filterArray) {
+            js.alg.arrEach(this._rows, __parseRows, { filterArray: filterArray, exclude: true });
             return this;
         },
         
@@ -843,6 +904,14 @@ js.extend.fn("sp", function () {
             var clone = sp.query(this._list);
             clone._rows = this._rows.slice(0);
             return clone;
+        },
+        
+        toExcelString: function(name, columns) {
+            return __generateXML(name, this._list, this._rows, columns);
+        },
+        
+        toCsvString: function(columns) {
+            return __generateCSV(this._list, this._rows, columns);
         }
     };
 
@@ -862,12 +931,14 @@ js.extend.fn("sp", function () {
      * @param {Object} filterData
      *      Collection of filters.  See jspyder.sp.query.filter
      * *******************************************************************/
-    function __parseRows(row, id, _rows, filterData) {
-        if(!row || !filterData || !filterData.length) { // catch null values
+    function __parseRows(row, id, _rows, data) {
+        if(!row || !data || !data.filterArray || !data.filterArray.length) { // catch null values
             return;
         }
         
-        var f, filter, drop, value, orDrop;
+        var filterData = data.filterArray,
+            exclude = data.exclude,
+            f, filter, drop, value, orDrop;
         
         drop = false;
         
@@ -975,12 +1046,12 @@ js.extend.fn("sp", function () {
             if(!drop && (typeof filter.not !== "undefined")) {
                 if(filter.not && typeof filter.not === "object") {
                     js.alg.each(filter.not, function(or) {
-                        orDrop = orDrop && !((value & or) !== or);
+                        orDrop = orDrop && !((value & or) === 0);
                         orDrop || this.stop();
                     });
                     drop = orDrop;
                 }
-                else { drop = !((value & filter.not) !== filter.not); }
+                else { drop = !((value & filter.not) === 0); }
             }
             
             if(!drop && (typeof filter.test !== "undefined")) { 
@@ -998,8 +1069,7 @@ js.extend.fn("sp", function () {
             }
         }
         
-        if(drop) {
-            // _rows[id] = null;
+        if((!exclude && drop) || (exclude && !drop)) {
             this.drop();
         }
         
@@ -1059,6 +1129,101 @@ js.extend.fn("sp", function () {
          */
         valueOf: function() { return this.value; }
     };
+    
+    function __generateXML (name, table, rows, columns, styles) {
+        var xml = [
+            "<?xml version=\"1.0\"?>",
+            "<?mso-application progid=\"Excel.Sheet\"?>",
+            __workbook(name, rows, columns)];
+            
+        function __workbook(name, rows, columns) {
+            return [
+                "<ss:Workbook xmlns:ss=\"urn:schemas-microsoft-com:office:spreadsheet\">",
+                    __styles(),
+                    __worksheet(name, rows, columns),
+                "</ss:Workbook>"
+            ].join('');
+        }
+        
+        function __styles(styles) {
+            return [
+                "<ss:Styles>",
+                    "<ss:Style ss:ID=\"1\">",
+                        "<ss:Font ss:Bold=\"1\" />",
+                    "</ss:Style>",
+                "</ss:Styles>"
+            ].join('');
+        }
+        
+        function __worksheet(name, rows, columns) {
+            return [
+                "<ss:Worksheet ss:Name=\"", name, "\">",
+                    "<ss:Table>",
+                        __rows(rows, columns),
+                    "</ss:Table>",
+                "</ss:Worksheet>"
+            ].join('');
+        }
+        
+        function __rows(rows, columns) {
+            var __rows = [];
+            
+            __rows.push("<ss:Row ss:StyleID=\"1\">");
+            js.alg.arrEach(columns, __pushRow, "text");
+            __rows.push("</ss:Row>");
+            
+            js.alg.arrEach(rows, function(row, i) {
+                __rows.push("<ss:Row>");
+                js.alg.arrEach(columns, __pushRow, "value");
+                __rows.push("</ss:Row>");
+            });
+            
+            function __pushRow (col, i, cols, data) {
+                __rows.push([
+                    "<ss:Cell><ss:Data ss:Type=\"String\">", rows[col][data], "</ss:Data></ss:Cell>"
+                ].join(''))
+            }
+            
+            return __rows.join('');
+        }
+        
+        return xml.join('');
+    }
+    
+    function __generateCSV (table, rows, columns) {
+        var csv = [
+            "\uFEFF",
+            __headers(table, columns),
+            "\r\n",
+            __rows(rows, columns)];
+        
+        function __headers(table, columns) {
+            var __headers = [];
+            js.alg.arrEach(columns, function(column) {
+                __headers.push(["\"", table.getColumn(column).text || " ", "\""].join(''));
+            });
+            return __headers.join(',');
+        }
+        
+        function __rows(rows, columns) {
+            var __rows = [],
+                __oneRow = null;
+            
+            js.alg.arrEach(rows, function(row, i) {
+                __oneRow = [];
+                js.alg.arrEach(columns, __pushRow, { row: row, type: "value", r: [] });
+                __rows.push(__oneRow.join(','));
+            });
+            
+            function __pushRow (col, i, cols, data) {
+                data.row && __oneRow.push([ "\"", (data.row[col] || {})[data.type] || "", "\"" ].join(''));
+            }
+            
+            return __rows.join('\r\n');
+        }
+        
+        return csv.join('');
+    }
 
     return sp;
 });

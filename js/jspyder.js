@@ -174,7 +174,7 @@
      */
     function _bootstrapEnv(js) {
         var VERSION_OBJ = {
-                MAJOR_VERSION: 0,
+                MAJOR_VERSION: 1,
                 MINOR_VERSION: 0,
                 PATCH_VERSION: 0 },
             VERSION_STR = VERSION_OBJ.MAJOR_VERSION + "." + VERSION_OBJ.MINOR_VERSION + "." + VERSION_OBJ.PATCH_VERSION,
@@ -185,7 +185,7 @@
             if (/*@cc_on!@*/false || !!document.documentMode) {
                 BROWSER_NAME = "IE";
                 if (!window.attachEvent) { BROWSER_VERSION = 11; }
-                else if (/*@cc_on (document.documentMode == 10)!=@*/false) { BROWSER_VERSION = 10; }
+                else if (eval("/*@cc_on (document.documentMode == 10)!=@*/false")) { BROWSER_VERSION = 10; }
                 else if (!window.requestAnimationFrame) { BROWSER_VERSION = 9; }
                 else if (!window.addEventListener) { BROWSER_VERSION = 8; }
                 else { BROWSER_VERSION = 7; }
@@ -220,23 +220,24 @@
                 else if (!window.RTCIceGatherOptions) { BROWSER_VERSION = 12; }
                 else { BROWSER_VERSION = 11; }
             }
-            else if (false) {
+            else if (/iP(ad|hone|od)/.test(navigator.userAgent)) {
                 BROWSER_NAME = "iOS Safari";
                 BROWSER_VERSION = 8.4;
-                9.2; 9.3;
+                // BROWSER_VERSION = 9.2;
+                // BROWSER_VERSION = 9.3;
             }
-            else if (false) {
+            else if (window.operamini) {
                 BROWSER_NAME = "Opera Mini";
                 BROWSER_VERSION = 8;
             }
-            else if (false) {
+            else if (/Android.*Mozilla\/5.0.*AppleWebKit/.test(navigator.userAgent)) {
                 BROWSER_NAME = "Android Browser";
                 BROWSER_VERSION = 4.3;
-                4.4;
-                4.44;
-                46;
+                // BROWSER_VERSION = 4.4;
+                // BROWSER_VERSION = 4.44;
+                // BROWSER_VERSION = 46;
             }
-            else if (false) {
+            else if (/Android.*Chrome/.test(navigator.userAgent)) {
                 BROWSER_NAME = "Chrome for Android";
                 BROWSER_VERSION = 47;
             }
@@ -502,8 +503,8 @@
                 if (typeof Int8Array === "undefined") {
                     u = +u;
                     u = (u === u ? u : 0) & 0xFF;
-                    for (u; u < -0x80; u += 0x100);
-                    for (u; u > 0x7F; u -= 0x100);
+                    while (u < -0x80) { u += 0x100; }
+                    while (u > 0x7F) { u -= 0x100; }
                     return u;
                 }
                 var buffer = new ArrayBuffer(1);
@@ -533,8 +534,8 @@
                 if (typeof Int16Array === "undefined") {
                     u = +u;
                     u = (u === u ? u : 0) & 0xFFFF;
-                    for (u; u < -0x8000; u += 0x10000);
-                    for (u; u > 0x7FFF; u -= 0x10000);
+                    while (u < -0x8000) { u += 0x10000; }
+                    while (u > 0x7FFF) { u -= 0x10000; }
                     return u;
                 }
                 var buffer = new ArrayBuffer(2);
@@ -564,8 +565,8 @@
                 if (typeof Int32Array === "undefined") {
                     u = +u;
                     u = (u === u ? u : 0) & 0xFFFFFFFF;
-                    for (u; u < -0x80000000; u += 0x100000000);
-                    for (u; u > 0x7FFFFFFF; u -= 0x100000000);
+                    while (u < -0x80000000) { u += 0x100000000; }
+                    while (u > 0x7FFFFFFF) { u -= 0x100000000; }
                     return u;
                 }
                 var buffer = new ArrayBuffer(4);
@@ -617,6 +618,22 @@
                 return byteArray[0];
             },
             
+            /**
+             * Takes an array of keys, and generates an enumerated
+             * object with them.
+             */
+            makeEnum: function (keys, enm) {
+                enm = enm || {};
+                var v = 1;
+                    
+                js.alg.arrEach(keys, function (key, val) {
+                    enm[key] = v;
+                    v *= 2;
+                });
+                
+                return enm;
+            },
+            
             rad2deg: function (n, d) {
                 return js.alg.number(n, d) * 180 / Math.PI;
             },
@@ -651,31 +668,37 @@
                 return arr;
             },
             
-            __sortArrayObj: function(asc, list) {
-                switch(js.env.browser.name) {
+            /** 
+             * @return {Function}
+             */
+            __sortArrayObj: function (asc, list) {
+                var __ret;
+                switch (js.env.browser.name) {
                     case "IE":
                     case "Edge":
-                        return function (left, right) {
+                        __ret = function (left, right) {
+                            for (var i = 0; left && right && i < list.length; i++) {
+                                left = left[list[i]];
+                                right = right[list[i]];
+                            }
+
+                            var a = (asc ? left : right),
+                                b = (asc ? right : left);
+
+                            return (a > b ? 1 : (a < b ? -1 : 0));
+                        };
+                        break;
+                    default:
+                        __ret = function (left, right) {
                             for (var i = 0; left && right && i < list.length; i++) {
                                 left = left[list[i]];
                                 right = right[list[i]];
                             }
                             
-                            var a = (asc ? left : right),
-                                b = (asc ? right : left);
-                                
-                            return (a > b ? 1 : (a < b ? -1 : 0 ));
+                            return (asc ? left >= right : left <= right);
                         };
-                    default:
-                        return function (left, right) {
-                                for (var i = 0; left && right && i < list.length; i++) {
-                                    left = left[list[i]];
-                                    right = right[list[i]];
-                                }
-                                
-                                return (asc ? left >= right : left <= right);
-                            };
                 }
+                return __ret;
             },
             
             sortArrayNum: function(arr, asc) {
@@ -974,9 +997,10 @@
             if (!(js_dom.fn.isPrototypeOf(element))) {
 
                 if (typeof s === "string") {
-                    try {
+                    if((s.match(/(^\\\<|\<)/g) || []).indexOf('<') === -1) {
                         element = document.querySelectorAll(s);
-                    } catch (e) {
+                    }
+                    else {
                         element = _parseHtml(s);
                     }
                 }
@@ -1484,7 +1508,7 @@
              */
             remove: function () {
                 this.each(function (child) {
-                    child.parentNode ? child.parentNode.removeChild(child) : null;
+                    child.parentNode && child.parentNode.removeChild(child);
                 });
                 return this;
             },
@@ -1612,19 +1636,21 @@
                 var e;
                 for (var i = 0; i < event.length; i++) {
                     if(!event[i]) { continue; }
-                    try {
-                        e = new Event(event[i], { "bubbles": true, "cancelable": false });
-                    }
-                    catch (_) {
-                        e = document.createEvent("Event");
-                        e.initEvent(event[i], true, true);
-                    }
+                    e = this._eventConstructor(event[i], true, true);
                     this.each(function (el) {
                         el.dispatchEvent(e);
                     });
                 }
 
                 return this;
+            },
+            
+            _eventConstructor: function(type, bubbles, cancelable) {
+                js_dom.fn._eventConstructor = ("function" === typeof window.Event
+                    ? function(type, bubbles, cancelable) { return new Event(type, { "bubbles": bubbles, "cancelable": cancelable }); }
+                    : function(type, bubbles, cancelable) { var e = window.document.createEvent("Event"); e.initEvent(type, bubbles, cancelable); return e; });
+                    
+                return js_dom.fn._eventConstructor.apply(this, arguments);
             },
 
             /**
@@ -1684,8 +1710,10 @@
                     _found = $found._element;
                     
                 this.each(function(element) {
-                    var children = element.querySelectorAll(cssSelector);
-                    js.alg.joinArray(_found, js_dom(children)._element);
+                    if(cssSelector) {
+                        var children = element.querySelectorAll(cssSelector);
+                        js.alg.joinArray(_found, js_dom(children)._element);
+                    }
                 });
                 
                 return $found;
@@ -1716,7 +1744,7 @@
                     js_dom.fn._matches = function (element, selector) {
                         var matches = (element.document || element.ownerDocument).querySelectorAll(selector),
                             i = matches.length;
-                        while (--i >= 0 && matches.item(i) !== element);
+                        while (--i >= 0 && matches.item(i) !== element) { }
                         return i > -1;
                     }
                 }

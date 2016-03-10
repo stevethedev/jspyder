@@ -1,4 +1,4 @@
-/* ****************************************************************************
+/*
  * The MIT License (MIT)
  *
  * Copyright (c) 2015 Steven Jimenez
@@ -20,7 +20,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
- * ***************************************************************************/
+ */
 
 jspyder.extend.fn("form", function () {
     var js = this;
@@ -152,6 +152,26 @@ jspyder.extend.fn("form", function () {
          */
         _fields: null,
         
+        /**
+         * @method
+         * Iterates through all of the form fields, calling the function [fn] on
+         * each field and using [data] as the fourth parameter.
+         * 
+         * @param {Function} fn     
+         *      The function to call on each iteration.
+         * @param {Object} [fn.field]
+         *      The first parameter to fn; the field currently being iterated.
+         * @param {String} [fn.name]
+         *      The second parameter to fn; the name of the field, internal to
+         *      JS-Form
+         * @param {Object} [fn.fields]
+         *      The field collection being itereated.
+         * @param {Mixed} [fn.data]
+         *      The context object passed in as the second parameter to 
+         *      js.form.each
+         * @param {Mixed} [data]
+         *      The variable to pass as the fourth parameter to [fn].
+         */
         each: function(fn, data) {
             js.alg.each(this._fields, fn, data);
             return this;
@@ -164,7 +184,6 @@ jspyder.extend.fn("form", function () {
          * 
          * @param {Object} fields
          */
-        
         addFields: function(fields) {
             for (var name in fields) {
                 this.addField(name, fields[name])
@@ -222,7 +241,7 @@ jspyder.extend.fn("form", function () {
             var cfg = Object.create(js_form.fn.fieldTemplate),
                 dval = config.default,
                 val = config.value,
-                $field;
+                $field = null;
             
             // copy all of the config options over, if they exist.    
             js.alg.mergeObj(cfg, config, {
@@ -237,6 +256,7 @@ jspyder.extend.fn("form", function () {
             if (!this._fields) {
                 this._fields = {};
             }
+            
             this._fields[name] = {
                 type: cfg.type,
                 field: $field,
@@ -247,46 +267,141 @@ jspyder.extend.fn("form", function () {
                 ignore: cfg.ignore,
                 config: cfg };
                 
-            // this.setFieldValue(name, (typeof val !== "undefined" ? val : dval));
             this.resetFieldValue(name);
+            
+            this.bindEvents($field, cfg);
 
             return this;
         },
         
+        /**
+         * @method
+         * Binds the events from the configuration object to the generated
+         * field.
+         * 
+         * @param {Object} control
+         *      JS-DOM node to bind events to
+         * @param {Object} config
+         *      The Configuration object the JS-DOM node was created with.
+         * @param {Object} config.events
+         *      An array of event types, in JS-DOM Event format, where keys
+         *      are event names and values are the event functions.  Note,
+         *      it *is* possible to double-bind a function to a control.
+         *      Any functions bound through this method take the Event object
+         *      as the first parameter, and the JS-Form object as the second.
+         */
+        bindEvents: function(control, config) {
+            var form = this;
+            
+            js.alg.each(config && config["events"], function(callback, event) { 
+                control.on(event, function(event) {
+                    js.alg.use(this, callback, [event, form]);
+                });
+            });
+            
+            return this;
+        },
+        
+        /**
+         * @method
+         * Registers a control constructor with JS-Form.
+         * 
+         * @param {String} typename
+         *      The name by which this constructor will be referenced.
+         * @param {Function} constructor
+         *      The function to use as the constructor for the form control.
+         * @param {Object} constructor.cfg
+         *      The config object to be passed into the constructor function
+         *      as the first parameter.
+         */
         registerControl: function (typename, constructor) {
             js_form.fn.templates[typename] = constructor;
             return this;
         },
+        
+        /**
+         * @method
+         * Used to define more complex control constructors, the function
+         * [preconstructor] is executed and the return value is passed to
+         * js.form.registerControl
+         * 
+         * @param {String} typename
+         *      The name by which this constructor will be referenced.
+         * @param {Function} preconstructor
+         *      A closure to execute; the return value will be used as the
+         *      second parameter to js.form.registerControl
+         */
         registerControlFn: function (typename, preconstructor) {
-            return this.registerControl(typename, js.alg.use(this, preconstructor));
+            this.registerControl(typename, js.alg.use(this, preconstructor));
+            return this;
         },
+        
+        /**
+         * @method
+         * Builds a control, as defined by the configuration object [config].
+         * 
+         * @param {Object} config
+         *      A configuration object to use to generate a control object.
+         * @param {String} config.type
+         *      The type of control to generate; corresponds to a value passed
+         *      as [typename] to js.form.registerControl or js.form.registerControlFn
+         * @param {String} [config.name]
+         *      The name of the generated control within the form.
+         * @param {String} [config.text]
+         *      The text to use as the label for the generated control.
+         * @param {Boolean} [config.nolabel]
+         *      TRUE to generate a control without a label; overrides [nolabel]
+         *      parameter.
+         * @param {String} [config.class]
+         *      The class name to attach to the generated control.
+         * @param {String} [config.tooltip]
+         *      The tooltip to display when hovering over an element.
+         * @param {Boolean} [nolabel]
+         *      If false, will not generate a label for the created field.  This
+         *      parameter is overridden by [config.nolabel].
+         * 
+         * @return {Object}
+         *      JS-DOM node for the generated control.
+         */
         buildControl: function (config, nolabel) {
             var tmp = this.templates[config.type] || this.templates["input"],
                 ctl = tmp.apply(this, [config]),
                 fieldname = js.alg.string(config.name),
                 labeltext = js.alg.string(config.text),
                 uselabel = !js.alg.bool(config.nolabel, nolabel),
-                lbl = this.buildLabel(uselabel && fieldname, uselabel && labeltext, config.class),
+                lbl = this.buildLabel(uselabel && fieldname, uselabel && labeltext, config.class, config.tooltip),
                 form = this;
-                
-            js.alg.each(config["events"], function(callback, event) { 
-                ctl.on(event, function(event) {
-                    js.alg.use(this, callback, [event, form]);
-                });
-            });
                 
             return lbl.and(ctl);
         },
-        buildLabel: function(fieldname, labeltext, labelclass) {
+        
+        /**
+         * @method
+         * Constructs a label for a generated JS-Form control.
+         * 
+         * @param {String} [fieldname]
+         *      The name of the field this label has been generated for.
+         * @param {String} [labeltext]
+         *      The text to display in the label
+         * @param {String} [labelclass]
+         *      The class to attach to the generated label element.
+         * @param {String} [tooltip]
+         *      The tooltip to apply to the generated label element.
+         */
+        buildLabel: function(fieldname, labeltext, labelclass, tooltip) {
             var html = (fieldname && labeltext
-                    ? ["<label for=\"", fieldname, "\" class=\"", labelclass, "\">", labeltext, "</label>"].join('')
+                    ? ["<label ", 
+                            (fieldname  ? "for=\"" + fieldname + "\" " : ""), 
+                            (labelclass ? "class=\"" + labelclass + "\"" : ""), 
+                            (tooltip ? "title=\"" + tooltip + "\"" : ""), 
+                        ">", labeltext, "</label>"].join('')
                     : "");
                     
             return js.dom(html);
         },
+        
         /**
          * @method
-         * 
          * Gets the defined field by name, and then passes it as a parameter
          * into the function defined by fn.
          */
@@ -295,9 +410,9 @@ jspyder.extend.fn("form", function () {
             js.alg.use(this, fn, [field]);
             return this;
         },
+        
         /**
          * @method
-         * 
          * Retrieves the defined field by name.
          */
         exportField: function (name) {
@@ -305,9 +420,9 @@ jspyder.extend.fn("form", function () {
                 field = (data ? data.field : null);
             return field;
         },
+        
         /**
          * @method
-         * 
          * Gets the defined field object, and passes it as the parameter to the
          * function defined by fn.
          */
@@ -316,15 +431,23 @@ jspyder.extend.fn("form", function () {
             js.alg.use(this, fn, [data]);
             return this;
         },
+        
         /**
          * @method
-         * 
          * Retrieves the field object stored under the defined name.
          */
         exportFieldData: function (name) {
             return this._fields[name] || null;
         },
         
+        /**
+         * @method
+         * Resets the values of all of the identified JS-Form field to their 
+         * initial values.
+         * 
+         * @param {String} name
+         *      The name of the field to reset.
+         */
         resetFieldValue: function (name) {
             var data = this.exportFieldData(name),
                 dval = data.config.default,
@@ -334,14 +457,34 @@ jspyder.extend.fn("form", function () {
             return this;
         },
         
+        /**
+         * @method
+         * Resets the values of all of the created JS-Form fields.
+         */
         resetFieldValues: function () {
             this.each(this._resetFieldValues, this);;
         },
+        
+        /**
+         * @private
+         * @method
+         * Iterator method for js.form.resetFieldValues
+         */
         _resetFieldValues: function (field, name, fields, form) {
             form.resetFieldValue(name);
             return;
         },
         
+        /**
+         * @method
+         * Sets the value of the identified field to the value passed as the
+         * second parameter.
+         * 
+         * @param {String} name
+         *      The name of the field to set a value against.
+         * @param {Mixed} value
+         *      The value to set the field to.
+         */
         setFieldValue: function (name, value) {
             var data = this.exportFieldData(name),
                 field = this.exportField(name);
@@ -358,6 +501,18 @@ jspyder.extend.fn("form", function () {
             return this;
         },
         
+        /**
+         * @method
+         * Retrieves the value from the identified field, and passes it as the
+         * first parameter in [fn].
+         * 
+         * @param {String} name
+         *      The name of the field to retrieve a value from.
+         * @param {Function} fn
+         *      The function to pass the value into.
+         * @param {Mixed} fn.value
+         *      The value retrieved from the field identified by [name].
+         */
         getFieldValue: function(name, fn) {
             var args = [
                 this.exportFieldValue(name)
@@ -365,6 +520,16 @@ jspyder.extend.fn("form", function () {
             js.alg.use(this, fn, args);
             return this;
         },
+        
+        /**
+         * @method
+         * Returns the value from the identified field.
+         * 
+         * @param {String} name
+         *      The name of the field to retrieve a value from.
+         * 
+         * @return {Mixed}
+         */
         exportFieldValue: function (name) {
             var data = this.exportFieldData(name),
                 field = this.exportField(name),
@@ -385,6 +550,12 @@ jspyder.extend.fn("form", function () {
             return value;
         },
         
+        /**
+         * @private
+         * @dict
+         * 
+         * The library of constructors.
+         */
         templates: { }, 
 
         /**
@@ -416,6 +587,10 @@ jspyder.extend.fn("form", function () {
             return this;
         },
         
+        /**
+         * @private
+         * The basic template to use when generating a new field config object
+         */
         fieldTemplate: {
             type: "input",
             values: [],
@@ -552,25 +727,99 @@ jspyder.extend.fn("form", function () {
             return this; 
         },
         
+        /**
+         * @method
+         * Compiles a template from memory, and inserts the fields by name.
+         * For example, a field named "my_field" would be replace ${my_field}
+         * in the loaded template.  However, this requires that field names
+         * match the same naming convention as the JS-Template variables.
+         * 
+         * Note that any fields not inserted into the template are still
+         * accessible through the form interface.  This can be used to obscure
+         * fields from the user without having to write them to the DOM.
+         * 
+         * @param {String} templateId
+         *      A Template ID, corresponding to a template which has been loaded
+         *      into JS-Template.
+         * @param {Object} data
+         *      The data object to use when executing the template
+         * @param {Function} fn
+         *      The function to execute; the return value will be a JS-DOM
+         *      object, containing the generated form elements.
+         * 
+         * @return {Object}
+         *      JS-DOM node, containing the compiled template.
+         */
         compile: function(templateId, data, fn) {
             return this._compiler(templateId, data, fn, "compile");
         },
         
+        /**
+         * @method
+         * Compiles a template from [template], and inserts the fields by name.
+         * For example, a field named "my_field" would be replace ${my_field}
+         * in the loaded template.  However, this requires that field names
+         * match the same naming convention as the JS-Template variables.
+         * 
+         * Note that any fields not inserted into the template are still
+         * accessible through the form interface.  This can be used to obscure
+         * fields from the user without having to write them to the DOM.
+         * 
+         * @param {String} template
+         *      A Template ID, corresponding to a template which has been loaded
+         *      into JS-Template.
+         * @param {Object} data
+         *      The data object to use when executing the template
+         * @param {Function} fn
+         *      The function to execute; the return value will be a JS-DOM
+         *      object, containing the generated form elements.
+         * 
+         * @return {Object}
+         *      JS-DOM node, containing the compiled template. 
+         */
         compileExplicit: function(template, data, fn) {
             return this._compiler(template, data, fn, "compileExplicit");
         },
         
+        /**
+         * @method
+         * Compiles a template from from a DOM node, and inserts the fields by name.
+         * For example, a field named "my_field" would be replace ${my_field}
+         * in the loaded template.  However, this requires that field names
+         * match the same naming convention as the JS-Template variables.
+         * 
+         * Note that any fields not inserted into the template are still
+         * accessible through the form interface.  This can be used to obscure
+         * fields from the user without having to write them to the DOM.
+         * 
+         * This is the most flexible of all of the compilation options; taking
+         * input as DOM nodes, JS-DOM nodes, HTML Strings, XML Strings, and CSS
+         * Selectors.
+         * 
+         * @param {String|Object} dom
+         *      Accepts any valid input for js.dom()
+         * @param {Object} data
+         *      The data object to use when executing the template
+         * @param {Function} fn
+         *      The function to execute; the return value will be a JS-DOM
+         *      object, containing the generated form elements.
+         */
         compileDom: function (dom, data, fn) {
+            dom = js.dom(dom);
             if (dom && dom.getHtml) {
                 var form = this;
                 dom.getHtml(function (html) {
                     form._compiler(html, data, fn, dom);
                 });
             }
-            return this;
-            // return this._compiler(dom, data, fn, null);
+            return dom;
         },
         
+        /**
+         * @private
+         * @method
+         * Internal constructor loop to js.form.compile
+         */
         _compiler: function(template, data, fn, compile) {
             var dom = null;
             
@@ -773,8 +1022,9 @@ jspyder.extend.fn("form", function () {
                     
                     js.alg.arrEach(weekdays, calStruct.buildWeekdays, data);
                         
-                    for(i; i < data.offset; i++) {
+                    while (i < data.offset) {
                         this.buildNumberedDays("", i - data.offset, null, data);
+                        i++;
                     }
                     
                     js.alg.arrEach(daylist, this.buildNumberedDays, data);
@@ -838,26 +1088,30 @@ jspyder.extend.fn("form", function () {
                     calStruct = __calStructFactory(cfg);
                 
                 $datepicker.filter("input").on("click", function(event) {
-                    var dateVal = this.value || cfg.value || cfg.default || new Date();
+                    var attrs = { "readonly": null };
+                    js.dom(this).getAttrs(attrs);
                     
-                    calStruct.clear();
-                    calStruct.input = js.dom(this);
-                    
-                    calStruct.date.setDate(dateVal, calStruct.format);
-                    
-                    calStruct
-                        .load()
-                        .preventClose();
-                    
-                    js.dom(this.parentNode)
-                        .append(calStruct.dom);
-                    
-                    calStruct.DOCDOM.on("click", function __docClick(event) {
-                        if(calStruct.pause) { return calStruct.enableClose(); }
+                    if(!attrs["readonly"]) {
+                        var dateVal = this.value || cfg.value || cfg.default || new Date();
+                         
                         calStruct.clear();
-                        calStruct.DOCDOM.off("click", __docClick);
-                    });
+                        calStruct.input = js.dom(this);
                         
+                        calStruct.date.setDate(dateVal, calStruct.format);
+                        
+                        calStruct
+                            .load()
+                            .preventClose();
+                        
+                        js.dom(this.parentNode)
+                            .append(calStruct.dom);
+                        
+                        calStruct.DOCDOM.on("click", function __docClick(event) {
+                            if(calStruct.pause) { return calStruct.enableClose(); }
+                            calStruct.clear();
+                            calStruct.DOCDOM.off("click", __docClick);
+                        });
+                    }
                     return;
                 });
                 
@@ -883,7 +1137,9 @@ jspyder.extend.fn("form", function () {
             
             function __clickFactory(form, fn) {
                 return function(event) {
-                    js.alg.use(this, fn, [event, form]);
+                    var attrs = { "readonly": null };
+                    js.dom(this).getAttrs(attrs);
+                    attrs["readonly"] || js.alg.use(this, fn, [event, form]);
                     return;
                 }
             }
@@ -899,7 +1155,7 @@ jspyder.extend.fn("form", function () {
                 
                 var html = [
                         "<div class=\"js-control js-control-button ", btnclass, "\"",
-                            " name=\"", btnname, "\">",
+                            (cfg.readonly ? " readonly=\"true\"" : ""), " name=\"", btnname, "\">",
                                 "<i class=\"" + btnicon + "\"></i>",
                                 "<span class=\"button-text\" data-buttontext=\"" + btntext + "\"></span>",
                         "</div>"
@@ -915,6 +1171,25 @@ jspyder.extend.fn("form", function () {
             return button;
         })
         /**
+         * @method buttonset
+         * @member jspyder.form.templates
+         */
+        .registerControlFn("buttonset", function () {
+            var __override = {
+                type: "button"
+            };
+            
+            return function (cfg) {
+                var buttons = js.dom();
+                for (var i = 0; i < cfg.buttons.length; i++) {
+                    var option = js.alg.mergeObj({ "readonly": cfg["readonly"] }, cfg.buttons[i], __override);
+                    option.class += ' js-buttonset';
+                    buttons.and(this.buildControl(option, true));
+                }
+                return buttons;
+            };
+        })
+        /**
          * @method submit
          * @member jspyder.form.templates
          */
@@ -922,7 +1197,9 @@ jspyder.extend.fn("form", function () {
             
             function __submitClickFactory(form) {
                 return function __submitClick(event) {
-                    form.submit();
+                    var attrs = { "readonly": null };
+                    js.dom(this).getAttrs(attrs);
+                    attrs["readonly"] || form.submit();
                     return;
                 }
             }
@@ -948,7 +1225,9 @@ jspyder.extend.fn("form", function () {
             
             function __resetClickFactory(form) {
                 return function __resetClick(event) {
-                    form.reset();
+                    var attrs = { "readonly": null };
+                    js.dom(this).getAttrs(attrs);
+                    attrs["readonly"] || form.reset();
                     return;
                 }
             }
@@ -974,10 +1253,14 @@ jspyder.extend.fn("form", function () {
             var $DOC = js.dom(document.documentElement);
             
             function __dropdownClickFactory(cfg) {
-                function __dropdownClick(event) {
-                    var $dropdown = js.dom(this);
-                    
-                    __createPopout($dropdown, cfg);
+                function __dropdownClick(event) {                    
+                    var $dropdown = js.dom(this),
+                        attrs = { "readonly": null };
+                        
+                    $dropdown.getAttrs(attrs);
+                    if(!attrs["readonly"]) {
+                        __createPopout($dropdown, cfg);
+                    }
                     
                     $dropdown = null;
                 }
@@ -995,7 +1278,7 @@ jspyder.extend.fn("form", function () {
                     pause = true,
                     i = 0;
                         
-                for(i; i < options.length; i++) {
+                while(i < options.length) {
                     option = options[i];
                     litext = js.alg.string(option.text, option.value);
                     livalue = js.alg.string(option.value, option.text);
@@ -1004,6 +1287,7 @@ jspyder.extend.fn("form", function () {
                         "<li class=\"item\" value=\"", livalue, "\" title=\"", litext, "\">", litext, "</li>"].join('');
                     
                     $popout.append(lihtml);
+                    i++
                 }
                 
                 function __copyValue(value) { $dropdown.setValue(value); }
@@ -1060,6 +1344,7 @@ jspyder.extend.fn("form", function () {
                 
                     html = [
                         "<div name=\"", cfgname, "\" tabindex=\"0\"",
+                            (cfg.readonly ? " readonly=\"true\"" : ""),
                             " class=\"input js-control js-control-dropdown ", cfgclass, "\">",
                             "<i class=\"dropdown-arrow arrow-drop-down\"></i>",
                             "<span class=\"dropdown-text\">", (cfgvalue || cfgdefault || "&nbsp;"), "</span>",
@@ -1091,6 +1376,7 @@ jspyder.extend.fn("form", function () {
                     cfgclass = js.alg.string(cfg.class, ""),
                     html = [
                         "<textarea name=\"", cfgname, "\"",
+                            (cfg.readonly ? " readonly=\"true\"" : ""),
                             " class=\"input ", cfgclass, "\">",
                         "</textarea>"
                     ].join('');
@@ -1113,41 +1399,45 @@ jspyder.extend.fn("form", function () {
             }
             
             function input(event) {
-                div = document.createElement("div");
-                var css = {
-                    "font-family": null,
-                    "font-size": null,
-                    "font-weight": null,
-                    "padding-left": null,
-                    "padding-right": null,
-                    "padding-bottom": null,
-                    "padding-top": null,
-                    "border-left": null,
-                    "border-right": null,
-                    "border-top": null,
-                    "border-bottom": null,
-                    "line-height": null,
-                    "word-wrap": null
-                };
+                var attrs = { "readonly": null };
+                js.dom(this).getAttrs(attrs);
+                if(!attrs["readonly"]) {
+                    div = document.createElement("div");
+                    var css = {
+                        "font-family": null,
+                        "font-size": null,
+                        "font-weight": null,
+                        "padding-left": null,
+                        "padding-right": null,
+                        "padding-bottom": null,
+                        "padding-top": null,
+                        "border-left": null,
+                        "border-right": null,
+                        "border-top": null,
+                        "border-bottom": null,
+                        "line-height": null,
+                        "word-wrap": null
+                    };
 
-                div.style["position"] = "fixed";
-                div.style["left"] = -0xFFFF + "px";
-                div.style["white-space"] = "pre-wrap";
-                div.style["white-space"] = "-moz-pre-wrap";
-                div.style["white-space"] = "-pre-wrap";
-                div.style["white-space"] = "-o-pre-wrap";
-                div.style["width"] = div.style["min-width"] = div.style["max-width"] = this.clientWidth + "px";
-                document.body.appendChild(div);
-                
-                var textarea = js.dom(this).getCss(css);
-                js.dom(div)
-                    .setText(this.value)
-                    .setCss(css)
-                    .getPosition(function(pos) {
-                        textarea.setCss({
-                            "height": (pos.height + 20) + "px"
-                        });
-                    }).remove();
+                    div.style["position"] = "fixed";
+                    div.style["left"] = -0xFFFF + "px";
+                    div.style["white-space"] = "pre-wrap";
+                    div.style["white-space"] = "-moz-pre-wrap";
+                    div.style["white-space"] = "-pre-wrap";
+                    div.style["white-space"] = "-o-pre-wrap";
+                    div.style["width"] = div.style["min-width"] = div.style["max-width"] = this.clientWidth + "px";
+                    document.body.appendChild(div);
+                    
+                    var textarea = js.dom(this).getCss(css);
+                    js.dom(div)
+                        .setText(this.value)
+                        .setCss(css)
+                        .getPosition(function(pos) {
+                            textarea.setCss({
+                                "height": (pos.height + 20) + "px"
+                            });
+                        }).remove();
+                }
                 return;
             }
             
@@ -1183,6 +1473,7 @@ jspyder.extend.fn("form", function () {
                         "<input value=\"", cfgvalue, "\"",
                             " name=\"", cfgname, "\"",
                             " type=\"radio\"",
+                            (cfg["readonly"] ? " readonly=\"true\"" : ""),
                             " class=\"", cfgclass, "\">",
                         "</input>"
                     ].join('');
@@ -1224,26 +1515,37 @@ jspyder.extend.fn("form", function () {
                     options = cfg.values || [],
                     option = null,
                     $option = null,
-                    $radio = js.dom(), 
-                    i = 0;
+                    $radio = js.dom(),
+                    i;
                     
                 cfg["data-values"] = {};
                 
-                for(i; i < options.length; i++) {
+                for(i = 0; i < options.length; i++) {
                     option = js.alg.mergeObj({ 
                         "name": cfgname, 
-                        "class": cfgclass }, options[i]);
+                        "class": cfgclass,
+                        "readonly": cfg.readonly }, options[i]);
                     option.class = cfgclass + js.alg.string(options[i].class);
                     $option = js.dom("<div></div>").append(single(option));
                     $radio.and($option);
                 }
                 
+                var form = this;
+                
                 $radio
                     .find("input")
                         .on("change", function (event) {
-                            js.dom(this).getValue(function(v) {
-                                cfg["data-value"] = v;
-                            });
+                            var attrs = { "readonly": null };
+                            var $me = js.dom(this);
+                            $me.getAttrs(attrs);
+                            if(!attrs["readonly"]) {
+                                $me.getValue(function(v) {
+                                    cfg["data-value"] = v;
+                                });
+                            }
+                            else {
+                                form.setFieldValue(cfgname, form.exportFieldValue(cfgname));
+                            }
                         });
                 
                 cfg.exportValue = exportValue;
@@ -1304,6 +1606,7 @@ jspyder.extend.fn("form", function () {
                         "<input value=\"", cfgvalue, "\"",
                             " name=\"", cfgname, "\"",
                             " type=\"checkbox\"",
+                            (cfg.readonly ? " readonly=\"true\"" : ""),
                             " class=\"", cfgclass, "\">",
                         "</input>"
                     ].join(''),
@@ -1319,13 +1622,13 @@ jspyder.extend.fn("form", function () {
                     option = null,
                     $option = null,
                     $checkbox = js.dom(),
-                    i = 0;
+                    i;
                     
                 cfg["data-values"] = {};
                     
-                for(i; i < options.length; i++) {
+                for(i = 0; i < options.length; i++) {
                     option = js.alg.mergeObj({ 
-                        "name": cfgname }, options[i]);
+                        "name": cfgname, readonly: cfg.readonly }, options[i]);
                     option.class = cfgclass + js.alg.string(options[i].class);
                     $option = js.dom("<div></div>").append(checkbox(option));
                     $checkbox.and($option);                    
@@ -1334,10 +1637,20 @@ jspyder.extend.fn("form", function () {
                 $checkbox
                     .find("input")
                         .on("change", function (event) {
-                            var checked = this.checked;
-                            js.dom(this).getValue(function(v) {
-                                cfg["data-values"]["val-" + js.alg.string(v)] = checked;
-                            });
+                            var checked = this.checked,
+                                self = js.dom(this),
+                                attrs = { "readonly": null };
+                            
+                            self.getAttrs(attrs);
+                            
+                            if(attrs["readonly"]) {
+                                this.checked = !checked;
+                            }
+                            else {
+                                self.getValue(function(v) {
+                                    cfg["data-values"]["val-" + js.alg.string(v)] = checked;
+                                });
+                            }
                         });
                 
                 cfg.exportValue = exportValue;
@@ -1399,11 +1712,15 @@ jspyder.extend.fn("form", function () {
                         type: "button",
                         text: cfgtext,
                         class: cfgclass + " js-buttonset",
+                        readonly: cfg.readonly,
                         click: function (data, event) {
                             js.dom(this)
-                                .getAttrs({ "data-checked": false }, function (attrs) {
-                                    attrs["data-checked"] = (js.alg.bool(attrs["data-checked"]) ? null : true);
-                                    this.setAttrs(attrs);
+                                .getAttrs({ "data-checked": false, "readonly": false }, function (attrs) {
+                                    if(!attrs["readonly"]) {
+                                        attrs["data-checked"] = (js.alg.bool(attrs["data-checked"]) ? null : true);
+                                        this.setAttrs(attrs);
+                                    }
+                                    return;
                                 });
                             return;
                         }
@@ -1419,14 +1736,16 @@ jspyder.extend.fn("form", function () {
                     option = null,
                     $option = null,
                     $checkbox = js.dom(),
-                    i = 0;
+                    i;
                     
                 cfg["data-values"] = {};
                     
-                for(i; i < options.length; i++) {
+                for(i = 0; i < options.length; i++) {
                     option = js.alg.mergeObj({ 
-                        "name": cfgname }, options[i]);
-                    option.class = cfgclass + js.alg.string(options[i].class);
+                        "name": cfgname,
+                        "readonly": cfg.readonly 
+                    }, options[i]);
+                    option.class = cfgclass + " " + js.alg.string(options[i].class);
                     $option = js.dom(checkbox(option));
                     $checkbox.and($option);
                 }
@@ -1479,8 +1798,8 @@ jspyder.extend.fn("form", function () {
                 $checkbox.on("click", function (event) {
                     var self = js.dom(this);
                     js.alg.each(cfg.values, function (valObj) {
-                        self.getAttrs({ "data-value": null }, function (attrs) {
-                            form.setFieldValue(cfg.name, attrs["data-value"]);
+                        self.getAttrs({ "data-value": null, "readonly": null }, function (attrs) {
+                            attrs["readonly"] || form.setFieldValue(cfg.name, attrs["data-value"]);
                         });
                         return;
                     });
@@ -1663,6 +1982,9 @@ jspyder.extend.fn("form", function () {
                 
                 autocomplete
                     .on("keydown", function (event) {
+                        var attrs = { "readonly": null };
+                        js.dom(this).getAttrs(attrs);
+                        if(attrs["readonly"]) { return ; }
                         var up = false;
                         switch (event.keyCode) {
                             case js.alg.keycodes.KC_UpArrow:
@@ -1695,7 +2017,13 @@ jspyder.extend.fn("form", function () {
                         return;
                     })
                     .on("blur", function (event) {
-                        if (config["strict"]) {
+                        var attrs = { "readonly": null };
+                        js.dom(this).getAttrs(attrs);
+                        if(attrs["readonly"]) { return ; }
+                        if(this.value === ""){ 
+                            js.dom(this).setAttrs({ "data-value": "" });
+                        }
+                        else if (config["strict"]) {
                             var match = searchValue(config, this.value, true);
                             if(!match) {
                                 this.value = "";
@@ -1706,12 +2034,8 @@ jspyder.extend.fn("form", function () {
                                 this.value = match.text;
                                 js.dom(this).setAttrs({ "data-value": match.value });
                             }
-                            // check if anything matches this value
-                            // form.setFieldValue(config.name, this.value);
-                            // found.find(".search-item").at(0, function () { this.trigger(".click"); });
                         }
                         fns.hide();
-                        // found.remove();
                         return;
                     });
                 
@@ -1742,9 +2066,7 @@ jspyder.extend.fn("form", function () {
                         }
                     },
                     hide: function () {
-                        // setTimeout(function () {
                         found.remove();
-                        // }, 100);
                     },
                     getFirst: function () {
                         
@@ -1850,7 +2172,9 @@ jspyder.extend.fn("form", function () {
                 
                 $autocomplete
                     .on("focus input", function (event) {
-                        $autocomplete.getValue(search.show);
+                        var attrs = { "readonly": null };
+                        js.dom(this).getAttrs(attrs);
+                        attrs["readonly"] || $autocomplete.getValue(search.show);
                     });
                 
                 return $autocomplete;
@@ -1960,8 +2284,14 @@ jspyder.extend.fn("form", function () {
                         return;
                     })
                     .on("focus", function (event) {
-                        var $input = js.dom(this).setAttrs({ "data-focus": true });
-                        form.setFieldValue(cfg.name, $input.exportValue());
+                        var attrs = { "readonly": null };
+                        js.dom(this).getAttrs(attrs);
+                        
+                        if(!attrs["readonly"]) {
+                            var $input = js.dom(this).setAttrs({ "data-focus": true });
+                            form.setFieldValue(cfg.name, $input.exportValue());
+                        }
+                        
                         return;
                     });
                     

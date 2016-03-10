@@ -67,7 +67,7 @@ jspyder.extend.fn("ajax", function () {
             
         xhttp.onreadystatechange = function xhttp_onreadystatechange() {
             if ((this.readyState === 4) && (typeof fn === "function")){
-                fn.apply(js, [this, context]);
+                js.alg.use(js, fn, [this, context]);
             }
             return null;
         };
@@ -85,17 +85,11 @@ jspyder.extend.fn("ajax", function () {
         xhttp.send();
         return this;
     };
-    
-    /**
-     * @property fn
-     * @member jspyder.ajax
-     * 
-     * Prototype for created ajax objects.
-     */
+
     js_ajax.fn = {
         /**
          * @property {Object} data
-         * @member jspyder.ajax.fn
+         * @member jspyder.ajax
          * 
          * Information which will be (or has been) sent to the server via the
          * Ajax call. 
@@ -104,7 +98,7 @@ jspyder.extend.fn("ajax", function () {
         
         /**
          * @property {String} url
-         * @member jspyder.ajax.fn
+         * @member jspyder.ajax
          * 
          * URL which data will be (or has been) setn to via the Ajax call.
          */
@@ -112,7 +106,7 @@ jspyder.extend.fn("ajax", function () {
         
         /**
          * @property {Function} fn
-         * @member jspyder.ajax.fn
+         * @member jspyder.ajax
          * 
          * Function which will be executed after the Ajax call has returned.
          */
@@ -120,7 +114,7 @@ jspyder.extend.fn("ajax", function () {
         
         /**
          * @property {Function} get
-         * @member jspyder.ajax.fn
+         * @member jspyder.ajax
          * 
          * @param {Function} [fn]
          *      A function to execute in place of the stored callback function.
@@ -137,7 +131,7 @@ jspyder.extend.fn("ajax", function () {
         
         /**
          * @property {Function} head
-         * @member jspyder.ajax.fn
+         * @member jspyder.ajax
          * 
          * @param {Function} [fn]
          *      A function to execute in place of the stored callback function.
@@ -154,7 +148,7 @@ jspyder.extend.fn("ajax", function () {
         
         /**
          * @property {Function} post
-         * @member jspyder.ajax.fn
+         * @member jspyder.ajax
          * 
          * @param {Function} [fn]
          *      A function to execute in place of the stored callback function.

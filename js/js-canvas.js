@@ -255,7 +255,7 @@ jspyder.extend.fn("canvas", function () {
                     cols, 
                     columnSplit,
                     colWidth,
-                    offsetY = 50,
+                    offsetY = labelSize * 1.2,
                     offsetX = 50;
                     
                 self.cmd.rectangle.call(this, {
@@ -288,7 +288,7 @@ jspyder.extend.fn("canvas", function () {
                     cols = js.alg.max(++c, cols);
                 });
                 
-                max = js.alg.magnitude(max);
+                max = js.alg.magnitude(max) * 1.1;
                 
                 js.alg.iterate(0, 5, function(i) {
                     self.cmd.line.call(self, {
@@ -303,7 +303,7 @@ jspyder.extend.fn("canvas", function () {
                         y: ((height * (5 - i)) / 5) - (labelSize / 3),
                         size: labelSize,
                         font: "Arial",
-                        text: (i / 5) * max,
+                        text: ((i / 5) * max)|0,
                         textalign: "left"
                     });
                     self.cmd.text.call(self, {
@@ -311,7 +311,7 @@ jspyder.extend.fn("canvas", function () {
                         y: ((height * (5 - i)) / 5) - (labelSize / 3),
                         size: labelSize,
                         font: "Arial",
-                        text: (i / 5) * max,
+                        text: ((i / 5) * max)|0,
                         textalign: "right"
                     });
                 });
@@ -392,7 +392,7 @@ jspyder.extend.fn("canvas", function () {
                     max = js.alg.number(settings.max, -Infinity), 
                     cols,
                     offsetX = 50,
-                    offsetY = 50;
+                    offsetY = labelSize * 1.2;
                     
                 self.cmd.rectangle.call(this, {
                     width: width,
@@ -423,7 +423,7 @@ jspyder.extend.fn("canvas", function () {
                     cols = js.alg.max(++c, cols);
                 });
                 
-                max = js.alg.magnitude(max);
+                max = js.alg.magnitude(max) * 1.1;
                 
                 js.alg.iterate(0, 5, function(i) {
                     self.cmd.line.call(self, {
@@ -438,7 +438,7 @@ jspyder.extend.fn("canvas", function () {
                         y: ((height * (5 - i)) / 5) - (labelSize / 3),
                         size: labelSize,
                         font: "Arial",
-                        text: (i / 5) * max,
+                        text: ((i / 5) * max)|0,
                         textalign: "left"
                     });
                     self.cmd.text.call(self, {
@@ -446,7 +446,7 @@ jspyder.extend.fn("canvas", function () {
                         y: ((height * (5 - i)) / 5) - (labelSize / 3),
                         size: labelSize,
                         font: "Arial",
-                        text: (i / 5) * max,
+                        text: ((i / 5) * max)|0,
                         textalign: "right"
                     });
                 });

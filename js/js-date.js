@@ -37,7 +37,55 @@ jspyder.extend.fn("date", function () {
      * @param {String} [format]
      *      A string to use with a String value parameter in order to 
      *      understand the date value; and to use when formatting strings 
-     *      from the date value.
+     *      from the date value.  The supported formatting characters are:
+     * 
+     * ## Year ##
+     * - YYYY: 4-digit year
+     * - yyyy: 4-digit year
+     * - YY: 2-digit year
+     * - yy: 2-digit year
+     * 
+     * ## Month ##
+     * - MMMM: Month name, ALL CAPS (JANUARY)
+     * - mmmm: Month name, Title Case (January)
+     * - MMM: Month 3-letter abbreviation, ALL CAPS (JAN)
+     * - mmm: Month 3-letter abbreviation, Title Case (Jan)
+     * - MM: Month number, 0-padded (01)
+     * - mm: Month number, 0-padded (01)
+     * - M: Month number, standard (1)
+     * - m: Month number, standard (1)
+     * 
+     * ## Day ##
+     * - ddth: Date Number, 0-padded Nth (01st) 
+     * - dth: Date Number, Nth (1st) 
+     * - dd: Date Number, 0-padded (01)
+     * - d: Date Number, standard (1)
+     *
+     * ## Weekday ##
+     * - DDDD: Weekday Name, ALL CAPS (SUNDAY)
+     * - dddd: Weekday Name, Title Case (Sunday)
+     * - DDD: Weekday Name 3-letter abbreviation, ALL CAPS (SUN)
+     * - ddd: Weekday Name 3-letter abbreviation, Title Case (Sun)
+     * - DD: Weekday Name, 2-letter abbreviation, Title Case (Su)
+     * - D: Weekday Name, 1-letter abbreviation, Capital (S)
+     * 
+     * ## Meridiem ##
+     * - AM: Meridiem, ALL CAPS (AM/PM)
+     * - am: Meridiem, lower case (am/pm)
+     * 
+     * ## Hours ##
+     * - HH: Hours, 24-hour clock, 0-padded (01)
+     * - hh: Hours, 12-hour clock, 0-padded (01)
+     * - H: Hours, 24-hour clock, standard (13)
+     * - h: Hours, 12-hour clock, standard (1)
+     * 
+     * ## Minutes ##
+     * - nn: minutes, 0-padded (01)
+     * - n: Minutes, standard (1)
+     *      
+     * ## Seconds ##
+     * - ss: Seconds, 0-padded (00)
+     * - s: Seconds, standard (0)
      * 
      * @param {Boolean} [utc=false]
      *      Whether to default to using UTC when getting formatted values.
@@ -170,6 +218,8 @@ jspyder.extend.fn("date", function () {
          * @param {Boolean} [useUtc=this._useUTC]
          * 
          * @param {Boolean} [defaultText=""]
+         * 
+         * @return {String}
          */
         asString: function (format, useUtc, defaultText) {
             if( this.isValid() ) {
@@ -178,6 +228,36 @@ jspyder.extend.fn("date", function () {
                 return __formatDate(this._value, format, useUtc);
             }
             return js.alg.string(defaultText, "");
+        },
+        
+        /**
+         * @method
+         * 
+         * Ensures that the object automatically converts to a string
+         * in the appropriate context.
+         */
+        toString: function () {
+            return Date.prototype.toString.apply(this._value, arguments);
+        },
+        
+        /**
+         * @method
+         * 
+         * Converts the stored date to a numerical value.
+         */
+        getTime: function (year, month, date, hour, minute, second, ms) {
+            var v = this._value;
+            year = js.alg.bool(year, true) * v.getFullYear();
+            month = js.alg.bool(month, true) * v.getMonth();
+            date = js.alg.bool(date, true) * v.getDate();
+            hour = js.alg.bool(hour, true) * v.getHours();
+            minute = js.alg.bool(minute, true) * v.getMinutes();
+            second = js.alg.bool(second, true) * v.getSeconds();
+            ms = js.alg.bool(ms, true) * v.getMilliseconds();
+            
+            var d = new Date(year, month, date, hour, minute, second, ms);
+            
+            return Date.prototype.getTime.call(d);
         },
         
         isValid: function() {
@@ -208,9 +288,10 @@ jspyder.extend.fn("date", function () {
                 d = 1,
                 days = [];
                 
-            for (d; d <= count; d++) {
+            while(d <= count) {
                 clone.setDay(d);
                 days.push(clone.asString(format));
+                d++;
             }
             
             return days;
@@ -231,11 +312,12 @@ jspyder.extend.fn("date", function () {
                 weekday = null,
                 weekdays = [];
                 
-            for (w; w < count; w++) {
+            while (w < count) {
                 weekday = __weekdays[w];
                 weekdays.push(typeof weekday[format] === "undefined" 
                     ? format 
-                    : weekday[format]); 
+                    : weekday[format]);
+                w++;
             }
             
             return weekdays;
@@ -374,17 +456,18 @@ jspyder.extend.fn("date", function () {
             "yyyy", "yy",
             "MMMM", "MMM", "MM", "M", 
             "mmmm", "mmm", "mm", "m",
-            "dddd", "ddd", "dd", "d",
-            "DDDD", "DDD", "DD", "D", "W",
+            "dddd", "ddd", "ddth","dth", "dd", "d",
+            "DDDD", "DDD", "DD", "D",
             "AM", "am", 
             "HH", "H", "hh", "h", 
-            "NN", "N", "nn", "n", 
-            "SS", "S", "ss", "s"
+            "nn", "n", 
+            "ss", "s",
+            "xxx", "xx", "x"
         ],
         /**
          * @ignore
          */
-        __reSearch = new RegExp("(" + __reSearchStrings.join("|") + ")", "g"),
+        __reSearch = new RegExp("(\\[[^\\]]*\\]|" + __reSearchStrings.join("|") + ")", "g"),
         /**
          * @ignore
          */
@@ -420,14 +503,37 @@ jspyder.extend.fn("date", function () {
          * @ignore
          */
         __days = [
-            { d:  "1", dd: "01" }, { d:  "2", dd: "02" }, { d:  "3", dd: "03" }, { d:  "4", dd: "04" },
-            { d:  "5", dd: "05" }, { d:  "6", dd: "06" }, { d:  "7", dd: "07" }, { d:  "8", dd: "08" },
-            { d:  "9", dd: "09" }, { d: "10", dd: "10" }, { d: "11", dd: "11" }, { d: "12", dd: "12" },
-            { d: "13", dd: "13" }, { d: "14", dd: "14" }, { d: "15", dd: "15" }, { d: "16", dd: "16" },
-            { d: "17", dd: "17" }, { d: "18", dd: "18" }, { d: "19", dd: "19" }, { d: "20", dd: "20" },
-            { d: "21", dd: "21" }, { d: "22", dd: "22" }, { d: "23", dd: "23" }, { d: "24", dd: "24" },
-            { d: "25", dd: "25" }, { d: "26", dd: "26" }, { d: "27", dd: "27" }, { d: "28", dd: "28" },
-            { d: "29", dd: "29" }, { d: "30", dd: "30" }, { d: "31", dd: "31" },
+            { d:  "1", dd: "01", dth:  "1st", ddth: "01st" }, 
+            { d:  "2", dd: "02", dth:  "2nd", ddth: "02nd" }, 
+            { d:  "3", dd: "03", dth:  "3rd", ddth: "03th" }, 
+            { d:  "4", dd: "04", dth:  "4th", ddth: "04th" },
+            { d:  "5", dd: "05", dth:  "5th", ddth: "05th" }, 
+            { d:  "6", dd: "06", dth:  "6th", ddth: "06th" }, 
+            { d:  "7", dd: "07", dth:  "7th", ddth: "07th" }, 
+            { d:  "8", dd: "08", dth:  "8th", ddth: "08th" },
+            { d:  "9", dd: "09", dth:  "9th", ddth: "09rd" }, 
+            { d: "10", dd: "10", dth: "10th", ddth: "10th" }, 
+            { d: "11", dd: "11", dth: "11th", ddth: "11st" }, 
+            { d: "12", dd: "12", dth: "12th", ddth: "12th" },
+            { d: "13", dd: "13", dth: "13th", ddth: "13th" }, 
+            { d: "14", dd: "14", dth: "14th", ddth: "14th" }, 
+            { d: "15", dd: "15", dth: "15th", ddth: "15th" }, 
+            { d: "16", dd: "16", dth: "16th", ddth: "16th" },
+            { d: "17", dd: "17", dth: "17th", ddth: "17th" }, 
+            { d: "18", dd: "18", dth: "18th", ddth: "18th" }, 
+            { d: "19", dd: "19", dth: "19th", ddth: "19th" }, 
+            { d: "20", dd: "20", dth: "20th", ddth: "20th" },
+            { d: "21", dd: "21", dth: "21st", ddth: "21th" }, 
+            { d: "22", dd: "22", dth: "22nd", ddth: "22nd" }, 
+            { d: "23", dd: "23", dth: "23rd", ddth: "23th" }, 
+            { d: "24", dd: "24", dth: "24th", ddth: "24th" },
+            { d: "25", dd: "25", dth: "25th", ddth: "25th" }, 
+            { d: "26", dd: "26", dth: "26th", ddth: "26th" }, 
+            { d: "27", dd: "27", dth: "27th", ddth: "27th" }, 
+            { d: "28", dd: "28", dth: "28th", ddth: "28th" },
+            { d: "29", dd: "29", dth: "29th", ddth: "29rd" }, 
+            { d: "30", dd: "30", dth: "30th", ddth: "30th" }, 
+            { d: "31", dd: "31", dth: "31st", ddth: "31st" },
         ],
         /**
          * @ignore
@@ -538,6 +644,8 @@ jspyder.extend.fn("date", function () {
             // days
             "d":    __buildFormatRegexStringFrom(__days,     "d"   ),
             "dd":   __buildFormatRegexStringFrom(__days,     "dd"  ),
+            "dth":  __buildFormatRegexStringFrom(__days,     "dth" ),
+            "ddth": __buildFormatRegexStringFrom(__days,     "ddth"),
             
             // weekdays
             "D":    __buildFormatRegexStringFrom(__weekdays, "D"   ),
@@ -560,14 +668,15 @@ jspyder.extend.fn("date", function () {
             // minutes
             "n":    __buildFormatRegexStringFrom(__minutes, "n"    ),
             "nn":   __buildFormatRegexStringFrom(__minutes, "nn"   ),
-            "N":    __buildFormatRegexStringFrom(__minutes, "N"    ),
-            "NN":   __buildFormatRegexStringFrom(__minutes, "NN"   ),
             
             // seconds
             "s":    __buildFormatRegexStringFrom(__seconds, "s"    ),
             "ss":   __buildFormatRegexStringFrom(__seconds, "ss"   ),
-            "S":    __buildFormatRegexStringFrom(__seconds, "S"    ),
-            "SS":   __buildFormatRegexStringFrom(__seconds, "SS"   )
+            
+            // milliseconds
+            "xxx":  true,
+            "xx":   true,
+            "x":    true
         };
     
     /**
@@ -625,7 +734,7 @@ jspyder.extend.fn("date", function () {
     function __parseString(v, f) {
         v = js.alg.string(v, "");
         var format = js.alg.string(f),
-            d = { y: 0, m: 0, d: 1, h: 0, n: 0, s: 0, a: 0 };
+            d = { y: 0, m: 0, d: 1, h: 0, n: 0, s: 0, x: 0, a: 0 };
         
         js.alg.arrEach(format.match(__reSearch), function(match) {
             // get the collection
@@ -642,7 +751,7 @@ jspyder.extend.fn("date", function () {
                 start = v.indexOf(value);
             
             v = v.substring(start + len);
-            
+                            
             switch (match) {
                 // year
                 case "yy":
@@ -667,6 +776,10 @@ jspyder.extend.fn("date", function () {
                     break;
                 
                 // date
+                case "ddth":
+                case "dth":
+                    value = value.substr(0, value.length - 2);
+                
                 case "dd":
                 case "d":
                     d["d"] = js.alg.number(value) || 1;
@@ -676,7 +789,7 @@ jspyder.extend.fn("date", function () {
                 case "h":
                 case "HH":
                 case "H":
-                    d["h"] = js.alg.number(value);
+                    d["h"] = js.alg.number(value, 0);
                     break;
                     
                 case "am":
@@ -685,33 +798,51 @@ jspyder.extend.fn("date", function () {
                         ? 12
                         : 0);
                     break;
+                    
+                case "nn":
+                case "n":
+                    d["n"] = js.alg.number(value, 0);
+                    break;
+                
+                case "ss":
+                case "s":
+                    d["s"] = js.alg.number(value, 0);
+                    break;
+                    
+                case "xxx":
+                    d["x"] = js.alg.number(value, 0);
+                    break;
+                case "xx":
+                    d["x"] = js.alg.number(value, 0) * 10;
+                    break;
+                case "x":
+                    d["x"] = js.alg.number(value, 0) * 100;
             }
         });
-        return new Date(d.y, d.m, d.d, d.h + d.a, d.n, d.s);
+        return new Date(d.y, d.m, d.d, d.h + d.a, d.n, d.s, d.x);
     }
     
     /** @ignore */
     function __formatDate(date, format, useUTC) {
         var d = {
-            y: useUTC ? date.getUTCFullYear() : date.getFullYear(),
-            m: useUTC ? date.getUTCMonth()    : date.getMonth(),
-            d: useUTC ? date.getUTCDate()     : date.getDate(),
-            h: useUTC ? date.getUTCHours()    : date.getHours(),
-            n: useUTC ? date.getUTCMinutes()  : date.getMinutes(),
-            s: useUTC ? date.getUTCSeconds()  : date.getSeconds(),
-            w: useUTC ? date.getUTCDay()      : date.getDay()
+            y: useUTC ? date.getUTCFullYear()     : date.getFullYear(),
+            m: useUTC ? date.getUTCMonth()        : date.getMonth(),
+            d: useUTC ? date.getUTCDate()         : date.getDate(),
+            h: useUTC ? date.getUTCHours()        : date.getHours(),
+            n: useUTC ? date.getUTCMinutes()      : date.getMinutes(),
+            s: useUTC ? date.getUTCSeconds()      : date.getSeconds(),
+            w: useUTC ? date.getUTCDay()          : date.getDay(),
+            x: useUTC ? date.getUTCMilliseconds() : date.getMilliseconds()
         };
         
         var left = "", right = format;
         js.alg.arrEach(format.match(__reSearch), function(match) {
             // get the collection
-            var collection = __formatCollection[match];
+            var collection = __formatCollection[match] || /\[[^\\]*\]/g.test(match);
             if(!collection) { return match; }
             
             // get the regexp
-            var regexp = collection.regexp,
-                values = collection.values,
-                len = match.length,
+            var len = match.length,
                 start = right.indexOf(match),
                 value = "";
                 
@@ -740,6 +871,8 @@ jspyder.extend.fn("date", function () {
                     value = collection.lookup[d.m];
                     break;
                     
+                case "dth":
+                case "ddth":
                 case "dd":
                 case "d":
                     value = collection.lookup[d.d - 1];
@@ -766,28 +899,36 @@ jspyder.extend.fn("date", function () {
                     value = collection.lookup[d.h];
                     break;
                     
-                case "NN":
-                case "N":
                 case "nn":
                 case "n":
                     value = collection.lookup[d.n];
                     break;
                     
-                case "SS":
-                case "S":
                 case "ss":
                 case "s":
                     value = collection.lookup[d.s];
                     break;
+                
+                case "xxx":
+                    value = (js.alg.string(d.x) + "00").substr(0, 3);
+                    break;
+                    
+                case "xx":
+                    value = (js.alg.string(d.x) + "0").substr(0, 2);
+                    break;
+                    
+                case "x":
+                    value = (js.alg.string(d.x)).substr(0, 1);
+                    break;
                     
                 default:
-                    console.log(collection);
+                    value = match.substring(1, match.length - 1);
             }
             
             left += js.alg.string(value, "");
         });
         
-        return left + right;
+        return (left + right);
     }
     
     /** @ignore */
