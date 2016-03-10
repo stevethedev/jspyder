@@ -1837,10 +1837,13 @@ label {
 .js-control.js-control-autosize {
   resize: none;
   transition: height .1s;
-  vertical-align: top; }
+  vertical-align: top;
+  overflow-y: hidden; }
 
 textarea {
-  min-height: 3em; }
+  min-height: 3em;
+  overflow-y: auto;
+  resize: none; }
 
 input, textarea, .input {
   border: 0.0625em solid #bdbdbd;
