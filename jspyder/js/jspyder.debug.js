@@ -2312,17 +2312,21 @@ jspyder.extend.fn("form", function() {
   }, addField:function $$js_form$$$fn$addField$($name$$, $config$$) {
     $name$$ = $js$$.alg.string($name$$, "");
     $config$$ = $js$$.alg.object($config$$, {});
-    var $cfg$$ = Object.create($js_form$$.fn.fieldTemplate), $form$$ = this, $$field$$ = null;
+    var $cfg$$ = Object.create($js_form$$.fn.fieldTemplate), $$field$$ = null;
     $js$$.alg.mergeObj($cfg$$, $config$$, {name:$name$$, "default":$config$$.default, value:$config$$.value, values:$js$$.alg.sliceArray($config$$.values)});
     $$field$$ = this.buildControl($cfg$$);
-    $js$$.alg.each($config$$.events, function($callback$$, $event$$0$$) {
-      $$field$$.on($event$$0$$, function($event$$) {
-        $js$$.alg.use(this, $callback$$, [$event$$, $form$$]);
-      });
-    });
     this._fields || (this._fields = {});
     this._fields[$name$$] = {type:$cfg$$.type, field:$$field$$, validate:$cfg$$.validate, exportValue:$cfg$$.exportValue, getValue:$cfg$$.getValue, setValue:$cfg$$.setValue, ignore:$cfg$$.ignore, config:$cfg$$};
     this.resetFieldValue($name$$);
+    this.bindEvents($$field$$, $cfg$$);
+    return this;
+  }, bindEvents:function $$js_form$$$fn$bindEvents$($control$$, $config$$) {
+    var $form$$ = this;
+    $js$$.alg.each($config$$ && $config$$.events, function($callback$$, $event$$0$$) {
+      $control$$.on($event$$0$$, function($event$$) {
+        $js$$.alg.use(this, $callback$$, [$event$$, $form$$]);
+      });
+    });
     return this;
   }, registerControl:function $$js_form$$$fn$registerControl$($typename$$, $constructor$$) {
     $js_form$$.fn.templates[$typename$$] = $constructor$$;
