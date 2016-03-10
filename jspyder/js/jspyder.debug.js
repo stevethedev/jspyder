@@ -2312,12 +2312,21 @@ jspyder.extend.fn("form", function() {
   }, addField:function $$js_form$$$fn$addField$($name$$, $config$$) {
     $name$$ = $js$$.alg.string($name$$, "");
     $config$$ = $js$$.alg.object($config$$, {});
-    var $cfg$$ = Object.create($js_form$$.fn.fieldTemplate), $$field$$;
+    var $cfg$$ = Object.create($js_form$$.fn.fieldTemplate), $$field$$ = null;
     $js$$.alg.mergeObj($cfg$$, $config$$, {name:$name$$, "default":$config$$.default, value:$config$$.value, values:$js$$.alg.sliceArray($config$$.values)});
     $$field$$ = this.buildControl($cfg$$);
     this._fields || (this._fields = {});
     this._fields[$name$$] = {type:$cfg$$.type, field:$$field$$, validate:$cfg$$.validate, exportValue:$cfg$$.exportValue, getValue:$cfg$$.getValue, setValue:$cfg$$.setValue, ignore:$cfg$$.ignore, config:$cfg$$};
     this.resetFieldValue($name$$);
+    this.bindEvents($$field$$, $cfg$$);
+    return this;
+  }, bindEvents:function $$js_form$$$fn$bindEvents$($control$$, $config$$) {
+    var $form$$ = this;
+    $js$$.alg.each($config$$ && $config$$.events, function($callback$$, $event$$0$$) {
+      $control$$.on($event$$0$$, function($event$$) {
+        $js$$.alg.use(this, $callback$$, [$event$$, $form$$]);
+      });
+    });
     return this;
   }, registerControl:function $$js_form$$$fn$registerControl$($typename$$, $constructor$$) {
     $js_form$$.fn.templates[$typename$$] = $constructor$$;
@@ -2326,13 +2335,8 @@ jspyder.extend.fn("form", function() {
     this.registerControl($typename$$, $js$$.alg.use(this, $preconstructor$$));
     return this;
   }, buildControl:function $$js_form$$$fn$buildControl$($config$$, $nolabel$$) {
-    var $ctl$$ = (this.templates[$config$$.type] || this.templates.input).apply(this, [$config$$]), $fieldname_lbl$$ = $js$$.alg.string($config$$.name), $labeltext$$ = $js$$.alg.string($config$$.text), $uselabel$$ = !$js$$.alg.bool($config$$.nolabel, $nolabel$$), $fieldname_lbl$$ = this.buildLabel($uselabel$$ && $fieldname_lbl$$, $uselabel$$ && $labeltext$$, $config$$.class, $config$$.tooltip), $form$$ = this;
-    $js$$.alg.each($config$$.events, function($callback$$, $event$$0$$) {
-      $ctl$$.on($event$$0$$, function($event$$) {
-        $js$$.alg.use(this, $callback$$, [$event$$, $form$$]);
-      });
-    });
-    return $fieldname_lbl$$.and($ctl$$);
+    var $ctl$$ = (this.templates[$config$$.type] || this.templates.input).apply(this, [$config$$]), $fieldname$$ = $js$$.alg.string($config$$.name), $labeltext$$ = $js$$.alg.string($config$$.text), $uselabel$$ = !$js$$.alg.bool($config$$.nolabel, $nolabel$$);
+    return this.buildLabel($uselabel$$ && $fieldname$$, $uselabel$$ && $labeltext$$, $config$$.class, $config$$.tooltip).and($ctl$$);
   }, buildLabel:function $$js_form$$$fn$buildLabel$($fieldname$$1_html$$, $labeltext$$, $labelclass$$, $tooltip$$) {
     $fieldname$$1_html$$ = $fieldname$$1_html$$ && $labeltext$$ ? ["<label ", $fieldname$$1_html$$ ? 'for="' + $fieldname$$1_html$$ + '" ' : "", $labelclass$$ ? 'class="' + $labelclass$$ + '"' : "", $tooltip$$ ? 'title="' + $tooltip$$ + '"' : "", ">", $labeltext$$, "</label>"].join("") : "";
     return $js$$.dom($fieldname$$1_html$$);
