@@ -241,7 +241,8 @@ jspyder.extend.fn("form", function () {
             var cfg = Object.create(js_form.fn.fieldTemplate),
                 dval = config.default,
                 val = config.value,
-                $field;
+                form = this,
+                $field = null;
             
             // copy all of the config options over, if they exist.    
             js.alg.mergeObj(cfg, config, {
@@ -252,6 +253,12 @@ jspyder.extend.fn("form", function () {
             });
 
             $field = this.buildControl(cfg);
+                
+            js.alg.each(config["events"], function(callback, event) { 
+                $field.on(event, function(event) {
+                    js.alg.use(this, callback, [event, form]);
+                });
+            });
 
             if (!this._fields) {
                 this._fields = {};
@@ -341,12 +348,6 @@ jspyder.extend.fn("form", function () {
                 uselabel = !js.alg.bool(config.nolabel, nolabel),
                 lbl = this.buildLabel(uselabel && fieldname, uselabel && labeltext, config.class, config.tooltip),
                 form = this;
-                
-            js.alg.each(config["events"], function(callback, event) { 
-                ctl.on(event, function(event) {
-                    js.alg.use(this, callback, [event, form]);
-                });
-            });
                 
             return lbl.and(ctl);
         },
