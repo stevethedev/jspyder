@@ -2333,7 +2333,7 @@ jspyder.extend.fn("form", function() {
     });
     return $fieldname_lbl$$.and($ctl$$);
   }, buildLabel:function $$js_form$$$fn$buildLabel$($fieldname$$1_html$$, $labeltext$$, $labelclass$$, $tooltip$$) {
-    $fieldname$$1_html$$ = $fieldname$$1_html$$ && $labeltext$$ ? ['<label for="', $fieldname$$1_html$$, '" class="', $labelclass$$, '"', $tooltip$$ ? 'title="' + $tooltip$$ + '"' : "", ">", $labeltext$$, "</label>"].join("") : "";
+    $fieldname$$1_html$$ = $fieldname$$1_html$$ && $labeltext$$ ? ["<label ", $fieldname$$1_html$$ ? 'for="' + $fieldname$$1_html$$ + '" ' : "", $labelclass$$ ? 'class="' + $labelclass$$ + '"' : "", $tooltip$$ ? 'title="' + $tooltip$$ + '"' : "", ">", $labeltext$$, "</label>"].join("") : "";
     return $js$$.dom($fieldname$$1_html$$);
   }, getField:function $$js_form$$$fn$getField$($name$$, $fn$$) {
     var $field$$ = this.exportField($name$$);

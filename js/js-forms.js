@@ -1,4 +1,4 @@
-/* ****************************************************************************
+/*
  * The MIT License (MIT)
  *
  * Copyright (c) 2015 Steven Jimenez
@@ -20,7 +20,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
- * ***************************************************************************/
+ */
 
 jspyder.extend.fn("form", function () {
     var js = this;
@@ -152,6 +152,26 @@ jspyder.extend.fn("form", function () {
          */
         _fields: null,
         
+        /**
+         * @method
+         * Iterates through all of the form fields, calling the function [fn] on
+         * each field and using [data] as the fourth parameter.
+         * 
+         * @param {Function} fn     
+         *      The function to call on each iteration.
+         * @param {Object} [fn.field]
+         *      The first parameter to fn; the field currently being iterated.
+         * @param {String} [fn.name]
+         *      The second parameter to fn; the name of the field, internal to
+         *      JS-Form
+         * @param {Object} [fn.fields]
+         *      The field collection being itereated.
+         * @param {Mixed} [fn.data]
+         *      The context object passed in as the second parameter to 
+         *      js.form.each
+         * @param {Mixed} [data]
+         *      The variable to pass as the fourth parameter to [fn].
+         */
         each: function(fn, data) {
             js.alg.each(this._fields, fn, data);
             return this;
@@ -164,7 +184,6 @@ jspyder.extend.fn("form", function () {
          * 
          * @param {Object} fields
          */
-        
         addFields: function(fields) {
             for (var name in fields) {
                 this.addField(name, fields[name])
@@ -253,13 +272,66 @@ jspyder.extend.fn("form", function () {
             return this;
         },
         
+        /**
+         * @method
+         * Registers a control constructor with JS-Form.
+         * 
+         * @param {String} typename
+         *      The name by which this constructor will be referenced.
+         * @param {Function} constructor
+         *      The function to use as the constructor for the form control.
+         * @param {Object} constructor.cfg
+         *      The config object to be passed into the constructor function
+         *      as the first parameter.
+         */
         registerControl: function (typename, constructor) {
             js_form.fn.templates[typename] = constructor;
             return this;
         },
+        
+        /**
+         * @method
+         * Used to define more complex control constructors, the function
+         * [preconstructor] is executed and the return value is passed to
+         * js.form.registerControl
+         * 
+         * @param {String} typename
+         *      The name by which this constructor will be referenced.
+         * @param {Function} preconstructor
+         *      A closure to execute; the return value will be used as the
+         *      second parameter to js.form.registerControl
+         */
         registerControlFn: function (typename, preconstructor) {
             return this.registerControl(typename, js.alg.use(this, preconstructor));
         },
+        
+        /**
+         * @method
+         * Builds a control, as defined by the configuration object [config].
+         * 
+         * @param {Object} config
+         *      A configuration object to use to generate a control object.
+         * @param {String} config.type
+         *      The type of control to generate; corresponds to a value passed
+         *      as [typename] to js.form.registerControl or js.form.registerControlFn
+         * @param {String} [config.name]
+         *      The name of the generated control within the form.
+         * @param {String} [config.text]
+         *      The text to use as the label for the generated control.
+         * @param {Boolean} [config.nolabel]
+         *      TRUE to generate a control without a label; overrides [nolabel]
+         *      parameter.
+         * @param {String} [config.class]
+         *      The class name to attach to the generated control.
+         * @param {String} [config.tooltip]
+         *      The tooltip to display when hovering over an element.
+         * @param {Boolean} [nolabel]
+         *      If false, will not generate a label for the created field.  This
+         *      parameter is overridden by [config.nolabel].
+         * 
+         * @return {Object}
+         *      JS-DOM node for the generated control.
+         */
         buildControl: function (config, nolabel) {
             var tmp = this.templates[config.type] || this.templates["input"],
                 ctl = tmp.apply(this, [config]),
@@ -277,16 +349,34 @@ jspyder.extend.fn("form", function () {
                 
             return lbl.and(ctl);
         },
+        
+        /**
+         * @method
+         * Constructs a label for a generated JS-Form control.
+         * 
+         * @param {String} [fieldname]
+         *      The name of the field this label has been generated for.
+         * @param {String} [labeltext]
+         *      The text to display in the label
+         * @param {String} [labelclass]
+         *      The class to attach to the generated label element.
+         * @param {String} [tooltip]
+         *      The tooltip to apply to the generated label element.
+         */
         buildLabel: function(fieldname, labeltext, labelclass, tooltip) {
             var html = (fieldname && labeltext
-                    ? ["<label for=\"", fieldname, "\" class=\"", labelclass, "\"", (tooltip ? "title=\"" + tooltip + "\"" : ""), ">", labeltext, "</label>"].join('')
+                    ? ["<label ", 
+                            (fieldname  ? "for=\"" + fieldname + "\" " : ""), 
+                            (labelclass ? "class=\"" + labelclass + "\"" : ""), 
+                            (tooltip ? "title=\"" + tooltip + "\"" : ""), 
+                        ">", labeltext, "</label>"].join('')
                     : "");
                     
             return js.dom(html);
         },
+        
         /**
          * @method
-         * 
          * Gets the defined field by name, and then passes it as a parameter
          * into the function defined by fn.
          */
@@ -295,9 +385,9 @@ jspyder.extend.fn("form", function () {
             js.alg.use(this, fn, [field]);
             return this;
         },
+        
         /**
          * @method
-         * 
          * Retrieves the defined field by name.
          */
         exportField: function (name) {
@@ -305,9 +395,9 @@ jspyder.extend.fn("form", function () {
                 field = (data ? data.field : null);
             return field;
         },
+        
         /**
          * @method
-         * 
          * Gets the defined field object, and passes it as the parameter to the
          * function defined by fn.
          */
@@ -316,15 +406,23 @@ jspyder.extend.fn("form", function () {
             js.alg.use(this, fn, [data]);
             return this;
         },
+        
         /**
          * @method
-         * 
          * Retrieves the field object stored under the defined name.
          */
         exportFieldData: function (name) {
             return this._fields[name] || null;
         },
         
+        /**
+         * @method
+         * Resets the values of all of the identified JS-Form field to their 
+         * initial values.
+         * 
+         * @param {String} name
+         *      The name of the field to reset.
+         */
         resetFieldValue: function (name) {
             var data = this.exportFieldData(name),
                 dval = data.config.default,
@@ -334,14 +432,34 @@ jspyder.extend.fn("form", function () {
             return this;
         },
         
+        /**
+         * @method
+         * Resets the values of all of the created JS-Form fields.
+         */
         resetFieldValues: function () {
             this.each(this._resetFieldValues, this);;
         },
+        
+        /**
+         * @private
+         * @method
+         * Iterator method for js.form.resetFieldValues
+         */
         _resetFieldValues: function (field, name, fields, form) {
             form.resetFieldValue(name);
             return;
         },
         
+        /**
+         * @method
+         * Sets the value of the identified field to the value passed as the
+         * second parameter.
+         * 
+         * @param {String} name
+         *      The name of the field to set a value against.
+         * @param {Mixed} value
+         *      The value to set the field to.
+         */
         setFieldValue: function (name, value) {
             var data = this.exportFieldData(name),
                 field = this.exportField(name);
@@ -358,6 +476,18 @@ jspyder.extend.fn("form", function () {
             return this;
         },
         
+        /**
+         * @method
+         * Retrieves the value from the identified field, and passes it as the
+         * first parameter in [fn].
+         * 
+         * @param {String} name
+         *      The name of the field to retrieve a value from.
+         * @param {Function} fn
+         *      The function to pass the value into.
+         * @param {Mixed} fn.value
+         *      The value retrieved from the field identified by [name].
+         */
         getFieldValue: function(name, fn) {
             var args = [
                 this.exportFieldValue(name)
@@ -365,6 +495,16 @@ jspyder.extend.fn("form", function () {
             js.alg.use(this, fn, args);
             return this;
         },
+        
+        /**
+         * @method
+         * Returns the value from the identified field.
+         * 
+         * @param {String} name
+         *      The name of the field to retrieve a value from.
+         * 
+         * @return {Mixed}
+         */
         exportFieldValue: function (name) {
             var data = this.exportFieldData(name),
                 field = this.exportField(name),
@@ -385,6 +525,12 @@ jspyder.extend.fn("form", function () {
             return value;
         },
         
+        /**
+         * @private
+         * @dict
+         * 
+         * The library of constructors.
+         */
         templates: { }, 
 
         /**
@@ -416,6 +562,10 @@ jspyder.extend.fn("form", function () {
             return this;
         },
         
+        /**
+         * @private
+         * The basic template to use when generating a new field config object
+         */
         fieldTemplate: {
             type: "input",
             values: [],
@@ -552,14 +702,86 @@ jspyder.extend.fn("form", function () {
             return this; 
         },
         
+        /**
+         * @method
+         * Compiles a template from memory, and inserts the fields by name.
+         * For example, a field named "my_field" would be replace ${my_field}
+         * in the loaded template.  However, this requires that field names
+         * match the same naming convention as the JS-Template variables.
+         * 
+         * Note that any fields not inserted into the template are still
+         * accessible through the form interface.  This can be used to obscure
+         * fields from the user without having to write them to the DOM.
+         * 
+         * @param {String} templateId
+         *      A Template ID, corresponding to a template which has been loaded
+         *      into JS-Template.
+         * @param {Object} data
+         *      The data object to use when executing the template
+         * @param {Function} fn
+         *      The function to execute; the return value will be a JS-DOM
+         *      object, containing the generated form elements.
+         * 
+         * @return {Object}
+         *      JS-DOM node, containing the compiled template.
+         */
         compile: function(templateId, data, fn) {
             return this._compiler(templateId, data, fn, "compile");
         },
         
+        /**
+         * @method
+         * Compiles a template from [template], and inserts the fields by name.
+         * For example, a field named "my_field" would be replace ${my_field}
+         * in the loaded template.  However, this requires that field names
+         * match the same naming convention as the JS-Template variables.
+         * 
+         * Note that any fields not inserted into the template are still
+         * accessible through the form interface.  This can be used to obscure
+         * fields from the user without having to write them to the DOM.
+         * 
+         * @param {String} template
+         *      A Template ID, corresponding to a template which has been loaded
+         *      into JS-Template.
+         * @param {Object} data
+         *      The data object to use when executing the template
+         * @param {Function} fn
+         *      The function to execute; the return value will be a JS-DOM
+         *      object, containing the generated form elements.
+         * 
+         * @return {Object}
+         *      JS-DOM node, containing the compiled template. 
+         */
         compileExplicit: function(template, data, fn) {
             return this._compiler(template, data, fn, "compileExplicit");
         },
         
+        /**
+         * @method
+         * Compiles a template from from a DOM node, and inserts the fields by name.
+         * For example, a field named "my_field" would be replace ${my_field}
+         * in the loaded template.  However, this requires that field names
+         * match the same naming convention as the JS-Template variables.
+         * 
+         * Note that any fields not inserted into the template are still
+         * accessible through the form interface.  This can be used to obscure
+         * fields from the user without having to write them to the DOM.
+         * 
+         * This is the most flexible of all of the compilation options; taking
+         * input as DOM nodes, JS-DOM nodes, HTML Strings, XML Strings, and CSS
+         * Selectors.
+         * 
+         * @param {String|Object} dom
+         *      Accepts any valid input for js.dom()
+         * @param {Object} data
+         *      The data object to use when executing the template
+         * @param {Function} fn
+         *      The function to execute; the return value will be a JS-DOM
+         *      object, containing the generated form elements.
+         * 
+         * @return {Object}
+         *      JS-DOM node, containing the compiled template. 
+         */
         compileDom: function (dom, data, fn) {
             dom = js.dom(dom);
             if (dom && dom.getHtml) {
@@ -572,6 +794,11 @@ jspyder.extend.fn("form", function () {
             // return this._compiler(dom, data, fn, null);
         },
         
+        /**
+         * @private
+         * @method
+         * Internal constructor loop to js.form.compile
+         */
         _compiler: function(template, data, fn, compile) {
             var dom = null;
             

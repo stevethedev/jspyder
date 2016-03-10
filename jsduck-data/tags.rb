@@ -26,3 +26,9 @@ class Async < JsDuck::Tag::BooleanTag
         EOHTML
     end
 end
+
+class TagDict < JsDuck::Tag::BooleanTag
+    def initialize
+        @pattern = "dict"
+    end
+end

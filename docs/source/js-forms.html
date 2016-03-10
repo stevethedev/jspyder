@@ -15,7 +15,7 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js">/* ****************************************************************************
+  <pre class="prettyprint lang-js">/*
  * The MIT License (MIT)
  *
  * Copyright (c) 2015 Steven Jimenez
@@ -37,7 +37,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
- * ***************************************************************************/
+ */
 
 jspyder.extend.fn(&quot;form&quot;, function () {
     var js = this;
@@ -169,6 +169,26 @@ jspyder.extend.fn(&quot;form&quot;, function () {
          */
         _fields: null,
         
+<span id='jspyder-form-method-each'>        /**
+</span>         * @method
+         * Iterates through all of the form fields, calling the function [fn] on
+         * each field and using [data] as the fourth parameter.
+         * 
+         * @param {Function} fn     
+         *      The function to call on each iteration.
+         * @param {Object} [fn.field]
+         *      The first parameter to fn; the field currently being iterated.
+         * @param {String} [fn.name]
+         *      The second parameter to fn; the name of the field, internal to
+         *      JS-Form
+         * @param {Object} [fn.fields]
+         *      The field collection being itereated.
+         * @param {Mixed} [fn.data]
+         *      The context object passed in as the second parameter to 
+         *      js.form.each
+         * @param {Mixed} [data]
+         *      The variable to pass as the fourth parameter to [fn].
+         */
         each: function(fn, data) {
             js.alg.each(this._fields, fn, data);
             return this;
@@ -181,7 +201,6 @@ jspyder.extend.fn(&quot;form&quot;, function () {
          * 
          * @param {Object} fields
          */
-        
         addFields: function(fields) {
             for (var name in fields) {
                 this.addField(name, fields[name])
@@ -270,13 +289,66 @@ jspyder.extend.fn(&quot;form&quot;, function () {
             return this;
         },
         
+<span id='jspyder-form-method-registerControl'>        /**
+</span>         * @method
+         * Registers a control constructor with JS-Form.
+         * 
+         * @param {String} typename
+         *      The name by which this constructor will be referenced.
+         * @param {Function} constructor
+         *      The function to use as the constructor for the form control.
+         * @param {Object} constructor.cfg
+         *      The config object to be passed into the constructor function
+         *      as the first parameter.
+         */
         registerControl: function (typename, constructor) {
             js_form.fn.templates[typename] = constructor;
             return this;
         },
+        
+<span id='jspyder-form-method-registerControlFn'>        /**
+</span>         * @method
+         * Used to define more complex control constructors, the function
+         * [preconstructor] is executed and the return value is passed to
+         * js.form.registerControl
+         * 
+         * @param {String} typename
+         *      The name by which this constructor will be referenced.
+         * @param {Function} preconstructor
+         *      A closure to execute; the return value will be used as the
+         *      second parameter to js.form.registerControl
+         */
         registerControlFn: function (typename, preconstructor) {
             return this.registerControl(typename, js.alg.use(this, preconstructor));
         },
+        
+<span id='jspyder-form-method-buildControl'>        /**
+</span>         * @method
+         * Builds a control, as defined by the configuration object [config].
+         * 
+         * @param {Object} config
+         *      A configuration object to use to generate a control object.
+         * @param {String} config.type
+         *      The type of control to generate; corresponds to a value passed
+         *      as [typename] to js.form.registerControl or js.form.registerControlFn
+         * @param {String} [config.name]
+         *      The name of the generated control within the form.
+         * @param {String} [config.text]
+         *      The text to use as the label for the generated control.
+         * @param {Boolean} [config.nolabel]
+         *      TRUE to generate a control without a label; overrides [nolabel]
+         *      parameter.
+         * @param {String} [config.class]
+         *      The class name to attach to the generated control.
+         * @param {String} [config.tooltip]
+         *      The tooltip to display when hovering over an element.
+         * @param {Boolean} [nolabel]
+         *      If false, will not generate a label for the created field.  This
+         *      parameter is overridden by [config.nolabel].
+         * 
+         * @return {Object}
+         *      JS-DOM node for the generated control.
+         */
         buildControl: function (config, nolabel) {
             var tmp = this.templates[config.type] || this.templates[&quot;input&quot;],
                 ctl = tmp.apply(this, [config]),
@@ -294,16 +366,34 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                 
             return lbl.and(ctl);
         },
+        
+<span id='jspyder-form-method-buildLabel'>        /**
+</span>         * @method
+         * Constructs a label for a generated JS-Form control.
+         * 
+         * @param {String} [fieldname]
+         *      The name of the field this label has been generated for.
+         * @param {String} [labeltext]
+         *      The text to display in the label
+         * @param {String} [labelclass]
+         *      The class to attach to the generated label element.
+         * @param {String} [tooltip]
+         *      The tooltip to apply to the generated label element.
+         */
         buildLabel: function(fieldname, labeltext, labelclass, tooltip) {
             var html = (fieldname &amp;&amp; labeltext
-                    ? [&quot;&lt;label for=\&quot;&quot;, fieldname, &quot;\&quot; class=\&quot;&quot;, labelclass, &quot;\&quot;&quot;, (tooltip ? &quot;title=\&quot;&quot; + tooltip + &quot;\&quot;&quot; : &quot;&quot;), &quot;&gt;&quot;, labeltext, &quot;&lt;/label&gt;&quot;].join('')
+                    ? [&quot;&lt;label &quot;, 
+                            (fieldname  ? &quot;for=\&quot;&quot; + fieldname + &quot;\&quot; &quot; : &quot;&quot;), 
+                            (labelclass ? &quot;class=\&quot;&quot; + labelclass + &quot;\&quot;&quot; : &quot;&quot;), 
+                            (tooltip ? &quot;title=\&quot;&quot; + tooltip + &quot;\&quot;&quot; : &quot;&quot;), 
+                        &quot;&gt;&quot;, labeltext, &quot;&lt;/label&gt;&quot;].join(&#39;&#39;)
                     : &quot;&quot;);
                     
             return js.dom(html);
         },
+        
 <span id='jspyder-form-method-getField'>        /**
 </span>         * @method
-         * 
          * Gets the defined field by name, and then passes it as a parameter
          * into the function defined by fn.
          */
@@ -312,9 +402,9 @@ jspyder.extend.fn(&quot;form&quot;, function () {
             js.alg.use(this, fn, [field]);
             return this;
         },
+        
 <span id='jspyder-form-method-exportField'>        /**
 </span>         * @method
-         * 
          * Retrieves the defined field by name.
          */
         exportField: function (name) {
@@ -322,9 +412,9 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                 field = (data ? data.field : null);
             return field;
         },
+        
 <span id='jspyder-form-method-getFieldData'>        /**
 </span>         * @method
-         * 
          * Gets the defined field object, and passes it as the parameter to the
          * function defined by fn.
          */
@@ -333,15 +423,23 @@ jspyder.extend.fn(&quot;form&quot;, function () {
             js.alg.use(this, fn, [data]);
             return this;
         },
+        
 <span id='jspyder-form-method-exportFieldData'>        /**
 </span>         * @method
-         * 
          * Retrieves the field object stored under the defined name.
          */
         exportFieldData: function (name) {
             return this._fields[name] || null;
         },
         
+<span id='jspyder-form-method-resetFieldValue'>        /**
+</span>         * @method
+         * Resets the values of all of the identified JS-Form field to their 
+         * initial values.
+         * 
+         * @param {String} name
+         *      The name of the field to reset.
+         */
         resetFieldValue: function (name) {
             var data = this.exportFieldData(name),
                 dval = data.config.default,
@@ -351,14 +449,34 @@ jspyder.extend.fn(&quot;form&quot;, function () {
             return this;
         },
         
+<span id='jspyder-form-method-resetFieldValues'>        /**
+</span>         * @method
+         * Resets the values of all of the created JS-Form fields.
+         */
         resetFieldValues: function () {
             this.each(this._resetFieldValues, this);;
         },
+        
+<span id='jspyder-form-method-_resetFieldValues'>        /**
+</span>         * @private
+         * @method
+         * Iterator method for js.form.resetFieldValues
+         */
         _resetFieldValues: function (field, name, fields, form) {
             form.resetFieldValue(name);
             return;
         },
         
+<span id='jspyder-form-method-setFieldValue'>        /**
+</span>         * @method
+         * Sets the value of the identified field to the value passed as the
+         * second parameter.
+         * 
+         * @param {String} name
+         *      The name of the field to set a value against.
+         * @param {Mixed} value
+         *      The value to set the field to.
+         */
         setFieldValue: function (name, value) {
             var data = this.exportFieldData(name),
                 field = this.exportField(name);
@@ -375,6 +493,18 @@ jspyder.extend.fn(&quot;form&quot;, function () {
             return this;
         },
         
+<span id='jspyder-form-method-getFieldValue'>        /**
+</span>         * @method
+         * Retrieves the value from the identified field, and passes it as the
+         * first parameter in [fn].
+         * 
+         * @param {String} name
+         *      The name of the field to retrieve a value from.
+         * @param {Function} fn
+         *      The function to pass the value into.
+         * @param {Mixed} fn.value
+         *      The value retrieved from the field identified by [name].
+         */
         getFieldValue: function(name, fn) {
             var args = [
                 this.exportFieldValue(name)
@@ -382,6 +512,16 @@ jspyder.extend.fn(&quot;form&quot;, function () {
             js.alg.use(this, fn, args);
             return this;
         },
+        
+<span id='jspyder-form-method-exportFieldValue'>        /**
+</span>         * @method
+         * Returns the value from the identified field.
+         * 
+         * @param {String} name
+         *      The name of the field to retrieve a value from.
+         * 
+         * @return {Mixed}
+         */
         exportFieldValue: function (name) {
             var data = this.exportFieldData(name),
                 field = this.exportField(name),
@@ -402,6 +542,12 @@ jspyder.extend.fn(&quot;form&quot;, function () {
             return value;
         },
         
+<span id='jspyder-form-property-templates'>        /**
+</span>         * @private
+         * @dict
+         * 
+         * The library of constructors.
+         */
         templates: { }, 
 
 <span id='jspyder-form-method-values'>        /**
@@ -433,6 +579,10 @@ jspyder.extend.fn(&quot;form&quot;, function () {
             return this;
         },
         
+<span id='jspyder-form-property-fieldTemplate'>        /**
+</span>         * @private
+         * The basic template to use when generating a new field config object
+         */
         fieldTemplate: {
             type: &quot;input&quot;,
             values: [],
@@ -569,14 +719,86 @@ jspyder.extend.fn(&quot;form&quot;, function () {
             return this; 
         },
         
+<span id='jspyder-form-method-compile'>        /**
+</span>         * @method
+         * Compiles a template from memory, and inserts the fields by name.
+         * For example, a field named &quot;my_field&quot; would be replace ${my_field}
+         * in the loaded template.  However, this requires that field names
+         * match the same naming convention as the JS-Template variables.
+         * 
+         * Note that any fields not inserted into the template are still
+         * accessible through the form interface.  This can be used to obscure
+         * fields from the user without having to write them to the DOM.
+         * 
+         * @param {String} templateId
+         *      A Template ID, corresponding to a template which has been loaded
+         *      into JS-Template.
+         * @param {Object} data
+         *      The data object to use when executing the template
+         * @param {Function} fn
+         *      The function to execute; the return value will be a JS-DOM
+         *      object, containing the generated form elements.
+         * 
+         * @return {Object}
+         *      JS-DOM node, containing the compiled template.
+         */
         compile: function(templateId, data, fn) {
             return this._compiler(templateId, data, fn, &quot;compile&quot;);
         },
         
+<span id='jspyder-form-method-compileExplicit'>        /**
+</span>         * @method
+         * Compiles a template from [template], and inserts the fields by name.
+         * For example, a field named &quot;my_field&quot; would be replace ${my_field}
+         * in the loaded template.  However, this requires that field names
+         * match the same naming convention as the JS-Template variables.
+         * 
+         * Note that any fields not inserted into the template are still
+         * accessible through the form interface.  This can be used to obscure
+         * fields from the user without having to write them to the DOM.
+         * 
+         * @param {String} template
+         *      A Template ID, corresponding to a template which has been loaded
+         *      into JS-Template.
+         * @param {Object} data
+         *      The data object to use when executing the template
+         * @param {Function} fn
+         *      The function to execute; the return value will be a JS-DOM
+         *      object, containing the generated form elements.
+         * 
+         * @return {Object}
+         *      JS-DOM node, containing the compiled template. 
+         */
         compileExplicit: function(template, data, fn) {
             return this._compiler(template, data, fn, &quot;compileExplicit&quot;);
         },
         
+<span id='jspyder-form-method-compileDom'>        /**
+</span>         * @method
+         * Compiles a template from from a DOM node, and inserts the fields by name.
+         * For example, a field named &quot;my_field&quot; would be replace ${my_field}
+         * in the loaded template.  However, this requires that field names
+         * match the same naming convention as the JS-Template variables.
+         * 
+         * Note that any fields not inserted into the template are still
+         * accessible through the form interface.  This can be used to obscure
+         * fields from the user without having to write them to the DOM.
+         * 
+         * This is the most flexible of all of the compilation options; taking
+         * input as DOM nodes, JS-DOM nodes, HTML Strings, XML Strings, and CSS
+         * Selectors.
+         * 
+         * @param {String|Object} dom
+         *      Accepts any valid input for js.dom()
+         * @param {Object} data
+         *      The data object to use when executing the template
+         * @param {Function} fn
+         *      The function to execute; the return value will be a JS-DOM
+         *      object, containing the generated form elements.
+         * 
+         * @return {Object}
+         *      JS-DOM node, containing the compiled template. 
+         */
         compileDom: function (dom, data, fn) {
             dom = js.dom(dom);
             if (dom &amp;&amp; dom.getHtml) {
@@ -589,6 +811,11 @@ jspyder.extend.fn(&quot;form&quot;, function () {
             // return this._compiler(dom, data, fn, null);
         },
         
+<span id='jspyder-form-method-_compiler'>        /**
+</span>         * @private
+         * @method
+         * Internal constructor loop to js.form.compile
+         */
         _compiler: function(template, data, fn, compile) {
             var dom = null;
             
@@ -638,7 +865,7 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                         &quot; name=\&quot;&quot;, fieldname, &quot;\&quot;&quot;,
                         (cfg.readonly ? &quot; readonly=\&quot;readonly\&quot;&quot; : &quot;&quot;),
                         &quot; data-type=\&quot;&quot;, fieldtype, &quot;\&quot;&gt;&lt;/input&gt;&quot;
-                    ].join('');
+                    ].join(&#39;&#39;);
                     
                 cfg.setValue = setValue;
 
@@ -772,7 +999,7 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                             &quot; value=\&quot;&quot;, (monthnum + 1), &quot;\&quot;&gt;&quot;,
                             month,
                         &quot;&lt;/div&gt;&quot;
-                    ].join('');
+                    ].join(&#39;&#39;);
                     
                     return;
                 },
@@ -817,7 +1044,7 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                             &quot;\&quot; style=\&quot;width:&quot;, (100 / data.wlen),&quot;%\&quot;&gt;&quot;,
                             weekday,
                         &quot;&lt;/div&gt;&quot;
-                    ].join('');
+                    ].join(&#39;&#39;);
                     return;
                 },
                 buildNumberedDays: function (day, daynum, daylist, data) {
@@ -833,7 +1060,7 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                             &quot;\&quot;&gt;&quot;,
                             day,
                         &quot;&lt;/div&gt;&quot;
-                    ].join('');
+                    ].join(&#39;&#39;);
                     return;
                 },
                 calendarHtml: [
@@ -845,7 +1072,7 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                         &quot;&lt;/div&gt;&quot;,
                         &quot;&lt;div class=\&quot;calendar-tiles\&quot;&gt;&lt;/div&gt;&quot;,
                     &quot;&lt;/div&gt;&quot;
-                ].join('')
+                ].join(&#39;&#39;)
             };
             
             var __override = {
@@ -928,7 +1155,7 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                                 &quot;&lt;i class=\&quot;&quot; + btnicon + &quot;\&quot;&gt;&lt;/i&gt;&quot;,
                                 &quot;&lt;span class=\&quot;button-text\&quot; data-buttontext=\&quot;&quot; + btntext + &quot;\&quot;&gt;&lt;/span&gt;&quot;,
                         &quot;&lt;/div&gt;&quot;
-                    ].join(''),
+                    ].join(&#39;&#39;),
                     
                     $button = js.dom(html)
                         .setValue(btnvalue)
@@ -952,7 +1179,7 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                 var buttons = js.dom();
                 for (var i = 0; i &lt; cfg.buttons.length; i++) {
                     var option = js.alg.mergeObj({ &quot;readonly&quot;: cfg[&quot;readonly&quot;] }, cfg.buttons[i], __override);
-                    option.class += ' js-buttonset';
+                    option.class += &#39; js-buttonset&#39;;
                     buttons.and(this.buildControl(option, true));
                 }
                 return buttons;
@@ -1053,7 +1280,7 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                     livalue = js.alg.string(option.value, option.text);
                     
                     lihtml = [
-                        &quot;&lt;li class=\&quot;item\&quot; value=\&quot;&quot;, livalue, &quot;\&quot; title=\&quot;&quot;, litext, &quot;\&quot;&gt;&quot;, litext, &quot;&lt;/li&gt;&quot;].join('');
+                        &quot;&lt;li class=\&quot;item\&quot; value=\&quot;&quot;, livalue, &quot;\&quot; title=\&quot;&quot;, litext, &quot;\&quot;&gt;&quot;, litext, &quot;&lt;/li&gt;&quot;].join(&#39;&#39;);
                     
                     $popout.append(lihtml);
                     i++
@@ -1118,7 +1345,7 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                             &quot;&lt;i class=\&quot;dropdown-arrow arrow-drop-down\&quot;&gt;&lt;/i&gt;&quot;,
                             &quot;&lt;span class=\&quot;dropdown-text\&quot;&gt;&quot;, (cfgvalue || cfgdefault || &quot;&amp;nbsp;&quot;), &quot;&lt;/span&gt;&quot;,
                         &quot;&lt;/div&gt;&quot;
-                    ].join(''),
+                    ].join(&#39;&#39;),
                     
                     $dropdown = js.dom(html);
                     
@@ -1148,7 +1375,7 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                             (cfg.readonly ? &quot; readonly=\&quot;true\&quot;&quot; : &quot;&quot;),
                             &quot; class=\&quot;input &quot;, cfgclass, &quot;\&quot;&gt;&quot;,
                         &quot;&lt;/textarea&gt;&quot;
-                    ].join('');
+                    ].join(&#39;&#39;);
                     
                 cfg.setValue = setValue;
                     
@@ -1217,7 +1444,7 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                         &quot;&lt;textarea name=\&quot;&quot;, cfgname, &quot;\&quot;&quot;,
                             &quot; class=\&quot;input js-control js-control-autosize &quot;, cfgclass, &quot;\&quot;&gt;&quot;,
                         &quot;&lt;/textarea&gt;&quot;
-                    ].join('');
+                    ].join(&#39;&#39;);
                     
                 cfg.setValue = setValue;
                     
@@ -1245,7 +1472,7 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                             (cfg[&quot;readonly&quot;] ? &quot; readonly=\&quot;true\&quot;&quot; : &quot;&quot;),
                             &quot; class=\&quot;&quot;, cfgclass, &quot;\&quot;&gt;&quot;,
                         &quot;&lt;/input&gt;&quot;
-                    ].join('');
+                    ].join(&#39;&#39;);
                 
                 return js.dom(html).and(js.form.fn.buildLabel(cfgname, cfgtext, cfgclass));
             }
@@ -1378,7 +1605,7 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                             (cfg.readonly ? &quot; readonly=\&quot;true\&quot;&quot; : &quot;&quot;),
                             &quot; class=\&quot;&quot;, cfgclass, &quot;\&quot;&gt;&quot;,
                         &quot;&lt;/input&gt;&quot;
-                    ].join(''),
+                    ].join(&#39;&#39;),
                     $checkbox = js.dom(html).and(js.form.fn.buildLabel(cfgname, cfgtext, cfgclass));
                     
                 return $checkbox;
@@ -1984,17 +2211,17 @@ jspyder.extend.fn(&quot;form&quot;, function () {
             }
             
             function toNumber(n, a) {
-                n = js.alg.string(n, '');
+                n = js.alg.string(n, &#39;&#39;);
                 
                 var reStrip = /([^\-\d\.]+)/g,
                     parts = null;
                     
-                n = n.replace(reStrip, '');
-                parts = n.split('.');
+                n = n.replace(reStrip, &#39;&#39;);
+                parts = n.split(&#39;.&#39;);
                 if (parts) {
                     parts[0] = js.alg.number(parts[0], 0);
                     parts[1] = js.alg.string(parts[1], &quot;0&quot;);
-                    n = js.alg.number(parts[0] + '.' + parts[1], 0);
+                    n = js.alg.number(parts[0] + &#39;.&#39; + parts[1], 0);
                 }
                 else {
                     n = 0;
@@ -2012,8 +2239,8 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                     return n;
                 }
                 n = js.alg.number(n, 0);
-                c = js.alg.string(c, ',');
-                d = js.alg.string(d, '.');
+                c = js.alg.string(c, &#39;,&#39;);
+                d = js.alg.string(d, &#39;.&#39;);
                 
                 if (typeof a !== &quot;undefined&quot;) {
                     n = n.toFixed(a);
@@ -2021,7 +2248,7 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                 
                 var reCommaSearch = /\B(?=(\d{3})+(?!\d))/g,
                     str = js.alg.string(n, &quot;&quot;),
-                    part = str.split('.'),
+                    part = str.split(&#39;.&#39;),
                     num = [];
                     
                 num[0] = (part[0] || &quot;&quot;).replace(reCommaSearch, c);
