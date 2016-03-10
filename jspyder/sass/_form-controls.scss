@@ -306,11 +306,15 @@ label {
         resize: none;
         transition: height .1s;
         vertical-align: top;
+        
+        overflow-y: hidden;
     }
 }
 
 textarea {
     min-height: 3em;
+    overflow-y: auto;
+    resize: none;
 }
 input, textarea, .input {
     border: $px solid $color-divider;
