@@ -686,7 +686,7 @@ $jscomp.string.endsWith$install = function $$jscomp$string$endsWith$install$() {
       return this.name + this.version;
     }};
     Object.freeze($__browser_js_env$$);
-    $__browser_js_env$$ = {version:"0.0.0", versionNo:0, browser:$__browser_js_env$$};
+    $__browser_js_env$$ = {version:"1.0.0", versionNo:65536, browser:$__browser_js_env$$};
     Object.freeze($__browser_js_env$$);
     $js$$.extend("env", $__browser_js_env$$);
   }
