@@ -33,9 +33,14 @@ function sass_fn_icons {
     if [ ! -d "$JSPYDER_OUT_DIR/css" ] ; then
         mkdir "$JSPYDER_OUT_DIR/css"
     fi
+    
+    if [ ! -d "$JSPYDER_OUT_DIR/css/font" ] ; then
+        mkdir "$JSPYDER_OUT_DIR/css/font"
+    fi
 
     sass "./sass/material-icons.scss" "$JSPYDER_OUT_DIR/css/material-icons.css"
     cp "./sass/material-icons.scss" "$JSPYDER_OUT_DIR/sass/material-icons.scss"
+    cp "./material-icon-font/"* "$JSPYDER_OUT_DIR/css/font/"
 }
 function sass_fn_jspyder {
     echo " > JSpyder CSS..."
@@ -49,7 +54,7 @@ function sass_fn_jspyder {
     fi
 
     sass "./sass/jspyder.scss" "$JSPYDER_OUT_DIR/css/jspyder.css"
-    cp -r "./sass" "$JSPYDER_OUT_DIR"
+    cp "./sass/"* "$JSPYDER_OUT_DIR/sass/"
 }
 
 function generate_docs {
