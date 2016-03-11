@@ -1,6 +1,8 @@
 #!/bin/bash
 # compiles all compilable projects in the directory
 
+JSPYDER_OUT_DIR="./jspyder"
+
 function help {
     echo "JSpyder Compiler Script"
     echo " "
@@ -17,65 +19,66 @@ function help {
 }
 
 function sass_fn {
-    echo "Generating CSS files..."
     test "$DO_ICONS" -eq "1" && sass_fn_icons
     test "$DO_CSS" -eq "1" && sass_fn_jspyder
 }
 
 function sass_fn_icons {
-    echo " > Material Icons..."
-    sass ./sass/material-icons.scss ./css/material-icons.css
+    echo " > Material Icons CSS..."
+    
+    if [ ! -d "$JSPYDER_OUT_DIR/sass" ] ; then
+        mkdir "$JSPYDER_OUT_DIR/sass"
+    fi
+    
+    if [ ! -d "$JSPYDER_OUT_DIR/css" ] ; then
+        mkdir "$JSPYDER_OUT_DIR/css"
+    fi
+    
+    if [ ! -d "$JSPYDER_OUT_DIR/css/font" ] ; then
+        mkdir "$JSPYDER_OUT_DIR/css/font"
+    fi
+
+    sass "./sass/material-icons.scss" "$JSPYDER_OUT_DIR/css/material-icons.css"
+    cp "./sass/material-icons.scss" "$JSPYDER_OUT_DIR/sass/material-icons.scss"
+    cp "./material-icon-font/"* "$JSPYDER_OUT_DIR/css/font/"
 }
 function sass_fn_jspyder {
-    echo " > JSpyder..."
-    sass ./sass/jspyder.scss ./css/jspyder.css
+    echo " > JSpyder CSS..."
+
+    if [ ! -d "$JSPYDER_OUT_DIR/sass" ] ; then
+        mkdir "$JSPYDER_OUT_DIR/sass"
+    fi
+    
+    if [ ! -d "$JSPYDER_OUT_DIR/css" ] ; then
+        mkdir "$JSPYDER_OUT_DIR/css"
+    fi
+
+    sass "./sass/jspyder.scss" "$JSPYDER_OUT_DIR/css/jspyder.css"
+    cp "./sass/"* "$JSPYDER_OUT_DIR/sass/"
 }
 
 function generate_docs {
-    echo "Generating Documentation..."
-    
-    if [ -d "./docs" ] ; then
+    if [ -d "$JSPYDER_OUT_DIR/docs" ] ; then
         echo " > Clearing Old Documentation..."
-        rm -d -r docs
+        rm -d -r "$JSPYDER_OUT_DIR/docs"
     fi
+    
+    mkdir "$JSPYDER_OUT_DIR/docs"
 
     echo " > Writing New Documentation..."
-    jsduck --title "JSpyder" --tags ./jsduck-data/tags.rb ./js --output ./docs
+    jsduck --title "JSpyder" --tags ./jsduck-data/tags.rb ./js --output "$JSPYDER_OUT_DIR/docs"
 }
 
 function closure_compiler {
-    echo "Compiling JavaScript..."
-    java -jar ./closure-compiler/compiler.jar --language_out=ES5 --js ./js/jspyder.js --js ./js/js-**.js --js_output_file ./js-compiled/jspyder.js
+    echo " > Compiling JavaScript..."
+    java -jar ./closure-compiler/compiler.jar --language_out=ES5 --js ./js/jspyder.js --js ./js/js-**.js --js_output_file "$JSPYDER_OUT_DIR/js/jspyder.js"
 }
 
 function closure_compiler_debug {
-    echo "Compiling Debug JavaScript..."
-    java -jar ./closure-compiler/compiler.jar --language_out=ES5 --formatting PRETTY_PRINT --debug true --js ./js/jspyder.js --js ./js/js-**.js --js_output_file ./js-compiled/jspyder.debug.js
+    echo " > Compiling Debug JavaScript..."
+    java -jar ./closure-compiler/compiler.jar --language_out=ES5 --formatting PRETTY_PRINT --debug true --js ./js/jspyder.js --js ./js/js-**.js --js_output_file "$JSPYDER_OUT_DIR/js/jspyder.debug.js"
 }
 
-function package_jspyder {
-    echo "Packaging JSpyder..."
-    
-    if [ -d "./jspyder" ] ; then
-        rm -d -r ./jspyder/*
-    else
-        mkdir ./jspyder
-    fi
-    
-    echo " > Packaging JavaScript Files..."
-    cp -r ./js-compiled ./jspyder/js
-    
-    echo " > Packaging SASS..."
-    cp -r ./sass ./jspyder/sass
-
-    echo " > Packaging CSS..."
-    cp -r ./css ./jspyder/css
-    
-    echo " > Packaging Documentation..."
-    cp -r ./docs ./jspyder/docs
-    
-    echo "JSpyder packaged into ./jspyder/"
-}
 
 test $# -eq "0" && help
 
@@ -84,7 +87,6 @@ DO_ICONS=0
 DO_CSS=0
 DO_COMPILE_JS=0
 DO_COMPILE_JS_DEBUG=0
-DO_PACKAGE_JS=0
 
 while test $# -gt 0; do
     case "$1" in
@@ -108,18 +110,12 @@ while test $# -gt 0; do
             DO_COMPILE_JS=1
             ;;
             
-        -p|--package)
-            shift
-            DO_PACKAGE_JS=1
-            ;;
-
         -a|--all)
             shift
             DO_ICONS=1
             DO_CSS=1
             DO_DOCS=1
             DO_COMPILE_JS=1
-            DO_PACKAGE_JS=1
             ;;
             
         -?|--help)
@@ -133,7 +129,12 @@ while test $# -gt 0; do
     esac
 done
 
+if [ ! -d "$JSPYDER_OUT_DIR" ] ; then
+    mkdir "$JSPYDER_OUT_DIR"
+fi
+
+echo "Compiling and Packaging JSpyder..."
+(test "$DO_COMPILE_JS" -eq "1") && (closure_compiler) && (closure_compiler_debug)
 (test "$DO_ICONS" -eq "1" || test "$DO_CSS" -eq "1") && (sass_fn)
 (test "$DO_DOCS" -eq "1") && (generate_docs)
-(test "$DO_COMPILE_JS" -eq "1") && (closure_compiler) && (closure_compiler_debug)
-(test "$DO_PACKAGE_JS" -eq "1") && (package_jspyder)
+echo "JSpyder packaged: $JSPYDER_OUT_DIR"
