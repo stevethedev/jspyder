@@ -17,6 +17,18 @@
         $padding: .4em;
         $header-height: 1.8em;
         $footer-height: 2em;
+     
+        &:after {   
+            content: " ";
+            background-color: rgba(255, 255, 255, 0.2);
+            position: absolute;
+            top: -.2em;
+            bottom: -.2em;
+            left: -.2em;
+            right: -.2em;
+            z-index: -100;
+            border-radius:.3em .3em 0 0;
+        }
         
         .js-dialog-header {
             padding: $padding;
