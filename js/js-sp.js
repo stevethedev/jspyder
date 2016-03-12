@@ -628,7 +628,7 @@ js.extend.fn("sp", function () {
         return;
     }
 
-    /** ***********************************************************************
+    /**
      * @private
      * Called after a successful query; loads data into the list reference.
      *
@@ -643,7 +643,7 @@ js.extend.fn("sp", function () {
      *
      * @param {Object} args
      *      Pushed in by SharePoint
-     * ***********************************************************************/
+     */
     function __successParse(listItems, successFn, sender, args) {
         var itemEnumerator = listItems.getEnumerator(),
             jsEach = js.alg.each,
@@ -667,7 +667,7 @@ js.extend.fn("sp", function () {
         successFn(sender, args);
     }
 
-    /** ***********************************************************************
+    /**
      * @private
      * Called in a loop to push data into the SP List Reference. This function
      * is defined outside of the loop for efficiency.
@@ -686,7 +686,7 @@ js.extend.fn("sp", function () {
      *      Includes data.item (sharepoint row reference), data.id (value of
      *      associated row ID in sharepoint), and data._row (reference to
      *      list reference's row getting pushed into the stack).
-     * ***********************************************************************/
+     */
     function __pushRow(colData, colName, columns, data) {
         var rowID = data.id,
             row = data._row,
@@ -765,7 +765,7 @@ js.extend.fn("sp", function () {
         return value;
     }
 
-    /** ***********************************************************************
+    /**
      * @private
      * Called after a failed query; loads data into the list reference.
      *
@@ -780,13 +780,13 @@ js.extend.fn("sp", function () {
      *
      * @param {Object} args
      *      Pushed in by SharePoint
-     * ***********************************************************************/
+     */
     function __failureParse(listItems, failureFn, sender, args) {
         failureFn(sender, args);
     }
 
 
-    /** ***********************************************************************
+    /**
      * @class jspyder.sp.query
      * @extends jspyder.sp
      *
@@ -794,7 +794,7 @@ js.extend.fn("sp", function () {
      * it should be either created by a call to jspyder.sp.list.query() or a
      * call to jspyder.sp.query.clone in order to ensure that it was properly
      * configured at creation and before use.
-     * ***********************************************************************/
+     */
     sp.query = function(list) {
         return Object.create(sp.query.fn, { _list: { value: list } });
     };
@@ -911,6 +911,15 @@ js.extend.fn("sp", function () {
             return this;
         },
 
+        /**
+         * Iterates through all of the rows in this query
+         *
+         * @param {Function} fn
+         *      Function to iterate with, where the first parameter
+         *      is the row, the second parameter is the row index, the
+         *      third parameter is the row list, and the fourth parameter
+         *      is the query object.
+         */
         each: function(fn) {
             js.alg.arrEach(this._rows, fn, this);
             return this;
@@ -1040,7 +1049,7 @@ js.extend.fn("sp", function () {
         }
     };
 
-    /** *******************************************************************
+    /**
      * @private
      * Separated from jspyder.sp.query.filter for memory efficiency.
      *
@@ -1055,7 +1064,7 @@ js.extend.fn("sp", function () {
      *
      * @param {Object} filterData
      *      Collection of filters.  See jspyder.sp.query.filter
-     * *******************************************************************/
+     */
     function __parseRows(row, id, _rows, data) {
         if(!row || !data || !data.filterArray || !data.filterArray.length) { // catch null values
             return;
@@ -1400,7 +1409,28 @@ js.extend.fn("sp", function () {
 
         return spUser;
     }
-    sp.user.getById
+
+    /**
+     * @method getById
+     * @member js.sp.user
+     * Retrieves the user in the specified URL using the User ID
+     */
+    sp.user.getById = function(userid, url) { return sp.user({ "userid": userid, "url": url }); }
+
+    /**
+     * @method getByLogin
+     * @member js.sp.user
+     * Retrieves the user in the specified URL using the User Login
+     */
+    sp.user.getByLogin = function(login, url) { return sp.user({ "login": login, "url": url }); }
+
+    /**
+     * @method getByEmail
+     * @member js.sp.user
+     * Retrieves the user in the specified URL using the User Email
+     */
+    sp.user.getByEmail = function(email, url) { return sp.user({ "email": email, "url": url }); }
+
     sp.user.fn = {
         "_user": null,
         "_email": null,
@@ -1408,7 +1438,24 @@ js.extend.fn("sp", function () {
         "_username": null,
         "_url": null,
 
-        memberOfGroup: function(group, yes, no) {
+        /**
+         * @async
+         *
+         * Executes the specified function, with the first parameter as "true"
+         * if the user is a member of the designated group, and "false" if not.
+         * If an error occurred, then this is treated as a false value.
+         *
+         * @param {Mixed} group
+         *      A JS-SP Group Constructor
+         *
+         * @param {Function} fn
+         *      The function to execute when the check completes:
+         *      fn(isMember, sender, args);
+         */
+        memberOfGroup: function(group, fn) {
+            var yes = js.alg.bindFn(this, fn, [true]),
+                no = js.alg.bindFn(this, fn, [false]);
+
             sp.group(group).isMember(this["_user"], yes, no);
             return this;
         }
@@ -1446,17 +1493,22 @@ js.extend.fn("sp", function () {
             group = null,
             spGroup = null;
 
-        if(config["name"]) {
-            group = groups.getByName(config["name"]);
+        if(config && config.isPrototypeOf(sp.group.fn)) {
+            spGroup = config;
         }
-        else if(config["groupid"]) {
-            group = groups.getById(config["groupid"]);
-        }
+        else {
+            if(config["name"]) {
+                group = groups.getByName(config["name"]);
+            }
+            else if(config["groupid"]) {
+                group = groups.getById(config["groupid"]);
+            }
 
-        spGroup = Object.create(sp.group.fn, {
-            "_url": { "value": js.alg.string(config["url"],"") },
-            "_group": { "value": group }
-        });
+            spGroup = Object.create(sp.group.fn, {
+                "_url": { "value": js.alg.string(config["url"],"") },
+                "_group": { "value": group }
+            });
+        }
 
         return spGroup;
     }
@@ -1486,6 +1538,7 @@ js.extend.fn("sp", function () {
         }
     };
 
+    /** @ignore */
     function __isMemberSuccess(successFn, failureFn, sender, args) {
         var userInGroup = false,
             enumerator = this._group.get_users().getEnumerator(),
@@ -1500,6 +1553,7 @@ js.extend.fn("sp", function () {
         }
         js.alg.use(this, userInGroup ? successFn : failureFn, [sender, args]);
     }
+    /** @ignore */
     function __isMemberFailure(failureFn, sender, args) {
         js.alg.use(this, failureFn, [sender, args]);
     }

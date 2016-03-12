@@ -3065,8 +3065,8 @@ js.extend.fn("sp", function() {
   function $sp$$() {
   }
   function $__successPush$$($listItems$$, $successFn$$, $sender$$, $args$$) {
-    for ($js$$.alg.use(this, $successFn$$, [$sender$$, $args$$, $listItems$$]);this._dirtyRows.pop();) {
-    }
+    $js$$.alg.use(this, $successFn$$, [$sender$$, $args$$, $listItems$$]);
+    this._dirtyRows.length = 0;
     this.pull();
   }
   function $__failurePush$$($listItems$$, $failureFn$$, $sender$$, $args$$) {
@@ -3190,6 +3190,27 @@ js.extend.fn("sp", function() {
       return $__rows$$.join("\r\n");
     }($rows$$0$$, $columns$$0$$)].join("");
   }
+  function $__spUserSuccess$$($config$$, $sender$$, $args$$) {
+    this._email = this._user.get_email();
+    this._username = this._user.get_loginName();
+    this._userid = this._user.get_userId();
+    $js$$.alg.use(this, $config$$.success, [$sender$$, $args$$]);
+  }
+  function $__spUserFailure$$($config$$, $sender$$, $args$$) {
+    $js$$.alg.use(this, $config$$.failure, [$sender$$, $args$$]);
+  }
+  function $__isMemberSuccess$$($successFn$$, $failureFn$$, $sender$$, $args$$) {
+    for (var $userInGroup$$ = !1, $enumerator$$ = this._group.get_users().getEnumerator(), $groupUser$$ = null;$enumerator$$.moveNext();) {
+      if ($groupUser$$ = $enumerator$$.get_current(), $groupUser$$.get_id() === user.get_id()) {
+        $userInGroup$$ = !0;
+        break;
+      }
+    }
+    $js$$.alg.use(this, $userInGroup$$ ? $successFn$$ : $failureFn$$, [$sender$$, $args$$]);
+  }
+  function $__isMemberFailure$$($failureFn$$, $sender$$, $args$$) {
+    $js$$.alg.use(this, $failureFn$$, [$sender$$, $args$$]);
+  }
   var $js$$ = window.jspyder;
   $sp$$.list = function spList($config$$, $fn$$) {
     window.SP || $js$$.log.warn("Ensure that MicrosoftAjax.js, sp.runtime.js, and sp.js have been loaded before using JSpyder SharePoint Interface");
@@ -3216,11 +3237,19 @@ js.extend.fn("sp", function() {
       $list$$.addColumn($name$$, $data$$);
     }, this);
     return this;
-  }, getColumn:function $$sp$$$list$fn$getColumn$($name$$) {
+  }, exportColumn:function $$sp$$$list$fn$exportColumn$($name$$) {
     return this._columns[$name$$] ? this._columns[$name$$] : Object.create($sp$$.column.fn, {list:{value:this}, name:{value:$name$$}});
-  }, getRow:function $$sp$$$list$fn$getRow$($n$$) {
+  }, getColumn:function $$sp$$$list$fn$getColumn$($name$$, $fn$$) {
+    var $col$$ = this._columns[$name$$];
+    $col$$ && $js$$.alg.use(this, $fn$$, [$col$$]);
+    return this;
+  }, exportRow:function $$sp$$$list$fn$exportRow$($n$$) {
     return this._rows[$js$$.alg.number($n$$, 0)] || null;
-  }, getRowById:function $$sp$$$list$fn$getRowById$($id$$) {
+  }, getRow:function $$sp$$$list$fn$getRow$($n$$, $fn$$) {
+    var $row$$ = this.exportRow($n$$);
+    $row$$ && $js$$.alg.use(this, $fn$$, [$row$$]);
+    return this;
+  }, exportRowById:function $$sp$$$list$fn$exportRowById$($id$$) {
     for (var $found$$ = null, $row$$ = null, $i$$ = 0;$row$$ = this.getRow($i$$++);) {
       if ($row$$.ID.value === $id$$) {
         $found$$ = $row$$;
@@ -3228,13 +3257,20 @@ js.extend.fn("sp", function() {
       }
     }
     return $found$$;
+  }, getRowById:function $$sp$$$list$fn$getRowById$($id$$, $fn$$) {
+    var $row$$ = this.exportRowById($id$$);
+    $row$$ && $js$$.alg.use(this, $fn$$, [$row$$]);
+    return this;
   }, eachDirtyRow:function $$sp$$$list$fn$eachDirtyRow$($fn$$, $data$$) {
     var $dirty$$ = this._dirtyRows;
     "function" === typeof $fn$$ && $js$$.alg.each($dirty$$, $fn$$, $data$$);
     return this;
-  }, _createListItem:function $$sp$$$list$fn$_createListItem$() {
-  }, getRowCount:function $$sp$$$list$fn$getRowCount$($n$$) {
+  }, exportRowCount:function $$sp$$$list$fn$exportRowCount$($n$$) {
     return this._rows.length;
+  }, getRowCount:function $$sp$$$list$fn$getRowCount$($n$$, $fn$$) {
+    var $count$$ = this.exportRowCount($n$$);
+    $js$$.alg.use(this, $fn$$, [$count$$]);
+    return this;
   }, pull:function $$sp$$$list$fn$pull$($success$$, $failure$$) {
     var $ctx$$ = new window.SP.ClientContext(this._url), $list$$7_listItems$$ = $ctx$$.get_web().get_lists().getByTitle(this._name), $caml$$ = new window.SP.CamlQuery, $successFn$$ = "function" === typeof $success$$ ? $success$$ : this._success, $failureFn$$ = "function" === typeof $failure$$ ? $failure$$ : this._failure;
     $caml$$.set_viewXml(this.caml);
@@ -3270,19 +3306,19 @@ js.extend.fn("sp", function() {
   }, _pushLoopDirtyRowColumns:function $$sp$$$list$fn$_pushLoopDirtyRowColumns$($coldata$$, $colname$$, $columns$$, $data$$) {
     $coldata$$.internal && $coldata$$.dirty && "ID" !== $coldata$$.internal && $data$$.listItem.set_item($coldata$$.internal, $coldata$$.value);
   }, updateRow:function $$sp$$$list$fn$updateRow$($id$$, $values$$) {
-    var $row$$ = this.getRowById($id$$), $data$$ = $js$$.alg.mergeObj({}, $values$$);
-    $row$$ && $js$$.alg.each($row$$, this._updateRowEach, $data$$);
-    return this;
+    return this.getRowById($id$$, function($row$$) {
+      $js$$.alg.each($row$$, this._updateRowEach, $js$$.alg.cloneObj($values$$));
+    });
   }, _updateRowEach:function $$sp$$$list$fn$_updateRowEach$($colData$$, $colName$$1_value$$, $row$$, $data$$) {
     $colName$$1_value$$ = $data$$[$colData$$.name];
     $row$$ = $colName$$1_value$$ !== $colData$$.value;
     "undefined" !== typeof $colName$$1_value$$ && $row$$ && ($colData$$.value = $colName$$1_value$$);
-  }, createRow:function $$sp$$$list$fn$createRow$($data$$104_values$$) {
+  }, createRow:function $$sp$$$list$fn$createRow$($data$$103_values$$) {
     var $columns$$ = this._columns;
-    $data$$104_values$$ = {row:{}, rowID:-1, values:$js$$.alg.mergeObj({}, $data$$104_values$$)};
-    $js$$.alg.each($columns$$, this._createRowEach, $data$$104_values$$);
-    $data$$104_values$$.row.ID.value = $data$$104_values$$.rowID;
-    this._dirtyRows.push($data$$104_values$$.row);
+    $data$$103_values$$ = {row:{}, rowID:-1, values:$js$$.alg.mergeObj({}, $data$$103_values$$)};
+    $js$$.alg.each($columns$$, this._createRowEach, $data$$103_values$$);
+    $data$$103_values$$.row.ID.value = $data$$103_values$$.rowID;
+    this._dirtyRows.push($data$$103_values$$.row);
     return this;
   }, _createRowEach:function $$sp$$$list$fn$_createRowEach$($colData$$, $colName$$2_value$$, $column$$, $cell$$1_data$$) {
     var $row$$ = $cell$$1_data$$.row;
@@ -3364,7 +3400,10 @@ js.extend.fn("sp", function() {
       default:
         $out$$[$colName$$] = $value$$.value;
     }
-  }, getValues:function $$sp$$$query$fn$getValues$($columns$$0$$, $fn$$) {
+  }, getValues:function $$sp$$$query$fn$getValues$($columns$$, $fn$$) {
+    $js$$.alg.use(this, $fn$$, [this.exportValues($columns$$)]);
+    return this;
+  }, exportValues:function $$sp$$$query$fn$exportValues$($columns$$0$$) {
     function $__copyColumn$$($arr$$, $key$$, $columns$$, $row$$) {
       $arr$$[$row$$[$key$$].value] = !0;
     }
@@ -3377,8 +3416,7 @@ js.extend.fn("sp", function() {
     $js$$.alg.each($columns$$0$$, function($obj$$, $k$$, $columns$$) {
       $columns$$[$k$$] = Object.keys($obj$$).sort();
     });
-    $js$$.alg.use(this, $fn$$, [$columns$$0$$]);
-    return this;
+    return $columns$$0$$;
   }, clone:function $$sp$$$query$fn$clone$() {
     var $clone$$ = $sp$$.query(this._list);
     $clone$$._rows = this._rows.slice(0);
@@ -3392,6 +3430,42 @@ js.extend.fn("sp", function() {
   };
   $sp$$.column.fn = {internal:"", text:"", type:"string", default:"", valueOf:function $$sp$$$column$fn$valueOf$() {
     return this.value;
+  }};
+  $sp$$.user = function $$sp$$$user$($config$$) {
+    var $ctx$$ = new window.SP.ClientContext($config$$.url), $spUser_userCollection$$ = $ctx$$.get_web().get_siteUsers(), $user$$ = null;
+    $config$$ = $config$$ || {};
+    $user$$ = $config$$.userid ? $spUser_userCollection$$.getById($config$$.userid) : $config$$.login ? $spUser_userCollection$$.getByLoginName($config$$.login) : $config$$.email ? $spUser_userCollection$$.getByEmail($config$$.email) : $spUser_userCollection$$.get_currentUser();
+    $spUser_userCollection$$ = Object.create($sp$$.user, {_user:{value:$user$$}});
+    $ctx$$.load($user$$);
+    $ctx$$.executeQueryAsync($js$$.alg.bindFn($spUser_userCollection$$, $__spUserSuccess$$, [$config$$]), $js$$.alg.bindFn($spUser_userCollection$$, $__spUserFailure$$, [$config$$]));
+    return $spUser_userCollection$$;
+  };
+  $sp$$.user.getById = function $$sp$$$user$getById$($userid$$, $url$$) {
+    return $sp$$.user({userid:$userid$$, url:$url$$});
+  };
+  $sp$$.user.getByLogin = function $$sp$$$user$getByLogin$($login$$, $url$$) {
+    return $sp$$.user({login:$login$$, url:$url$$});
+  };
+  $sp$$.user.getByEmail = function $$sp$$$user$getByEmail$($email$$, $url$$) {
+    return $sp$$.user({email:$email$$, url:$url$$});
+  };
+  $sp$$.user.fn = {_user:null, _email:null, _userid:null, _username:null, _url:null, memberOfGroup:function $$sp$$$user$fn$memberOfGroup$($group$$, $fn$$) {
+    var $yes$$ = $js$$.alg.bindFn(this, $fn$$, [!0]), $no$$ = $js$$.alg.bindFn(this, $fn$$, [!1]);
+    $sp$$.group($group$$).isMember(this._user, $yes$$, $no$$);
+    return this;
+  }};
+  $sp$$.group = function $$sp$$$group$($config$$) {
+    var $groups$$ = (new window.SP.ClientContext($config$$.url)).get_web().get_siteGroups(), $group$$ = null, $spGroup$$ = null;
+    $config$$ && $config$$.isPrototypeOf($sp$$.group.fn) ? $spGroup$$ = $config$$ : ($config$$.name ? $group$$ = $groups$$.getByName($config$$.name) : $config$$.groupid && ($group$$ = $groups$$.getById($config$$.groupid)), $spGroup$$ = Object.create($sp$$.group.fn, {_url:{value:$js$$.alg.string($config$$.url, "")}, _group:{value:$group$$}}));
+    return $spGroup$$;
+  };
+  $sp$$.group.fn = {_url:null, _group:null, isMember:function $$sp$$$group$fn$isMember$($user$$, $success$$, $failure$$) {
+    var $ctx$$ = null, $ctx$$ = new window.SP.ClientContext(this._url);
+    $ctx$$.get_web();
+    $ctx$$.load($user$$);
+    $ctx$$.load(this._group, "Users");
+    $ctx$$.executeQueryAsync($js$$.alg.bindFn(this, $__isMemberSuccess$$, [$success$$, $failure$$]), $js$$.alg.bindFn(this, $__isMemberFailure$$, [$failure$$]));
+    return this;
   }};
   return $sp$$;
 });
@@ -3437,9 +3511,9 @@ jspyder.extend.fn("template", function() {
   }
   var $_templates$$ = $js$$.createRegistry(), $_library$$ = $js$$.createRegistry(), $__master_key$$ = (4294967295 * Math.random() | 0).toString(32), $reFuncArgs$$ = /\s*(`(?:[^`\\]|\\.)*`|"(?:[^"\\]|\\.)*"|\d+(?:\.\d+)?|\$\{\D[a-z0-9_]*\})(?:\s*,\s*(?!\)))?/i, $reString$$ = /"(?:[^"\\]|\\.)*"/i, $reCommandLiteral$$ = /`(?:[^`\\]|\\.)*`/i, $reNumber$$ = /\d+(?:\.\d+)?/, $reVariable$$ = /\$\{\D[a-z0-9_]*\}/i, $reFuncName$$ = /\@\D[a-z0-9_]*/i, $reFunction$$ = /\@\D[a-z0-9_]*\((?:\s*(`(?:[^`\\]|\\.)*`|"(?:[^"\\]|\\.)*"|\d+(?:\.\d+)?|\$\{\D[a-z0-9_]*\})(?:\s*,\s*(?!\)))?)*\)/i, 
   $reSymbol$$ = /(\@\D[a-z0-9_]*\((?:\s*(`(?:[^`\\]|\\.)*`|"(?:[^"\\]|\\.)*"|\d+(?:\.\d+)?|\$\{\D[a-z0-9_]*\})(?:\s*,\s*(?!\)))?)*\)|\$\{\D[a-z0-9_]*\})/i;
-  $js_template$$.fn = {compile:function $$js_template$$$fn$compile$($name$$100_template$$, $data$$, $fn$$) {
-    $name$$100_template$$ = $_templates$$.fetch($name$$100_template$$);
-    return this.compileExplicit($name$$100_template$$, $data$$, $fn$$);
+  $js_template$$.fn = {compile:function $$js_template$$$fn$compile$($name$$101_template$$, $data$$, $fn$$) {
+    $name$$101_template$$ = $_templates$$.fetch($name$$101_template$$);
+    return this.compileExplicit($name$$101_template$$, $data$$, $fn$$);
   }, compileExplicit:function $$js_template$$$fn$compileExplicit$($template$$4_tmp$$, $data$$, $fn$$) {
     "function" !== typeof $data$$ || $fn$$ || ($fn$$ = $data$$, $data$$ = null);
     "undefined" === typeof $template$$4_tmp$$ && ($template$$4_tmp$$ = "");
@@ -3558,9 +3632,9 @@ jspyder.extend.fn("template", function() {
     return "";
   }, map_item:function($map$$, $id$$) {
     return ($map$$ = this[$map$$]) ? $map$$[$id$$] : $id$$;
-  }, js_registry:function($data$$120_key$$) {
-    $data$$120_key$$ = $js$$.registry.fetch($data$$120_key$$);
-    return null === $data$$120_key$$ || "undefined" === typeof $data$$120_key$$ ? "" : $data$$120_key$$;
+  }, js_registry:function($data$$119_key$$) {
+    $data$$119_key$$ = $js$$.registry.fetch($data$$119_key$$);
+    return null === $data$$119_key$$ || "undefined" === typeof $data$$119_key$$ ? "" : $data$$119_key$$;
   }, js_log:function($data$$) {
     console.log($data$$);
   }, concat:function($str$$) {
