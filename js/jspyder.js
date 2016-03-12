@@ -1220,6 +1220,21 @@
                 return this;
             },
             
+            /**
+             * Exports the value of js.dom.getCss to a return variable.
+             */
+            exportCss: function(css) {
+                css = css || {};
+                this.getCss(css);
+                return css;
+            },
+            
+            /**
+             * Retrieves the current position for each of the elements in the JS-Dom
+             * node, and pushes their values into the function identified.
+             * 
+             * @param {Function} fn
+             */
             getPosition: function (fn) {
                 this.each(function (el) {
                     var pos = el.getBoundingClientRect();
@@ -1227,6 +1242,10 @@
                 })
                 return this;
             },
+            
+            /**
+             * Exports the value returned by js.dom.getPosition()
+             */
             exportPosition: function () {
                 var pos = null;
                 this.at(0).use(function() {
@@ -1236,9 +1255,15 @@
                 return pos;
             },
             
+            /**
+             * Calculates the offset position of each of the elements in the JS-Dom node,
+             * and pushes the values into the function identified.
+             * 
+             * @param {Function} fn
+             */
             getOffsetPosition: function(fn) {
-                this.each(function () {
-                    var el = this.parentNode,
+                this.each(function (self) {
+                    var el = self.parentNode,
                         ret = {
                             top: 0, left: 0, bottom: 0, right: 0, x: 0, y: 0, height: 0, width: 0
                         };
@@ -1247,7 +1272,7 @@
                     }
                     
                     if (el) {
-                        var me = this.getBoundingClientRect(),
+                        var me = self.getBoundingClientRect(),
                             pr = el.getBoundingClientRect();
                             
                         js.each(ret, function (v, p, ret) {
@@ -1255,10 +1280,19 @@
                         });
                     }
                     
-                    js_dom(this).use(fn, [ret]);
+                    js_dom(el).use(fn, [ret]);
                     return;
                 });
                 return this;
+            },
+            
+            /**
+             * Returns the value calculated in the first call of js.dom.getOffsetPosition
+             */
+            exportOffsetPosition: function() {
+                var first = null;
+                this.getOffsetPosition(function(v) { if(!first) { first = v; }});
+                return first;
             },
 
             /**
@@ -1291,6 +1325,15 @@
                     }, { first: attrs, others: o });
                 }
                 return this;
+            },
+            
+            /**
+             * Exports the value returned by js.dom.getAttrs
+             */
+            exportAttrs: function(attrs) {
+                attrs = attrs || {};
+                this.getAttrs(attrs);
+                return attrs;
             },
             
             /**
@@ -1418,7 +1461,11 @@
                 return this;
             },
             
-            attachBefore: function (parent, fn) {
+            /**
+             * Inserts this set of nodes to the identified node's parent, immediately
+             * preceding that element.
+             */
+            attachStart: function (parent, fn) {
                 var children = this;
                 js_dom(parent).element(0, function (p) {
                     var doc = document.createDocumentFragment();
@@ -1429,7 +1476,11 @@
                 return this;
             },
             
-            attachAfter: function (parent, fn) {
+            /**
+             * Inserst this set of nodes to the identified node's parent, immediately
+             * following that element.
+             */
+            attachEnd: function (parent, fn) {
                 var children = this;
                 js_dom(parent).element(0, function (p) {
                     var doc = document.createDocumentFragment();
@@ -1457,11 +1508,19 @@
                 return this;
             },
             
+            /** @ignore */
             _append: function (c, _1, _2, doc) {
                 doc.appendChild(c);
             },
             
-            insertBefore: function (child) {
+            /**
+             * Attaches the element to the identified node's parent, immediately
+             * preceding the identified child.
+             * 
+             * @param {Mixed} child
+             *      JS-Dom identifier for the element to prepend.
+             */
+            appendBefore: function (child) {
                 this.element(0, function () {
                     var doc = document.createDocumentFragment();
                     js_dom(child).each(js_dom.fn._append, doc);
@@ -1470,7 +1529,14 @@
                 return this;
             },
             
-            insertAfter: function (child) {
+            /**
+             * Attaches the element to the identified node's parent, immediately
+             * following the identifed child.
+             * 
+             * @param {Mixed} child
+             *      JS-Dom identifier for the element to prepend.
+             */
+            appendAfter: function (child) {
                 this.element(0, function () {
                     var doc = document.createDocumentFragment();
                     js_dom(child).each(js_dom.fn._append, doc);
@@ -1575,6 +1641,15 @@
             },
             
             /**
+             * Exports the values found by js.dom.getClasses
+             */
+            exportClasses: function(classes) {
+                classes = classes || {};
+                this.getClasses(classes);
+                return classes;
+            },
+            
+            /**
              * Inserts an event handler on all of the jsDom elements, for each
              * event in a space-separated list.
              *
@@ -1603,6 +1678,9 @@
                 return this;
             },
             
+            /**
+             * Turns off the identified event handler.
+             */
             off: function(events, handler) {
                 events = (events || "").split(/\s+/);
                 var self = this;
@@ -1622,7 +1700,6 @@
                 });
             },
 
-            /// triggers the event(s) provided
             /**
              * Dispatches the event(s) identified for all of the wrapped DOM
              * elements.
@@ -1645,6 +1722,7 @@
                 return this;
             },
             
+            /** @private */
             _eventConstructor: function(type, bubbles, cancelable) {
                 js_dom.fn._eventConstructor = ("function" === typeof window.Event
                     ? function(type, bubbles, cancelable) { return new Event(type, { "bubbles": bubbles, "cancelable": cancelable }); }
@@ -1654,8 +1732,7 @@
             },
 
             /**
-             * Sets the innerHTML For each of the wrapped elements with the
-             * identified value.
+             * Sets the innerHTML for each of the wrapped elements.
              * 
              * @param {String} html
              *      New HTML to push into the wrapped elements.
@@ -1667,7 +1744,12 @@
                 return this;
             },
 
-            /// gets the inner html value.
+            /**
+             * Retrieves the innerHTML for each of the wrapped elements,
+             * and passes the values into the identified function.
+             * 
+             * @param {Function} fn 
+             */
             getHtml: function (fn) {
                 if (typeof fn === "function") {
                     this.each(function (element) {
@@ -1677,18 +1759,59 @@
                 return this;
             },
             
+            /**
+             * Retrieves and returns the value retrieved by js.dom.getHtml
+             */
+            exportHtml: function() {
+                var html = null;
+                    
+                this.getHtml(function(h) {
+                    if(!html) { 
+                        html = h;
+                    }
+                });
+                
+                return html;
+            },
+            
+            /**
+             * Retrieves the text content for each of the wrapped elements,
+             * and passes the values into the identified function.
+             * 
+             * @param {Function} fn 
+             */
             getText: function(fn) {
                 if(typeof fn === "function") {
+                    var t = typeof document.documentElement["textContent"] === "undefined" ? "innerText" : "textContent";
                     this.each(function(element) {
-                        fn.call(element, element.textContent || "");
+                        fn.call(element, js.alg.string(element[t]));
                     });
                 }
                 return this;
             },
             
+            /**
+             * Retrieves and returns the first value to be returned in js.dom.getText
+             */
+            exportText: function() {
+                var text = null;
+                this.getText(function(t) {
+                    if(!text) { text = t; }
+                });
+                return text;
+            },
+            
+            /**
+             * Sets the text content of each of the elements to the specified value
+             * 
+             * @param {String} text
+             *      New text value to use on each of the wrapped element.
+             */
             setText: function(text) {
+                text = js.alg.string(text);
+                fn = typeof document.documentElement["textContent"] === "undefined" ? "innerText" : "textContent";
                 this.each(function(element) {
-                    element.textContent = text || "";
+                    element[fn] = text;
                 });
                 return this;
             },
@@ -1719,6 +1842,10 @@
                 return $found;
             },
             
+            /**
+             * searchs through the wrapped objects, and excludes any elements
+             * which do not meet the identified CSS selector.
+             */
             filter: function (cssSelector) {
                 var $found = js_dom(),
                     _found = $found._element;
@@ -1731,6 +1858,8 @@
                 
                 return $found;
             },
+            
+            /** @private */
             _matches: function (element, selector) {
                 var fn = "";
                 if(element.matches) { fn = "matches"; }
@@ -1830,7 +1959,6 @@
                     .each(function(element) {
                         parent.insertBefore(element, next);
                     });
-                // parent.insertBefore(element, next);
                 return true;
             },
             
@@ -1848,38 +1976,15 @@
                 }).use(fn);
             },
             
-            setOverride: function(name, fn) {
-                this.each(function(element) {
-                    element.__jspyder.override = (element.__jspyder.override || {});
-                    element.__jspyder.override[name] = fn; 
-                });
-                return this;
-            },
-            getOverride: function(name) {
-                var fn = null;
-                this.each(function(element) {
-                    if(element.__jspyder.override && element.__jspyder.override[name]) {
-                        fn = element.__jspyder.override[name];
-                        this.stop();
-                    }
-                });
-                return fn;
-            },
-            
             /**
-             * Gets the value of the wrapped elements
+             * Gets the value of the wrapped elements and pushes the values
+             * into the identified function.
+             * 
+             * @param {Function} fn
              */
             getValue: function(fn) {
                 var self = this;
                 return self.each(function(element) {
-                    var $me = js_dom(element),
-                        override = $me.getOverride("getValue");
-                        
-                    if(override) {
-                        $me.use(override, [fn]);
-                        return;
-                    }
-                    
                     var value = (typeof element.value !== "undefined"
                         ? element.value : element.getAttribute("value"));
                         
@@ -1893,11 +1998,27 @@
                     }
                 });
             },
+            
+            /**
+             * Exports the value retrieved by js.dom.getValue
+             */
             exportValue: function() {
                 var value = null;
                 this.getValue(function(v) { value = v; });
                 return value;
             },
+            
+            /**
+             * Retrieves the identified properties in [obj] and passes the
+             * value into [fn].
+             * 
+             * @param {Object} obj
+             *      An object where keys correspond to properties, and the values
+             *      will be overwritten with the actual properties.
+             * 
+             * @param {Function} fn
+             *      The function to receive the output value.
+             */
             getProps: function(obj, fn) {
                 this.each(function(element) {
                     js.alg.each(obj, function(val, name, obj) {
@@ -1907,6 +2028,29 @@
                 this.use(fn, [obj]);
                 return this;
             },
+            
+            /**
+             * Exports the first value in js.dom.getProps
+             * 
+             * @param {Object} obj
+             *      An object where keys correspond to properties, and the values
+             *      will be overwritten with the actual properties.
+             */
+            exportProps: function(obj) {
+                obj = obj || {};
+                this.getProps(obj);
+                return obj;
+            },
+            
+            /**
+             * Sets the properties of the wrapped elements to the values specified in
+             * [obj], where keys identify properties and values identify the values to 
+             * set.
+             * 
+             * @param {Object} obj
+             *      An object where keys correspond to properties, and the properties
+             *      will be overwritten with the actual values.
+             */
             setProps: function(obj) {
                 this.each(function(element) {
                     js.alg.each(obj, function(val, name) {
