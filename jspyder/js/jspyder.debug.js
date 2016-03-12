@@ -1871,81 +1871,120 @@ jspyder.extend.fn("date", function() {
     this._value.setDate(this._value.getDate() + $js$$.alg.number($days$$));
     return this;
   }, setDay:function $$js_date$$$$setDay$($days$$) {
-    this._value.setDate($js$$.alg.number($days$$));
+    $days$$ = $js$$.alg.number($days$$);
+    this._value.setDate($days$$);
     return this;
-  }, getDay:function $$js_date$$$$getDay$() {
+  }, getDay:function $$js_date$$$$getDay$($fn$$) {
+    $js$$.alg.use(this, $fn$$, [this.exportDay()]);
+    return this;
+  }, exportDay:function $$js_date$$$$exportDay$() {
     return this._value.getDate();
-  }, getDayList:function $$js_date$$$$getDayList$($format$$) {
+  }, exportDayList:function $$js_date$$$$exportDayList$($format$$) {
     $format$$ = $js$$.alg.string($format$$, "d");
-    for (var $count$$ = this.getDayCount(), $clone$$ = this.clone(), $d$$ = 1, $days$$ = [];$d$$ <= $count$$;) {
+    for (var $count$$ = this.exportDayCount(), $clone$$ = this.clone(), $d$$ = 1, $days$$ = [];$d$$ <= $count$$;) {
       $clone$$.setDay($d$$), $days$$.push($clone$$.asString($format$$)), $d$$++;
     }
     return $days$$;
-  }, getDayCount:function $$js_date$$$$getDayCount$() {
+  }, getDayList:function $$js_date$$$$getDayList$($format$$, $fn$$) {
+    $js$$.alg.use(this, $fn$$, [this.exportDayList($format$$)]);
+    return this;
+  }, exportDayCount:function $$js_date$$$$exportDayCount$() {
     return $js$$.alg.number(this.clone().addMonths(1).setDay(0).asString("d"));
-  }, getWeekdayList:function $$js_date$$$$getWeekdayList$($format$$) {
+  }, getDayCount:function $$js_date$$$$getDayCount$($fn$$) {
+    $js$$.alg.use(this, $fn$$, [this.exportDayCount()]);
+    return this;
+  }, exportWeekdayList:function $$js_date$$$$exportWeekdayList$($format$$) {
     $format$$ = $js$$.alg.string($format$$, "dddd");
-    for (var $count$$ = this.getWeekdayCount(), $w$$ = 0, $weekday$$ = null, $weekdays$$ = [];$w$$ < $count$$;) {
+    for (var $count$$ = this.exportWeekdayCount(), $w$$ = 0, $weekday$$ = null, $weekdays$$ = [];$w$$ < $count$$;) {
       $weekday$$ = $__weekdays$$[$w$$], $weekdays$$.push("undefined" === typeof $weekday$$[$format$$] ? $format$$ : $weekday$$[$format$$]), $w$$++;
     }
     return $weekdays$$;
-  }, getWeekdayCount:function $$js_date$$$$getWeekdayCount$() {
+  }, getWeekdayList:function $$js_date$$$$getWeekdayList$($format$$, $fn$$) {
+    $js$$.alg.use(this, $fn$$, [this.exportWeekdayList($format$$)]);
+    return this;
+  }, exportWeekdayCount:function $$js_date$$$$exportWeekdayCount$() {
     return $js$$.alg.number($__weekdays$$.length, 0);
-  }, getWeekdayOffset:function $$js_date$$$$getWeekdayOffset$() {
+  }, getWeekdayCount:function $$js_date$$$$getWeekdayCount$($fn$$) {
+    $js$$.alg.use(this, $fn$$, [this.exportWeekdayCount()]);
+    return this;
+  }, exportWeekdayOffset:function $$js_date$$$$exportWeekdayOffset$() {
     var $data$$ = {str:this.clone().setDay(1).asString("dddd"), found:0};
-    $js$$.alg.arrEach(this.getWeekdayList(), this._getWeekdayOffset, $data$$);
+    $js$$.alg.arrEach(this.exportWeekdayList("dddd"), this._getWeekdayOffset, $data$$);
     return $js$$.alg.number($data$$.found, 0);
   }, _getWeekdayOffset:function $$js_date$$$$_getWeekdayOffset$($day$$, $daynum$$, $days$$, $data$$) {
     $day$$ === $data$$.str && ($data$$.found = $daynum$$, this.stop());
+  }, getWeekdayOffset:function $$js_date$$$$getWeekdayOffset$($fn$$) {
+    $js$$.alg.use(this, $fn$$, [this.exportWeekdayOffset()]);
+    return this;
   }, addMonths:function $$js_date$$$$addMonths$($months$$) {
     this._value.setMonth(this._value.getMonth() + $js$$.alg.number($months$$));
     return this;
   }, setMonth:function $$js_date$$$$setMonth$($month$$) {
     this._value.setMonth($js$$.alg.number($month$$) - 1);
     return this;
-  }, getMonth:function $$js_date$$$$getMonth$() {
+  }, exportMonth:function $$js_date$$$$exportMonth$() {
     return this._value.getMonth() + 1;
-  }, getMonthList:function $$js_date$$$$getMonthList$($data$$43_format$$) {
+  }, getMonth:function $$js_date$$$$getMonth$($fn$$) {
+    $js$$.alg.use(this, $fn$$, [this.exportMonth()]);
+    return this;
+  }, exportMonthList:function $$js_date$$$$exportMonthList$($data$$43_format$$) {
     $data$$43_format$$ = {a:[], f:$js$$.alg.string($data$$43_format$$, "mmmm"), c:this.clone()};
     $js$$.alg.arrEach($__months$$, this._getMonthList_each, $data$$43_format$$);
     return $data$$43_format$$.a;
   }, _getMonthList_each:function $$js_date$$$$_getMonthList_each$($monthDef$$, $i$$, $months$$, $ctx$$) {
     $ctx$$.c.setMonth($i$$ + 1);
     $ctx$$.a.push($ctx$$.c.asString($ctx$$.f));
-  }, getMonthCount:function $$js_date$$$$getMonthCount$() {
+  }, getMonthList:function $$js_date$$$$getMonthList$($format$$, $fn$$) {
+    $js$$.alg.use(this, $fn$$, [this.exportMonthList($format$$)]);
+    return this;
+  }, exportMonthCount:function $$js_date$$$$exportMonthCount$() {
     return $__months$$.length;
+  }, getMonthCount:function $$js_date$$$$getMonthCount$($fn$$) {
+    $js$$.alg.use(this, $fn$$, [this.exportMonthCount()]);
+    return this;
   }, addYears:function $$js_date$$$$addYears$($years$$) {
     this._value.setFullYear(this._value.getFullYear() + $js$$.alg.number($years$$));
     return this;
   }, setYear:function $$js_date$$$$setYear$($years$$) {
     this._value.setFullYear($js$$.alg.number($years$$));
     return this;
-  }, getYear:function $$js_date$$$$getYear$() {
+  }, exportYear:function $$js_date$$$$exportYear$() {
     return this._value.getFullYear();
+  }, getYear:function $$js_date$$$$getYear$($fn$$) {
+    $js$$.alg.use(this, $fn$$, [this.exportYear()]);
+    return this;
   }, addSeconds:function $$js_date$$$$addSeconds$($seconds$$) {
     this._value.setSeconds(this._value.getSeconds() + $js$$.alg.number($seconds$$));
     return this;
-  }, setSecond:function $$js_date$$$$setSecond$($seconds$$) {
+  }, setSeconds:function $$js_date$$$$setSeconds$($seconds$$) {
     this._value.setSeconds($js$$.alg.number($seconds$$));
     return this;
-  }, getSecond:function $$js_date$$$$getSecond$() {
-    return this._value.getSeconds();
+  }, exportSecond:function $$js_date$$$$exportSecond$() {
+    return this._value.getSecond();
+  }, getSecond:function $$js_date$$$$getSecond$($fn$$) {
+    $js$$.alg.use(this, $fn$$, [this.exportSecond()]);
+    return this;
   }, addMinutes:function $$js_date$$$$addMinutes$($minutes$$) {
     this._value.setMinutes(this._value.getMinutes() + $js$$.alg.number($minutes$$));
     return this;
   }, setMinute:function $$js_date$$$$setMinute$($minutes$$) {
     this._value.setMinutes($js$$.alg.number($minutes$$));
     return this;
-  }, getMinute:function $$js_date$$$$getMinute$() {
+  }, exportMinute:function $$js_date$$$$exportMinute$() {
     return this._value.getMinutes();
+  }, getMinute:function $$js_date$$$$getMinute$($fn$$) {
+    $js$$.alg.use(this, $fn$$, [this.exportMinute()]);
   }, addHours:function $$js_date$$$$addHours$($hours$$) {
     this._value.setHours(this._value.getHours() + $js$$.alg.number($hours$$));
     return this;
   }, setHour:function $$js_date$$$$setHour$($hours$$) {
     this._value.setHours($js$$.alg.number($hours$$));
     return this;
-  }, getHour:function $$js_date$$$$getHour$() {
+  }, exportHour:function $$js_date$$$$exportHour$() {
     return this._value.getHours();
+  }, getHour:function $$js_date$$$$getHour$($fn$$) {
+    $js$$.alg.use(this, $fn$$, [this.exportHour()]);
+    return this;
   }};
   var $__reSearch$$ = /(\[[^\]]*\]|YYYY|YY|yyyy|yy|MMMM|MMM|MM|M|mmmm|mmm|mm|m|dddd|ddd|ddth|dth|dd|d|DDDD|DDD|DD|D|AM|am|HH|H|hh|h|nn|n|ss|s|xxx|xx|x)/g, $__defaultFormat$$ = "ddd mmm d yyyy hh:mm:ss", $__years$$ = [{YY:"\\d{2}", YYYY:"\\d{4}", yy:"\\d{2}", yyyy:"\\d{4}"}], $__months$$ = [{m:"1", mm:"01", mmm:"Jan", mmmm:"January", M:"1", MM:"01", MMM:"JAN", MMMM:"JANUARY"}, {m:"2", mm:"02", mmm:"Feb", mmmm:"February", M:"2", MM:"02", MMM:"FEB", MMMM:"FEBRUARY"}, {m:"3", mm:"03", mmm:"Mar", mmmm:"March", 
   M:"3", MM:"03", MMM:"MAR", MMMM:"MARCH"}, {m:"4", mm:"04", mmm:"Apr", mmmm:"April", M:"4", MM:"04", MMM:"APR", MMMM:"APRIL"}, {m:"5", mm:"05", mmm:"May", mmmm:"May", M:"5", MM:"05", MMM:"MAY", MMMM:"MAY"}, {m:"6", mm:"06", mmm:"Jun", mmmm:"June", M:"6", MM:"06", MMM:"JUN", MMMM:"JUNE"}, {m:"7", mm:"07", mmm:"Jul", mmmm:"July", M:"7", MM:"07", MMM:"JUL", MMMM:"JULY"}, {m:"8", mm:"08", mmm:"Aug", mmmm:"August", M:"8", MM:"08", MMM:"AUG", MMMM:"AUGUST"}, {m:"9", mm:"09", mmm:"Sep", mmmm:"September", 
@@ -2431,19 +2470,19 @@ jspyder.extend.fn("form", function() {
       }
       var $calStruct$$ = this;
       this.months = "";
-      $js$$.alg.arrEach(this.date.getMonthList("mmm"), this.monthlistBuilder, this);
+      $js$$.alg.arrEach(this.date.exportMonthList("mmm"), this.monthlistBuilder, this);
       this.setTiles($calStruct$$.months);
       this.tiles.find(".month").on("click", function __monthClick($event$$) {
         $js$$.dom(this).getValue($copyValue$$);
       });
     }, monthlistBuilder:function $$__calStructFactory$$$fn$monthlistBuilder$($month$$, $monthnum$$, $months$$, $data$$) {
-      $months$$ = $data$$.today.getYear() === $data$$.date.getYear();
-      var $sameMonth$$ = $monthnum$$ + 1 === $data$$.today.getMonth();
+      $months$$ = $data$$.today.exportYear() === $data$$.date.exportYear();
+      var $sameMonth$$ = $monthnum$$ + 1 === $data$$.today.exportMonth();
       $data$$.months += ['<div class="month ', $months$$ && $sameMonth$$ ? "today" : "", '" value="', $monthnum$$ + 1, '">', $month$$, "</div>"].join("");
     }, monthClick:function $$__calStructFactory$$$fn$monthClick$() {
       var $calStruct$$ = this;
       $calStruct$$.today = $js$$.date();
-      var $weekdays$$ = $calStruct$$.date.getWeekdayList("DD"), $daylist$$ = $calStruct$$.date.getDayList("d"), $i$$ = 0, $data$$ = {html:"", wlen:$weekdays$$.length, offset:$calStruct$$.date.getWeekdayOffset(), calStruct:$calStruct$$, today:$calStruct$$.today.getMonth() === $calStruct$$.date.getMonth() && $js$$.date().getDay()};
+      var $weekdays$$ = $calStruct$$.date.exportWeekdayList("DD"), $daylist$$ = $calStruct$$.date.exportDayList("d"), $i$$ = 0, $data$$ = {html:"", wlen:$weekdays$$.length, offset:$calStruct$$.date.exportWeekdayOffset(), calStruct:$calStruct$$, today:$calStruct$$.today.exportMonth() === $calStruct$$.date.exportMonth() && $js$$.date().exportDay()};
       for ($js$$.alg.arrEach($weekdays$$, $calStruct$$.buildWeekdays, $data$$);$i$$ < $data$$.offset;) {
         this.buildNumberedDays("", $i$$ - $data$$.offset, null, $data$$), $i$$++;
       }
@@ -2462,7 +2501,7 @@ jspyder.extend.fn("form", function() {
     }, buildWeekdays:function $$__calStructFactory$$$fn$buildWeekdays$($weekday$$, $daynum$$, $daylist$$, $data$$) {
       $data$$.html += ['<div class="date-title date-title-index-', $daynum$$ + 1, '" style="width:', 100 / $data$$.wlen, '%">', $weekday$$, "</div>"].join("");
     }, buildNumberedDays:function $$__calStructFactory$$$fn$buildNumberedDays$($day$$, $daynum$$, $daylist$$, $data$$) {
-      var $sameYear$$ = $data$$.calStruct.today.getYear() === $data$$.calStruct.date.getYear(), $sameMonth$$ = $data$$.calStruct.today.getMonth() === $data$$.calStruct.date.getMonth(), $sameDate$$ = $data$$.calStruct.today.getDay() === $daynum$$ + 1;
+      var $sameYear$$ = $data$$.calStruct.today.exportYear() === $data$$.calStruct.date.exportYear(), $sameMonth$$ = $data$$.calStruct.today.exportMonth() === $data$$.calStruct.date.exportMonth(), $sameDate$$ = $data$$.calStruct.today.exportDay() === $daynum$$ + 1;
       $data$$.html += ['<div class="date ', $sameYear$$ && $sameMonth$$ && $sameDate$$ ? "today" : "", '" value="', $daynum$$ + 1, '" style="width:', 100 / $data$$.wlen, "%;", $js$$.alg.bool($daylist$$) ? "" : "visibility: hidden;", '">', $day$$, "</div>"].join("");
     }, calendarHtml:'<div class="js-control js-control-date-picker"><div class="date-picker-header"><i class="chevron-left date-picker-prev"></i><h4 class="date-picker-title">${YEAR}</h4><i class="chevron-right date-picker-next"></i></div><div class="calendar-tiles"></div></div>'};
     var $__override$$ = {type:"input"};

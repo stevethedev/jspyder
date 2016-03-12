@@ -122,8 +122,8 @@ js.extend.fn(&quot;sp&quot;, function () {
     }
 
     var __rowLimit = 10000;
-    var __caml = &quot;&lt;View&gt;&lt;Query&gt;&lt;Where&gt;&lt;Geq&gt;&lt;FieldRef Name='ID' /&gt;&quot;
-        + &quot;&lt;Value Type='Number'&gt;1&lt;/Value&gt;&lt;/Geq&gt;&lt;/Where&gt;&lt;/Query&gt;&quot;
+    var __caml = &quot;&lt;View&gt;&lt;Query&gt;&lt;Where&gt;&lt;Geq&gt;&lt;FieldRef Name=&#39;ID&#39; /&gt;&quot;
+        + &quot;&lt;Value Type=&#39;Number&#39;&gt;1&lt;/Value&gt;&lt;/Geq&gt;&lt;/Where&gt;&lt;/Query&gt;&quot;
         + &quot;&lt;RowLimit&gt;&quot; + __rowLimit + &quot;&lt;/RowLimit&gt;&lt;/View&gt;&quot;
 
     sp.list.fn = {
@@ -326,7 +326,7 @@ js.extend.fn(&quot;sp&quot;, function () {
          * executes data currently residing in the cache.
          * 
          * @param {Array} criteria
-         *      A list of criteria to run against the list reference's cache.
+         *      A list of criteria to run against the list reference&#39;s cache.
          *      Expected as an array of query objects.  See jspyder.sp.query.filter
          * 
          * @return {Object}
@@ -603,7 +603,7 @@ js.extend.fn(&quot;sp&quot;, function () {
      *      Individual column template (based on sp.column.fn)
      * 
      * @param {String} colName
-     *      Column's internal reference ID, defined in constructor
+     *      Column&#39;s internal reference ID, defined in constructor
      * 
      * @param {Object} columns
      *      Collection of js column references
@@ -612,7 +612,7 @@ js.extend.fn(&quot;sp&quot;, function () {
      *      Collection of relevant loop data, pushed in my js.alg.each.
      *      Includes data.item (sharepoint row reference), data.id (value of
      *      associated row ID in sharepoint), and data._row (reference to
-     *      list reference's row getting pushed into the stack).  
+     *      list reference&#39;s row getting pushed into the stack).  
      * ***********************************************************************/
     function __pushRow(colData, colName, columns, data) {
         var rowID = data.id,
@@ -742,7 +742,7 @@ js.extend.fn(&quot;sp&quot;, function () {
         
 <span id='jspyder-sp-query-method-reset'>        /** *******************************************************************
 </span>         * Resets the query object to include all of the available rows in the
-         * associated list's cache.
+         * associated list&#39;s cache.
          * *******************************************************************/
         reset: function() {
             this._rows = this._list._rows.slice(0);
@@ -1159,7 +1159,7 @@ js.extend.fn(&quot;sp&quot;, function () {
                     __styles(),
                     __worksheet(name, rows, columns),
                 &quot;&lt;/ss:Workbook&gt;&quot;
-            ].join('');
+            ].join(&#39;&#39;);
         }
         
         function __styles(styles) {
@@ -1169,7 +1169,7 @@ js.extend.fn(&quot;sp&quot;, function () {
                         &quot;&lt;ss:Font ss:Bold=\&quot;1\&quot; /&gt;&quot;,
                     &quot;&lt;/ss:Style&gt;&quot;,
                 &quot;&lt;/ss:Styles&gt;&quot;
-            ].join('');
+            ].join(&#39;&#39;);
         }
         
         function __worksheet(name, rows, columns) {
@@ -1179,7 +1179,7 @@ js.extend.fn(&quot;sp&quot;, function () {
                         __rows(rows, columns),
                     &quot;&lt;/ss:Table&gt;&quot;,
                 &quot;&lt;/ss:Worksheet&gt;&quot;
-            ].join('');
+            ].join(&#39;&#39;);
         }
         
         function __rows(rows, columns) {
@@ -1198,13 +1198,13 @@ js.extend.fn(&quot;sp&quot;, function () {
             function __pushRow (col, i, cols, data) {
                 __rows.push([
                     &quot;&lt;ss:Cell&gt;&lt;ss:Data ss:Type=\&quot;String\&quot;&gt;&quot;, rows[col][data], &quot;&lt;/ss:Data&gt;&lt;/ss:Cell&gt;&quot;
-                ].join(''))
+                ].join(&#39;&#39;))
             }
             
-            return __rows.join('');
+            return __rows.join(&#39;&#39;);
         }
         
-        return xml.join('');
+        return xml.join(&#39;&#39;);
     }
     
     function __generateCSV (table, rows, columns) {
@@ -1217,9 +1217,9 @@ js.extend.fn(&quot;sp&quot;, function () {
         function __headers(table, columns) {
             var __headers = [];
             js.alg.arrEach(columns, function(column) {
-                __headers.push([&quot;\&quot;&quot;, table.getColumn(column).text || &quot; &quot;, &quot;\&quot;&quot;].join(''));
+                __headers.push([&quot;\&quot;&quot;, table.getColumn(column).text || &quot; &quot;, &quot;\&quot;&quot;].join(&#39;&#39;));
             });
-            return __headers.join(',');
+            return __headers.join(&#39;,&#39;);
         }
         
         function __rows(rows, columns) {
@@ -1229,17 +1229,17 @@ js.extend.fn(&quot;sp&quot;, function () {
             js.alg.arrEach(rows, function(row, i) {
                 __oneRow = [];
                 js.alg.arrEach(columns, __pushRow, { row: row, type: &quot;value&quot;, r: [] });
-                __rows.push(__oneRow.join(','));
+                __rows.push(__oneRow.join(&#39;,&#39;));
             });
             
             function __pushRow (col, i, cols, data) {
-                data.row &amp;&amp; __oneRow.push([ &quot;\&quot;&quot;, (data.row[col] || {})[data.type] || &quot;&quot;, &quot;\&quot;&quot; ].join(''));
+                data.row &amp;&amp; __oneRow.push([ &quot;\&quot;&quot;, (data.row[col] || {})[data.type] || &quot;&quot;, &quot;\&quot;&quot; ].join(&#39;&#39;));
             }
             
-            return __rows.join('\r\n');
+            return __rows.join(&#39;\r\n&#39;);
         }
         
-        return csv.join('');
+        return csv.join(&#39;&#39;);
     }
 
     return sp;

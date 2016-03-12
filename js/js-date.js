@@ -273,17 +273,47 @@ jspyder.extend.fn("date", function () {
             this._value.setDate(this._value.getDate() + js.alg.number(days));
             return this;
         },
+        
+        /**
+         * Sets the date to the specified number of days.
+         * 
+         * @param {Number} days
+         *      The numbered day of the month to use.
+         */
         setDay: function (days) {
-            this._value.setDate(js.alg.number(days));
+            days = js.alg.number(days);
+            this._value.setDate(days);
             return this;
         },
-        getDay: function () {
+        
+        /**
+         * Retrieves the numbered day of the month for the wrapped date.
+         * 
+         * @param {Function} fn
+         *      The function to receive the day number.
+         */
+        getDay: function(fn) {
+            js.alg.use(this, fn, [this.exportDay()]);
+            return this;
+        },
+        
+        /**
+         * Returns the numbered day of the month for the wrapped date.
+         */
+        exportDay: function () {
             return this._value.getDate();
         },
-        getDayList: function (format) {
+        
+        /**
+         * Calculates and returns the days in the current month.
+         * 
+         * @param {String} format
+         *      The format to use when exporting the number of days in the month.
+         */
+        exportDayList: function (format) {
             format = js.alg.string(format, "d");
             
-            var count = this.getDayCount(),
+            var count = this.exportDayCount(),
                 clone = this.clone(),
                 d = 1,
                 days = [];
@@ -296,7 +326,24 @@ jspyder.extend.fn("date", function () {
             
             return days;
         },
-        getDayCount: function () {
+        
+        /**
+         * Calculates the days in the current month and pushes the result 
+         * into the function identified in the first parameter.
+         * 
+         * @param {String} format
+         * @param {Function} fn
+         */
+        getDayList: function(format, fn) {
+            js.alg.use(this, fn, [this.exportDayList(format)]);
+            return this;
+        },
+        
+        /**
+         * Calculates and returns the number of days in the currently identified
+         * month.
+         */
+        exportDayCount: function () {
             return js.alg.number(
                 this.clone()
                     .addMonths(1)
@@ -304,10 +351,27 @@ jspyder.extend.fn("date", function () {
                     .asString("d"));
         },
         
-        getWeekdayList: function(format) {
+        /**
+         * Calculates the value of the current month and pushes its value into the
+         * function identified in the first parameter.
+         * 
+         * @param {Function} fn
+         */
+        getDayCount: function(fn) {
+            js.alg.use(this, fn, [this.exportDayCount()]);
+            return this;
+        },
+        
+        /**
+         * Calculates and returns the day-names of a week.
+         * 
+         * @param {String} format
+         *      The format to use when generating the weekday list.
+         */
+        exportWeekdayList: function(format) {
             format = js.alg.string(format, "dddd");
             
-            var count = this.getWeekdayCount(),
+            var count = this.exportWeekdayCount(),
                 w = 0,
                 weekday = null,
                 weekdays = [];
@@ -323,21 +387,52 @@ jspyder.extend.fn("date", function () {
             return weekdays;
         },
         
-        getWeekdayCount: function() {
+        /**
+         * Calculates the day-names of a week, and pushes the value into
+         * the function identified in the second parameter.
+         * 
+         * @param {String} format
+         * @param {Function} fn
+         */
+        getWeekdayList: function(format, fn) {
+            js.alg.use(this, fn, [this.exportWeekdayList(format)]);
+            return this;
+        },
+        
+        /**
+         * Calculates the number of days in a week, and returns the value.
+         */
+        exportWeekdayCount: function() {
             return js.alg.number(__weekdays.length, 0);
         },
         
-        getWeekdayOffset: function() {
+        /**
+         * Calculates the number of days in a week, and pushes the value
+         * into the argument identified in the first parameter.
+         * 
+         * @param {Function} fn
+         */
+        getWeekdayCount: function(fn) {
+            js.alg.use(this, fn, [this.exportWeekdayCount()]);
+            return this;
+        },
+        
+        /**
+         * Calculates and returns the number of days into the week that
+         * the currently wrapped date's month starts.
+         */
+        exportWeekdayOffset: function() {
             var data = { 
                     str: this.clone().setDay(1).asString("dddd"), 
                     found: 0
                 };
                 
-            js.alg.arrEach(this.getWeekdayList(), this._getWeekdayOffset, data);
+            js.alg.arrEach(this.exportWeekdayList("dddd"), this._getWeekdayOffset, data);
             
             return js.alg.number(data.found, 0);
         },
         
+        /** @private */
         _getWeekdayOffset: function(day, daynum, days, data) {
             if(day === data.str) {
                 data.found = daynum;
@@ -347,22 +442,66 @@ jspyder.extend.fn("date", function () {
         },
         
         /**
-         * @method
+         * Calculates the number of days into the week that the currently wrapped
+         * date's month starts, and pushes the return value into the identified 
+         * function.
          * 
+         * @param {Function} fn
+         */
+        getWeekdayOffset: function(fn) {
+            js.alg.use(this, fn, [this.exportWeekdayOffset()]);
+            return this;
+        },
+        
+        /**
          * Adds the specified number of months to the wrapped date value.
+         * 
+         * @param {Number} months
          */
         addMonths: function (months) {
             this._value.setMonth(this._value.getMonth() + js.alg.number(months));
             return this;
         },
+        
+        /**
+         * Sets the specified month number for the wrapped date-value.  Note that
+         * JS-Date Months start at 1, instead of 0.
+         * 
+         * @param {Number} month
+         */
         setMonth: function (month) {
             this._value.setMonth(js.alg.number(month) - 1);
             return this;
         },
-        getMonth: function () {
+        
+        /**
+         * Exports the month number from the wrapped element.  Note that JS-Date months
+         * start at 1 instead of 0.
+         */
+        exportMonth: function () {
             return this._value.getMonth() + 1;
         },
-        getMonthList: function (format) {
+        
+        /**
+         * Retrieves the month number from the wrapped element, and pushes the
+         * value into the identified function.  Note that JS-Date months start
+         * at 1 instead of 0.
+         * 
+         * @param {Function} fn
+         *      Callback function
+         */
+        getMonth: function(fn) {
+            js.alg.use(this, fn, [this.exportMonth()]);
+            return this;
+        },
+        
+        /**
+         * Retrieves and returns the list of months (e.g. January, February, ...)
+         * in the specified format.
+         * 
+         * @param {String} format
+         */
+        exportMonthList: function (format) {
             var data = { 
                 "a": [], 
                 "f": js.alg.string(format, "mmmm"),
@@ -372,81 +511,200 @@ jspyder.extend.fn("date", function () {
             
             return data.a;
         },
+        
+        /** @private */
         _getMonthList_each: function (monthDef, i, months, ctx) {
             ctx.c.setMonth(i + 1);
             ctx.a.push(ctx.c.asString(ctx.f));
             return;
         },
-        getMonthCount: function () {
+        
+        /**
+         * Retrieves the list of months (e.g. January, February, ...)
+         * in the specified format and pushes them into the specified
+         * function.
+         * 
+         * @param {String} format
+         * @param {Function} fn
+         */
+        getMonthList: function(format, fn) {
+            js.alg.use(this, fn, [this.exportMonthList(format)]);
+            return this;
+        },
+        
+        /**
+         * Retrieves and returns the number of months the JS-Date
+         * library is configured to display.
+         */
+        exportMonthCount: function () {
             return __months.length;
         },
         
         /**
-         * @method
+         * Retrieves the number of months the JS-Date library is configured
+         * to display, and pushes them into the function identified in the
+         * first parameter.
          * 
+         * @param {Function} fn
+         */
+        getMonthCount: function(fn) {
+            js.alg.use(this, fn, [this.exportMonthCount()]);
+            return this;
+        },
+        
+        /**
          * Adds the specified number of years to the wrapped date value.
+         * 
+         * @param {Number} years
          */
         addYears: function (years) {
             this._value.setFullYear(this._value.getFullYear() + js.alg.number(years));
             return this;
         },
+        
+        /**
+         * Sets the year number to the value specified in the first parameter.
+         * 
+         * @param {Number} years
+         */
         setYear: function (years) {
             this._value.setFullYear(js.alg.number(years));
             return this;
         },
-        getYear: function() { 
+        
+        /**
+         * Calculates and retrieves the value of the currently wrapped year.
+         */
+        exportYear: function() { 
             return this._value.getFullYear();
         },
         
         /**
-         * @method
+         * Calculates the value of the currently wrapped year, and pushes the value
+         * into the identified function.
          * 
+         * @param {Function} fn
+         */
+        getYear: function(fn) {
+            js.alg.use(this, fn, [this.exportYear()]);
+            return this;
+        },
+        
+        /**
          * Adds the specified number of seconds to the wrapped date value.
+         * 
+         * @param {Number} seconds
          */
         addSeconds: function (seconds) {
             this._value.setSeconds(this._value.getSeconds() + js.alg.number(seconds));
             return this;
         },
-        setSecond: function (seconds) {
+        
+        /**
+         * Sets the specified number of seconds in the wrapped date value.
+         * 
+         * @param {Number} seconds
+         */
+        setSeconds: function (seconds) {
             this._value.setSeconds(js.alg.number(seconds));
             return this;
         },
-        getSecond: function () {
-            return this._value.getSeconds();
-        },
+        
         /**
-         * @method
+         * Calculates and returns the number of seconds past the minute in the currently
+         * wrapped date value.
+         */
+        exportSecond: function () {
+            return this._value.getSecond();
+        },
+        
+        /**
+         * Calculates the number of seconds past the minute in the currently wrapped
+         * date value, and pushes the value into the identified function.
          * 
+         * @param {Function} fn
+         */
+        getSecond: function(fn) {
+            js.alg.use(this, fn, [this.exportSecond()]);
+            return this;
+        },
+        
+        /**
          * Adds the specified number of minutes to the wrapped date value.
+         * 
+         * @param {Number} minutes
          */
         addMinutes: function (minutes) {
             this._value.setMinutes(this._value.getMinutes() + js.alg.number(minutes));
             return this;
         },
+        
+        /**
+         * Sets the number of minutes past the hour in the currently wrapped date value.
+         * 
+         * @param {Number} minutes
+         */
         setMinute: function (minutes) {
             this._value.setMinutes(js.alg.number(minutes));
             return this;
         },
-        getMinute: function () {
+        
+        /**
+         * Calculates and returns the number of minutes past the hour in the currently
+         * wrapped date value.
+         */
+        exportMinute: function () {
             return this._value.getMinutes();
         },
+        
         /**
-         * @method
+         * Calculates the number of minutes past the hour in the currently wrapped date
+         * value, and passes teh value into the identified function.
          * 
+         * @param {Function} fn
+         */
+        getMinute: function(fn) {
+            js.alg.use(this, fn, [this.exportMinute()]);
+        },
+        
+        /**
          * Adds the specified number of hours to the wrapped date value.
+         * 
+         * @param {Number} hours
          */
         addHours: function (hours) {
             this._value.setHours(this._value.getHours() + js.alg.number(hours));
             return this;
         },
+        
+        /**
+         * Sets the specified number of hours into the day for the wrapped date
+         * value.
+         * 
+         * @param {Number} hours
+         */
         setHour: function (hours) {
             this._value.setHours(js.alg.number(hours));
             return this;
         },
-        getHour: function () {
+        
+        /**
+         * Calculates and returns the number of hours into the day the currently
+         * wrapped date value has.
+         */
+        exportHour: function () {
             return this._value.getHours();
+        },
+        
+        /**
+         * Calculates the number of hours into the day the currently wrapped date
+         * value has, and pushes the value into the identified function.
+         */
+        getHour: function(fn) {
+            js.alg.use(this, fn, [this.exportHour()]);
+            return this;
         }
-    }
+    };
     
     /**
      * @ignore
