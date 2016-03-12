@@ -175,6 +175,7 @@ js.extend.fn("sp", function () {
             
             return this;
         },
+        
         /**
          * Adds a group of columns to the SP List proxy, via this.addColumn,
          * where keys correspond to the [name] parameter, and values correspond
@@ -197,12 +198,29 @@ js.extend.fn("sp", function () {
          *      any changes to the template will change the template for all
          *      of the derived values within the table.
          */
-        getColumn: function(name) {
+        exportColumn: function(name) {
             return (this._columns[name]
                 ? this._columns[name] 
                 : Object.create(sp.column.fn, {
                     list: { value: this },
                     name: { value: name }}));
+        },
+        
+        /**
+         * Gets the column template by name, as identified in js.sp.list.addColumn
+         * 
+         * @param {String} name
+         *      The name of the field to retrieve the template for. Note that
+         *      any changes to the template will change the template for all
+         *      of the derived values within the table.
+         * 
+         * @param {Function} fn
+         *      The function to use with the found column (if it exists)
+         */
+        getColumn: function(name, fn) {
+            var col = this._columns[name];
+            col && js.alg.use(this, fn, [col]);
+            return this;
         },
         
         /**
@@ -212,15 +230,42 @@ js.extend.fn("sp", function () {
          * 
          * @param {Number} n
          *      The row number to retrieve from the cache.
+         * 
+         * @return {Object}
+         *      The row number from the list.
          */
-        getRow: function(n) {
+        exportRow: function(n) {
             return this._rows[js.alg.number(n, 0)] || null;
         },
         
         /**
+         * Gets the row number from the cache of stored values.  Note that this
+         * number does not necessarily correspond to the row ID within 
+         * SharePoint.
          * 
+         * @param {Number} n
+         *      The row number to retrieve from the cache.
+         * @param {Function} fn
+         *      The function to run with the returned row as the first parameter,
+         *      if it exists.  If the row does not exist, then the function is
+         *      skipped.
          */
-        getRowById: function(id) {
+        getRow: function(n, fn) {
+            var row = this.exportRow(n);
+            row && js.alg.use(this, fn, [row]);
+            return this;
+        },
+        
+        /**
+         * Gets the row with the specified ID number, else returns nothing.
+         * 
+         * @param {Number} id
+         *      The ID number of the record to retrieve.
+         * 
+         * @return {Object}
+         *      Row object
+         */
+        exportRowById: function(id) {
             var found = null,
                 row = null,
                 i = 0;
@@ -237,7 +282,28 @@ js.extend.fn("sp", function () {
         },
         
         /**
-         * Gets the dirty rows
+         * Gets the row with the specified ID number, else returns nothing.
+         * 
+         * @param {Number} id
+         *      The ID number of the record to retrieve.
+         * @param {Function} fn
+         *      The function to run with the returned row as the first parameter,
+         *      if it exists.  If the row does not exist, then the function is
+         *      skipped.
+         */
+        getRowById: function(id, fn) {
+            var row = this.exportRowById(id);
+            row && js.alg.use(this, fn, [row]);
+            return this;
+        },
+        
+        /**
+         * Iterates through all of the rows marked as "dirty".
+         * 
+         * @param {Function} fn
+         *      The function to run against the rows
+         * @param {Mixed} data
+         *      The context to use with the function
          */
         eachDirtyRow: function(fn, data) {
             var dirty = this._dirtyRows;
@@ -249,8 +315,13 @@ js.extend.fn("sp", function () {
             return this;
         },
         
-        _createListItem: function() {
-            
+        /**
+         * Retrieves the number of rows within the cache.
+         * 
+         * @return {Number}
+         */
+        exportRowCount: function(n) {
+            return this._rows.length;
         },
         
         /**
@@ -258,8 +329,10 @@ js.extend.fn("sp", function () {
          * 
          * @return {Number}
          */
-        getRowCount: function(n) {
-            return this._rows.length;
+        getRowCount: function(n, fn) {
+            var count = this.exportRowCount(n);
+            js.alg.use(this, fn, [count]);
+            return this;
         },
         
         /**
@@ -340,19 +413,13 @@ js.extend.fn("sp", function () {
         },
         
         /**
+         * @async
          * Pushes changed data to the server.
          * 
-         * !TODO: Implement the logic for this:
-         *  1: Loop through all rows
-         *  2: Loop through all columns
-         *  3: Find relevant changes
-         *  4: Stash them in ClientContext
-         *  5: Push
-         * 
-         * Alternatively, I could cache the changed values when I mark them as
-         * "dirty".
-         *  
-         * @async
+         * @param {Function} success
+         *      The function to execute if the push is successful
+         * @param {Function} failure
+         *      The function to execute if the push failed
          */
         push: function(success, failure) {
             var ctx = new window.SP.ClientContext(this._url),
@@ -372,6 +439,9 @@ js.extend.fn("sp", function () {
                 
             return this;
         },
+        /**
+         * @private
+         */
         _pushLoopDirtyRows: function(row, i, rows, data) {
             var rowID = row.ID.value,
                 itemInfo = null,
@@ -398,6 +468,9 @@ js.extend.fn("sp", function () {
             listItem.update();
             data.clientContext.load(listItem);
         },
+        /**
+         * @private
+         */
         _pushLoopDirtyRowColumns: function(coldata, colname, columns, data) {
             if(coldata.internal && coldata.dirty && (coldata.internal !== "ID")) {
                 data.listItem.set_item(coldata.internal, coldata.value);
@@ -405,16 +478,22 @@ js.extend.fn("sp", function () {
             return;
         },
         
+        /**
+         * Updates the row with ID number ID.  If the row ID doesn't exist, then
+         * nothing is done.
+         * 
+         * @param {Number} id
+         *      The value of the ID column to search
+         * @param {Object} values
+         *      An object containing all of the changed values, where keys correspond
+         *      to field names and values correspond to the updated values.
+         */
         updateRow: function(id, values) {
-            var row = this.getRowById(id),
-                data = js.alg.mergeObj({}, values);
-                
-                if(row) {
-                    js.alg.each(row, this._updateRowEach, data);
-                }
-            
-            return this;
+            return this.getRowById(id, function(row) {
+                js.alg.each(row, this._updateRowEach, js.alg.cloneObj(values));
+            });
         },
+        /** @private */
         _updateRowEach: function (colData, colName, row, data) {
             var row = data.row,
                 value = data[colData.name],
@@ -428,7 +507,11 @@ js.extend.fn("sp", function () {
             return;
         },
         /**
-         * @method
+         * Creates a new row with the specified value set.
+         * 
+         * @param {Object} values
+         *      An object containing all of the new field values, where keys correspond
+         *      to field names and values correspond to the updated values.
          */
         createRow: function(values) {
             var columns = this._columns,
@@ -444,6 +527,7 @@ js.extend.fn("sp", function () {
             
             return this;
         },
+        /** @private */
         _createRowEach: function (colData, colName, column, data) {
             var row = data.row,
                 value = data.values[colData.name],
@@ -470,6 +554,7 @@ js.extend.fn("sp", function () {
         
         /**
          * @method
+         * @async
          * 
          * Retrieves the permission levels for the current user in the
          * associated list.
@@ -479,8 +564,6 @@ js.extend.fn("sp", function () {
          * 
          * @param {Function} failure
          *      The function to execute if the permissions failed to retrieve.
-         * 
-         * @async
          */
         getPermissions: function (success, failure) {
             var ctx = new window.SP.ClientContext(this._url),
@@ -498,6 +581,9 @@ js.extend.fn("sp", function () {
                 
             return this;
         },
+        /**
+         * @private
+         */
         _getPermissionsSuccess: function (data, callback, sender, args) {
             var permissions = this._permissions = {};
             
@@ -521,9 +607,8 @@ js.extend.fn("sp", function () {
      * Called after a successful data push
      */
     function __successPush(listItems, successFn, sender, args) {
-        // console.log("Successfully pushed " + listItems.length + " items!");
         js.alg.use(this, successFn, [sender, args, listItems]);
-        while(this._dirtyRows.pop()) { /* nothing */ }
+        this._dirtyRows.length = 0;
         this.pull();
         return;
     }
@@ -533,7 +618,6 @@ js.extend.fn("sp", function () {
      * Called after an unsuccessful data push
      */
     function __failurePush(listItems, failureFn, sender, args) {
-        // console.log("Failed to push " + listItems.length + " items!");
         js.alg.use(this, failureFn, [sender, args, listItems]);
         return;
     }
@@ -723,16 +807,16 @@ js.extend.fn("sp", function () {
             return this._rows[js.alg.number(n)];
         },
         
-        /** *******************************************************************
+        /**
          * Resets the query object to include all of the available rows in the
          * associated list's cache.
-         * *******************************************************************/
+         */
         reset: function() {
             this._rows = this._list._rows.slice(0);
             return this;
         },
         
-        /** *******************************************************************
+        /**
          * Applies a single filter against the data stored in the cache.
          *
          * @param {Object} filterData
@@ -747,7 +831,7 @@ js.extend.fn("sp", function () {
          *       - neq:  "Field value != this.neq"       (3 != 4)
          *       - snq:  "Field value !== this.snq"      (3 !== "3")
          *       - test: "Field value matches this.test" (/^3/.test(3000))
-         * *******************************************************************/
+         */
         filter: function(filterData) {
             if(filterData) {
                 js.alg.arrEach(this._rows, __parseRows, { filterArray: [filterData], exclude: false });
@@ -755,7 +839,7 @@ js.extend.fn("sp", function () {
             return this;
         },
         
-        /** *******************************************************************
+        /**
          * Applies a set of filters against the data stored in the cache. Due
          * to the nature of the filtering algorithm, this is the more efficient
          * of the two methods, as it requires fewer passes to apply multiple
@@ -763,12 +847,19 @@ js.extend.fn("sp", function () {
          *
          * @param {Array} filterArray
          *      Array of filter collections
-         * *******************************************************************/
+         */
         filters: function(filterArray) {
             js.alg.arrEach(this._rows, __parseRows, { filterArray: filterArray, exclude: false });
             return this;
         },
         
+        /**
+         * The opposite of js.sp.query.filters, this function performs a filter
+         * and EXCLUDES all of the rows that match the specified criteria.
+         * 
+         * @param {Array} filterArray
+         *      Array of filter collections
+         */
         excludes: function(filterArray) {
             js.alg.arrEach(this._rows, __parseRows, { filterArray: filterArray, exclude: true });
             return this;
@@ -783,7 +874,7 @@ js.extend.fn("sp", function () {
             return this;
         },
         
-        /** *******************************************************************
+        /**
          * Retrieves all stored data, and runs the function defined by [fn]
          * with the context [this] and the parameter pointing to a copy of the
          * data set.  Note that any changes to the array will mark the row for
@@ -793,7 +884,7 @@ js.extend.fn("sp", function () {
          *      Function to execute, with the context of the jspyder.sp.query
          *      object, and the first argument being the stored row references
          *      as an array.
-         * *******************************************************************/
+         */
         data: function(fn) {
             js.alg.use(this, fn, [this._rows]);
             return this;
@@ -819,7 +910,7 @@ js.extend.fn("sp", function () {
             return this;
         },
         
-        /** *******************************************************************
+        /**
          * Retrieves the sum of all of the stored data, if it is numerical.
          * It not numerical, then makes no change to the default value 
          * provided.
@@ -833,7 +924,7 @@ js.extend.fn("sp", function () {
          * @param {Function} fn
          *      A callback function, using the jspyder.sp.query object as the
          *      context, and the columns object as the first argument.
-         * *******************************************************************/
+         */
         sum: function(columns, fn) {
             this.data(function(rows) {
                 // initialize default values...
@@ -845,14 +936,17 @@ js.extend.fn("sp", function () {
             return this;
         },
         
+        /** @private */
         _sum: function(column, key, columns) {
             columns[key] = column.value || column.default;
         },
-                
+           
+        /** @private */
         _sumRows: function (row, _, rows, columns) {
             js.alg.each(row, sp.query.fn._sumColumns, columns);
         },
         
+        /** @private */
         _sumColumns: function (value, colName, _, out) {
             switch(value.type) {
                 case "number":
@@ -870,8 +964,28 @@ js.extend.fn("sp", function () {
         /**
          * Copies all of the values from the rows in the query into the object 
          * provided.
+         * 
+         * @param {Object} columns
+         *      A collection where keys correspond to the columns to retrieve 
+         *      values from.
+         * @param {Function} fn
+         *      The function to execute with the exported values
          */
         getValues: function (columns, fn) {
+            js.alg.use(this, fn, [this.exportValues(columns)]);
+            
+            return this;
+        },
+        
+        /**
+         * Copies all of the values from the rows in the query into the object 
+         * provided and returns the first parameter.
+         * 
+         * @param {Object} columns
+         *      A collection where keys correspond to the columns to retrieve 
+         *      values from.
+         */
+        exportValues: function (columns) {
             // initializes [columns] variable
             js.alg.each(columns, function(v, k, columns) {
                 columns[k] = {};
@@ -888,28 +1002,33 @@ js.extend.fn("sp", function () {
                 columns[k] = Object.keys(obj).sort();
             });
             
-            js.alg.use(this, fn, [columns]);
-            
-            return this;
+            return columns;
         },
         
-        /** *******************************************************************
+        /**
          * Creates a copy of the jspyder.sp.query object; pointing to the same
          * jspyder.sp.list object, but with its own context of data copied from
          * the current cache.
          * 
          * @return {Object} jspyder.sp.query object clone.
-         * *******************************************************************/
+         */
         clone: function() {
             var clone = sp.query(this._list);
             clone._rows = this._rows.slice(0);
             return clone;
         },
         
+        /**
+         * Converts the jspyder.sp.query data to an Excel-ready XML string.
+         */
         toExcelString: function(name, columns) {
             return __generateXML(name, this._list, this._rows, columns);
         },
         
+        /**
+         * Converts the jspyder.sp.query data to a Comma-Separated Value (CSV)
+         * string.
+         */
         toCsvString: function(columns) {
             return __generateCSV(this._list, this._rows, columns);
         }
@@ -1076,7 +1195,6 @@ js.extend.fn("sp", function () {
         return this;
     }
     
-    // used in sp list
     /**
      * @class jspyder.sp.column
      * @member jspyder.sp
@@ -1130,6 +1248,9 @@ js.extend.fn("sp", function () {
         valueOf: function() { return this.value; }
     };
     
+    /**
+     * @private
+     */
     function __generateXML (name, table, rows, columns, styles) {
         var xml = [
             "<?xml version=\"1.0\"?>",
@@ -1190,6 +1311,9 @@ js.extend.fn("sp", function () {
         return xml.join('');
     }
     
+    /**
+     * @private
+     */
     function __generateCSV (table, rows, columns) {
         var csv = [
             "\uFEFF",
@@ -1223,6 +1347,155 @@ js.extend.fn("sp", function () {
         }
         
         return csv.join('');
+    }
+    
+    /**
+     * @class js.sp.user
+     * @member js.sp
+     * @async
+     * Manages User information
+     * 
+     * @param {Object} config
+     * @param {String} config.url
+     * @param {String} [config.userid]
+     * @param {String} [config.login]
+     * @param {String} [config.email]
+     * @param {Function} [config.success]
+     * @param {Function} [config.failure]
+     */
+    sp.user = function(config) {
+        var ctx = new window["SP"].ClientContext(config["url"]),
+            web = ctx.get_web(),
+            userCollection = web.get_siteUsers(),
+            user = null,
+            config = (config || {});
+            
+        if(config["userid"]) {
+            user = userCollection.getById(config["userid"]);
+        }
+        else if(config["login"]) {
+            user = userCollection.getByLoginName(config["login"]);
+        }
+        else if(config["email"]) {
+            user = userCollection.getByEmail(config["email"]);
+        }
+        else {
+            user = userCollection.get_currentUser();
+        }
+        
+        var spUser = Object.create(sp.user, {
+            _user: { value: user }
+        });
+        
+        ctx.load(user);
+        ctx.executeQueryAsync(
+            js.alg.bindFn(spUser, __spUserSuccess, [config]),
+            js.alg.bindFn(spUser, __spUserFailure, [config]));
+            
+        return spUser;
+    }
+    sp.user.getById
+    sp.user.fn = {
+        "_user": null,
+        "_email": null,
+        "_userid": null,
+        "_username": null,
+        "_url": null,
+        
+        memberOfGroup: function(group, yes, no) {
+            sp.group(group).isMember(this["_user"], yes, no);
+            return this;
+        }
+    };
+    
+    /** @private */
+    function __spUserSuccess(config, sender, args) {
+        this._email = this._user.get_email();
+        this._username = this._user.get_loginName();
+        this._userid = this._user.get_userId();
+        js.alg.use(this, config["success"], [sender, args]);
+    }
+    
+    /** @private */
+    function __spUserFailure(config, sender, args) {
+        js.alg.use(this, config["failure"], [sender, args]);
+    }
+    
+    /**
+     * @class
+     * Manages information having to do with the SP User
+     * 
+     * @param {Object} config
+     *      Configuration object
+     * @param {String} config.url
+     *      The URL the group is part of
+     * @param {String} [config.name]
+     *      The name of the group
+     * @param {String} [config.groupid]
+     */
+    sp.group = function(config) {
+        var ctx = new window["SP"].ClientContext(config["url"]),
+            web = ctx.get_web(),
+            groups = web.get_siteGroups(),
+            group = null,
+            spGroup = null;
+            
+        if(config["name"]) {
+            group = groups.getByName(config["name"]);
+        }
+        else if(config["groupid"]) {
+            group = groups.getById(config["groupid"]);
+        }
+            
+        spGroup = Object.create(sp.group.fn, {
+            "_url": { "value": js.alg.string(config["url"],"") },
+            "_group": { "value": group }
+        });
+        
+        return spGroup;
+    }
+    sp.group.fn = {
+        "_url": null,
+        "_group": null,
+        
+        /**
+         * @async
+         * 
+         * Determines whether the current user is a member of this group
+         */
+        "isMember": function(user, success, failure) {
+            var ctx = null,
+                web = null;
+                
+            ctx = new window["SP"].ClientContext(this["_url"]);
+            web = ctx.get_web();
+            
+            ctx.load(user);
+            ctx.load(this._group, "Users");
+            ctx.executeQueryAsync(
+                js.alg.bindFn(this, __isMemberSuccess, [success, failure]),
+                js.alg.bindFn(this, __isMemberFailure, [failure]));
+                
+            return this;
+        }
+    };
+    
+    function __isMemberSuccess(successFn, failureFn, sender, args) {
+        var userInGroup = false,
+            enumerator = this._group.get_users().getEnumerator(),
+            groupUser = null;
+            
+        while (enumerator.moveNext()) {
+            groupUser = enumerator.get_current();
+            if(groupUser.get_id() === user.get_id()) {
+                userInGroup = true;
+                break;
+            }
+        }
+        js.alg.use(this, userInGroup ? successFn : failureFn, [sender, args]);
+    }
+    function __isMemberFailure(failureFn, sender, args) {
+        js.alg.use(this, failureFn, [sender, args]);
     }
 
     return sp;
