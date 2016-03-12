@@ -976,7 +976,7 @@ jspyder.extend.fn("form", function () {
                     this.months = "";
                 
                     js.alg.arrEach(
-                        this.date.getMonthList("mmm"), 
+                        this.date.exportMonthList("mmm"), 
                         this.monthlistBuilder, 
                         this);
                         
@@ -995,8 +995,8 @@ jspyder.extend.fn("form", function () {
                     return;
                 },
                 monthlistBuilder: function (month, monthnum, months, data) {
-                    var sameYear = data.today.getYear() === data.date.getYear(),
-                        sameMonth = (monthnum + 1) === data.today.getMonth(); 
+                    var sameYear = data.today.exportYear() === data.date.exportYear(),
+                        sameMonth = (monthnum + 1) === data.today.exportMonth(); 
                         
                     data.months += [
                         "<div class=\"month ", (( sameYear && sameMonth ) ? "today" : ""), "\"",
@@ -1010,15 +1010,15 @@ jspyder.extend.fn("form", function () {
                 monthClick: function () {
                     var calStruct = this;
                     calStruct.today = js.date();
-                    var weekdays = calStruct.date.getWeekdayList("DD"),
-                        daylist = calStruct.date.getDayList("d"),
+                    var weekdays = calStruct.date.exportWeekdayList("DD"),
+                        daylist = calStruct.date.exportDayList("d"),
                         i = 0,
                         data = { 
                             html: "", 
                             wlen: weekdays.length,
-                            offset: calStruct.date.getWeekdayOffset(),
+                            offset: calStruct.date.exportWeekdayOffset(),
                             calStruct: calStruct,
-                            today: (calStruct.today.getMonth() === calStruct.date.getMonth()) && (js.date().getDay()) };
+                            today: (calStruct.today.exportMonth() === calStruct.date.exportMonth()) && (js.date().exportDay()) };
                     
                     js.alg.arrEach(weekdays, calStruct.buildWeekdays, data);
                         
@@ -1052,9 +1052,9 @@ jspyder.extend.fn("form", function () {
                     return;
                 },
                 buildNumberedDays: function (day, daynum, daylist, data) {
-                    var sameYear = data.calStruct.today.getYear() === data.calStruct.date.getYear(),
-                        sameMonth = data.calStruct.today.getMonth() === data.calStruct.date.getMonth(),
-                        sameDate = data.calStruct.today.getDay() === (daynum + 1);
+                    var sameYear = data.calStruct.today.exportYear() === data.calStruct.date.exportYear(),
+                        sameMonth = data.calStruct.today.exportMonth() === data.calStruct.date.exportMonth(),
+                        sameDate = data.calStruct.today.exportDay() === (daynum + 1);
                             
                     data.html += [
                         "<div class=\"date ", (sameYear && sameMonth && sameDate ? "today":"") ,"\" value=\"", (daynum + 1), "\" ",
