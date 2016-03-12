@@ -2074,7 +2074,7 @@ jspyder.extend.fn(&quot;form&quot;, function () {
 
                             found
                                 .setHtml(data.match.join(&quot;&quot;))
-                                .attachAfter(this)
+                                .attachEnd(this)
                                 .setCss(css)
                                 .find(&quot;.search-item&quot;).on(&quot;mousedown&quot;, searchClick);
                         }

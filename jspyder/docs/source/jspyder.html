@@ -1237,6 +1237,21 @@
                 return this;
             },
             
+<span id='jspyder-dom-method-exportCss'>            /**
+</span>             * Exports the value of js.dom.getCss to a return variable.
+             */
+            exportCss: function(css) {
+                css = css || {};
+                this.getCss(css);
+                return css;
+            },
+            
+<span id='jspyder-dom-method-getPosition'>            /**
+</span>             * Retrieves the current position for each of the elements in the JS-Dom
+             * node, and pushes their values into the function identified.
+             * 
+             * @param {Function} fn
+             */
             getPosition: function (fn) {
                 this.each(function (el) {
                     var pos = el.getBoundingClientRect();
@@ -1244,6 +1259,10 @@
                 })
                 return this;
             },
+            
+<span id='jspyder-dom-method-exportPosition'>            /**
+</span>             * Exports the value returned by js.dom.getPosition()
+             */
             exportPosition: function () {
                 var pos = null;
                 this.at(0).use(function() {
@@ -1253,9 +1272,15 @@
                 return pos;
             },
             
+<span id='jspyder-dom-method-getOffsetPosition'>            /**
+</span>             * Calculates the offset position of each of the elements in the JS-Dom node,
+             * and pushes the values into the function identified.
+             * 
+             * @param {Function} fn
+             */
             getOffsetPosition: function(fn) {
-                this.each(function () {
-                    var el = this.parentNode,
+                this.each(function (self) {
+                    var el = self.parentNode,
                         ret = {
                             top: 0, left: 0, bottom: 0, right: 0, x: 0, y: 0, height: 0, width: 0
                         };
@@ -1264,7 +1289,7 @@
                     }
                     
                     if (el) {
-                        var me = this.getBoundingClientRect(),
+                        var me = self.getBoundingClientRect(),
                             pr = el.getBoundingClientRect();
                             
                         js.each(ret, function (v, p, ret) {
@@ -1272,10 +1297,19 @@
                         });
                     }
                     
-                    js_dom(this).use(fn, [ret]);
+                    js_dom(el).use(fn, [ret]);
                     return;
                 });
                 return this;
+            },
+            
+<span id='jspyder-dom-method-exportOffsetPosition'>            /**
+</span>             * Returns the value calculated in the first call of js.dom.getOffsetPosition
+             */
+            exportOffsetPosition: function() {
+                var first = null;
+                this.getOffsetPosition(function(v) { if(!first) { first = v; }});
+                return first;
             },
 
 <span id='jspyder-dom-method-getAttrs'>            /**
@@ -1308,6 +1342,15 @@
                     }, { first: attrs, others: o });
                 }
                 return this;
+            },
+            
+<span id='jspyder-dom-method-exportAttrs'>            /**
+</span>             * Exports the value returned by js.dom.getAttrs
+             */
+            exportAttrs: function(attrs) {
+                attrs = attrs || {};
+                this.getAttrs(attrs);
+                return attrs;
             },
             
 <span id='jspyder-dom-method-setAttrs'>            /**
@@ -1435,7 +1478,11 @@
                 return this;
             },
             
-            attachBefore: function (parent, fn) {
+<span id='jspyder-dom-method-attachStart'>            /**
+</span>             * Inserts this set of nodes to the identified node&#39;s parent, immediately
+             * preceding that element.
+             */
+            attachStart: function (parent, fn) {
                 var children = this;
                 js_dom(parent).element(0, function (p) {
                     var doc = document.createDocumentFragment();
@@ -1446,7 +1493,11 @@
                 return this;
             },
             
-            attachAfter: function (parent, fn) {
+<span id='jspyder-dom-method-attachEnd'>            /**
+</span>             * Inserst this set of nodes to the identified node&#39;s parent, immediately
+             * following that element.
+             */
+            attachEnd: function (parent, fn) {
                 var children = this;
                 js_dom(parent).element(0, function (p) {
                     var doc = document.createDocumentFragment();
@@ -1474,11 +1525,19 @@
                 return this;
             },
             
-            _append: function (c, _1, _2, doc) {
+<span id='global-method-_append'>            /** @ignore */
+</span>            _append: function (c, _1, _2, doc) {
                 doc.appendChild(c);
             },
             
-            insertBefore: function (child) {
+<span id='jspyder-dom-method-appendBefore'>            /**
+</span>             * Attaches the element to the identified node&#39;s parent, immediately
+             * preceding the identified child.
+             * 
+             * @param {Mixed} child
+             *      JS-Dom identifier for the element to prepend.
+             */
+            appendBefore: function (child) {
                 this.element(0, function () {
                     var doc = document.createDocumentFragment();
                     js_dom(child).each(js_dom.fn._append, doc);
@@ -1487,7 +1546,14 @@
                 return this;
             },
             
-            insertAfter: function (child) {
+<span id='jspyder-dom-method-appendAfter'>            /**
+</span>             * Attaches the element to the identified node&#39;s parent, immediately
+             * following the identifed child.
+             * 
+             * @param {Mixed} child
+             *      JS-Dom identifier for the element to prepend.
+             */
+            appendAfter: function (child) {
                 this.element(0, function () {
                     var doc = document.createDocumentFragment();
                     js_dom(child).each(js_dom.fn._append, doc);
@@ -1591,6 +1657,15 @@
                 return this;
             },
             
+<span id='jspyder-dom-method-exportClasses'>            /**
+</span>             * Exports the values found by js.dom.getClasses
+             */
+            exportClasses: function(classes) {
+                classes = classes || {};
+                this.getClasses(classes);
+                return classes;
+            },
+            
 <span id='jspyder-dom-method-on'>            /**
 </span>             * Inserts an event handler on all of the jsDom elements, for each
              * event in a space-separated list.
@@ -1620,6 +1695,9 @@
                 return this;
             },
             
+<span id='jspyder-dom-method-off'>            /**
+</span>             * Turns off the identified event handler.
+             */
             off: function(events, handler) {
                 events = (events || &quot;&quot;).split(/\s+/);
                 var self = this;
@@ -1639,7 +1717,6 @@
                 });
             },
 
-            /// triggers the event(s) provided
 <span id='jspyder-dom-method-trigger'>            /**
 </span>             * Dispatches the event(s) identified for all of the wrapped DOM
              * elements.
@@ -1662,7 +1739,8 @@
                 return this;
             },
             
-            _eventConstructor: function(type, bubbles, cancelable) {
+<span id='jspyder-dom-method-_eventConstructor'>            /** @private */
+</span>            _eventConstructor: function(type, bubbles, cancelable) {
                 js_dom.fn._eventConstructor = (&quot;function&quot; === typeof window.Event
                     ? function(type, bubbles, cancelable) { return new Event(type, { &quot;bubbles&quot;: bubbles, &quot;cancelable&quot;: cancelable }); }
                     : function(type, bubbles, cancelable) { var e = window.document.createEvent(&quot;Event&quot;); e.initEvent(type, bubbles, cancelable); return e; });
@@ -1671,8 +1749,7 @@
             },
 
 <span id='jspyder-dom-method-setHtml'>            /**
-</span>             * Sets the innerHTML For each of the wrapped elements with the
-             * identified value.
+</span>             * Sets the innerHTML for each of the wrapped elements.
              * 
              * @param {String} html
              *      New HTML to push into the wrapped elements.
@@ -1684,7 +1761,12 @@
                 return this;
             },
 
-            /// gets the inner html value.
+<span id='jspyder-dom-method-getHtml'>            /**
+</span>             * Retrieves the innerHTML for each of the wrapped elements,
+             * and passes the values into the identified function.
+             * 
+             * @param {Function} fn 
+             */
             getHtml: function (fn) {
                 if (typeof fn === &quot;function&quot;) {
                     this.each(function (element) {
@@ -1694,18 +1776,59 @@
                 return this;
             },
             
+<span id='jspyder-dom-method-exportHtml'>            /**
+</span>             * Retrieves and returns the value retrieved by js.dom.getHtml
+             */
+            exportHtml: function() {
+                var html = null;
+                    
+                this.getHtml(function(h) {
+                    if(!html) { 
+                        html = h;
+                    }
+                });
+                
+                return html;
+            },
+            
+<span id='jspyder-dom-method-getText'>            /**
+</span>             * Retrieves the text content for each of the wrapped elements,
+             * and passes the values into the identified function.
+             * 
+             * @param {Function} fn 
+             */
             getText: function(fn) {
                 if(typeof fn === &quot;function&quot;) {
+                    var t = typeof document.documentElement[&quot;textContent&quot;] === &quot;undefined&quot; ? &quot;innerText&quot; : &quot;textContent&quot;;
                     this.each(function(element) {
-                        fn.call(element, element.textContent || &quot;&quot;);
+                        fn.call(element, js.alg.string(element[t]));
                     });
                 }
                 return this;
             },
             
+<span id='jspyder-dom-method-exportText'>            /**
+</span>             * Retrieves and returns the first value to be returned in js.dom.getText
+             */
+            exportText: function() {
+                var text = null;
+                this.getText(function(t) {
+                    if(!text) { text = t; }
+                });
+                return text;
+            },
+            
+<span id='jspyder-dom-method-setText'>            /**
+</span>             * Sets the text content of each of the elements to the specified value
+             * 
+             * @param {String} text
+             *      New text value to use on each of the wrapped element.
+             */
             setText: function(text) {
+                text = js.alg.string(text);
+                fn = typeof document.documentElement[&quot;textContent&quot;] === &quot;undefined&quot; ? &quot;innerText&quot; : &quot;textContent&quot;;
                 this.each(function(element) {
-                    element.textContent = text || &quot;&quot;;
+                    element[fn] = text;
                 });
                 return this;
             },
@@ -1736,6 +1859,10 @@
                 return $found;
             },
             
+<span id='jspyder-dom-method-filter'>            /**
+</span>             * searchs through the wrapped objects, and excludes any elements
+             * which do not meet the identified CSS selector.
+             */
             filter: function (cssSelector) {
                 var $found = js_dom(),
                     _found = $found._element;
@@ -1748,7 +1875,9 @@
                 
                 return $found;
             },
-            _matches: function (element, selector) {
+            
+<span id='jspyder-dom-method-_matches'>            /** @private */
+</span>            _matches: function (element, selector) {
                 var fn = &quot;&quot;;
                 if(element.matches) { fn = &quot;matches&quot;; }
                 else if (element.matchesSelector) { fn = &quot;matchesSelector&quot;; }
@@ -1847,7 +1976,6 @@
                     .each(function(element) {
                         parent.insertBefore(element, next);
                     });
-                // parent.insertBefore(element, next);
                 return true;
             },
             
@@ -1865,38 +1993,15 @@
                 }).use(fn);
             },
             
-            setOverride: function(name, fn) {
-                this.each(function(element) {
-                    element.__jspyder.override = (element.__jspyder.override || {});
-                    element.__jspyder.override[name] = fn; 
-                });
-                return this;
-            },
-            getOverride: function(name) {
-                var fn = null;
-                this.each(function(element) {
-                    if(element.__jspyder.override &amp;&amp; element.__jspyder.override[name]) {
-                        fn = element.__jspyder.override[name];
-                        this.stop();
-                    }
-                });
-                return fn;
-            },
-            
 <span id='jspyder-dom-method-getValue'>            /**
-</span>             * Gets the value of the wrapped elements
+</span>             * Gets the value of the wrapped elements and pushes the values
+             * into the identified function.
+             * 
+             * @param {Function} fn
              */
             getValue: function(fn) {
                 var self = this;
                 return self.each(function(element) {
-                    var $me = js_dom(element),
-                        override = $me.getOverride(&quot;getValue&quot;);
-                        
-                    if(override) {
-                        $me.use(override, [fn]);
-                        return;
-                    }
-                    
                     var value = (typeof element.value !== &quot;undefined&quot;
                         ? element.value : element.getAttribute(&quot;value&quot;));
                         
@@ -1910,11 +2015,27 @@
                     }
                 });
             },
+            
+<span id='jspyder-dom-method-exportValue'>            /**
+</span>             * Exports the value retrieved by js.dom.getValue
+             */
             exportValue: function() {
                 var value = null;
                 this.getValue(function(v) { value = v; });
                 return value;
             },
+            
+<span id='jspyder-dom-method-getProps'>            /**
+</span>             * Retrieves the identified properties in [obj] and passes the
+             * value into [fn].
+             * 
+             * @param {Object} obj
+             *      An object where keys correspond to properties, and the values
+             *      will be overwritten with the actual properties.
+             * 
+             * @param {Function} fn
+             *      The function to receive the output value.
+             */
             getProps: function(obj, fn) {
                 this.each(function(element) {
                     js.alg.each(obj, function(val, name, obj) {
@@ -1924,6 +2045,29 @@
                 this.use(fn, [obj]);
                 return this;
             },
+            
+<span id='jspyder-dom-method-exportProps'>            /**
+</span>             * Exports the first value in js.dom.getProps
+             * 
+             * @param {Object} obj
+             *      An object where keys correspond to properties, and the values
+             *      will be overwritten with the actual properties.
+             */
+            exportProps: function(obj) {
+                obj = obj || {};
+                this.getProps(obj);
+                return obj;
+            },
+            
+<span id='jspyder-dom-method-setProps'>            /**
+</span>             * Sets the properties of the wrapped elements to the values specified in
+             * [obj], where keys identify properties and values identify the values to 
+             * set.
+             * 
+             * @param {Object} obj
+             *      An object where keys correspond to properties, and the properties
+             *      will be overwritten with the actual values.
+             */
             setProps: function(obj) {
                 this.each(function(element) {
                     js.alg.each(obj, function(val, name) {
