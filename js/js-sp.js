@@ -958,20 +958,28 @@ js.extend.fn("sp", function () {
 
         /** @private */
         _sumRows: function (row, _, rows, columns) {
+            // js.alg.each(row, sp.query.fn._sumColumns, columns);
             js.alg.each(row, sp.query.fn._sumColumns, columns);
         },
 
         /** @private */
-        _sumColumns: function (value, colName, _, out) {
+        // _sumColumns: function(value, colName, _, out) {
+        _sumColumns: function(sumValue, colName, out, row) {
+            var rowValue = row[colName].value
             switch(value.type) {
                 case "number":
-                    out[colName] = js.alg.number(out[colName]) + js.alg.number(value.value);
+                    // out[colName] = js.alg.number(out[colName]) + js.alg.number(value.value);
+                    out[colName] = js.alg.number(rowValue) + js.alg.number(sumValue);
                     break;
 
-                case "string":
                 case "bitflag":
+                    out[colName] = sumValue & js.alg.number(rowValue);
+                    break;
+                    
+                case "string":
                 default:
-                    out[colName] = value.value;
+                    // out[colName] = value.value;
+                    out[colName] = rowValue;
                     break;
             }
         },
