@@ -965,8 +965,12 @@ js.extend.fn("sp", function () {
         /** @private */
         // _sumColumns: function(value, colName, _, out) {
         _sumColumns: function(sumValue, colName, out, row) {
-            var rowValue = row[colName].value
-            switch(value.type) {
+            var column = row[colName];
+            if (!column) { return; }
+
+            var rowValue = (column && column.value);
+
+            switch(column["type"]) {
                 case "number":
                     // out[colName] = js.alg.number(out[colName]) + js.alg.number(value.value);
                     out[colName] = js.alg.number(rowValue) + js.alg.number(sumValue);
