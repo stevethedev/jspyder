@@ -154,6 +154,11 @@ jspyder.extend.fn("canvas", function () {
 
         /**
          * Queues a command from js.canvas.cmd to be rendered
+         *
+         * @param {String} type
+         *      The name of the function in js.canvas.cmd to execute
+         * @param {Object} settings
+         *      The settings object to pass into the draw macro
          */
         "draw": function (type, settings) {
             var cmd = this.cmd[type],
@@ -270,52 +275,75 @@ jspyder.extend.fn("canvas", function () {
 
             /**
              * Queues text rendering
+             *
+             * @param {Object} settings
+             * @param {Number} [settings.size]
+             * @param {String} [settings.font]
+             * @param {String} [settings.text]
+             * @param {Number} [settings.x]
+             * @param {Number} [settings.y]
+             * @param {String} [settings.outline]
+             * @param {String} [settings.fill]
+             * @param {String} [settings.textalign]
              */
             "text": function (settings) {
                 settings = settings || {};
-                settings.size = js.alg.number(settings.size, 16);
-                settings.font = js.alg.string(settings.font, "Arial");
-                settings.text = js.alg.string(settings.text, "");
-                settings.x = js.alg.string(settings.x, 0);
-                settings.y = js.alg.string(settings.y, 0);
-                settings.outline = js.alg.string(settings.outline, "transparent");
-                settings.fill = js.alg.string(settings.fill, "black");
-                settings.textalign = js.alg.string(settings.textalign, "start");
+                settings["size"] = js.alg.number(settings["size"], 16);
+                settings["font"] = js.alg.string(settings["font"], "Arial");
+                settings["text"] = js.alg.string(settings["text"], "");
+                settings["x"] = js.alg.string(settings["x"], 0);
+                settings["y"] = js.alg.string(settings["y"], 0);
+                settings["outline"] = js.alg.string(settings["outline"], "transparent");
+                settings["fill"] = js.alg.string(settings["fill"], "black");
+                settings["textalign"] = js.alg.string(settings["textalign"], "start");
 
-                this.context.textAlign = settings.textalign;
-                this.context.font = settings.size + "px " + settings.font;
-                this.context.fillStyle = settings.fill;
-                this.context.fillText(settings.text, settings.x, settings.y);
-                this.context.strokeStyle = settings.outline;
-                this.context.strokeText(settings.text, settings.x, settings.y);
+                this["context"]["textAlign"] = settings["textalign"];
+                this["context"]["font"] = settings["size"] + "px " + settings["font"];
+                this["context"]["fillStyle"] = settings["fill"];
+                this["context"].fillText(settings["text"], settings["x"], settings["y"]);
+                this["context"]["strokeStyle"] = settings["outline"];
+                this["context"].strokeText(settings["text"], settings["x"], settings["y"]);
 
                 return;
             },
 
             /**
-             * Queues line rendering
+             * Queues a line for rendering
+             *
+             * @param {Object} settings
+             * @param {Number} [settings.x=0]
+             * @param {Number} [settings.y=0]
+             * @param {Number} [settings.width=0]
+             * @param {Number} [settings.height=0]
+             * @param {String} [settings.color=black]
+             * @param {Number} [settings.thickness=1]
              */
             "line": function(settings) {
                 settings = settings || {};
-                settings.x = js.alg.number(settings.x, 0);
-                settings.y = js.alg.number(settings.y, 0);
-                settings.width = js.alg.number(settings.width, 0);
-                settings.height = js.alg.number(settings.height, 0);
-                settings.color = js.alg.string(settings.color, "black");
-                settings.thickness = js.alg.number(settings.thickness, 1);
+                settings["x"] = js.alg.number(settings["x"], 0);
+                settings["y"] = js.alg.number(settings["y"], 0);
+                settings["width"] = js.alg.number(settings["width"], 0);
+                settings["height"] = js.alg.number(settings["height"], 0);
+                settings["color"] = js.alg.string(settings["color"], "black");
+                settings["thickness"] = js.alg.number(settings["thickness"], 1);
 
-                this.context.strokeStyle = settings.color;
-                this.context.lineWidth = settings.thickness;
-                this.context.beginPath();
-                this.context.moveTo(settings.x, settings.y);
-                this.context.lineTo(settings.x + settings.width, settings.y + settings.height);
-                this.context.stroke();
+                this["context"].strokeStyle = settings["color"];
+                this["context"].lineWidth = settings["thickness"];
+                this["context"].beginPath();
+                this["context"].moveTo(settings["x"], settings["y"]);
+                this["context"].lineTo(settings["x"] + settings["width"], settings["y"] + settings["height"]);
+                this["context"].stroke();
 
                 return;
             },
 
             /**
              * Renders a pie chart
+             *
+             * @param {Object} settings
+             * @param {Number} [settings.radius=0]
+             * @param {Number} [settings.angle=-90]
+             * @param {Boolean} [settings.anticlockwise=false]
              */
             "pie": function (settings) {
                 settings = __mergeSettings(settings);
@@ -323,18 +351,18 @@ jspyder.extend.fn("canvas", function () {
                 settings["angle"] = js.alg.number(settings["angle"], -90);
                 settings["anticlockwise"] = js.alg.bool(settings["anticlockwise"], false);
                 settings["closepath"] = true;
+                settings["degrees"] = 360;
 
                 var canvas = this,
                     total = 0,
                     angle = 0;
 
-                settings["degrees"] = 360;
-
                 js.alg.use(canvas, canvas["cmd"].arc, [settings]);
 
-                js.alg.each(settings["sections"], function (section) {
+                js.alg.each(settings["sections"], function(section) {
                     total += js.alg.number(section.value, 0);
-                })
+                });
+
                 js.alg.each(settings["sections"], function (section) {
                     var deg = (js.alg.number(section["value"], 0) / total) * 360,
                         arc = js.alg.mergeObj({}, settings, {
@@ -348,29 +376,45 @@ jspyder.extend.fn("canvas", function () {
 
                     js.alg.use(canvas, canvas.cmd.arc, [arc]);
                 });
+
                 return;
             },
 
             /**
              * Queues a Bar Chart
+             *
+             * @param {Object} settings
+             * @param {Object[]} settings.sections
+             * @param {Number} [settings.borderWidth=1]
+             * @param {Number} [settinsg.width]
+             * @param {Number} [settings.height]
+             * @param {Number} [settings.x=0]
+             * @param {Number} [settings.y=0]
+             * @param {String} [settings.color=white]
+             * @param {String} [settings.fill=black]
+             * @param {String[]} [settings.labels]
+             * @param {Number} [settings.labelSize]
+             * @param {String} [settings.linecolor]
+             * @param {Number} [settings.min]
+             * @param {Number} [settings.max]
              */
             "barchart": function (settings) {
                 settings = settings || {};
-                var sections = js.alg.sliceArray(settings.sections) || [],
+                var sections = settings["sections"] = (settings["sections"] || []),
                     size = this.exportSize(),
-                    borderWidth = js.alg.number(settings.borderWidth, 1),
-                    width = js.alg.number(settings.width, size.width),
-                    height = js.alg.number(settings.height, size.height),
-                    chartX = js.alg.number(settings.x, 0),
-                    chartY = js.alg.number(settings.y, 0),
-                    fill = js.alg.string(settings.fill, "white"),
-                    border = js.alg.string(settings.border, "black"),
-                    lineColor = js.alg.string(settings.lineColor, "rgba(0, 0, 0, 0.3)"),
-                    labels = settings.labels || [],
-                    labelSize = js.alg.number(settings.labelSize, 16),
+                    borderWidth = settings["borderWidth"] = js.alg.number(settings["borderWidth"], 1),
+                    width = settings["width"] = js.alg.number(settings["width"], size["width"]),
+                    height = settings["height"] = js.alg.number(settings["height"], size["height"]),
+                    chartX = settings["x"] = js.alg.number(settings["x"], 0),
+                    chartY = settings["y"] = js.alg.number(settings["y"], 0),
+                    fill = settings["fill"] = js.alg.string(settings["fill"], "white"),
+                    border = settings["border"] = js.alg.string(settings["border"], "black"),
+                    lineColor = settings["lineColor"] = js.alg.string(settings["lineColor"], "rgba(0, 0, 0, 0.3)"),
+                    labels = settings["labels"] = (settings["labels"] || []),
+                    labelSize = settings["labelSize"] = js.alg.number(settings["labelSize"], 16),
+                    min = settings["min"] = js.alg.number(settings["min"], Infinity),
+                    max = settings["max"] = js.alg.number(settings["max"], -Infinity),
                     self = this,
-                    min = js.alg.number(settings.min, Infinity),
-                    max = js.alg.number(settings.max, -Infinity),
                     cols,
                     columnSplit,
                     colWidth,
@@ -378,13 +422,13 @@ jspyder.extend.fn("canvas", function () {
                     offsetX = 50;
 
                 self.cmd.rectangle.call(this, {
-                    width: width,
-                    height: height,
-                    x: chartX,
-                    y: chartY,
-                    fill: fill,
-                    borderWidth: borderWidth,
-                    border: border
+                    "width": width,
+                    "height": height,
+                    "x": chartX,
+                    "y": chartY,
+                    "fill": fill,
+                    "borderWidth": borderWidth,
+                    "border": border
                 });
 
                 width -= borderWidth * 2;
@@ -411,81 +455,81 @@ jspyder.extend.fn("canvas", function () {
 
                 js.alg.iterate(0, 5, function(i) {
                     self.cmd.line.call(self, {
-                        x: chartX,
-                        y: (height * (5 - i)) / 5,
-                        width: width + chartX,
-                        height: 0,
-                        color: lineColor
+                        "x": chartX,
+                        "y": (height * (5 - i)) / 5,
+                        "width": width + chartX,
+                        "height": 0,
+                        "color": lineColor
                     });
                     self.cmd.text.call(self, {
-                        x: labelSize / 3,
-                        y: ((height * (5 - i)) / 5) - (labelSize / 3),
-                        size: labelSize,
-                        font: "Arial",
-                        text: ((i / 5) * max)|0,
-                        textalign: "left"
+                        "x": labelSize / 3,
+                        "y": ((height * (5 - i)) / 5) - (labelSize / 3),
+                        "size": labelSize,
+                        "font": "Arial",
+                        "text": ((i / 5) * max)|0,
+                        "textalign": "left"
                     });
                     self.cmd.text.call(self, {
-                        x: width - (labelSize / 3),
-                        y: ((height * (5 - i)) / 5) - (labelSize / 3),
-                        size: labelSize,
-                        font: "Arial",
-                        text: ((i / 5) * max)|0,
-                        textalign: "right"
+                        "x": width - (labelSize / 3),
+                        "y": ((height * (5 - i)) / 5) - (labelSize / 3),
+                        "size": labelSize,
+                        "font": "Arial",
+                        "text": ((i / 5) * max)|0,
+                        "textalign": "right"
                     });
                 });
 
                 width -= offsetX;
                 chartX += offsetX;
-                columnSplit = (sections.length + 1) * (cols);
+                columnSplit = (sections["length"] + 1) * (cols);
                 colWidth = (width / columnSplit);
 
                 var workArea = {
-                    x: chartX,
-                    y: chartY,
-                    height: height - chartY,
-                    width: width - chartX,
-                    vertWidth: (width - chartX) / cols
+                    "x": chartX,
+                    "y": chartY,
+                    "height": height - chartY,
+                    "width": width - chartX,
+                    "vertWidth": (width - chartX) / cols
                 };
 
                 js.alg.iterate(0, cols + 1, function(i) {
-                    var x = workArea.x + (workArea.vertWidth * i);
+                    var x = workArea["x"] + (workArea["vertWidth"] * i);
 
                     self.cmd.line.call(self, {
-                        x: x,
-                        y: workArea.y,
-                        width: 0,
-                        height: workArea.height,
-                        color: lineColor
+                        "x": x,
+                        "y": workArea["y"],
+                        "width": 0,
+                        "height": workArea["height"],
+                        "color": lineColor
                     });
                     self.cmd.text.call(self, {
-                        text: labels[i],
-                        font: "Arial",
-                        size: labelSize,
-                        x: workArea.x + (workArea.vertWidth * (i + i + 1)/2),
-                        y: workArea.height + labelSize,
-                        textalign: "center"
+                        "text": labels[i],
+                        "font": "Arial",
+                        "size": labelSize,
+                        "x": workArea["x"] + (workArea["vertWidth"] * (i + i + 1)/2),
+                        "y": workArea["height"] + labelSize,
+                        "textalign": "center"
                     });
                 });
 
                 js.alg.arrEach(sections, function(group, g) {
-                    var barColor = js.alg.string(group.fill, "black"),
-                        barOutline = js.alg.string(group.border, barColor),
-                        barOutlineWidth = js.alg.number(group.borderWidth, 1);
+                    var barColor = group["fill"] = js.alg.string(group["fill"], "black"),
+                        barOutline = group["border"] = js.alg.string(group["border"], barColor),
+                        barOutlineWidth = group["borderWidth"] = js.alg.number(group["borderWidth"], 1);
 
                     js.alg.arrEach(group && group.values, function(bar, b) {
                         var value = height * (js.alg.number(bar) / (max || 1)),
-                            barY = (workArea.height - workArea.y - value),
-                            barX = (colWidth / sections.length) + (g * colWidth) + (b * workArea.vertWidth);
+                            barY = (workArea["height"] - workArea["y"] - value),
+                            barX = (colWidth / sections["length"]) + (g * colWidth) + (b * workArea["vertWidth"]);
 
                         self.cmd.rectangle.call(self, {
-                            x: workArea.x + barX,
-                            y: workArea.y + barY,
-                            width: colWidth,
-                            height: value,
-                            fill: barColor,
-                            border: barOutline,
-                            borderWidth: barOutlineWidth
+                            "x": workArea["x"] + barX,
+                            "y": workArea["y"] + barY,
+                            "width": colWidth,
+                            "height": value,
+                            "fill": barColor,
+                            "border": barOutline,
+                            "borderWidth": barOutlineWidth
                         });
                     });
                 });
@@ -495,27 +539,42 @@ jspyder.extend.fn("canvas", function () {
 
             /**
              * Queues a Line Chart
+             *
+             * @param {Object} settings
+             * @param {Object[]} settings.sections
+             * @param {Number} [settings.borderWidth=1]
+             * @param {Number} [settinsg.width]
+             * @param {Number} [settings.height]
+             * @param {Number} [settings.x=0]
+             * @param {Number} [settings.y=0]
+             * @param {String} [settings.color=white]
+             * @param {String} [settings.fill=black]
+             * @param {String[]} [settings.labels]
+             * @param {Number} [settings.labelSize]
+             * @param {String} [settings.linecolor]
+             * @param {Number} [settings.min]
+             * @param {Number} [settings.max]
              */
             "linechart": function (settings) {
                 settings = settings || {};
-                var sections = js.alg.sliceArray(settings.sections) || [],
+                var sections = settings["sections"] = (settings["sections"] || []),
                     size = this.exportSize(),
-                    borderWidth = js.alg.number(settings.borderWidth, 1),
-                    width = js.alg.number(settings.width, size.width),
-                    height = js.alg.number(settings.height, size.height),
-                    chartX = js.alg.number(settings.x, 0),
-                    chartY = js.alg.number(settings.y, 0),
-                    fill = js.alg.string(settings.fill, "white"),
-                    border = js.alg.string(settings.border, "black"),
-                    labels = settings.labels || [],
-                    labelSize = js.alg.number(settings.labelSize, 16),
-                    lineColor = js.alg.string(settings.linecolor, "rgba(0, 0, 0, 0.3)"),
+                    borderWidth = settings["borderWidth"] = js.alg.number(settings["borderWidth"], 1),
+                    width = settings["width"] = js.alg.number(settings["width"], size["width"]),
+                    height = settings["height"] = js.alg.number(settings["height"], size["height"]),
+                    chartX = settings["x"] = js.alg.number(settings["x"], 0),
+                    chartY = settings["y"] = js.alg.number(settings["y"], 0),
+                    fill = settings["fill"] = js.alg.string(settings["fill"], "white"),
+                    border = settings["border"] = js.alg.string(settings["border"], "black"),
+                    labels = settings["labels"] = (settings["labels"] || []),
+                    labelSize = settings["labelSize"] = js.alg.number(settings["labelSize"], 16),
+                    lineColor = settings["linecolor"] = js.alg.string(settings["linecolor"], "rgba(0, 0, 0, 0.3)"),
+                    min = js.alg.number(settings["min"], Infinity),
+                    max = js.alg.number(settings["max"], -Infinity),
                     self = this,
-                    min = js.alg.number(settings.min, Infinity),
-                    max = js.alg.number(settings.max, -Infinity),
                     cols,
                     offsetX = 50,
-                    offsetY = labelSize * 1.2;
+                    offsetY = labelSize * 1.5;
 
                 self.cmd.rectangle.call(this, {
                     width: width,
@@ -556,6 +615,7 @@ jspyder.extend.fn("canvas", function () {
                         height: 0,
                         color: lineColor
                     });
+
                     self.cmd.text.call(self, {
                         x: labelSize / 3,
                         y: ((height * (5 - i)) / 5) - (labelSize / 3),
@@ -564,6 +624,7 @@ jspyder.extend.fn("canvas", function () {
                         text: ((i / 5) * max)|0,
                         textalign: "left"
                     });
+
                     self.cmd.text.call(self, {
                         x: width - (labelSize / 3),
                         y: ((height * (5 - i)) / 5) - (labelSize / 3),
@@ -578,73 +639,75 @@ jspyder.extend.fn("canvas", function () {
                 chartX += offsetX;
 
                 var workArea = {
-                    x: chartX,
-                    y: chartY,
-                    height: height - chartY,
-                    width: width - chartX,
-                    vertWidth: (width - chartX) / (cols - 1)
+                    "x": chartX,
+                    "y": chartY,
+                    "height": height - chartY,
+                    "width": width - chartX,
+                    "vertWidth": (width - chartX) / (cols - 1)
                 };
 
                 js.alg.iterate(0, cols, function(i) {
-                    var x = workArea.x + (workArea.vertWidth * i);
+                    var x = workArea["x"] + (workArea["vertWidth"] * i);
                     self.cmd.line.call(self, {
-                        x: x,
-                        y: workArea.y,
-                        width: 0,
-                        height: workArea.height,
-                        color: lineColor
+                        "x": x,
+                        "y": workArea["y"],
+                        "width": 0,
+                        "height": workArea["height"],
+                        "color": lineColor
                     });
                     self.cmd.text.call(self, {
-                        text: labels[i],
-                        font: "Arial",
-                        size: labelSize,
-                        x: x,
-                        y: workArea.height + labelSize,
-                        textalign: "center"
+                        "text": labels[i],
+                        "font": "Arial",
+                        "size": labelSize,
+                        "x": x,
+                        "y": workArea["height"] + labelSize,
+                        "textalign": "center"
                     });
                 });
 
                 js.alg.arrEach(sections, function(group, g) {
-                    var lineColor = js.alg.string(group.fill, "transparent"),
-                        lineOutline = js.alg.string(group.border, "black"),
-                        lineOutlineWidth = js.alg.number(group.borderWidth, 1),
-                        dotColor = js.alg.string(group.dotfill, lineColor),
-                        dotOutline = js.alg.string(group.dotBorder, lineOutline),
-                        dotOutlineWidth = js.alg.string(group.dotBorderWidth, lineOutlineWidth),
-                        dotRadius = js.alg.number(group.dotRadius, 4);
+                    var lineColor = group["fill"] = js.alg.string(group["fill"], "transparent"),
+                        lineOutline = group["border"] = js.alg.string(group["border"], "black"),
+                        lineOutlineWidth = group["borderWidth"] = js.alg.number(group["borderWidth"], 1),
+                        dotColor = group["dotfill"] = js.alg.string(group["dotfill"], lineColor),
+                        dotOutline = group["dotBorder"] = js.alg.string(group["dotBorder"], lineOutline),
+                        dotOutlineWidth = group["dotBorderWidth"] = js.alg.string(group["dotBorderWidth"], lineOutlineWidth),
+                        dotRadius = group["dotRadius"] = js.alg.number(group["dotRadius"], 4);
 
                     js.alg.arrEach(group && group.values, function(val, b, values) {
 
-                        var v1 = workArea.height - (workArea.y + (workArea.height * js.alg.number(values[b-1]) / (max || 1))),
-                            v2 = workArea.height - (workArea.y + (workArea.height * js.alg.number(val) / (max || 1))),
-                            x = workArea.x + (workArea.vertWidth * (b - 1)),
-                            dotX = workArea.x + (workArea.vertWidth * (b));
+                        var v1 = workArea["height"] - (workArea["y"] + (workArea["height"] * js.alg.number(values[b-1]) / (max || 1))),
+                            v2 = workArea["height"] - (workArea["y"] + (workArea["height"] * js.alg.number(val) / (max || 1))),
+                            x = workArea["x"] + (workArea["vertWidth"] * (b - 1)),
+                            dotX = workArea["x"] + (workArea["vertWidth"] * (b));
 
                         if(b) {
                             self.cmd.line.call(self, {
-                                x: x,
-                                y: v1,
-                                width: workArea.vertWidth,
-                                height: (v2 - v1),
-                                color: lineOutline,
-                                thickness: lineOutlineWidth
+                                "x": x,
+                                "y": v1,
+                                "width": workArea["vertWidth"],
+                                "height": (v2 - v1),
+                                "color": lineOutline,
+                                "thickness": lineOutlineWidth
                             });
                         }
+
                         self.cmd.circle.call(self, {
-                            y: v2,
-                            x: dotX,
-                            radius: 4,
-                            fill: dotColor,
-                            border: dotOutline,
-                            thickness: dotOutlineWidth
+                            "y": v2,
+                            "x": dotX,
+                            "radius": 4,
+                            "fill": dotColor,
+                            "border": dotOutline,
+                            "thickness": dotOutlineWidth
                         });
+
                         self.cmd.circle.call(self, {
-                            y: v1,
-                            x: x,
-                            radius: 4,
-                            fill: dotColor,
-                            border: dotOutline,
-                            thickness: dotOutlineWidth
+                            "y": v1,
+                            "x": x,
+                            "radius": 4,
+                            "fill": dotColor,
+                            "border": dotOutline,
+                            "thickness": dotOutlineWidth
                         });
                     });
                 });
@@ -654,6 +717,9 @@ jspyder.extend.fn("canvas", function () {
         }
     };
 
+    /**
+     * @private
+     */
     function __mergeSettings(settings) {
         settings = settings || {};
 
