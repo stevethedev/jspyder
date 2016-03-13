@@ -259,7 +259,6 @@ jspyder.extend.fn("canvas", function () {
             /**
              * Qeues a circle
              *
-             * @param {Object} settings
              * @param {Number} settings.radius      The radius of the circle from the centerpoint (settings.x, settings.y)
              * @param {Number} settings.x           The x-position of the element
              * @param {Number} settings.y           The y-position of the element
@@ -387,7 +386,7 @@ jspyder.extend.fn("canvas", function () {
              * @param {Object} settings
              * @param {Object[]} settings.sections
              * @param {Number} [settings.borderWidth=1]
-             * @param {Number} [settings.width]
+             * @param {Number} [settinsg.width]
              * @param {Number} [settings.height]
              * @param {Number} [settings.x=0]
              * @param {Number} [settings.y=0]
@@ -544,7 +543,7 @@ jspyder.extend.fn("canvas", function () {
              * @param {Object} settings
              * @param {Object[]} settings.sections
              * @param {Number} [settings.borderWidth=1]
-             * @param {Number} [settings.width]
+             * @param {Number} [settinsg.width]
              * @param {Number} [settings.height]
              * @param {Number} [settings.x=0]
              * @param {Number} [settings.y=0]
