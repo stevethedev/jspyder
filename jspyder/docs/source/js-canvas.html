@@ -15,41 +15,52 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js">/* ****************************************************************************
+  <pre class="prettyprint lang-js">/*
  * The MIT License (MIT)
  *
  * Copyright (c) 2015 Steven Jimenez
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the &quot;Software&quot;), to 
- * deal in the Software without restriction, including without limitation the 
- * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or 
- * sell copies of the Software, and to permit persons to whom the Software is 
+ * of this software and associated documentation files (the &quot;Software&quot;), to
+ * deal in the Software without restriction, including without limitation the
+ * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+ * sell copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *  
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+ *
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
- * ***************************************************************************/
+ */
 
 jspyder.extend.fn(&quot;canvas&quot;, function () {
     var js = this;
+
+<span id='jspyder-canvas'>    /**
+</span>     * @class jspyder.canvas
+     * A wrapper for JavaScript &amp; HTML5 Canvas manipulation.
+     *
+     * @param {Object} settings
+     * @param {Number} [settings.height=150]    Canvas Height
+     * @param {Number} [settings.width=300]     Canvas Width
+     * @param {Object} [settings.css]           Canvas CSS Styles
+     * @param {String} [settings.alt]           Text to display if the browser doesn&#39;t support Canvas elements.
+     */
     function js_canvas(settings) {
         settings = settings || {};
         var c = js.dom(&quot;&lt;canvas&gt;&lt;/canvas&gt;&quot;),
             attrs = {
-                height: js.alg.number(settings.height, 150),
-                width: js.alg.number(settings.width, 300)
+                height: js.alg.number(settings[&quot;height&quot;], 150),
+                width: js.alg.number(settings[&quot;width&quot;], 300)
             },
-            css = settings.css,
-            alt = settings.alt;
+            css = settings[&quot;css&quot;],
+            alt = js.alg.string(settings[&quot;alt&quot;], &quot;Your browser does not support Canvas elements.&quot;);
 
         c.setAttrs(attrs);
         c.setCss(css);
@@ -58,359 +69,531 @@ jspyder.extend.fn(&quot;canvas&quot;, function () {
         return Object.create(js_canvas.fn, {
             canvas: { value: c },
             queue: { value: [] },
-            context: { value: c._element[0] &amp;&amp; c._element[0].getContext &amp;&amp; c._element[0].getContext(&quot;2d&quot;) },
+            context: { value: c[&quot;_element&quot;][0] &amp;&amp; c[&quot;_element&quot;][0][&quot;getContext&quot;] &amp;&amp; c[&quot;_element&quot;][0].getContext(&quot;2d&quot;) },
         });
     }
 
-    js_canvas.fn = {
-        canvas: null,
-        context: null,
-        queue: null,
-        attach: function () {
-            this.canvas &amp;&amp; this.canvas.attach(arguments);
+    js_canvas[&quot;fn&quot;] = {
+<span id='jspyder-canvas-property-canvas'>        /**
+</span>         * The JS-DOM Canvas Element
+         */
+        &quot;canvas&quot;: null,
+
+<span id='jspyder-canvas-property-context'>        /**
+</span>         * The HTML5 2D Canvas Context
+         */
+        &quot;context&quot;: null,
+
+<span id='jspyder-canvas-property-queue'>        /**
+</span>         * The queue of commands to be executed when rendered.
+         */
+        &quot;queue&quot;: null,
+
+<span id='jspyder-canvas-method-attach'>        /**
+</span>         * An alias for js.dom.attach
+         */
+        &quot;attach&quot;: function () {
+            this[&quot;canvas&quot;] &amp;&amp; this[&quot;canvas&quot;].attach(arguments);
             return this;
         },
-        remove: function () {
-            this.canvas &amp;&amp; this.canvas.remove();
+
+<span id='jspyder-canvas-method-remove'>        /**
+</span>         * An alias for js.dom.remove
+         */
+        &quot;remove&quot;: function () {
+            this[&quot;canvas&quot;] &amp;&amp; this[&quot;canvas&quot;].remove();
             return this;
         },
-        getSize: function (o, fn) {
-            o = o || {};
-            var element = this.canvas &amp;&amp; this.canvas._element &amp;&amp; this.canvas._element[0],
+
+<span id='jspyder-canvas-method-getSize'>        /**
+</span>         * Retrieves the size of the canvas element, and passes the value
+         * into the identified function.
+         *
+         * @param {Function} fn
+         *      The function to execute with [o] as the first parameter.
+         *      Output keys are x (position), y (position), width, and
+         *      height.
+         */
+        &quot;getSize&quot;: function (fn) {
+            js.alg.use(this, fn, [this.exportSize()]);
+            return this;
+        },
+
+<span id='jspyder-canvas-method-exportSize'>        /**
+</span>         * Exports the values retrieved by js.canvas.getSize to a new
+         * variable.
+         */
+        &quot;exportSize&quot;: function() {
+            var size = {
+                    &quot;height&quot;: 0,
+                    &quot;width&quot;: 0,
+                    &quot;x&quot;: 0,
+                    &quot;y&quot;: 0
+                },
+                element = (this[&quot;canvas&quot;] &amp;&amp; this[&quot;canvas&quot;][&quot;_element&quot;] &amp;&amp; this[&quot;canvas&quot;][&quot;_element&quot;][0]),
                 rect;
 
             if (element) {
                 rect = element.getBoundingClientRect();
-                o.width = element.width;
-                o.height = element.height;
-                o.x = rect.x;
-                o.y = rect.y;
-                js.alg.use(this, fn, [o]);
+                size[&quot;width&quot;] = element[&quot;width&quot;];
+                size[&quot;height&quot;] = element[&quot;height&quot;];
+                size[&quot;x&quot;] = rect[&quot;x&quot;];
+                size[&quot;y&quot;] = rect[&quot;y&quot;];
             }
-            return this;
-        },
-        exportSize: function() {
-            var size = {};
-            this.getSize(size);
+
             return size;
         },
-        clear: function () {
+
+<span id='jspyder-canvas-method-clear'>        /**
+</span>         * Wipes all of the data from the canvas.
+         */
+        &quot;clear&quot;: function () {
             var self = this;
-            this.getSize({}, function (size) {
-                self.context.clearRect(0, 0, size.width, size.height);
+            this.getSize(function (size) {
+                self[&quot;context&quot;].clearRect(0, 0, size[&quot;width&quot;], size[&quot;height&quot;]);
             });
             return this;
         },
-        render: function () {
+
+<span id='jspyder-canvas-method-render'>        /**
+</span>         * Renders the queue to the canvas.
+         */
+        &quot;render&quot;: function () {
             this.clear();
-            if (this.context) {
+            if (this[&quot;context&quot;]) {
                 var self = this;
-                js.alg.each(this.queue, function (command) {
+                js.alg.each(this[&quot;queue&quot;], function (command) {
                     js.alg.use(self, command);
                 });
             }
             return this;
         },
-        draw: function (type, settings) {
+
+<span id='jspyder-canvas-method-draw'>        /**
+</span>         * Queues a command from js.canvas.cmd to be rendered
+         *
+         * @param {String} type
+         *      The name of the function in js.canvas.cmd to execute
+         * @param {Object} settings
+         *      The settings object to pass into the draw macro
+         */
+        &quot;draw&quot;: function (type, settings) {
             var cmd = this.cmd[type],
                 data;
 
             if (cmd) {
                 data = function () { js.alg.use(this, cmd, [settings]); };
                 if (typeof data === &quot;function&quot;) {
-                    data.settings = settings;
-                    data.type = type;
-                    this.queue &amp;&amp; this.queue.push(data);
+                    data[&quot;settings&quot;] = settings;
+                    data[&quot;type&quot;] = type;
+                    this[&quot;queue&quot;] &amp;&amp; this[&quot;queue&quot;].push(data);
                 }
             }
 
             return this;
         },
-        cmd: {
-            rectangle: function (settings) {
+
+<span id='jspyder-canvas-property-cmd'>        /**
+</span>         * Canvas Command Dictionary
+         */
+        &quot;cmd&quot;: {
+<span id='jspyder-canvas-method-rectangle'>            /**
+</span>             * Queues a rectangle
+             *
+             * @param {Object} settings
+             * @param {String} [settings.border]  The color of the border to render around the rectangle.
+             * @param {Number} [settings.borderWidth]  The width of the border to render around the rectangle.
+             * @param {Number} [settings.borderLeftWidth]  The width of the left-border of the rendered rectangle.
+             * @param {Number} [settings.borderRightWidth] The width of the right-border of the rendered rectangle.
+             * @param {Number} [settings.borderTopWidth]   The width of the top-border of the rendered rectangle.
+             * @param {Number} [settings.borderBottomWidth] The width of the bottom-border of the rendered rectangle.
+             * @param {String} [settings.fill]  The fill-color of the rendered rectangle.
+             */
+            &quot;rectangle&quot;: function (settings) {
                 settings = __mergeSettings(settings);
 
-                this.context.fillStyle = settings.border;
-                this.context.fillRect(
-                    settings.x,
-                    settings.y,
-                    settings.width,
-                    settings.height);
+                this[&quot;context&quot;][&quot;fillStyle&quot;] = settings[&quot;border&quot;];
+                this[&quot;context&quot;].fillRect(
+                    settings[&quot;x&quot;],
+                    settings[&quot;y&quot;],
+                    settings[&quot;width&quot;],
+                    settings[&quot;height&quot;]);
 
-                this.context.fillStyle = settings.fill;
-                this.context.fillRect(
-                    settings.x + settings.borderLeftWidth,
-                    settings.y + settings.borderTopWidth,
-                    settings.width - (settings.borderRightWidth + settings.borderLeftWidth),
-                    settings.height - (settings.borderBottomWidth + settings.borderTopWidth));
+                this[&quot;context&quot;][&quot;fillStyle&quot;] = settings[&quot;fill&quot;];
+                this[&quot;context&quot;][&quot;fillRect&quot;](
+                    settings[&quot;x&quot;] + settings[&quot;borderLeftWidth&quot;],
+                    settings[&quot;y&quot;] + settings[&quot;borderTopWidth&quot;],
+                    settings[&quot;width&quot;] - (settings[&quot;borderRightWidth&quot;] + settings[&quot;borderLeftWidth&quot;]),
+                    settings[&quot;height&quot;] - (settings[&quot;borderBottomWidth&quot;] + settings[&quot;borderTopWidth&quot;]));
             },
-            arc: function (settings) {
+
+<span id='jspyder-canvas-method-arc'>            /**
+</span>             * Qeues an Arc
+             *
+             * @param {Object} settings
+             * @param {Number} settings.radius      The radius of the arc from the centerpoint (settings.x, settings.y)
+             * @param {Number} settings.x           The x-position of the element
+             * @param {Number} settings.y           The y-position of the element
+             * @param {Number} settings.angle       The offset angle the arc should be tilted
+             * @param {Number} settings.degrees     The number of degrees (360-based) the arc should span.
+             * @param {Boolean} settings.anticlockwise  Whether the arc should rotate left (true) or right (falsey)
+             * @param {Boolean} settings.fromcenter Whether to extend a line from the ends of the arc to the center point (x,y)
+             * @param {String} settings.border      The color to use for the border of the arc
+             * @param {String} settings.fill        The color to use for the fill of the arc
+             */
+            &quot;arc&quot;: function (settings) {
                 settings = __mergeSettings(settings);
-                settings.radius = js.alg.number(settings.radius, 0);
-                settings.anticlockwise = js.alg.bool(settings.anticlockwise, false);
-                
-                var angle = js.alg.deg2rad(settings.angle, 0),
-                    degrees = js.alg.deg2rad(settings.degrees, 360) + angle;
-                
-                this.context.beginPath();
-                
-                this.context.arc(
-                    settings.x,
-                    settings.y,
-                    settings.radius,
+                settings[&quot;radius&quot;] = js.alg.number(settings[&quot;radius&quot;], 0);
+                settings[&quot;anticlockwise&quot;] = js.alg.bool(settings[&quot;anticlockwise&quot;], false);
+
+                var angle = js.alg.deg2rad(settings[&quot;angle&quot;], 0),
+                    degrees = js.alg.deg2rad(settings[&quot;degrees&quot;], 360) + angle;
+
+                this[&quot;context&quot;].beginPath();
+
+                this[&quot;context&quot;].arc(
+                    settings[&quot;x&quot;],
+                    settings[&quot;y&quot;],
+                    settings[&quot;radius&quot;],
                     angle,
                     degrees,
-                    settings.anticlockwise);
-                    
-                if (settings.fromcenter) {
-                    this.context.lineTo(settings.x, settings.y);
+                    settings[&quot;anticlockwise&quot;]);
+
+                if (settings[&quot;fromcenter&quot;]) {
+                    this[&quot;context&quot;].lineTo(settings[&quot;x&quot;], settings[&quot;y&quot;]);
                 }
                 if (settings.closepath) {
-                    this.context.closePath();
+                    this[&quot;context&quot;].closePath();
                 }
-                
-                this.context.strokeStyle = settings.border;
-                this.context.stroke();
-                
-                this.context.fillStyle = settings.fill;
-                this.context.fill();
+
+                this[&quot;context&quot;][&quot;strokeStyle&quot;] = settings[&quot;border&quot;];
+                this[&quot;context&quot;].stroke();
+
+                this[&quot;context&quot;][&quot;fillStyle&quot;] = settings[&quot;fill&quot;];
+                this[&quot;context&quot;].fill();
             },
-            circle: function (settings) {
+
+<span id='jspyder-canvas-method-circle'>            /**
+</span>             * Qeues a circle
+             *
+             * @param {Object} settings
+             * @param {Number} settings.radius      The radius of the circle from the centerpoint (settings.x, settings.y)
+             * @param {Number} settings.x           The x-position of the element
+             * @param {Number} settings.y           The y-position of the element
+             * @param {Number} settings.angle       The offset angle the circle should be tilted
+             * @param {String} settings.border      The color to use for the border of the circle
+             * @param {String} settings.fill        The color to use for the fill of the circle
+             */
+            &quot;circle&quot;: function (settings) {
                 settings = __mergeSettings(settings);
-                settings.degrees = 360;
-                
-                this.cmd.arc.call(this, settings);
+                settings[&quot;degrees&quot;] = 360;
+
+                js.alg.use(this, this[&quot;cmd&quot;].arc, [settings]);
             },
-            pie: function (settings) {
+
+<span id='jspyder-canvas-method-text'>            /**
+</span>             * Queues text rendering
+             *
+             * @param {Object} settings
+             * @param {Number} [settings.size]
+             * @param {String} [settings.font]
+             * @param {String} [settings.text]
+             * @param {Number} [settings.x]
+             * @param {Number} [settings.y]
+             * @param {String} [settings.outline]
+             * @param {String} [settings.fill]
+             * @param {String} [settings.textalign]
+             */
+            &quot;text&quot;: function (settings) {
+                settings = settings || {};
+                settings[&quot;size&quot;] = js.alg.number(settings[&quot;size&quot;], 16);
+                settings[&quot;font&quot;] = js.alg.string(settings[&quot;font&quot;], &quot;Arial&quot;);
+                settings[&quot;text&quot;] = js.alg.string(settings[&quot;text&quot;], &quot;&quot;);
+                settings[&quot;x&quot;] = js.alg.string(settings[&quot;x&quot;], 0);
+                settings[&quot;y&quot;] = js.alg.string(settings[&quot;y&quot;], 0);
+                settings[&quot;outline&quot;] = js.alg.string(settings[&quot;outline&quot;], &quot;transparent&quot;);
+                settings[&quot;fill&quot;] = js.alg.string(settings[&quot;fill&quot;], &quot;black&quot;);
+                settings[&quot;textalign&quot;] = js.alg.string(settings[&quot;textalign&quot;], &quot;start&quot;);
+
+                this[&quot;context&quot;][&quot;textAlign&quot;] = settings[&quot;textalign&quot;];
+                this[&quot;context&quot;][&quot;font&quot;] = settings[&quot;size&quot;] + &quot;px &quot; + settings[&quot;font&quot;];
+                this[&quot;context&quot;][&quot;fillStyle&quot;] = settings[&quot;fill&quot;];
+                this[&quot;context&quot;].fillText(settings[&quot;text&quot;], settings[&quot;x&quot;], settings[&quot;y&quot;]);
+                this[&quot;context&quot;][&quot;strokeStyle&quot;] = settings[&quot;outline&quot;];
+                this[&quot;context&quot;].strokeText(settings[&quot;text&quot;], settings[&quot;x&quot;], settings[&quot;y&quot;]);
+
+                return;
+            },
+
+<span id='jspyder-canvas-method-line'>            /**
+</span>             * Queues a line for rendering
+             *
+             * @param {Object} settings
+             * @param {Number} [settings.x=0]
+             * @param {Number} [settings.y=0]
+             * @param {Number} [settings.width=0]
+             * @param {Number} [settings.height=0]
+             * @param {String} [settings.color=black]
+             * @param {Number} [settings.thickness=1]
+             */
+            &quot;line&quot;: function(settings) {
+                settings = settings || {};
+                settings[&quot;x&quot;] = js.alg.number(settings[&quot;x&quot;], 0);
+                settings[&quot;y&quot;] = js.alg.number(settings[&quot;y&quot;], 0);
+                settings[&quot;width&quot;] = js.alg.number(settings[&quot;width&quot;], 0);
+                settings[&quot;height&quot;] = js.alg.number(settings[&quot;height&quot;], 0);
+                settings[&quot;color&quot;] = js.alg.string(settings[&quot;color&quot;], &quot;black&quot;);
+                settings[&quot;thickness&quot;] = js.alg.number(settings[&quot;thickness&quot;], 1);
+
+                this[&quot;context&quot;].strokeStyle = settings[&quot;color&quot;];
+                this[&quot;context&quot;].lineWidth = settings[&quot;thickness&quot;];
+                this[&quot;context&quot;].beginPath();
+                this[&quot;context&quot;].moveTo(settings[&quot;x&quot;], settings[&quot;y&quot;]);
+                this[&quot;context&quot;].lineTo(settings[&quot;x&quot;] + settings[&quot;width&quot;], settings[&quot;y&quot;] + settings[&quot;height&quot;]);
+                this[&quot;context&quot;].stroke();
+
+                return;
+            },
+
+<span id='jspyder-canvas-method-pie'>            /**
+</span>             * Renders a pie chart
+             *
+             * @param {Object} settings
+             * @param {Number} [settings.radius=0]
+             * @param {Number} [settings.angle=-90]
+             * @param {Boolean} [settings.anticlockwise=false]
+             */
+            &quot;pie&quot;: function (settings) {
                 settings = __mergeSettings(settings);
-                settings.radius = js.alg.number(settings.radius, 0);
-                settings.angle = js.alg.number(settings.angle, -90);
-                settings.anticlockwise = js.alg.bool(settings.anticlockwise, false);
-                settings.closepath = true;
-                
+                settings[&quot;radius&quot;] = js.alg.number(settings[&quot;radius&quot;], 0);
+                settings[&quot;angle&quot;] = js.alg.number(settings[&quot;angle&quot;], -90);
+                settings[&quot;anticlockwise&quot;] = js.alg.bool(settings[&quot;anticlockwise&quot;], false);
+                settings[&quot;closepath&quot;] = true;
+                settings[&quot;degrees&quot;] = 360;
+
                 var canvas = this,
                     total = 0,
                     angle = 0;
-                    
-                settings.degrees = 360;
-                    
-                js.alg.use(canvas, canvas.cmd.arc, [settings]);
-                    
-                js.alg.each(settings.sections, function (section) {
+
+                js.alg.use(canvas, canvas[&quot;cmd&quot;].arc, [settings]);
+
+                js.alg.each(settings[&quot;sections&quot;], function(section) {
                     total += js.alg.number(section.value, 0);
-                })
-                js.alg.each(settings.sections, function (section) {
-                    var deg = (js.alg.number(section.value, 0) / total) * 360,
+                });
+
+                js.alg.each(settings[&quot;sections&quot;], function (section) {
+                    var deg = (js.alg.number(section[&quot;value&quot;], 0) / total) * 360,
                         arc = js.alg.mergeObj({}, settings, {
-                            angle: angle + settings.angle,
+                            angle: angle + settings[&quot;angle&quot;],
                             degrees: deg,
-                            fill: section.fill,
+                            fill: section[&quot;fill&quot;],
                             fromcenter: true,
                             closepath: true
                         });
                         angle += deg;
-                        
+
                     js.alg.use(canvas, canvas.cmd.arc, [arc]);
                 });
+
                 return;
             },
-            text: function (settings) {
+
+<span id='jspyder-canvas-method-barchart'>            /**
+</span>             * Queues a Bar Chart
+             *
+             * @param {Object} settings
+             * @param {Object[]} settings.sections
+             * @param {Number} [settings.borderWidth=1]
+             * @param {Number} [settings.width]
+             * @param {Number} [settings.height]
+             * @param {Number} [settings.x=0]
+             * @param {Number} [settings.y=0]
+             * @param {String} [settings.color=white]
+             * @param {String} [settings.fill=black]
+             * @param {String[]} [settings.labels]
+             * @param {Number} [settings.labelSize]
+             * @param {String} [settings.linecolor]
+             * @param {Number} [settings.min]
+             * @param {Number} [settings.max]
+             */
+            &quot;barchart&quot;: function (settings) {
                 settings = settings || {};
-                settings.size = js.alg.number(settings.size, 16);
-                settings.font = js.alg.string(settings.font, &quot;Arial&quot;);
-                settings.text = js.alg.string(settings.text, &quot;&quot;);
-                settings.x = js.alg.string(settings.x, 0);
-                settings.y = js.alg.string(settings.y, 0);
-                settings.outline = js.alg.string(settings.outline, &quot;transparent&quot;);
-                settings.fill = js.alg.string(settings.fill, &quot;black&quot;);
-                settings.textalign = js.alg.string(settings.textalign, &quot;start&quot;);
-                
-                this.context.textAlign = settings.textalign;
-                this.context.font = settings.size + &quot;px &quot; + settings.font;
-                this.context.fillStyle = settings.fill;
-                this.context.fillText(settings.text, settings.x, settings.y);
-                this.context.strokeStyle = settings.outline;
-                this.context.strokeText(settings.text, settings.x, settings.y);
-                
-                return;
-            },
-            line: function(settings) {
-                settings = settings || {}; 
-                settings.x = js.alg.number(settings.x, 0);
-                settings.y = js.alg.number(settings.y, 0);
-                settings.width = js.alg.number(settings.width, 0);
-                settings.height = js.alg.number(settings.height, 0);
-                settings.color = js.alg.string(settings.color, &quot;black&quot;);
-                settings.thickness = js.alg.number(settings.thickness, 1);
-                
-                this.context.strokeStyle = settings.color;
-                this.context.lineWidth = settings.thickness;
-                this.context.beginPath();
-                this.context.moveTo(settings.x, settings.y);
-                this.context.lineTo(settings.x + settings.width, settings.y + settings.height);
-                this.context.stroke();
-                
-                return;
-            },
-            barchart: function (settings) {
-                settings = settings || {};
-                var sections = js.alg.sliceArray(settings.sections) || [],
+                var sections = settings[&quot;sections&quot;] = (settings[&quot;sections&quot;] || []),
                     size = this.exportSize(),
-                    borderWidth = js.alg.number(settings.borderWidth, 1),
-                    width = js.alg.number(settings.width, size.width),
-                    height = js.alg.number(settings.height, size.height),
-                    chartX = js.alg.number(settings.x, 0),
-                    chartY = js.alg.number(settings.y, 0),
-                    fill = js.alg.string(settings.fill, &quot;white&quot;),
-                    border = js.alg.string(settings.border, &quot;black&quot;),
-                    lineColor = js.alg.string(settings.lineColor, &quot;rgba(0, 0, 0, 0.3)&quot;),
-                    labels = settings.labels || [],
-                    labelSize = js.alg.number(settings.labelSize, 16),
+                    borderWidth = settings[&quot;borderWidth&quot;] = js.alg.number(settings[&quot;borderWidth&quot;], 1),
+                    width = settings[&quot;width&quot;] = js.alg.number(settings[&quot;width&quot;], size[&quot;width&quot;]),
+                    height = settings[&quot;height&quot;] = js.alg.number(settings[&quot;height&quot;], size[&quot;height&quot;]),
+                    chartX = settings[&quot;x&quot;] = js.alg.number(settings[&quot;x&quot;], 0),
+                    chartY = settings[&quot;y&quot;] = js.alg.number(settings[&quot;y&quot;], 0),
+                    fill = settings[&quot;fill&quot;] = js.alg.string(settings[&quot;fill&quot;], &quot;white&quot;),
+                    border = settings[&quot;border&quot;] = js.alg.string(settings[&quot;border&quot;], &quot;black&quot;),
+                    lineColor = settings[&quot;lineColor&quot;] = js.alg.string(settings[&quot;lineColor&quot;], &quot;rgba(0, 0, 0, 0.3)&quot;),
+                    labels = settings[&quot;labels&quot;] = (settings[&quot;labels&quot;] || []),
+                    labelSize = settings[&quot;labelSize&quot;] = js.alg.number(settings[&quot;labelSize&quot;], 16),
+                    min = settings[&quot;min&quot;] = js.alg.number(settings[&quot;min&quot;], Infinity),
+                    max = settings[&quot;max&quot;] = js.alg.number(settings[&quot;max&quot;], -Infinity),
                     self = this,
-                    min = js.alg.number(settings.min, Infinity), 
-                    max = js.alg.number(settings.max, -Infinity), 
-                    cols, 
+                    cols,
                     columnSplit,
                     colWidth,
                     offsetY = labelSize * 1.2,
                     offsetX = 50;
-                    
+
                 self.cmd.rectangle.call(this, {
-                    width: width,
-                    height: height,
-                    x: chartX,
-                    y: chartY,
-                    fill: fill,
-                    borderWidth: borderWidth,
-                    border: border
+                    &quot;width&quot;: width,
+                    &quot;height&quot;: height,
+                    &quot;x&quot;: chartX,
+                    &quot;y&quot;: chartY,
+                    &quot;fill&quot;: fill,
+                    &quot;borderWidth&quot;: borderWidth,
+                    &quot;border&quot;: border
                 });
-                
+
                 width -= borderWidth * 2;
                 height -= borderWidth * 2;
-                
+
                 chartX += borderWidth;
                 chartY += borderWidth;
-                
+
                 height -= offsetY;
-                
+
                 js.alg.arrEach(sections, function(group) {
                     var c = -1;
-                    
+
                     js.alg.arrEach(group.values, function(bar) {
                         c++;
                         min = js.alg.min(min, bar);
                         max = js.alg.max(max, bar);
                     });
-                    
+
                     cols = js.alg.max(++c, cols);
                 });
-                
+
                 max = js.alg.magnitude(max) * 1.1;
-                
+
                 js.alg.iterate(0, 5, function(i) {
                     self.cmd.line.call(self, {
-                        x: chartX,
-                        y: (height * (5 - i)) / 5,
-                        width: width + chartX,
-                        height: 0,
-                        color: lineColor
+                        &quot;x&quot;: chartX,
+                        &quot;y&quot;: (height * (5 - i)) / 5,
+                        &quot;width&quot;: width + chartX,
+                        &quot;height&quot;: 0,
+                        &quot;color&quot;: lineColor
                     });
                     self.cmd.text.call(self, {
-                        x: labelSize / 3,
-                        y: ((height * (5 - i)) / 5) - (labelSize / 3),
-                        size: labelSize,
-                        font: &quot;Arial&quot;,
-                        text: ((i / 5) * max)|0,
-                        textalign: &quot;left&quot;
+                        &quot;x&quot;: labelSize / 3,
+                        &quot;y&quot;: ((height * (5 - i)) / 5) - (labelSize / 3),
+                        &quot;size&quot;: labelSize,
+                        &quot;font&quot;: &quot;Arial&quot;,
+                        &quot;text&quot;: ((i / 5) * max)|0,
+                        &quot;textalign&quot;: &quot;left&quot;
                     });
                     self.cmd.text.call(self, {
-                        x: width - (labelSize / 3),
-                        y: ((height * (5 - i)) / 5) - (labelSize / 3),
-                        size: labelSize,
-                        font: &quot;Arial&quot;,
-                        text: ((i / 5) * max)|0,
-                        textalign: &quot;right&quot;
+                        &quot;x&quot;: width - (labelSize / 3),
+                        &quot;y&quot;: ((height * (5 - i)) / 5) - (labelSize / 3),
+                        &quot;size&quot;: labelSize,
+                        &quot;font&quot;: &quot;Arial&quot;,
+                        &quot;text&quot;: ((i / 5) * max)|0,
+                        &quot;textalign&quot;: &quot;right&quot;
                     });
                 });
-                                
+
                 width -= offsetX;
                 chartX += offsetX;
-                columnSplit = (sections.length + 1) * (cols);
+                columnSplit = (sections[&quot;length&quot;] + 1) * (cols);
                 colWidth = (width / columnSplit);
-                
+
                 var workArea = {
-                    x: chartX,
-                    y: chartY,
-                    height: height - chartY,
-                    width: width - chartX,
-                    vertWidth: (width - chartX) / cols
+                    &quot;x&quot;: chartX,
+                    &quot;y&quot;: chartY,
+                    &quot;height&quot;: height - chartY,
+                    &quot;width&quot;: width - chartX,
+                    &quot;vertWidth&quot;: (width - chartX) / cols
                 };
-                
+
                 js.alg.iterate(0, cols + 1, function(i) {
-                    var x = workArea.x + (workArea.vertWidth * i);
-                    
+                    var x = workArea[&quot;x&quot;] + (workArea[&quot;vertWidth&quot;] * i);
+
                     self.cmd.line.call(self, {
-                        x: x,
-                        y: workArea.y,
-                        width: 0,
-                        height: workArea.height,
-                        color: lineColor
+                        &quot;x&quot;: x,
+                        &quot;y&quot;: workArea[&quot;y&quot;],
+                        &quot;width&quot;: 0,
+                        &quot;height&quot;: workArea[&quot;height&quot;],
+                        &quot;color&quot;: lineColor
                     });
                     self.cmd.text.call(self, {
-                        text: labels[i],
-                        font: &quot;Arial&quot;,
-                        size: labelSize,
-                        x: workArea.x + (workArea.vertWidth * (i + i + 1)/2),
-                        y: workArea.height + labelSize,
-                        textalign: &quot;center&quot;
+                        &quot;text&quot;: labels[i],
+                        &quot;font&quot;: &quot;Arial&quot;,
+                        &quot;size&quot;: labelSize,
+                        &quot;x&quot;: workArea[&quot;x&quot;] + (workArea[&quot;vertWidth&quot;] * (i + i + 1)/2),
+                        &quot;y&quot;: workArea[&quot;height&quot;] + labelSize,
+                        &quot;textalign&quot;: &quot;center&quot;
                     });
                 });
-                
+
                 js.alg.arrEach(sections, function(group, g) {
-                    var barColor = js.alg.string(group.fill, &quot;black&quot;),
-                        barOutline = js.alg.string(group.border, barColor),
-                        barOutlineWidth = js.alg.number(group.borderWidth, 1);
-                        
+                    var barColor = group[&quot;fill&quot;] = js.alg.string(group[&quot;fill&quot;], &quot;black&quot;),
+                        barOutline = group[&quot;border&quot;] = js.alg.string(group[&quot;border&quot;], barColor),
+                        barOutlineWidth = group[&quot;borderWidth&quot;] = js.alg.number(group[&quot;borderWidth&quot;], 1);
+
                     js.alg.arrEach(group &amp;&amp; group.values, function(bar, b) {
                         var value = height * (js.alg.number(bar) / (max || 1)),
-                            barY = (workArea.height - workArea.y - value),
-                            barX = (colWidth / sections.length) + (g * colWidth) + (b * workArea.vertWidth);
-                            
+                            barY = (workArea[&quot;height&quot;] - workArea[&quot;y&quot;] - value),
+                            barX = (colWidth / sections[&quot;length&quot;]) + (g * colWidth) + (b * workArea[&quot;vertWidth&quot;]);
+
                         self.cmd.rectangle.call(self, {
-                            x: workArea.x + barX,
-                            y: workArea.y + barY,
-                            width: colWidth,
-                            height: value,
-                            fill: barColor,
-                            border: barOutline,
-                            borderWidth: barOutlineWidth
+                            &quot;x&quot;: workArea[&quot;x&quot;] + barX,
+                            &quot;y&quot;: workArea[&quot;y&quot;] + barY,
+                            &quot;width&quot;: colWidth,
+                            &quot;height&quot;: value,
+                            &quot;fill&quot;: barColor,
+                            &quot;border&quot;: barOutline,
+                            &quot;borderWidth&quot;: barOutlineWidth
                         });
                     });
                 });
-                
+
                 return;
             },
-            linechart: function (settings) {
+
+<span id='jspyder-canvas-method-linechart'>            /**
+</span>             * Queues a Line Chart
+             *
+             * @param {Object} settings
+             * @param {Object[]} settings.sections
+             * @param {Number} [settings.borderWidth=1]
+             * @param {Number} [settings.width]
+             * @param {Number} [settings.height]
+             * @param {Number} [settings.x=0]
+             * @param {Number} [settings.y=0]
+             * @param {String} [settings.color=white]
+             * @param {String} [settings.fill=black]
+             * @param {String[]} [settings.labels]
+             * @param {Number} [settings.labelSize]
+             * @param {String} [settings.linecolor]
+             * @param {Number} [settings.min]
+             * @param {Number} [settings.max]
+             */
+            &quot;linechart&quot;: function (settings) {
                 settings = settings || {};
-                var sections = js.alg.sliceArray(settings.sections) || [],
+                var sections = settings[&quot;sections&quot;] = (settings[&quot;sections&quot;] || []),
                     size = this.exportSize(),
-                    borderWidth = js.alg.number(settings.borderWidth, 1),
-                    width = js.alg.number(settings.width, size.width),
-                    height = js.alg.number(settings.height, size.height),
-                    chartX = js.alg.number(settings.x, 0),
-                    chartY = js.alg.number(settings.y, 0),
-                    fill = js.alg.string(settings.fill, &quot;white&quot;),
-                    border = js.alg.string(settings.border, &quot;black&quot;),
-                    labels = settings.labels || [],
-                    labelSize = js.alg.number(settings.labelSize, 16),
-                    lineColor = js.alg.string(settings.linecolor, &quot;rgba(0, 0, 0, 0.3)&quot;),
+                    borderWidth = settings[&quot;borderWidth&quot;] = js.alg.number(settings[&quot;borderWidth&quot;], 1),
+                    width = settings[&quot;width&quot;] = js.alg.number(settings[&quot;width&quot;], size[&quot;width&quot;]),
+                    height = settings[&quot;height&quot;] = js.alg.number(settings[&quot;height&quot;], size[&quot;height&quot;]),
+                    chartX = settings[&quot;x&quot;] = js.alg.number(settings[&quot;x&quot;], 0),
+                    chartY = settings[&quot;y&quot;] = js.alg.number(settings[&quot;y&quot;], 0),
+                    fill = settings[&quot;fill&quot;] = js.alg.string(settings[&quot;fill&quot;], &quot;white&quot;),
+                    border = settings[&quot;border&quot;] = js.alg.string(settings[&quot;border&quot;], &quot;black&quot;),
+                    labels = settings[&quot;labels&quot;] = (settings[&quot;labels&quot;] || []),
+                    labelSize = settings[&quot;labelSize&quot;] = js.alg.number(settings[&quot;labelSize&quot;], 16),
+                    lineColor = settings[&quot;linecolor&quot;] = js.alg.string(settings[&quot;linecolor&quot;], &quot;rgba(0, 0, 0, 0.3)&quot;),
+                    min = js.alg.number(settings[&quot;min&quot;], Infinity),
+                    max = js.alg.number(settings[&quot;max&quot;], -Infinity),
                     self = this,
-                    min = js.alg.number(settings.min, Infinity), 
-                    max = js.alg.number(settings.max, -Infinity), 
                     cols,
                     offsetX = 50,
-                    offsetY = labelSize * 1.2;
-                    
+                    offsetY = labelSize * 1.5;
+
                 self.cmd.rectangle.call(this, {
                     width: width,
                     height: height,
@@ -420,28 +603,28 @@ jspyder.extend.fn(&quot;canvas&quot;, function () {
                     borderWidth: borderWidth,
                     border: border
                 });
-                
+
                 width -= borderWidth * 2;
                 height -= borderWidth * 2;
                 chartX += borderWidth;
                 chartY += borderWidth;
-                
+
                 height -= offsetY;
-                
+
                 js.alg.arrEach(sections, function(group) {
                     var c = -1;
-                    
+
                     js.alg.arrEach(group.values, function(value) {
                         c++;
                         min = js.alg.min(min, value);
                         max = js.alg.max(max, value);
                     });
-                    
+
                     cols = js.alg.max(++c, cols);
                 });
-                
+
                 max = js.alg.magnitude(max) * 1.1;
-                
+
                 js.alg.iterate(0, 5, function(i) {
                     self.cmd.line.call(self, {
                         x: chartX,
@@ -450,6 +633,7 @@ jspyder.extend.fn(&quot;canvas&quot;, function () {
                         height: 0,
                         color: lineColor
                     });
+
                     self.cmd.text.call(self, {
                         x: labelSize / 3,
                         y: ((height * (5 - i)) / 5) - (labelSize / 3),
@@ -458,6 +642,7 @@ jspyder.extend.fn(&quot;canvas&quot;, function () {
                         text: ((i / 5) * max)|0,
                         textalign: &quot;left&quot;
                     });
+
                     self.cmd.text.call(self, {
                         x: width - (labelSize / 3),
                         y: ((height * (5 - i)) / 5) - (labelSize / 3),
@@ -467,105 +652,110 @@ jspyder.extend.fn(&quot;canvas&quot;, function () {
                         textalign: &quot;right&quot;
                     });
                 });
-                
+
                 width -= offsetX;
                 chartX += offsetX;
-                
+
                 var workArea = {
-                    x: chartX,
-                    y: chartY,
-                    height: height - chartY,
-                    width: width - chartX,
-                    vertWidth: (width - chartX) / (cols - 1)
+                    &quot;x&quot;: chartX,
+                    &quot;y&quot;: chartY,
+                    &quot;height&quot;: height - chartY,
+                    &quot;width&quot;: width - chartX,
+                    &quot;vertWidth&quot;: (width - chartX) / (cols - 1)
                 };
-                
+
                 js.alg.iterate(0, cols, function(i) {
-                    var x = workArea.x + (workArea.vertWidth * i);
+                    var x = workArea[&quot;x&quot;] + (workArea[&quot;vertWidth&quot;] * i);
                     self.cmd.line.call(self, {
-                        x: x,
-                        y: workArea.y,
-                        width: 0,
-                        height: workArea.height,
-                        color: lineColor
+                        &quot;x&quot;: x,
+                        &quot;y&quot;: workArea[&quot;y&quot;],
+                        &quot;width&quot;: 0,
+                        &quot;height&quot;: workArea[&quot;height&quot;],
+                        &quot;color&quot;: lineColor
                     });
                     self.cmd.text.call(self, {
-                        text: labels[i],
-                        font: &quot;Arial&quot;,
-                        size: labelSize,
-                        x: x,
-                        y: workArea.height + labelSize,
-                        textalign: &quot;center&quot;
+                        &quot;text&quot;: labels[i],
+                        &quot;font&quot;: &quot;Arial&quot;,
+                        &quot;size&quot;: labelSize,
+                        &quot;x&quot;: x,
+                        &quot;y&quot;: workArea[&quot;height&quot;] + labelSize,
+                        &quot;textalign&quot;: &quot;center&quot;
                     });
                 });
-                
+
                 js.alg.arrEach(sections, function(group, g) {
-                    var lineColor = js.alg.string(group.fill, &quot;transparent&quot;),
-                        lineOutline = js.alg.string(group.border, &quot;black&quot;),
-                        lineOutlineWidth = js.alg.number(group.borderWidth, 1),
-                        dotColor = js.alg.string(group.dotfill, lineColor),
-                        dotOutline = js.alg.string(group.dotBorder, lineOutline),
-                        dotOutlineWidth = js.alg.string(group.dotBorderWidth, lineOutlineWidth),
-                        dotRadius = js.alg.number(group.dotRadius, 4);
-                        
+                    var lineColor = group[&quot;fill&quot;] = js.alg.string(group[&quot;fill&quot;], &quot;transparent&quot;),
+                        lineOutline = group[&quot;border&quot;] = js.alg.string(group[&quot;border&quot;], &quot;black&quot;),
+                        lineOutlineWidth = group[&quot;borderWidth&quot;] = js.alg.number(group[&quot;borderWidth&quot;], 1),
+                        dotColor = group[&quot;dotfill&quot;] = js.alg.string(group[&quot;dotfill&quot;], lineColor),
+                        dotOutline = group[&quot;dotBorder&quot;] = js.alg.string(group[&quot;dotBorder&quot;], lineOutline),
+                        dotOutlineWidth = group[&quot;dotBorderWidth&quot;] = js.alg.string(group[&quot;dotBorderWidth&quot;], lineOutlineWidth),
+                        dotRadius = group[&quot;dotRadius&quot;] = js.alg.number(group[&quot;dotRadius&quot;], 4);
+
                     js.alg.arrEach(group &amp;&amp; group.values, function(val, b, values) {
-                        
-                        var v1 = workArea.height - (workArea.y + (workArea.height * js.alg.number(values[b-1]) / (max || 1))),
-                            v2 = workArea.height - (workArea.y + (workArea.height * js.alg.number(val) / (max || 1))),
-                            x = workArea.x + (workArea.vertWidth * (b - 1)),
-                            dotX = workArea.x + (workArea.vertWidth * (b));
-                            
+
+                        var v1 = workArea[&quot;height&quot;] - (workArea[&quot;y&quot;] + (workArea[&quot;height&quot;] * js.alg.number(values[b-1]) / (max || 1))),
+                            v2 = workArea[&quot;height&quot;] - (workArea[&quot;y&quot;] + (workArea[&quot;height&quot;] * js.alg.number(val) / (max || 1))),
+                            x = workArea[&quot;x&quot;] + (workArea[&quot;vertWidth&quot;] * (b - 1)),
+                            dotX = workArea[&quot;x&quot;] + (workArea[&quot;vertWidth&quot;] * (b));
+
                         if(b) {
                             self.cmd.line.call(self, {
-                                x: x,
-                                y: v1,
-                                width: workArea.vertWidth,
-                                height: (v2 - v1),
-                                color: lineOutline,
-                                thickness: lineOutlineWidth 
+                                &quot;x&quot;: x,
+                                &quot;y&quot;: v1,
+                                &quot;width&quot;: workArea[&quot;vertWidth&quot;],
+                                &quot;height&quot;: (v2 - v1),
+                                &quot;color&quot;: lineOutline,
+                                &quot;thickness&quot;: lineOutlineWidth
                             });
                         }
+
                         self.cmd.circle.call(self, {
-                            y: v2,
-                            x: dotX,
-                            radius: 4,
-                            fill: dotColor,
-                            border: dotOutline,
-                            thickness: dotOutlineWidth
+                            &quot;y&quot;: v2,
+                            &quot;x&quot;: dotX,
+                            &quot;radius&quot;: 4,
+                            &quot;fill&quot;: dotColor,
+                            &quot;border&quot;: dotOutline,
+                            &quot;thickness&quot;: dotOutlineWidth
                         });
+
                         self.cmd.circle.call(self, {
-                            y: v1,
-                            x: x,
-                            radius: 4,
-                            fill: dotColor,
-                            border: dotOutline,
-                            thickness: dotOutlineWidth
+                            &quot;y&quot;: v1,
+                            &quot;x&quot;: x,
+                            &quot;radius&quot;: 4,
+                            &quot;fill&quot;: dotColor,
+                            &quot;border&quot;: dotOutline,
+                            &quot;thickness&quot;: dotOutlineWidth
                         });
                     });
                 });
-                
+
                 return;
             }
         }
     };
-    
+
+<span id='jspyder-canvas-method-__mergeSettings'>    /**
+</span>     * @private
+     */
     function __mergeSettings(settings) {
         settings = settings || {};
-        
-        settings.fill = js.alg.string(settings.fill, &quot;#FFF&quot;);
-        settings.border = js.alg.string(settings.border, &quot;transparent&quot;);
-        settings.borderWidth = js.alg.number(settings.borderWidth, 0);
-        settings.borderTopWidth = js.alg.number(settings.borderTopWidth, settings.borderWidth);
-        settings.borderRightWidth = js.alg.number(settings.borderRightWidth, settings.borderWidth);
-        settings.borderBottomWidth = js.alg.number(settings.borderBottomWidth, settings.borderWidth);
-        settings.borderLeftWidth = js.alg.number(settings.borderLeftWidth, settings.borderWidth);
-        settings.x = js.alg.number(settings.x, 0);
-        settings.y = js.alg.number(settings.y, 0);
-        settings.height = js.alg.number(settings.height, 0);
-        settings.width = js.alg.number(settings.width, 0);
-        
+
+        settings[&quot;fill&quot;] = js.alg.string(settings[&quot;fill&quot;], &quot;#FFF&quot;);
+        settings[&quot;border&quot;] = js.alg.string(settings[&quot;border&quot;], &quot;transparent&quot;);
+        settings[&quot;borderWidth&quot;] = js.alg.number(settings[&quot;borderWidth&quot;], 0);
+        settings[&quot;borderTopWidth&quot;] = js.alg.number(settings[&quot;borderTopWidth&quot;], settings[&quot;borderWidth&quot;]);
+        settings[&quot;borderRightWidth&quot;] = js.alg.number(settings[&quot;borderRightWidth&quot;], settings[&quot;borderWidth&quot;]);
+        settings[&quot;borderBottomWidth&quot;] = js.alg.number(settings[&quot;borderBottomWidth&quot;], settings[&quot;borderWidth&quot;]);
+        settings[&quot;borderLeftWidth&quot;] = js.alg.number(settings[&quot;borderLeftWidth&quot;], settings[&quot;borderWidth&quot;]);
+        settings[&quot;x&quot;] = js.alg.number(settings[&quot;x&quot;], 0);
+        settings[&quot;y&quot;] = js.alg.number(settings[&quot;y&quot;], 0);
+        settings[&quot;height&quot;] = js.alg.number(settings[&quot;height&quot;], 0);
+        settings[&quot;width&quot;] = js.alg.number(settings[&quot;width&quot;], 0);
+
         return settings;
     }
-    
+
     return js_canvas;
 });</pre>
 </body>

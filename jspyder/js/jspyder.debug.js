@@ -1439,7 +1439,7 @@ jspyder.extend.fn("canvas", function() {
   function $js_canvas$$($alt_settings$$) {
     $alt_settings$$ = $alt_settings$$ || {};
     var $c$$ = $js$$.dom("<canvas></canvas>"), $attrs$$ = {height:$js$$.alg.number($alt_settings$$.height, 150), width:$js$$.alg.number($alt_settings$$.width, 300)}, $css$$ = $alt_settings$$.css;
-    $alt_settings$$ = $alt_settings$$.alt;
+    $alt_settings$$ = $js$$.alg.string($alt_settings$$.alt, "Your browser does not support Canvas elements.");
     $c$$.setAttrs($attrs$$);
     $c$$.setCss($css$$);
     $c$$.setHtml($alt_settings$$);
@@ -1467,18 +1467,16 @@ jspyder.extend.fn("canvas", function() {
   }, remove:function $$js_canvas$$$fn$remove$() {
     this.canvas && this.canvas.remove();
     return this;
-  }, getSize:function $$js_canvas$$$fn$getSize$($o$$, $fn$$) {
-    $o$$ = $o$$ || {};
-    var $element$$ = this.canvas && this.canvas._element && this.canvas._element[0], $rect$$;
-    $element$$ && ($rect$$ = $element$$.getBoundingClientRect(), $o$$.width = $element$$.width, $o$$.height = $element$$.height, $o$$.x = $rect$$.x, $o$$.y = $rect$$.y, $js$$.alg.use(this, $fn$$, [$o$$]));
+  }, getSize:function $$js_canvas$$$fn$getSize$($fn$$) {
+    $js$$.alg.use(this, $fn$$, [this.exportSize()]);
     return this;
   }, exportSize:function $$js_canvas$$$fn$exportSize$() {
-    var $size$$ = {};
-    this.getSize($size$$);
+    var $size$$ = {height:0, width:0, x:0, y:0}, $element$$ = this.canvas && this.canvas._element && this.canvas._element[0], $rect$$;
+    $element$$ && ($rect$$ = $element$$.getBoundingClientRect(), $size$$.width = $element$$.width, $size$$.height = $element$$.height, $size$$.x = $rect$$.x, $size$$.y = $rect$$.y);
     return $size$$;
   }, clear:function $$js_canvas$$$fn$clear$() {
     var $self$$ = this;
-    this.getSize({}, function($size$$) {
+    this.getSize(function($size$$) {
       $self$$.context.clearRect(0, 0, $size$$.width, $size$$.height);
     });
     return this;
@@ -1519,25 +1517,7 @@ jspyder.extend.fn("canvas", function() {
   }, circle:function $$js_canvas$$$fn$cmd$circle$($settings$$) {
     $settings$$ = $__mergeSettings$$($settings$$);
     $settings$$.degrees = 360;
-    this.cmd.arc.call(this, $settings$$);
-  }, pie:function $$js_canvas$$$fn$cmd$pie$($settings$$) {
-    $settings$$ = $__mergeSettings$$($settings$$);
-    $settings$$.radius = $js$$.alg.number($settings$$.radius, 0);
-    $settings$$.angle = $js$$.alg.number($settings$$.angle, -90);
-    $settings$$.anticlockwise = $js$$.alg.bool($settings$$.anticlockwise, !1);
-    $settings$$.closepath = !0;
-    var $canvas$$ = this, $total$$ = 0, $angle$$ = 0;
-    $settings$$.degrees = 360;
-    $js$$.alg.use($canvas$$, $canvas$$.cmd.arc, [$settings$$]);
-    $js$$.alg.each($settings$$.sections, function($section$$) {
-      $total$$ += $js$$.alg.number($section$$.value, 0);
-    });
-    $js$$.alg.each($settings$$.sections, function($arc_section$$) {
-      var $deg$$ = $js$$.alg.number($arc_section$$.value, 0) / $total$$ * 360;
-      $arc_section$$ = $js$$.alg.mergeObj({}, $settings$$, {angle:$angle$$ + $settings$$.angle, degrees:$deg$$, fill:$arc_section$$.fill, fromcenter:!0, closepath:!0});
-      $angle$$ += $deg$$;
-      $js$$.alg.use($canvas$$, $canvas$$.cmd.arc, [$arc_section$$]);
-    });
+    $js$$.alg.use(this, this.cmd.arc, [$settings$$]);
   }, text:function $$js_canvas$$$fn$cmd$text$($settings$$) {
     $settings$$ = $settings$$ || {};
     $settings$$.size = $js$$.alg.number($settings$$.size, 16);
@@ -1568,10 +1548,29 @@ jspyder.extend.fn("canvas", function() {
     this.context.moveTo($settings$$.x, $settings$$.y);
     this.context.lineTo($settings$$.x + $settings$$.width, $settings$$.y + $settings$$.height);
     this.context.stroke();
+  }, pie:function $$js_canvas$$$fn$cmd$pie$($settings$$) {
+    $settings$$ = $__mergeSettings$$($settings$$);
+    $settings$$.radius = $js$$.alg.number($settings$$.radius, 0);
+    $settings$$.angle = $js$$.alg.number($settings$$.angle, -90);
+    $settings$$.anticlockwise = $js$$.alg.bool($settings$$.anticlockwise, !1);
+    $settings$$.closepath = !0;
+    $settings$$.degrees = 360;
+    var $canvas$$ = this, $total$$ = 0, $angle$$ = 0;
+    $js$$.alg.use($canvas$$, $canvas$$.cmd.arc, [$settings$$]);
+    $js$$.alg.each($settings$$.sections, function($section$$) {
+      $total$$ += $js$$.alg.number($section$$.value, 0);
+    });
+    $js$$.alg.each($settings$$.sections, function($arc_section$$) {
+      var $deg$$ = $js$$.alg.number($arc_section$$.value, 0) / $total$$ * 360;
+      $arc_section$$ = $js$$.alg.mergeObj({}, $settings$$, {angle:$angle$$ + $settings$$.angle, degrees:$deg$$, fill:$arc_section$$.fill, fromcenter:!0, closepath:!0});
+      $angle$$ += $deg$$;
+      $js$$.alg.use($canvas$$, $canvas$$.cmd.arc, [$arc_section$$]);
+    });
   }, barchart:function $$js_canvas$$$fn$cmd$barchart$($offsetY_settings$$) {
     $offsetY_settings$$ = $offsetY_settings$$ || {};
-    var $sections$$ = $js$$.alg.sliceArray($offsetY_settings$$.sections) || [], $chartY_size$$ = this.exportSize(), $borderWidth$$ = $js$$.alg.number($offsetY_settings$$.borderWidth, 1), $width$$ = $js$$.alg.number($offsetY_settings$$.width, $chartY_size$$.width), $height$$ = $js$$.alg.number($offsetY_settings$$.height, $chartY_size$$.height), $chartX$$ = $js$$.alg.number($offsetY_settings$$.x, 0), $chartY_size$$ = $js$$.alg.number($offsetY_settings$$.y, 0), $fill$$ = $js$$.alg.string($offsetY_settings$$.fill, 
-    "white"), $border$$ = $js$$.alg.string($offsetY_settings$$.border, "black"), $lineColor$$ = $js$$.alg.string($offsetY_settings$$.lineColor, "rgba(0, 0, 0, 0.3)"), $labels$$ = $offsetY_settings$$.labels || [], $labelSize$$ = $js$$.alg.number($offsetY_settings$$.labelSize, 16), $self$$ = this, $min$$ = $js$$.alg.number($offsetY_settings$$.min, Infinity), $max$$ = $js$$.alg.number($offsetY_settings$$.max, -Infinity), $cols$$, $colWidth$$;
+    var $sections$$ = $offsetY_settings$$.sections = $offsetY_settings$$.sections || [], $chartY_size$$ = this.exportSize(), $borderWidth$$ = $offsetY_settings$$.borderWidth = $js$$.alg.number($offsetY_settings$$.borderWidth, 1), $width$$ = $offsetY_settings$$.width = $js$$.alg.number($offsetY_settings$$.width, $chartY_size$$.width), $height$$ = $offsetY_settings$$.height = $js$$.alg.number($offsetY_settings$$.height, $chartY_size$$.height), $chartX$$ = $offsetY_settings$$.x = $js$$.alg.number($offsetY_settings$$.x, 
+    0), $chartY_size$$ = $offsetY_settings$$.y = $js$$.alg.number($offsetY_settings$$.y, 0), $fill$$ = $offsetY_settings$$.fill = $js$$.alg.string($offsetY_settings$$.fill, "white"), $border$$ = $offsetY_settings$$.border = $js$$.alg.string($offsetY_settings$$.border, "black"), $lineColor$$ = $offsetY_settings$$.lineColor = $js$$.alg.string($offsetY_settings$$.lineColor, "rgba(0, 0, 0, 0.3)"), $labels$$ = $offsetY_settings$$.labels = $offsetY_settings$$.labels || [], $labelSize$$ = $offsetY_settings$$.labelSize = 
+    $js$$.alg.number($offsetY_settings$$.labelSize, 16), $min$$ = $offsetY_settings$$.min = $js$$.alg.number($offsetY_settings$$.min, Infinity), $max$$ = $offsetY_settings$$.max = $js$$.alg.number($offsetY_settings$$.max, -Infinity), $self$$ = this, $cols$$, $colWidth$$;
     $offsetY_settings$$ = 1.2 * $labelSize$$;
     $self$$.cmd.rectangle.call(this, {width:$width$$, height:$height$$, x:$chartX$$, y:$chartY_size$$, fill:$fill$$, borderWidth:$borderWidth$$, border:$border$$});
     $width$$ -= 2 * $borderWidth$$;
@@ -1597,23 +1596,24 @@ jspyder.extend.fn("canvas", function() {
     $width$$ -= 50;
     $chartX$$ += 50;
     $colWidth$$ = $width$$ / (($sections$$.length + 1) * $cols$$);
-    var $JSCompiler_object_inline_x_42$$ = $chartX$$, $JSCompiler_object_inline_y_43$$ = $chartY_size$$, $JSCompiler_object_inline_height_44$$ = $height$$ - $chartY_size$$, $JSCompiler_object_inline_vertWidth_46$$ = ($width$$ - $chartX$$) / $cols$$;
+    var $workArea$$ = {x:$chartX$$, y:$chartY_size$$, height:$height$$ - $chartY_size$$, width:$width$$ - $chartX$$, vertWidth:($width$$ - $chartX$$) / $cols$$};
     $js$$.alg.iterate(0, $cols$$ + 1, function($i$$) {
-      $self$$.cmd.line.call($self$$, {x:$JSCompiler_object_inline_x_42$$ + $JSCompiler_object_inline_vertWidth_46$$ * $i$$, y:$JSCompiler_object_inline_y_43$$, width:0, height:$JSCompiler_object_inline_height_44$$, color:$lineColor$$});
-      $self$$.cmd.text.call($self$$, {text:$labels$$[$i$$], font:"Arial", size:$labelSize$$, x:$JSCompiler_object_inline_x_42$$ + $JSCompiler_object_inline_vertWidth_46$$ * ($i$$ + $i$$ + 1) / 2, y:$JSCompiler_object_inline_height_44$$ + $labelSize$$, textalign:"center"});
+      $self$$.cmd.line.call($self$$, {x:$workArea$$.x + $workArea$$.vertWidth * $i$$, y:$workArea$$.y, width:0, height:$workArea$$.height, color:$lineColor$$});
+      $self$$.cmd.text.call($self$$, {text:$labels$$[$i$$], font:"Arial", size:$labelSize$$, x:$workArea$$.x + $workArea$$.vertWidth * ($i$$ + $i$$ + 1) / 2, y:$workArea$$.height + $labelSize$$, textalign:"center"});
     });
     $js$$.alg.arrEach($sections$$, function($group$$, $g$$) {
-      var $barColor$$ = $js$$.alg.string($group$$.fill, "black"), $barOutline$$ = $js$$.alg.string($group$$.border, $barColor$$), $barOutlineWidth$$ = $js$$.alg.number($group$$.borderWidth, 1);
+      var $barColor$$ = $group$$.fill = $js$$.alg.string($group$$.fill, "black"), $barOutline$$ = $group$$.border = $js$$.alg.string($group$$.border, $barColor$$), $barOutlineWidth$$ = $group$$.borderWidth = $js$$.alg.number($group$$.borderWidth, 1);
       $js$$.alg.arrEach($group$$ && $group$$.values, function($bar$$, $b$$) {
         var $value$$ = $height$$ * ($js$$.alg.number($bar$$) / ($max$$ || 1));
-        $self$$.cmd.rectangle.call($self$$, {x:$JSCompiler_object_inline_x_42$$ + ($colWidth$$ / $sections$$.length + $g$$ * $colWidth$$ + $b$$ * $JSCompiler_object_inline_vertWidth_46$$), y:$JSCompiler_object_inline_y_43$$ + ($JSCompiler_object_inline_height_44$$ - $JSCompiler_object_inline_y_43$$ - $value$$), width:$colWidth$$, height:$value$$, fill:$barColor$$, border:$barOutline$$, borderWidth:$barOutlineWidth$$});
+        $self$$.cmd.rectangle.call($self$$, {x:$workArea$$.x + ($colWidth$$ / $sections$$.length + $g$$ * $colWidth$$ + $b$$ * $workArea$$.vertWidth), y:$workArea$$.y + ($workArea$$.height - $workArea$$.y - $value$$), width:$colWidth$$, height:$value$$, fill:$barColor$$, border:$barOutline$$, borderWidth:$barOutlineWidth$$});
       });
     });
   }, linechart:function $$js_canvas$$$fn$cmd$linechart$($offsetY$$1_settings$$) {
     $offsetY$$1_settings$$ = $offsetY$$1_settings$$ || {};
-    var $sections$$ = $js$$.alg.sliceArray($offsetY$$1_settings$$.sections) || [], $chartY$$1_size$$ = this.exportSize(), $borderWidth$$ = $js$$.alg.number($offsetY$$1_settings$$.borderWidth, 1), $width$$ = $js$$.alg.number($offsetY$$1_settings$$.width, $chartY$$1_size$$.width), $height$$ = $js$$.alg.number($offsetY$$1_settings$$.height, $chartY$$1_size$$.height), $chartX$$ = $js$$.alg.number($offsetY$$1_settings$$.x, 0), $chartY$$1_size$$ = $js$$.alg.number($offsetY$$1_settings$$.y, 0), $fill$$ = 
-    $js$$.alg.string($offsetY$$1_settings$$.fill, "white"), $border$$ = $js$$.alg.string($offsetY$$1_settings$$.border, "black"), $labels$$ = $offsetY$$1_settings$$.labels || [], $labelSize$$ = $js$$.alg.number($offsetY$$1_settings$$.labelSize, 16), $lineColor$$0$$ = $js$$.alg.string($offsetY$$1_settings$$.linecolor, "rgba(0, 0, 0, 0.3)"), $self$$ = this, $min$$ = $js$$.alg.number($offsetY$$1_settings$$.min, Infinity), $max$$ = $js$$.alg.number($offsetY$$1_settings$$.max, -Infinity), $cols$$;
-    $offsetY$$1_settings$$ = 1.2 * $labelSize$$;
+    var $sections$$ = $offsetY$$1_settings$$.sections = $offsetY$$1_settings$$.sections || [], $chartY$$1_size$$ = this.exportSize(), $borderWidth$$ = $offsetY$$1_settings$$.borderWidth = $js$$.alg.number($offsetY$$1_settings$$.borderWidth, 1), $width$$ = $offsetY$$1_settings$$.width = $js$$.alg.number($offsetY$$1_settings$$.width, $chartY$$1_size$$.width), $height$$ = $offsetY$$1_settings$$.height = $js$$.alg.number($offsetY$$1_settings$$.height, $chartY$$1_size$$.height), $chartX$$ = $offsetY$$1_settings$$.x = 
+    $js$$.alg.number($offsetY$$1_settings$$.x, 0), $chartY$$1_size$$ = $offsetY$$1_settings$$.y = $js$$.alg.number($offsetY$$1_settings$$.y, 0), $fill$$ = $offsetY$$1_settings$$.fill = $js$$.alg.string($offsetY$$1_settings$$.fill, "white"), $border$$ = $offsetY$$1_settings$$.border = $js$$.alg.string($offsetY$$1_settings$$.border, "black"), $labels$$ = $offsetY$$1_settings$$.labels = $offsetY$$1_settings$$.labels || [], $labelSize$$ = $offsetY$$1_settings$$.labelSize = $js$$.alg.number($offsetY$$1_settings$$.labelSize, 
+    16), $lineColor$$0$$ = $offsetY$$1_settings$$.linecolor = $js$$.alg.string($offsetY$$1_settings$$.linecolor, "rgba(0, 0, 0, 0.3)"), $min$$ = $js$$.alg.number($offsetY$$1_settings$$.min, Infinity), $max$$ = $js$$.alg.number($offsetY$$1_settings$$.max, -Infinity), $self$$ = this, $cols$$;
+    $offsetY$$1_settings$$ = 1.5 * $labelSize$$;
     $self$$.cmd.rectangle.call(this, {width:$width$$, height:$height$$, x:$chartX$$, y:$chartY$$1_size$$, fill:$fill$$, borderWidth:$borderWidth$$, border:$border$$});
     $width$$ -= 2 * $borderWidth$$;
     $height$$ -= 2 * $borderWidth$$;
@@ -1635,20 +1635,21 @@ jspyder.extend.fn("canvas", function() {
       $self$$.cmd.text.call($self$$, {x:$labelSize$$ / 3, y:$height$$ * (5 - $i$$) / 5 - $labelSize$$ / 3, size:$labelSize$$, font:"Arial", text:$i$$ / 5 * $max$$ | 0, textalign:"left"});
       $self$$.cmd.text.call($self$$, {x:$width$$ - $labelSize$$ / 3, y:$height$$ * (5 - $i$$) / 5 - $labelSize$$ / 3, size:$labelSize$$, font:"Arial", text:$i$$ / 5 * $max$$ | 0, textalign:"right"});
     });
-    var $width$$ = $width$$ - 50, $JSCompiler_object_inline_x_47$$ = $chartX$$ += 50, $JSCompiler_object_inline_y_48$$ = $chartY$$1_size$$, $JSCompiler_object_inline_height_49$$ = $height$$ - $chartY$$1_size$$, $JSCompiler_object_inline_vertWidth_51$$ = ($width$$ - $chartX$$) / ($cols$$ - 1);
+    var $width$$ = $width$$ - 50, $chartX$$ = $chartX$$ + 50, $workArea$$ = {x:$chartX$$, y:$chartY$$1_size$$, height:$height$$ - $chartY$$1_size$$, width:$width$$ - $chartX$$, vertWidth:($width$$ - $chartX$$) / ($cols$$ - 1)};
     $js$$.alg.iterate(0, $cols$$, function($i$$) {
-      var $x$$ = $JSCompiler_object_inline_x_47$$ + $JSCompiler_object_inline_vertWidth_51$$ * $i$$;
-      $self$$.cmd.line.call($self$$, {x:$x$$, y:$JSCompiler_object_inline_y_48$$, width:0, height:$JSCompiler_object_inline_height_49$$, color:$lineColor$$0$$});
-      $self$$.cmd.text.call($self$$, {text:$labels$$[$i$$], font:"Arial", size:$labelSize$$, x:$x$$, y:$JSCompiler_object_inline_height_49$$ + $labelSize$$, textalign:"center"});
+      var $x$$ = $workArea$$.x + $workArea$$.vertWidth * $i$$;
+      $self$$.cmd.line.call($self$$, {x:$x$$, y:$workArea$$.y, width:0, height:$workArea$$.height, color:$lineColor$$0$$});
+      $self$$.cmd.text.call($self$$, {text:$labels$$[$i$$], font:"Arial", size:$labelSize$$, x:$x$$, y:$workArea$$.height + $labelSize$$, textalign:"center"});
     });
     $js$$.alg.arrEach($sections$$, function($group$$, $g$$) {
-      var $lineColor$$ = $js$$.alg.string($group$$.fill, "transparent"), $lineOutline$$ = $js$$.alg.string($group$$.border, "black"), $lineOutlineWidth$$ = $js$$.alg.number($group$$.borderWidth, 1), $dotColor$$ = $js$$.alg.string($group$$.dotfill, $lineColor$$), $dotOutline$$ = $js$$.alg.string($group$$.dotBorder, $lineOutline$$), $dotOutlineWidth$$ = $js$$.alg.string($group$$.dotBorderWidth, $lineOutlineWidth$$);
-      $js$$.alg.number($group$$.dotRadius, 4);
+      var $lineColor$$ = $group$$.fill = $js$$.alg.string($group$$.fill, "transparent"), $lineOutline$$ = $group$$.border = $js$$.alg.string($group$$.border, "black"), $lineOutlineWidth$$ = $group$$.borderWidth = $js$$.alg.number($group$$.borderWidth, 1), $dotColor$$ = $group$$.dotfill = $js$$.alg.string($group$$.dotfill, $lineColor$$), $dotOutline$$ = $group$$.dotBorder = $js$$.alg.string($group$$.dotBorder, $lineOutline$$), $dotOutlineWidth$$ = $group$$.dotBorderWidth = $js$$.alg.string($group$$.dotBorderWidth, 
+      $lineOutlineWidth$$);
+      $group$$.dotRadius = $js$$.alg.number($group$$.dotRadius, 4);
       $js$$.alg.arrEach($group$$ && $group$$.values, function($v2_val$$, $b$$, $v1_values$$) {
-        $v1_values$$ = $JSCompiler_object_inline_height_49$$ - ($JSCompiler_object_inline_y_48$$ + $JSCompiler_object_inline_height_49$$ * $js$$.alg.number($v1_values$$[$b$$ - 1]) / ($max$$ || 1));
-        $v2_val$$ = $JSCompiler_object_inline_height_49$$ - ($JSCompiler_object_inline_y_48$$ + $JSCompiler_object_inline_height_49$$ * $js$$.alg.number($v2_val$$) / ($max$$ || 1));
-        var $x$$ = $JSCompiler_object_inline_x_47$$ + $JSCompiler_object_inline_vertWidth_51$$ * ($b$$ - 1), $dotX$$ = $JSCompiler_object_inline_x_47$$ + $JSCompiler_object_inline_vertWidth_51$$ * $b$$;
-        $b$$ && $self$$.cmd.line.call($self$$, {x:$x$$, y:$v1_values$$, width:$JSCompiler_object_inline_vertWidth_51$$, height:$v2_val$$ - $v1_values$$, color:$lineOutline$$, thickness:$lineOutlineWidth$$});
+        $v1_values$$ = $workArea$$.height - ($workArea$$.y + $workArea$$.height * $js$$.alg.number($v1_values$$[$b$$ - 1]) / ($max$$ || 1));
+        $v2_val$$ = $workArea$$.height - ($workArea$$.y + $workArea$$.height * $js$$.alg.number($v2_val$$) / ($max$$ || 1));
+        var $x$$ = $workArea$$.x + $workArea$$.vertWidth * ($b$$ - 1), $dotX$$ = $workArea$$.x + $workArea$$.vertWidth * $b$$;
+        $b$$ && $self$$.cmd.line.call($self$$, {x:$x$$, y:$v1_values$$, width:$workArea$$.vertWidth, height:$v2_val$$ - $v1_values$$, color:$lineOutline$$, thickness:$lineOutlineWidth$$});
         $self$$.cmd.circle.call($self$$, {y:$v2_val$$, x:$dotX$$, radius:4, fill:$dotColor$$, border:$dotOutline$$, thickness:$dotOutlineWidth$$});
         $self$$.cmd.circle.call($self$$, {y:$v1_values$$, x:$x$$, radius:4, fill:$dotColor$$, border:$dotOutline$$, thickness:$dotOutlineWidth$$});
       });
@@ -1756,8 +1757,8 @@ jspyder.extend.fn("date", function() {
     return new Date($d$$.y, $d$$.m, $d$$.d, $d$$.h + $d$$.a, $d$$.n, $d$$.s, $d$$.x);
   }
   function $__formatDate$$($date$$, $format$$, $useUTC$$) {
-    var $JSCompiler_object_inline_y_52$$ = $useUTC$$ ? $date$$.getUTCFullYear() : $date$$.getFullYear(), $JSCompiler_object_inline_m_53$$ = $useUTC$$ ? $date$$.getUTCMonth() : $date$$.getMonth(), $JSCompiler_object_inline_d_54$$ = $useUTC$$ ? $date$$.getUTCDate() : $date$$.getDate(), $JSCompiler_object_inline_h_55$$ = $useUTC$$ ? $date$$.getUTCHours() : $date$$.getHours(), $JSCompiler_object_inline_n_56$$ = $useUTC$$ ? $date$$.getUTCMinutes() : $date$$.getMinutes(), $JSCompiler_object_inline_s_57$$ = 
-    $useUTC$$ ? $date$$.getUTCSeconds() : $date$$.getSeconds(), $JSCompiler_object_inline_w_58$$ = $useUTC$$ ? $date$$.getUTCDay() : $date$$.getDay(), $JSCompiler_object_inline_x_59$$ = $useUTC$$ ? $date$$.getUTCMilliseconds() : $date$$.getMilliseconds(), $left$$ = "", $right$$ = $format$$;
+    var $JSCompiler_object_inline_y_42$$ = $useUTC$$ ? $date$$.getUTCFullYear() : $date$$.getFullYear(), $JSCompiler_object_inline_m_43$$ = $useUTC$$ ? $date$$.getUTCMonth() : $date$$.getMonth(), $JSCompiler_object_inline_d_44$$ = $useUTC$$ ? $date$$.getUTCDate() : $date$$.getDate(), $JSCompiler_object_inline_h_45$$ = $useUTC$$ ? $date$$.getUTCHours() : $date$$.getHours(), $JSCompiler_object_inline_n_46$$ = $useUTC$$ ? $date$$.getUTCMinutes() : $date$$.getMinutes(), $JSCompiler_object_inline_s_47$$ = 
+    $useUTC$$ ? $date$$.getUTCSeconds() : $date$$.getSeconds(), $JSCompiler_object_inline_w_48$$ = $useUTC$$ ? $date$$.getUTCDay() : $date$$.getDay(), $JSCompiler_object_inline_x_49$$ = $useUTC$$ ? $date$$.getUTCMilliseconds() : $date$$.getMilliseconds(), $left$$ = "", $right$$ = $format$$;
     $js$$.alg.arrEach($format$$.match($__reSearch$$), function($match$$) {
       var $collection$$ = $__formatCollection$$[$match$$] || /\[[^\\]*\]/g.test($match$$);
       if (!$collection$$) {
@@ -1770,12 +1771,12 @@ jspyder.extend.fn("date", function() {
         case "YY":
         ;
         case "yy":
-          $value$$ = $js$$.alg.string($JSCompiler_object_inline_y_52$$ % 100);
+          $value$$ = $js$$.alg.string($JSCompiler_object_inline_y_42$$ % 100);
           break;
         case "YYYY":
         ;
         case "yyyy":
-          $value$$ = $js$$.alg.string($JSCompiler_object_inline_y_52$$, "");
+          $value$$ = $js$$.alg.string($JSCompiler_object_inline_y_42$$, "");
           break;
         case "MMMM":
         ;
@@ -1792,7 +1793,7 @@ jspyder.extend.fn("date", function() {
         case "M":
         ;
         case "m":
-          $value$$ = $collection$$.lookup[$JSCompiler_object_inline_m_53$$];
+          $value$$ = $collection$$.lookup[$JSCompiler_object_inline_m_43$$];
           break;
         case "dth":
         ;
@@ -1801,7 +1802,7 @@ jspyder.extend.fn("date", function() {
         case "dd":
         ;
         case "d":
-          $value$$ = $collection$$.lookup[$JSCompiler_object_inline_d_54$$ - 1];
+          $value$$ = $collection$$.lookup[$JSCompiler_object_inline_d_44$$ - 1];
           break;
         case "DDDD":
         ;
@@ -1814,12 +1815,12 @@ jspyder.extend.fn("date", function() {
         case "DD":
         ;
         case "D":
-          $value$$ = $collection$$.lookup[$JSCompiler_object_inline_w_58$$];
+          $value$$ = $collection$$.lookup[$JSCompiler_object_inline_w_48$$];
           break;
         case "am":
         ;
         case "AM":
-          $value$$ = $collection$$.lookup[$JSCompiler_object_inline_h_55$$];
+          $value$$ = $collection$$.lookup[$JSCompiler_object_inline_h_45$$];
           break;
         case "HH":
         ;
@@ -1828,26 +1829,26 @@ jspyder.extend.fn("date", function() {
         case "hh":
         ;
         case "h":
-          $value$$ = $collection$$.lookup[$JSCompiler_object_inline_h_55$$];
+          $value$$ = $collection$$.lookup[$JSCompiler_object_inline_h_45$$];
           break;
         case "nn":
         ;
         case "n":
-          $value$$ = $collection$$.lookup[$JSCompiler_object_inline_n_56$$];
+          $value$$ = $collection$$.lookup[$JSCompiler_object_inline_n_46$$];
           break;
         case "ss":
         ;
         case "s":
-          $value$$ = $collection$$.lookup[$JSCompiler_object_inline_s_57$$];
+          $value$$ = $collection$$.lookup[$JSCompiler_object_inline_s_47$$];
           break;
         case "xxx":
-          $value$$ = ($js$$.alg.string($JSCompiler_object_inline_x_59$$) + "00").substr(0, 3);
+          $value$$ = ($js$$.alg.string($JSCompiler_object_inline_x_49$$) + "00").substr(0, 3);
           break;
         case "xx":
-          $value$$ = ($js$$.alg.string($JSCompiler_object_inline_x_59$$) + "0").substr(0, 2);
+          $value$$ = ($js$$.alg.string($JSCompiler_object_inline_x_49$$) + "0").substr(0, 2);
           break;
         case "x":
-          $value$$ = $js$$.alg.string($JSCompiler_object_inline_x_59$$).substr(0, 1);
+          $value$$ = $js$$.alg.string($JSCompiler_object_inline_x_49$$).substr(0, 1);
           break;
         default:
           $value$$ = $match$$.substring(1, $match$$.length - 1);
