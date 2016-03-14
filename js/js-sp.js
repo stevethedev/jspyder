@@ -191,7 +191,7 @@ js.extend.fn("sp", function () {
         },
 
         /**
-         * Gets the column template by name, as identified in js.sp.list.addColumn
+         * Gets the column template by name, as identified in jspyder.sp.list.addColumn
          *
          * @param {String} name
          *      The name of the field to retrieve the template for. Note that
@@ -207,7 +207,7 @@ js.extend.fn("sp", function () {
         },
 
         /**
-         * Gets the column template by name, as identified in js.sp.list.addColumn
+         * Gets the column template by name, as identified in jspyder.sp.list.addColumn
          *
          * @param {String} name
          *      The name of the field to retrieve the template for. Note that
@@ -860,7 +860,7 @@ js.extend.fn("sp", function () {
         },
 
         /**
-         * The opposite of js.sp.query.filters, this function performs a filter
+         * The opposite of jspyder.sp.query.filters, this function performs a filter
          * and EXCLUDES all of the rows that match the specified criteria.
          *
          * @param {Array} filterArray
@@ -1377,7 +1377,7 @@ js.extend.fn("sp", function () {
     }
 
     /**
-     * @class js.sp.user
+     * @class jspyder.sp.user
      * @member jspyder.sp
      * @async
      * Manages User information

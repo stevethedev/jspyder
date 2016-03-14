@@ -208,7 +208,7 @@ js.extend.fn(&quot;sp&quot;, function () {
         },
 
 <span id='jspyder-sp-list-method-exportColumn'>        /**
-</span>         * Gets the column template by name, as identified in js.sp.list.addColumn
+</span>         * Gets the column template by name, as identified in jspyder.sp.list.addColumn
          *
          * @param {String} name
          *      The name of the field to retrieve the template for. Note that
@@ -224,7 +224,7 @@ js.extend.fn(&quot;sp&quot;, function () {
         },
 
 <span id='jspyder-sp-list-method-getColumn'>        /**
-</span>         * Gets the column template by name, as identified in js.sp.list.addColumn
+</span>         * Gets the column template by name, as identified in jspyder.sp.list.addColumn
          *
          * @param {String} name
          *      The name of the field to retrieve the template for. Note that
@@ -877,7 +877,7 @@ js.extend.fn(&quot;sp&quot;, function () {
         },
 
 <span id='jspyder-sp-query-method-excludes'>        /**
-</span>         * The opposite of js.sp.query.filters, this function performs a filter
+</span>         * The opposite of jspyder.sp.query.filters, this function performs a filter
          * and EXCLUDES all of the rows that match the specified criteria.
          *
          * @param {Array} filterArray
@@ -1393,8 +1393,8 @@ js.extend.fn(&quot;sp&quot;, function () {
         return csv.join(&#39;&#39;);
     }
 
-<span id='js-sp-user'>    /**
-</span>     * @class js.sp.user
+<span id='jspyder-sp-user'>    /**
+</span>     * @class jspyder.sp.user
      * @member jspyder.sp
      * @async
      * Manages User information
@@ -1467,7 +1467,7 @@ js.extend.fn(&quot;sp&quot;, function () {
         &quot;_username&quot;: null,
         &quot;_url&quot;: null,
 
-<span id='js-sp-user-method-memberOfGroup'>        /**
+<span id='jspyder-sp-user-method-memberOfGroup'>        /**
 </span>         * @async
          *
          * Executes the specified function, with the first parameter as &quot;true&quot;
@@ -1490,7 +1490,7 @@ js.extend.fn(&quot;sp&quot;, function () {
         }
     };
 
-<span id='js-sp-user-method-__spUserSuccess'>    /** @private */
+<span id='jspyder-sp-user-method-__spUserSuccess'>    /** @private */
 </span>    function __spUserSuccess(config, sender, args) {
         this._email = this._user.get_email();
         this._username = this._user.get_loginName();
@@ -1498,7 +1498,7 @@ js.extend.fn(&quot;sp&quot;, function () {
         js.alg.use(this, config[&quot;success&quot;], [sender, args]);
     }
 
-<span id='js-sp-user-method-__spUserFailure'>    /** @private */
+<span id='jspyder-sp-user-method-__spUserFailure'>    /** @private */
 </span>    function __spUserFailure(config, sender, args) {
         js.alg.use(this, config[&quot;failure&quot;], [sender, args]);
     }
