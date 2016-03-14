@@ -147,7 +147,7 @@ js.extend.fn("download", function () {
         name = js.alg.string(name, "download.txt");
         
         if(__reDataUrl.test(blob)) {
-            return saveBlob ? saveBlob(__encode(blob), name) : __triggerSave(blob);
+            return saveBlob ? saveBlob(__encode(blob), name) : __triggerSave(name, blob);
         }
         
         blob = (blob instanceof Blob ? blob : new Blob([blob], { type: type }));
@@ -165,11 +165,11 @@ js.extend.fn("download", function () {
         }
         else {
             if(typeof blob === "string" || blob instanceof String) {
-                return __triggerSave( "data:" + type + __decode(blob) );
+                return __triggerSave( name, "data:" + type + __decode(blob) );
             }
             
             var filereader = new FileReader();
-            filereader.onload = function(e) { __triggerSave(this.result); };
+            filereader.onload = function(e) { __triggerSave(name, this.result); };
             filereader.readAsDataURL(blob);
         }
         

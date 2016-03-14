@@ -1460,13 +1460,10 @@ jspyder.extend.fn("ajax", function() {
   return $js_ajax$$;
 });
 jspyder.extend.fn("canvas", function() {
-  function $js_canvas$$($alt_settings$$) {
-    $alt_settings$$ = $alt_settings$$ || {};
-    var $c$$ = $js$$.dom("<canvas></canvas>"), $attrs$$ = {height:$js$$.alg.number($alt_settings$$.height, 150), width:$js$$.alg.number($alt_settings$$.width, 300)}, $css$$ = $alt_settings$$.css;
-    $alt_settings$$ = $js$$.alg.string($alt_settings$$.alt, "Your browser does not support Canvas elements.");
-    $c$$.setAttrs($attrs$$);
-    $c$$.setCss($css$$);
-    $c$$.setHtml($alt_settings$$);
+  function $js_canvas$$($settings$$) {
+    $settings$$ = $settings$$ || {};
+    var $c$$ = $js$$.dom($settings$$.canvas || "<canvas></canvas>"), $css$$ = $settings$$.css, $attrs$$ = {height:$js$$.alg.number($settings$$.height, 150), width:$js$$.alg.number($settings$$.width, 300)};
+    $settings$$.canvas || $c$$.setCss($css$$).setAttrs($attrs$$);
     return Object.create($js_canvas$$.fn, {canvas:{value:$c$$}, queue:{value:[]}, context:{value:$c$$._element[0] && $c$$._element[0].getContext && $c$$._element[0].getContext("2d")}});
   }
   function $__mergeSettings$$($settings$$) {
@@ -1498,6 +1495,20 @@ jspyder.extend.fn("canvas", function() {
     var $size$$ = {height:0, width:0, x:0, y:0}, $element$$ = this.canvas && this.canvas._element && this.canvas._element[0], $rect$$;
     $element$$ && ($rect$$ = $element$$.getBoundingClientRect(), $size$$.width = $element$$.width, $size$$.height = $element$$.height, $size$$.x = $rect$$.x, $size$$.y = $rect$$.y);
     return $size$$;
+  }, exportImageUrl:function $$js_canvas$$$fn$exportImageUrl$($type$$) {
+    var $dataUrl$$ = "";
+    this.canvas && this.canvas.element(0, function() {
+      $dataUrl$$ = this.toDataURL("image/" + $type$$);
+    });
+    return $dataUrl$$;
+  }, getImageUrl:function $$js_canvas$$$fn$getImageUrl$($type$$, $fn$$) {
+    $js$$.alg.use(this, $fn$$, [this.exportImageUrl($type$$)]);
+    return this;
+  }, exportImage:function $$js_canvas$$$fn$exportImage$($type$$) {
+    return $js$$.dom("<img></img>").setAttrs({src:this.exportImageUrl($type$$)});
+  }, getImage:function $$js_canvas$$$fn$getImage$($type$$, $fn$$) {
+    $js$$.alg.use(this, $fn$$, [this.exportImage($type$$)]);
+    return this;
   }, clear:function $$js_canvas$$$fn$clear$() {
     var $self$$ = this;
     this.getSize(function($size$$) {
@@ -1594,8 +1605,10 @@ jspyder.extend.fn("canvas", function() {
     $offsetY_settings$$ = $offsetY_settings$$ || {};
     var $sections$$ = $offsetY_settings$$.sections = $offsetY_settings$$.sections || [], $chartY_size$$ = this.exportSize(), $borderWidth$$ = $offsetY_settings$$.borderWidth = $js$$.alg.number($offsetY_settings$$.borderWidth, 1), $width$$ = $offsetY_settings$$.width = $js$$.alg.number($offsetY_settings$$.width, $chartY_size$$.width), $height$$ = $offsetY_settings$$.height = $js$$.alg.number($offsetY_settings$$.height, $chartY_size$$.height), $chartX$$ = $offsetY_settings$$.x = $js$$.alg.number($offsetY_settings$$.x, 
     0), $chartY_size$$ = $offsetY_settings$$.y = $js$$.alg.number($offsetY_settings$$.y, 0), $fill$$ = $offsetY_settings$$.fill = $js$$.alg.string($offsetY_settings$$.fill, "white"), $border$$ = $offsetY_settings$$.border = $js$$.alg.string($offsetY_settings$$.border, "black"), $lineColor$$ = $offsetY_settings$$.lineColor = $js$$.alg.string($offsetY_settings$$.lineColor, "rgba(0, 0, 0, 0.3)"), $labels$$ = $offsetY_settings$$.labels = $offsetY_settings$$.labels || [], $labelSize$$ = $offsetY_settings$$.labelSize = 
-    $js$$.alg.number($offsetY_settings$$.labelSize, 16), $min$$ = $offsetY_settings$$.min = $js$$.alg.number($offsetY_settings$$.min, Infinity), $max$$ = $offsetY_settings$$.max = $js$$.alg.number($offsetY_settings$$.max, -Infinity), $self$$ = this, $cols$$, $colWidth$$;
-    $offsetY_settings$$ = 1.2 * $labelSize$$;
+    $js$$.alg.number($offsetY_settings$$.labelSize, 16), $min$$ = $offsetY_settings$$.min = $js$$.alg.number($offsetY_settings$$.min, Infinity), $max$$ = $offsetY_settings$$.max = $js$$.alg.number($offsetY_settings$$.max, -Infinity), $format$$ = $js$$.alg.bindFn(this, $offsetY_settings$$.format || function($n$$) {
+      return $n$$;
+    }), $self$$ = this, $cols$$, $colWidth$$;
+    $offsetY_settings$$ = 1.5 * $labelSize$$;
     $self$$.cmd.rectangle.call(this, {width:$width$$, height:$height$$, x:$chartX$$, y:$chartY_size$$, fill:$fill$$, borderWidth:$borderWidth$$, border:$border$$});
     $width$$ -= 2 * $borderWidth$$;
     $height$$ -= 2 * $borderWidth$$;
@@ -1614,8 +1627,8 @@ jspyder.extend.fn("canvas", function() {
     $max$$ = 1.1 * $js$$.alg.magnitude($max$$);
     $js$$.alg.iterate(0, 5, function($i$$) {
       $self$$.cmd.line.call($self$$, {x:$chartX$$, y:$height$$ * (5 - $i$$) / 5, width:$width$$ + $chartX$$, height:0, color:$lineColor$$});
-      $self$$.cmd.text.call($self$$, {x:$labelSize$$ / 3, y:$height$$ * (5 - $i$$) / 5 - $labelSize$$ / 3, size:$labelSize$$, font:"Arial", text:$i$$ / 5 * $max$$ | 0, textalign:"left"});
-      $self$$.cmd.text.call($self$$, {x:$width$$ - $labelSize$$ / 3, y:$height$$ * (5 - $i$$) / 5 - $labelSize$$ / 3, size:$labelSize$$, font:"Arial", text:$i$$ / 5 * $max$$ | 0, textalign:"right"});
+      $self$$.cmd.text.call($self$$, {x:$labelSize$$ / 3, y:$height$$ * (5 - $i$$) / 5 - $labelSize$$ / 3, size:$labelSize$$, font:"Arial", text:$format$$($i$$ / 5 * $max$$ | 0), textalign:"left"});
+      $self$$.cmd.text.call($self$$, {x:$width$$ - $labelSize$$ / 3, y:$height$$ * (5 - $i$$) / 5 - $labelSize$$ / 3, size:$labelSize$$, font:"Arial", text:$format$$($i$$ / 5 * $max$$ | 0), textalign:"right"});
     });
     $width$$ -= 50;
     $chartX$$ += 50;
@@ -1636,7 +1649,9 @@ jspyder.extend.fn("canvas", function() {
     $offsetY$$1_settings$$ = $offsetY$$1_settings$$ || {};
     var $sections$$ = $offsetY$$1_settings$$.sections = $offsetY$$1_settings$$.sections || [], $chartY$$1_size$$ = this.exportSize(), $borderWidth$$ = $offsetY$$1_settings$$.borderWidth = $js$$.alg.number($offsetY$$1_settings$$.borderWidth, 1), $width$$ = $offsetY$$1_settings$$.width = $js$$.alg.number($offsetY$$1_settings$$.width, $chartY$$1_size$$.width), $height$$ = $offsetY$$1_settings$$.height = $js$$.alg.number($offsetY$$1_settings$$.height, $chartY$$1_size$$.height), $chartX$$ = $offsetY$$1_settings$$.x = 
     $js$$.alg.number($offsetY$$1_settings$$.x, 0), $chartY$$1_size$$ = $offsetY$$1_settings$$.y = $js$$.alg.number($offsetY$$1_settings$$.y, 0), $fill$$ = $offsetY$$1_settings$$.fill = $js$$.alg.string($offsetY$$1_settings$$.fill, "white"), $border$$ = $offsetY$$1_settings$$.border = $js$$.alg.string($offsetY$$1_settings$$.border, "black"), $labels$$ = $offsetY$$1_settings$$.labels = $offsetY$$1_settings$$.labels || [], $labelSize$$ = $offsetY$$1_settings$$.labelSize = $js$$.alg.number($offsetY$$1_settings$$.labelSize, 
-    16), $lineColor$$0$$ = $offsetY$$1_settings$$.linecolor = $js$$.alg.string($offsetY$$1_settings$$.linecolor, "rgba(0, 0, 0, 0.3)"), $min$$ = $js$$.alg.number($offsetY$$1_settings$$.min, Infinity), $max$$ = $js$$.alg.number($offsetY$$1_settings$$.max, -Infinity), $self$$ = this, $cols$$;
+    16), $lineColor$$0$$ = $offsetY$$1_settings$$.linecolor = $js$$.alg.string($offsetY$$1_settings$$.linecolor, "rgba(0, 0, 0, 0.3)"), $min$$ = $js$$.alg.number($offsetY$$1_settings$$.min, Infinity), $max$$ = $js$$.alg.number($offsetY$$1_settings$$.max, -Infinity), $format$$ = $js$$.alg.bindFn(this, $offsetY$$1_settings$$.format || function($n$$) {
+      return $n$$;
+    }), $self$$ = this, $cols$$;
     $offsetY$$1_settings$$ = 1.5 * $labelSize$$;
     $self$$.cmd.rectangle.call(this, {width:$width$$, height:$height$$, x:$chartX$$, y:$chartY$$1_size$$, fill:$fill$$, borderWidth:$borderWidth$$, border:$border$$});
     $width$$ -= 2 * $borderWidth$$;
@@ -1656,8 +1671,8 @@ jspyder.extend.fn("canvas", function() {
     $max$$ = 1.1 * $js$$.alg.magnitude($max$$);
     $js$$.alg.iterate(0, 5, function($i$$) {
       $self$$.cmd.line.call($self$$, {x:$chartX$$, y:$height$$ * (5 - $i$$) / 5, width:$width$$ + $chartX$$, height:0, color:$lineColor$$0$$});
-      $self$$.cmd.text.call($self$$, {x:$labelSize$$ / 3, y:$height$$ * (5 - $i$$) / 5 - $labelSize$$ / 3, size:$labelSize$$, font:"Arial", text:$i$$ / 5 * $max$$ | 0, textalign:"left"});
-      $self$$.cmd.text.call($self$$, {x:$width$$ - $labelSize$$ / 3, y:$height$$ * (5 - $i$$) / 5 - $labelSize$$ / 3, size:$labelSize$$, font:"Arial", text:$i$$ / 5 * $max$$ | 0, textalign:"right"});
+      $self$$.cmd.text.call($self$$, {x:$labelSize$$ / 3, y:$height$$ * (5 - $i$$) / 5 - $labelSize$$ / 3, size:$labelSize$$, font:"Arial", text:$format$$($i$$ / 5 * $max$$ | 0), textalign:"left"});
+      $self$$.cmd.text.call($self$$, {x:$width$$ - $labelSize$$ / 3, y:$height$$ * (5 - $i$$) / 5 - $labelSize$$ / 3, size:$labelSize$$, font:"Arial", text:$format$$($i$$ / 5 * $max$$ | 0), textalign:"right"});
     });
     var $width$$ = $width$$ - 50, $chartX$$ = $chartX$$ + 50, $workArea$$ = {x:$chartX$$, y:$chartY$$1_size$$, height:$height$$ - $chartY$$1_size$$, width:$width$$ - $chartX$$, vertWidth:($width$$ - $chartX$$) / ($cols$$ - 1)};
     $js$$.alg.iterate(0, $cols$$, function($i$$) {
@@ -1667,15 +1682,14 @@ jspyder.extend.fn("canvas", function() {
     });
     $js$$.alg.arrEach($sections$$, function($group$$, $g$$) {
       var $lineColor$$ = $group$$.fill = $js$$.alg.string($group$$.fill, "transparent"), $lineOutline$$ = $group$$.border = $js$$.alg.string($group$$.border, "black"), $lineOutlineWidth$$ = $group$$.borderWidth = $js$$.alg.number($group$$.borderWidth, 1), $dotColor$$ = $group$$.dotfill = $js$$.alg.string($group$$.dotfill, $lineColor$$), $dotOutline$$ = $group$$.dotBorder = $js$$.alg.string($group$$.dotBorder, $lineOutline$$), $dotOutlineWidth$$ = $group$$.dotBorderWidth = $js$$.alg.string($group$$.dotBorderWidth, 
-      $lineOutlineWidth$$);
-      $group$$.dotRadius = $js$$.alg.number($group$$.dotRadius, 4);
+      $lineOutlineWidth$$), $dotRadius$$ = $group$$.dotRadius = $js$$.alg.number($group$$.dotRadius, 4);
       $js$$.alg.arrEach($group$$ && $group$$.values, function($v2_val$$, $b$$, $v1_values$$) {
         $v1_values$$ = $workArea$$.height - ($workArea$$.y + $workArea$$.height * $js$$.alg.number($v1_values$$[$b$$ - 1]) / ($max$$ || 1));
         $v2_val$$ = $workArea$$.height - ($workArea$$.y + $workArea$$.height * $js$$.alg.number($v2_val$$) / ($max$$ || 1));
         var $x$$ = $workArea$$.x + $workArea$$.vertWidth * ($b$$ - 1), $dotX$$ = $workArea$$.x + $workArea$$.vertWidth * $b$$;
         $b$$ && $self$$.cmd.line.call($self$$, {x:$x$$, y:$v1_values$$, width:$workArea$$.vertWidth, height:$v2_val$$ - $v1_values$$, color:$lineOutline$$, thickness:$lineOutlineWidth$$});
-        $self$$.cmd.circle.call($self$$, {y:$v2_val$$, x:$dotX$$, radius:4, fill:$dotColor$$, border:$dotOutline$$, thickness:$dotOutlineWidth$$});
-        $self$$.cmd.circle.call($self$$, {y:$v1_values$$, x:$x$$, radius:4, fill:$dotColor$$, border:$dotOutline$$, thickness:$dotOutlineWidth$$});
+        $self$$.cmd.circle.call($self$$, {y:$v2_val$$, x:$dotX$$, radius:$dotRadius$$, fill:$dotColor$$, border:$dotOutline$$, thickness:$dotOutlineWidth$$});
+        $self$$.cmd.circle.call($self$$, {y:$v1_values$$, x:$x$$, radius:$dotRadius$$, fill:$dotColor$$, border:$dotOutline$$, thickness:$dotOutlineWidth$$});
       });
     });
   }}};
@@ -2151,27 +2165,27 @@ js.extend.fn("download", function() {
     $dl$$.setName($def$$.name).setType($def$$.type).setData($def$$.data).setCharset($def$$.charset);
     return $dl$$;
   }
-  function $__save$$($filereader_name$$, $type$$, $blob$$) {
-    $type$$ = $js$$.alg.string($type$$, $safeType$$);
-    $filereader_name$$ = $js$$.alg.string($filereader_name$$, "download.txt");
+  function $__save$$($name$$, $filereader_type$$, $blob$$) {
+    $filereader_type$$ = $js$$.alg.string($filereader_type$$, $safeType$$);
+    $name$$ = $js$$.alg.string($name$$, "download.txt");
     if ($__reDataUrl$$.test($blob$$)) {
-      return $saveBlob$$ ? $saveBlob$$($__encode$$($blob$$), $filereader_name$$) : $__triggerSave$$($blob$$);
+      return $saveBlob$$ ? $saveBlob$$($__encode$$($blob$$), $name$$) : $__triggerSave$$($name$$, $blob$$);
     }
-    $blob$$ = $blob$$ instanceof $Blob$$ ? $blob$$ : new $Blob$$([$blob$$], {type:$type$$});
+    $blob$$ = $blob$$ instanceof $Blob$$ ? $blob$$ : new $Blob$$([$blob$$], {type:$filereader_type$$});
     if ($saveBlob$$) {
-      return $saveBlob$$($blob$$, $filereader_name$$);
+      return $saveBlob$$($blob$$, $name$$);
     }
     if ($URL$$) {
-      return "Chrome" === $js$$.env.browser.name && $type$$ !== $safeType$$ && ($blob$$ = $sliceBlob$$.call($blob$$, 0, $blob$$.size, $safeType$$)), $__triggerSave$$($filereader_name$$, $URL$$.createObjectURL($blob$$));
+      return "Chrome" === $js$$.env.browser.name && $filereader_type$$ !== $safeType$$ && ($blob$$ = $sliceBlob$$.call($blob$$, 0, $blob$$.size, $safeType$$)), $__triggerSave$$($name$$, $URL$$.createObjectURL($blob$$));
     }
     if ("string" === typeof $blob$$ || $blob$$ instanceof String) {
-      return $__triggerSave$$("data:" + $type$$ + $__decode$$($blob$$));
+      return $__triggerSave$$($name$$, "data:" + $filereader_type$$ + $__decode$$($blob$$));
     }
-    $filereader_name$$ = new FileReader;
-    $filereader_name$$.onload = function $$filereader_name$$$onload$($e$$) {
-      $__triggerSave$$(this.result);
+    $filereader_type$$ = new FileReader;
+    $filereader_type$$.onload = function $$filereader_type$$$onload$($e$$) {
+      $__triggerSave$$($name$$, this.result);
     };
-    $filereader_name$$.readAsDataURL($blob$$);
+    $filereader_type$$.readAsDataURL($blob$$);
     return !0;
   }
   function $__triggerSave$$($filename$$, $url$$) {

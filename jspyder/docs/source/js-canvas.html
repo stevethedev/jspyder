@@ -47,29 +47,30 @@ jspyder.extend.fn(&quot;canvas&quot;, function () {
      * A wrapper for JavaScript &amp; HTML5 Canvas manipulation.
      *
      * @param {Object} settings
+     * @param {Number} [settings.canvas]        If defined, this canvas will be used instead of generating a new one.
      * @param {Number} [settings.height=150]    Canvas Height
      * @param {Number} [settings.width=300]     Canvas Width
      * @param {Object} [settings.css]           Canvas CSS Styles
-     * @param {String} [settings.alt]           Text to display if the browser doesn't support Canvas elements.
      */
     function js_canvas(settings) {
         settings = settings || {};
-        var c = js.dom(&quot;&lt;canvas&gt;&lt;/canvas&gt;&quot;),
-            attrs = {
-                height: js.alg.number(settings[&quot;height&quot;], 150),
-                width: js.alg.number(settings[&quot;width&quot;], 300)
-            },
+        var c = js.dom(settings[&quot;canvas&quot;] || &quot;&lt;canvas&gt;&lt;/canvas&gt;&quot;),
             css = settings[&quot;css&quot;],
-            alt = js.alg.string(settings[&quot;alt&quot;], &quot;Your browser does not support Canvas elements.&quot;);
+            attrs = {
+                &quot;height&quot;: js.alg.number(settings[&quot;height&quot;], 150),
+                &quot;width&quot;: js.alg.number(settings[&quot;width&quot;], 300)
+            };
 
-        c.setAttrs(attrs);
-        c.setCss(css);
-        c.setHtml(alt);
+        if(!settings[&quot;canvas&quot;]) {
+            c.setCss(css)
+                .setAttrs(attrs);
+        }
+        
 
         return Object.create(js_canvas.fn, {
-            canvas: { value: c },
-            queue: { value: [] },
-            context: { value: c[&quot;_element&quot;][0] &amp;&amp; c[&quot;_element&quot;][0][&quot;getContext&quot;] &amp;&amp; c[&quot;_element&quot;][0].getContext(&quot;2d&quot;) },
+            &quot;canvas&quot;: { value: c },
+            &quot;queue&quot;: { value: [] },
+            &quot;context&quot;: { value: c[&quot;_element&quot;][0] &amp;&amp; c[&quot;_element&quot;][0][&quot;getContext&quot;] &amp;&amp; c[&quot;_element&quot;][0].getContext(&quot;2d&quot;) },
         });
     }
 
@@ -142,6 +143,57 @@ jspyder.extend.fn(&quot;canvas&quot;, function () {
             }
 
             return size;
+        },
+        
+<span id='jspyder-canvas-method-exportImageUrl'>        /**
+</span>         * Creates an image of the defined type, and returns the value.
+         * 
+         * @param {String} type
+         *      The type of image to generate (png, gif, jpg, etc.)
+         */
+        &quot;exportImageUrl&quot;: function(type) {
+            var dataUrl = &quot;&quot;;
+            if(this.canvas) {
+                this.canvas.element(0, function() {
+                    dataUrl = this.toDataURL(&quot;image/&quot; + type);
+                });
+            }
+            return dataUrl;
+        },
+        
+<span id='jspyder-canvas-method-getImageUrl'>        /**
+</span>         * Creates an image of the defined type, and exports the data-url into
+         * the defined function.
+         * 
+         * @param {String} type
+         *      The type of image to generate (png, gif, jpg, etc.)
+         * @param {Function} fn
+         *      The function to receive the generated data-url
+         */
+        &quot;getImageUrl&quot;: function(type, fn) {
+            js.alg.use(this, fn, [this.exportImageUrl(type)]);
+            return this;
+        },
+        
+<span id='jspyder-canvas-method-exportImage'>        /**
+</span>         * Generates an image, and returns the image node.
+         * 
+         * @param {String} type
+         */
+        &quot;exportImage&quot;: function(type) {
+            return js.dom(&quot;&lt;img&gt;&lt;/img&gt;&quot;)
+                .setAttrs({ &quot;src&quot;: this.exportImageUrl(type) });
+        },
+        
+<span id='jspyder-canvas-method-getImage'>        /**
+</span>         * Generates an image, and inserts it into the specified function.
+         * 
+         * @param {String} type
+         * @param {Function} fn
+         */
+        &quot;getImage&quot;: function(type, fn) {
+            js.alg.use(this, fn, [this.exportImage(type)]);
+            return this;
         },
 
 <span id='jspyder-canvas-method-clear'>        /**
@@ -415,6 +467,7 @@ jspyder.extend.fn(&quot;canvas&quot;, function () {
              * @param {String} [settings.linecolor]
              * @param {Number} [settings.min]
              * @param {Number} [settings.max]
+             * @param {Function} [settings.format]
              */
             &quot;barchart&quot;: function (settings) {
                 settings = settings || {};
@@ -432,11 +485,12 @@ jspyder.extend.fn(&quot;canvas&quot;, function () {
                     labelSize = settings[&quot;labelSize&quot;] = js.alg.number(settings[&quot;labelSize&quot;], 16),
                     min = settings[&quot;min&quot;] = js.alg.number(settings[&quot;min&quot;], Infinity),
                     max = settings[&quot;max&quot;] = js.alg.number(settings[&quot;max&quot;], -Infinity),
+                    format = js.alg.bindFn(this, settings[&quot;format&quot;] || function(n) { return n; }),
                     self = this,
                     cols,
                     columnSplit,
                     colWidth,
-                    offsetY = labelSize * 1.2,
+                    offsetY = labelSize * 1.5,
                     offsetX = 50;
 
                 self.cmd.rectangle.call(this, {
@@ -484,7 +538,7 @@ jspyder.extend.fn(&quot;canvas&quot;, function () {
                         &quot;y&quot;: ((height * (5 - i)) / 5) - (labelSize / 3),
                         &quot;size&quot;: labelSize,
                         &quot;font&quot;: &quot;Arial&quot;,
-                        &quot;text&quot;: ((i / 5) * max)|0,
+                        &quot;text&quot;: format(((i / 5) * max)|0),
                         &quot;textalign&quot;: &quot;left&quot;
                     });
                     self.cmd.text.call(self, {
@@ -492,7 +546,7 @@ jspyder.extend.fn(&quot;canvas&quot;, function () {
                         &quot;y&quot;: ((height * (5 - i)) / 5) - (labelSize / 3),
                         &quot;size&quot;: labelSize,
                         &quot;font&quot;: &quot;Arial&quot;,
-                        &quot;text&quot;: ((i / 5) * max)|0,
+                        &quot;text&quot;: format(((i / 5) * max)|0),
                         &quot;textalign&quot;: &quot;right&quot;
                     });
                 });
@@ -572,6 +626,7 @@ jspyder.extend.fn(&quot;canvas&quot;, function () {
              * @param {String} [settings.linecolor]
              * @param {Number} [settings.min]
              * @param {Number} [settings.max]
+             * @param {Function} [settings.format]
              */
             &quot;linechart&quot;: function (settings) {
                 settings = settings || {};
@@ -589,6 +644,7 @@ jspyder.extend.fn(&quot;canvas&quot;, function () {
                     lineColor = settings[&quot;linecolor&quot;] = js.alg.string(settings[&quot;linecolor&quot;], &quot;rgba(0, 0, 0, 0.3)&quot;),
                     min = js.alg.number(settings[&quot;min&quot;], Infinity),
                     max = js.alg.number(settings[&quot;max&quot;], -Infinity),
+                    format = js.alg.bindFn(this, settings[&quot;format&quot;] || function(n) { return n; }),
                     self = this,
                     cols,
                     offsetX = 50,
@@ -639,7 +695,7 @@ jspyder.extend.fn(&quot;canvas&quot;, function () {
                         y: ((height * (5 - i)) / 5) - (labelSize / 3),
                         size: labelSize,
                         font: &quot;Arial&quot;,
-                        text: ((i / 5) * max)|0,
+                        text: format(((i / 5) * max)|0),
                         textalign: &quot;left&quot;
                     });
 
@@ -648,7 +704,7 @@ jspyder.extend.fn(&quot;canvas&quot;, function () {
                         y: ((height * (5 - i)) / 5) - (labelSize / 3),
                         size: labelSize,
                         font: &quot;Arial&quot;,
-                        text: ((i / 5) * max)|0,
+                        text: format(((i / 5) * max)|0),
                         textalign: &quot;right&quot;
                     });
                 });
@@ -713,7 +769,7 @@ jspyder.extend.fn(&quot;canvas&quot;, function () {
                         self.cmd.circle.call(self, {
                             &quot;y&quot;: v2,
                             &quot;x&quot;: dotX,
-                            &quot;radius&quot;: 4,
+                            &quot;radius&quot;: dotRadius,
                             &quot;fill&quot;: dotColor,
                             &quot;border&quot;: dotOutline,
                             &quot;thickness&quot;: dotOutlineWidth
@@ -722,7 +778,7 @@ jspyder.extend.fn(&quot;canvas&quot;, function () {
                         self.cmd.circle.call(self, {
                             &quot;y&quot;: v1,
                             &quot;x&quot;: x,
-                            &quot;radius&quot;: 4,
+                            &quot;radius&quot;: dotRadius,
                             &quot;fill&quot;: dotColor,
                             &quot;border&quot;: dotOutline,
                             &quot;thickness&quot;: dotOutlineWidth
