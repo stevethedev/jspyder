@@ -1487,7 +1487,7 @@ js.extend.fn("sp", function () {
     }
 
     /**
-     * @class
+     * @class jspyder.sp.group
      * @member jspyder.sp
      *
      * Manages information having to do with the SP User
