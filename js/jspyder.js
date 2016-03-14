@@ -477,7 +477,7 @@
              *
              * @param {Function} fn     Function to execute
              */
-            run: function (fn) {
+            "run": function (fn) {
                 if (typeof fn === "function") { fn(); }
                 return this;
             },
@@ -488,7 +488,7 @@
              * @param {Mixed} b             Value to convert to a boolean.
              * @param {Boolean} [d=false]   Value to use if b is undefined.
              */
-            bool: function bool(b, d) {
+            "bool": function bool(b, d) {
                 switch (typeof b) {
                     case "undefined":
                         return d || false;
@@ -516,7 +516,7 @@
                 if (typeof s === "string") {
                     return s;
                 }
-                else if (typeof s === "object" && s.isPrototypeOf(RegExp)) {
+                else if (s !== null && typeof s === "object" && s.isPrototypeOf(RegExp)) {
                     s = ('' + s).match(/^\/(.*)\/[a-z]*$/, "$1");
                     return s;
                 }
@@ -966,35 +966,12 @@
             /**
              * Creates a deep copy of the passed object.
              */
-            "deepCloneObj": function(obj /*, depchain, ...*/) {
+            "deepCloneObj": function(obj) {
                 if(!obj || typeof obj !== "object") { return obj; }
                 obj = this.cloneObj(obj);
 
-                var depchain = js.alg.array(arguments[1]);                
-                
                 js.alg.each(obj, function(value, key, obj) {
-                    for (var i = 0; i < depchain.length; i++) {
-                        if (depchain[i]["from"] === value) {
-                            obj[key] = depchain[i]["to"];
-                            return;
-                        }
-                    }
-
-                    var map = { "from": value, "to": {} };
-                    depchain.push(map);
-                    map["cleanup"] = obj[key] = js.alg.deepCloneObj(value, depchain);
-                });
-
-                js.alg.each(obj, function refill(value, key, obj) {
-                    for (var i = 0; i < depchain.length; i++) {
-                        if (value === depchain[i]["to"] && depchain[i]["cleanup"]) {
-                            obj[key] = depchain[i]["cleanup"];
-                            break;
-                        }
-                        else if (typeof value === "object") {
-                            js.alg.each(value, refill);
-                        }
-                    }
+                    obj[key] = js.alg.deepCloneObj(value);
                 });
                 
                 return obj;

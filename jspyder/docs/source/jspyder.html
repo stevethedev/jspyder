@@ -182,7 +182,7 @@
 </span>     * @private
      * @member jspyder
      * 
-     * Bootstrap jspyder&#39;s environment variable collection.
+     * Bootstrap jspyder's environment variable collection.
      * 
      * @param {Object} js Jspyder Object
      */
@@ -204,7 +204,7 @@
                 else if (!window.addEventListener) { BROWSER_VERSION = 8; }
                 else { BROWSER_VERSION = 7; }
             }
-            else if (typeof window.InstallTrigger !== &#39;undefined&#39;) {
+            else if (typeof window.InstallTrigger !== 'undefined') {
                 BROWSER_NAME = &quot;Firefox&quot;;
 
                 if (Int8Array &amp;&amp; Int8Array.prototype.sort) { BROWSER_VERSION = 7; }
@@ -214,7 +214,7 @@
                 else if (typeof window.Reflect !== &quot;undefined&quot;) { BROWSER_VERSION = 42; }
                 else { BROWSER_VERSION = 41; }
             }
-            else if (!!window.opera || navigator.userAgent.indexOf(&#39; OPR/&#39;) &gt;= 0) {
+            else if (!!window.opera || navigator.userAgent.indexOf(' OPR/') &gt;= 0) {
                 BROWSER_NAME = &quot;Opera&quot;;
                 BROWSER_VERSION = 1;
             }
@@ -223,7 +223,7 @@
                 BROWSER_VERSION = 45;
                 //45 - 51;
             }
-            else if (Object.prototype.toString.call(window.HTMLElement).indexOf(&#39;Constructor&#39;) &gt; 0) {
+            else if (Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') &gt; 0) {
                 BROWSER_NAME = &quot;Safari&quot;;
                 if (window.CSS.supports) { BROWSER_VERSION = 9; }
                 else if (!window.CSS.supports) { BROWSER_VERSION = 8; }
@@ -312,7 +312,7 @@
 </span>     * @private
      * @member jspyder
      * 
-     * Bootstrap jspyder&#39;s algorithm collection.
+     * Bootstrap jspyder's algorithm collection.
      * 
      * @param {Object} js Jspyder Object
      */
@@ -494,7 +494,7 @@
              *
              * @param {Function} fn     Function to execute
              */
-            run: function (fn) {
+            &quot;run&quot;: function (fn) {
                 if (typeof fn === &quot;function&quot;) { fn(); }
                 return this;
             },
@@ -505,7 +505,7 @@
              * @param {Mixed} b             Value to convert to a boolean.
              * @param {Boolean} [d=false]   Value to use if b is undefined.
              */
-            bool: function bool(b, d) {
+            &quot;bool&quot;: function bool(b, d) {
                 switch (typeof b) {
                     case &quot;undefined&quot;:
                         return d || false;
@@ -533,8 +533,8 @@
                 if (typeof s === &quot;string&quot;) {
                     return s;
                 }
-                else if (typeof s === &quot;object&quot; &amp;&amp; s.isPrototypeOf(RegExp)) {
-                    s = (&#39;&#39; + s).match(/^\/(.*)\/[a-z]*$/, &quot;$1&quot;);
+                else if (s !== null &amp;&amp; typeof s === &quot;object&quot; &amp;&amp; s.isPrototypeOf(RegExp)) {
+                    s = ('' + s).match(/^\/(.*)\/[a-z]*$/, &quot;$1&quot;);
                     return s;
                 }
                 else if (s || s === 0) {
@@ -561,7 +561,7 @@
 </span>             * Coerces a value to a date, or else returns a new date object.
              */
             &quot;date&quot;: function(v, d) {
-                return ((input instanceof Date || Object.prototype.toString.call(input) === &#39;[object Date]&#39;)
+                return ((input instanceof Date || Object.prototype.toString.call(input) === '[object Date]')
                     ? v
                     : d || new Date());
             },
@@ -888,7 +888,7 @@
              * @return {Array} arrRef parameter
              */
             &quot;joinArray&quot;: function(arrRef, arrFrom /*, ... */) {
-                // limit pulled from Google&#39;s closure library:
+                // limit pulled from Google's closure library:
                 // https://github.com/google/closure-library/commit/da353e0265ea32583ea1db9e7520dce5cceb6f6a
                 var CHUNK_SIZE = 8192; 
                 
@@ -983,35 +983,12 @@
 <span id='jspyder-alg-method-deepCloneObj'>            /**
 </span>             * Creates a deep copy of the passed object.
              */
-            &quot;deepCloneObj&quot;: function(obj /*, depchain, ...*/) {
+            &quot;deepCloneObj&quot;: function(obj) {
                 if(!obj || typeof obj !== &quot;object&quot;) { return obj; }
                 obj = this.cloneObj(obj);
 
-                var depchain = js.alg.array(arguments[1]);                
-                
                 js.alg.each(obj, function(value, key, obj) {
-                    for (var i = 0; i &lt; depchain.length; i++) {
-                        if (depchain[i][&quot;from&quot;] === value) {
-                            obj[key] = depchain[i][&quot;to&quot;];
-                            return;
-                        }
-                    }
-
-                    var map = { &quot;from&quot;: value, &quot;to&quot;: {} };
-                    depchain.push(map);
-                    map[&quot;cleanup&quot;] = obj[key] = js.alg.deepCloneObj(value, depchain);
-                });
-
-                js.alg.each(obj, function refill(value, key, obj) {
-                    for (var i = 0; i &lt; depchain.length; i++) {
-                        if (value === depchain[i][&quot;to&quot;] &amp;&amp; depchain[i][&quot;cleanup&quot;]) {
-                            obj[key] = depchain[i][&quot;cleanup&quot;];
-                            break;
-                        }
-                        else if (typeof value === &quot;object&quot;) {
-                            js.alg.each(value, refill);
-                        }
-                    }
+                    obj[key] = js.alg.deepCloneObj(value);
                 });
                 
                 return obj;
@@ -1202,7 +1179,7 @@
             if (!(js_dom.fn.isPrototypeOf(element))) {
 
                 if (typeof s === &quot;string&quot;) {
-                    if((s.match(/(^\\\&lt;|\&lt;)/g) || []).indexOf(&#39;&lt;&#39;) === -1) {
+                    if((s.match(/(^\\\&lt;|\&lt;)/g) || []).indexOf('&lt;') === -1) {
                         element = document.querySelectorAll(s);
                     }
                     else {
@@ -1255,7 +1232,7 @@
         
 <span id='jspyder-dom-method-__getDomClasses'>        /**
 </span>         * @private
-         * Gets the DOM object&#39;s classes as an array
+         * Gets the DOM object's classes as an array
          */
         function __getDomClasses(element) {
             return (__isElement(element)
@@ -1265,7 +1242,7 @@
         
 <span id='jspyder-dom-method-_setDomClass'>        /**
 </span>         * @private
-         * Sets the DOM object&#39;s class based on the enable flag
+         * Sets the DOM object's class based on the enable flag
          */
         function _setDomClass(element, cls, enable) {
             var clss = __getDomClasses(element),
@@ -1290,7 +1267,7 @@
         
 <span id='jspyder-dom-method-_getDomClass'>        /**
 </span>         * @private
-         * Sets the DOM object&#39;s class based on the enable flag
+         * Sets the DOM object's class based on the enable flag
          */
         function _getDomClass(element, cls) {
             return (__getDomClasses(element).indexOf(cls) !== -1);
@@ -1667,7 +1644,7 @@
             },
             
 <span id='jspyder-dom-method-attachStart'>            /**
-</span>             * Inserts this set of nodes to the identified node&#39;s parent, immediately
+</span>             * Inserts this set of nodes to the identified node's parent, immediately
              * preceding that element.
              */
             attachStart: function (parent, fn) {
@@ -1682,7 +1659,7 @@
             },
             
 <span id='jspyder-dom-method-attachEnd'>            /**
-</span>             * Inserst this set of nodes to the identified node&#39;s parent, immediately
+</span>             * Inserst this set of nodes to the identified node's parent, immediately
              * following that element.
              */
             attachEnd: function (parent, fn) {
@@ -1719,7 +1696,7 @@
             },
             
 <span id='jspyder-dom-method-appendBefore'>            /**
-</span>             * Attaches the element to the identified node&#39;s parent, immediately
+</span>             * Attaches the element to the identified node's parent, immediately
              * preceding the identified child.
              * 
              * @param {Mixed} child
@@ -1735,7 +1712,7 @@
             },
             
 <span id='jspyder-dom-method-appendAfter'>            /**
-</span>             * Attaches the element to the identified node&#39;s parent, immediately
+</span>             * Attaches the element to the identified node's parent, immediately
              * following the identifed child.
              * 
              * @param {Mixed} child
@@ -2129,7 +2106,7 @@
                     name = names[n];
                     field = fields[name];
 
-                    this._template_insert(tDOM, &#39;${&#39; + name + &#39;}&#39;, field);
+                    this._template_insert(tDOM, '${' + name + '}', field);
                 }
                 return tDOM;
             },

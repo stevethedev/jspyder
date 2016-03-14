@@ -270,12 +270,11 @@ js.extend.fn("sp", function () {
                 row = null,
                 i = 0;
 
-            while(row = this.getRow(i++)) {
+            while(row = this.exportRow(i++)) {
                 if(row["ID"]["value"] === id) {
                     found = row;
                     break;
                 }
-
             }
 
             return found;
@@ -444,12 +443,12 @@ js.extend.fn("sp", function () {
          * @private
          */
         _pushLoopDirtyRows: function(row, i, rows, data) {
-            var rowID = row.ID.value,
+            var rowID = row._columns && row._columns["ID"].value,
                 itemInfo = null,
                 listItem = null;
 
-            if(row.ID.value < 0) {
-                itemInfo = new SP.ListItemCreationInformation();
+            if(rowID < 0) {
+                itemInfo = new window.SP.ListItemCreationInformation();
                 listItem = data.list.addItem(itemInfo);
                 data.newrow = true;
             }
@@ -958,11 +957,9 @@ js.extend.fn("sp", function () {
 
         /** @private */
         _sumRows: function (row, _, rows, columns) {
-            // js.alg.each(row, sp.query.fn._sumColumns, columns);
-            js.alg.each(row, sp.query.fn._sumColumns, columns);
+            js.alg.each(columns, sp.query.fn._sumColumns, row);
         },
 
-        // _sumColumns: function(value, colName, _, out) {
         /** @private */
         _sumColumns: function(sumValue, colName, out, row) {
             var column = row[colName];
@@ -972,7 +969,6 @@ js.extend.fn("sp", function () {
 
             switch(column["type"]) {
                 case "number":
-                    // out[colName] = js.alg.number(out[colName]) + js.alg.number(value.value);
                     out[colName] = js.alg.number(rowValue) + js.alg.number(sumValue);
                     break;
 
@@ -982,7 +978,6 @@ js.extend.fn("sp", function () {
                     
                 case "string":
                 default:
-                    // out[colName] = value.value;
                     out[colName] = rowValue;
                     break;
             }
