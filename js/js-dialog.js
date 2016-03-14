@@ -107,7 +107,7 @@ jspyder.extend.fn("dialog", function () {
                         dlg.remove(); 
                         (typeof cfg.callback === "function") && (cfg.callback(false)); 
                     } 
-                },
+                }
             ]
         });
         return dlg;
@@ -137,7 +137,7 @@ jspyder.extend.fn("dialog", function () {
                         dlg.remove(); 
                         (typeof cfg.callback === "function") && (cfg.callback(false)); 
                     } 
-                },
+                }
             ]
         });
         return dlg;

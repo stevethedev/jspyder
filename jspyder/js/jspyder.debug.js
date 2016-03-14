@@ -1460,13 +1460,10 @@ jspyder.extend.fn("ajax", function() {
   return $js_ajax$$;
 });
 jspyder.extend.fn("canvas", function() {
-  function $js_canvas$$($alt_settings$$) {
-    $alt_settings$$ = $alt_settings$$ || {};
-    var $c$$ = $js$$.dom("<canvas></canvas>"), $attrs$$ = {height:$js$$.alg.number($alt_settings$$.height, 150), width:$js$$.alg.number($alt_settings$$.width, 300)}, $css$$ = $alt_settings$$.css;
-    $alt_settings$$ = $js$$.alg.string($alt_settings$$.alt, "Your browser does not support Canvas elements.");
-    $c$$.setAttrs($attrs$$);
-    $c$$.setCss($css$$);
-    $c$$.setHtml($alt_settings$$);
+  function $js_canvas$$($settings$$) {
+    $settings$$ = $settings$$ || {};
+    var $c$$ = $js$$.dom($settings$$.canvas || "<canvas></canvas>"), $css$$ = $settings$$.css, $attrs$$ = {height:$js$$.alg.number($settings$$.height, 150), width:$js$$.alg.number($settings$$.width, 300)};
+    $settings$$.canvas || $c$$.setCss($css$$).setAttrs($attrs$$);
     return Object.create($js_canvas$$.fn, {canvas:{value:$c$$}, queue:{value:[]}, context:{value:$c$$._element[0] && $c$$._element[0].getContext && $c$$._element[0].getContext("2d")}});
   }
   function $__mergeSettings$$($settings$$) {
@@ -1498,6 +1495,20 @@ jspyder.extend.fn("canvas", function() {
     var $size$$ = {height:0, width:0, x:0, y:0}, $element$$ = this.canvas && this.canvas._element && this.canvas._element[0], $rect$$;
     $element$$ && ($rect$$ = $element$$.getBoundingClientRect(), $size$$.width = $element$$.width, $size$$.height = $element$$.height, $size$$.x = $rect$$.x, $size$$.y = $rect$$.y);
     return $size$$;
+  }, exportImageUrl:function $$js_canvas$$$fn$exportImageUrl$($type$$) {
+    var $dataUrl$$ = "";
+    this.canvas && this.canvas.element(0, function() {
+      $dataUrl$$ = this.toDataURL("image/" + $type$$);
+    });
+    return $dataUrl$$;
+  }, getImageUrl:function $$js_canvas$$$fn$getImageUrl$($type$$, $fn$$) {
+    $js$$.alg.use(this, $fn$$, [this.exportImageUrl($type$$)]);
+    return this;
+  }, exportImage:function $$js_canvas$$$fn$exportImage$($type$$) {
+    return $js$$.dom("<img></img>").setAttrs({src:this.exportImageUrl($type$$)});
+  }, getImage:function $$js_canvas$$$fn$getImage$($type$$, $fn$$) {
+    $js$$.alg.use(this, $fn$$, [this.exportImage($type$$)]);
+    return this;
   }, clear:function $$js_canvas$$$fn$clear$() {
     var $self$$ = this;
     this.getSize(function($size$$) {
@@ -1597,7 +1608,7 @@ jspyder.extend.fn("canvas", function() {
     $js$$.alg.number($offsetY_settings$$.labelSize, 16), $min$$ = $offsetY_settings$$.min = $js$$.alg.number($offsetY_settings$$.min, Infinity), $max$$ = $offsetY_settings$$.max = $js$$.alg.number($offsetY_settings$$.max, -Infinity), $format$$ = $js$$.alg.bindFn(this, $offsetY_settings$$.format || function($n$$) {
       return $n$$;
     }), $self$$ = this, $cols$$, $colWidth$$;
-    $offsetY_settings$$ = 1.2 * $labelSize$$;
+    $offsetY_settings$$ = 1.5 * $labelSize$$;
     $self$$.cmd.rectangle.call(this, {width:$width$$, height:$height$$, x:$chartX$$, y:$chartY_size$$, fill:$fill$$, borderWidth:$borderWidth$$, border:$border$$});
     $width$$ -= 2 * $borderWidth$$;
     $height$$ -= 2 * $borderWidth$$;
@@ -2154,27 +2165,27 @@ js.extend.fn("download", function() {
     $dl$$.setName($def$$.name).setType($def$$.type).setData($def$$.data).setCharset($def$$.charset);
     return $dl$$;
   }
-  function $__save$$($filereader_name$$, $type$$, $blob$$) {
-    $type$$ = $js$$.alg.string($type$$, $safeType$$);
-    $filereader_name$$ = $js$$.alg.string($filereader_name$$, "download.txt");
+  function $__save$$($name$$, $filereader_type$$, $blob$$) {
+    $filereader_type$$ = $js$$.alg.string($filereader_type$$, $safeType$$);
+    $name$$ = $js$$.alg.string($name$$, "download.txt");
     if ($__reDataUrl$$.test($blob$$)) {
-      return $saveBlob$$ ? $saveBlob$$($__encode$$($blob$$), $filereader_name$$) : $__triggerSave$$($blob$$);
+      return $saveBlob$$ ? $saveBlob$$($__encode$$($blob$$), $name$$) : $__triggerSave$$($name$$, $blob$$);
     }
-    $blob$$ = $blob$$ instanceof $Blob$$ ? $blob$$ : new $Blob$$([$blob$$], {type:$type$$});
+    $blob$$ = $blob$$ instanceof $Blob$$ ? $blob$$ : new $Blob$$([$blob$$], {type:$filereader_type$$});
     if ($saveBlob$$) {
-      return $saveBlob$$($blob$$, $filereader_name$$);
+      return $saveBlob$$($blob$$, $name$$);
     }
     if ($URL$$) {
-      return "Chrome" === $js$$.env.browser.name && $type$$ !== $safeType$$ && ($blob$$ = $sliceBlob$$.call($blob$$, 0, $blob$$.size, $safeType$$)), $__triggerSave$$($filereader_name$$, $URL$$.createObjectURL($blob$$));
+      return "Chrome" === $js$$.env.browser.name && $filereader_type$$ !== $safeType$$ && ($blob$$ = $sliceBlob$$.call($blob$$, 0, $blob$$.size, $safeType$$)), $__triggerSave$$($name$$, $URL$$.createObjectURL($blob$$));
     }
     if ("string" === typeof $blob$$ || $blob$$ instanceof String) {
-      return $__triggerSave$$("data:" + $type$$ + $__decode$$($blob$$));
+      return $__triggerSave$$($name$$, "data:" + $filereader_type$$ + $__decode$$($blob$$));
     }
-    $filereader_name$$ = new FileReader;
-    $filereader_name$$.onload = function $$filereader_name$$$onload$($e$$) {
-      $__triggerSave$$(this.result);
+    $filereader_type$$ = new FileReader;
+    $filereader_type$$.onload = function $$filereader_type$$$onload$($e$$) {
+      $__triggerSave$$($name$$, this.result);
     };
-    $filereader_name$$.readAsDataURL($blob$$);
+    $filereader_type$$.readAsDataURL($blob$$);
     return !0;
   }
   function $__triggerSave$$($filename$$, $url$$) {
