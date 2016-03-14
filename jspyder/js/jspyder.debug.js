@@ -633,7 +633,7 @@ $jscomp.string.endsWith$install = function $$jscomp$string$endsWith$install$() {
     var $js$$ = $global$$.jspyder = function jspyder() {
     };
     $js$$.extend = function js_extend($name$$, $obj$$) {
-      Object.defineProperty(this, $name$$, {value:$obj$$});
+      this.hasOwnProperty($name$$) || Object.defineProperty(this, $name$$, {value:$obj$$});
       return this;
     };
     $js$$.extend.fn = function js_extend_fn($name$$, $fn$$, $args$$) {
@@ -3215,28 +3215,46 @@ js.extend.fn("sp", function() {
       return $__rows$$.join("\r\n");
     }($rows$$0$$, $columns$$0$$)].join("");
   }
-  function $__spUserSuccess$$($config$$, $sender$$, $args$$) {
+  function $__spUserSuccess$$($config$$, $success$$, $sender$$, $args$$) {
     this._email = this._user.get_email();
     this._username = this._user.get_loginName();
-    this._userid = this._user.get_userId();
-    $js$$.alg.use(this, $config$$.success, [$sender$$, $args$$]);
+    this._userid = this._user.get_id();
+    $js$$.alg.use(this, $success$$, [$sender$$, $args$$]);
   }
-  function $__spUserFailure$$($config$$, $sender$$, $args$$) {
-    $js$$.alg.use(this, $config$$.failure, [$sender$$, $args$$]);
+  function $__spUserFailure$$($config$$, $failure$$, $sender$$, $args$$) {
+    $js$$.alg.use(this, $failure$$, [$sender$$, $args$$]);
   }
-  function $__isMemberSuccess$$($successFn$$, $failureFn$$, $sender$$, $args$$) {
+  function $__getGroupByFn$$($testFn$$, $e$$, $name$$, $success$$, $failure$$, $sender$$, $args$$) {
+    $e$$ = $e$$.getEnumerator();
+    for (var $group$$ = null;$e$$.moveNext();) {
+      if ($group$$ = $e$$.get_current(), $group$$[$testFn$$]() === $name$$) {
+        Object.defineProperties(this, {_group:{value:$group$$}, _id:{value:$group$$.get_id()}, _name:{value:$group$$.get_title()}});
+        $js$$.alg.use(this, $success$$, [$group$$]);
+        return;
+      }
+    }
+    $js$$.alg.use(this, $failure$$, [$sender$$, $args$$]);
+  }
+  function $__isMemberSuccess$$($user$$, $successFn$$, $failureFn$$, $sender$$, $args$$) {
     for (var $userInGroup$$ = !1, $enumerator$$ = this._group.get_users().getEnumerator(), $groupUser$$ = null;$enumerator$$.moveNext();) {
-      if ($groupUser$$ = $enumerator$$.get_current(), $groupUser$$.get_id() === user.get_id()) {
+      if ($groupUser$$ = $enumerator$$.get_current(), $groupUser$$.get_id() === $user$$.get_id()) {
         $userInGroup$$ = !0;
         break;
       }
     }
     $js$$.alg.use(this, $userInGroup$$ ? $successFn$$ : $failureFn$$, [$sender$$, $args$$]);
   }
-  function $__isMemberFailure$$($failureFn$$, $sender$$, $args$$) {
+  function $__isMemberFailure$$($user$$, $failureFn$$, $sender$$, $args$$) {
     $js$$.alg.use(this, $failureFn$$, [$sender$$, $args$$]);
   }
   var $js$$ = window.jspyder;
+  $sp$$.getContext = function $$sp$$$getContext$($url$$, $fn$$) {
+    $js$$.alg.use($sp$$.exportContext($url$$), $fn$$);
+    return $sp$$;
+  };
+  $sp$$.exportContext = function $$sp$$$exportContext$($url$$) {
+    return $url$$ ? new window.SP.ClientContext($url$$) : window.SP.ClientContext.get_current();
+  };
   $sp$$.list = function spList($config$$, $fn$$) {
     window.SP || $js$$.log.warn("Ensure that MicrosoftAjax.js, sp.runtime.js, and sp.js have been loaded before using JSpyder SharePoint Interface");
     var $list$$ = Object.create($sp$$.list.fn);
@@ -3297,7 +3315,7 @@ js.extend.fn("sp", function() {
     $js$$.alg.use(this, $fn$$, [$count$$]);
     return this;
   }, pull:function $$sp$$$list$fn$pull$($success$$, $failure$$) {
-    var $ctx$$ = new window.SP.ClientContext(this._url), $list$$7_listItems$$ = $ctx$$.get_web().get_lists().getByTitle(this._name), $caml$$ = new window.SP.CamlQuery, $successFn$$ = "function" === typeof $success$$ ? $success$$ : this._success, $failureFn$$ = "function" === typeof $failure$$ ? $failure$$ : this._failure;
+    var $ctx$$ = $sp$$.exportContext(this._url), $list$$7_listItems$$ = $ctx$$.get_web().get_lists().getByTitle(this._name), $caml$$ = new window.SP.CamlQuery, $successFn$$ = "function" === typeof $success$$ ? $success$$ : this._success, $failureFn$$ = "function" === typeof $failure$$ ? $failure$$ : this._failure;
     $caml$$.set_viewXml(this.caml);
     $list$$7_listItems$$ = $list$$7_listItems$$.getItems($caml$$);
     $ctx$$.load($list$$7_listItems$$);
@@ -3315,7 +3333,7 @@ js.extend.fn("sp", function() {
     });
     return this;
   }, push:function $$sp$$$list$fn$push$($success$$, $failure$$) {
-    var $ctx$$ = new window.SP.ClientContext(this._url), $data$$99_list$$ = $ctx$$.get_web().get_lists().getByTitle(this._name), $data$$99_list$$ = {clientContext:$ctx$$, items:[], list:$data$$99_list$$, self:this};
+    var $ctx$$ = $sp$$.exportContext(this._url), $data$$99_list$$ = $ctx$$.get_web().get_lists().getByTitle(this._name), $data$$99_list$$ = {clientContext:$ctx$$, items:[], list:$data$$99_list$$, self:this};
     this.eachDirtyRow(this._pushLoopDirtyRows, $data$$99_list$$);
     $ctx$$.executeQueryAsync($js$$.alg.bindFn(this, $__successPush$$, [$data$$99_list$$.items, $success$$]), $js$$.alg.bindFn(this, $__failurePush$$, [$data$$99_list$$.items, $failure$$]));
     return this;
@@ -3358,7 +3376,7 @@ js.extend.fn("sp", function() {
     var $colValue$$ = "undefined" !== typeof $colName$$2_value$$ ? $colName$$2_value$$ : $colData$$.default || null;
     $row$$[$colData$$.name] = $cell$$1_data$$;
   }, getPermissions:function $$sp$$$list$fn$getPermissions$($success$$, $failure$$) {
-    var $ctx$$ = new window.SP.ClientContext(this._url), $web$$ = $ctx$$.get_web(), $data$$ = {currentUser:$web$$.get_currentUser(), web:$web$$};
+    var $ctx$$ = $sp$$.exportContext(this._url), $web$$ = $ctx$$.get_web(), $data$$ = {currentUser:$web$$.get_currentUser(), web:$web$$};
     $ctx$$.load($data$$.currentUser);
     $ctx$$.load($web$$, "EffectiveBasePermissions");
     $ctx$$.executeQueryAsync($js$$.alg.bindFn(this, this._getPermissionsSuccess, [$data$$, $success$$]), $js$$.alg.bindFn(this, this._getPermissionsSuccess, [null, $failure$$]));
@@ -3462,14 +3480,12 @@ js.extend.fn("sp", function() {
   $sp$$.column.fn = {internal:"", text:"", type:"string", default:"", valueOf:function $$sp$$$column$fn$valueOf$() {
     return this.value;
   }};
-  $sp$$.user = function $$sp$$$user$($config$$) {
-    var $ctx$$ = new window.SP.ClientContext($config$$.url), $spUser_userCollection$$ = $ctx$$.get_web().get_siteUsers(), $user$$ = null;
+  $sp$$.user = function $$sp$$$user$($config$$, $success$$, $failure$$) {
     $config$$ = $config$$ || {};
-    $user$$ = $config$$.userid ? $spUser_userCollection$$.getById($config$$.userid) : $config$$.login ? $spUser_userCollection$$.getByLoginName($config$$.login) : $config$$.email ? $spUser_userCollection$$.getByEmail($config$$.email) : $spUser_userCollection$$.get_currentUser();
-    $spUser_userCollection$$ = Object.create($sp$$.user, {_user:{value:$user$$}});
+    var $ctx$$ = $sp$$.exportContext($config$$.url), $spUser_web$$ = $ctx$$.get_web(), $userCollection$$ = $spUser_web$$.get_siteUserInfoList(), $user$$ = null, $user$$ = $config$$.userid ? $userCollection$$.getById($config$$.userid) : $config$$.login ? $userCollection$$.getByLoginName($config$$.login) : $config$$.email ? $userCollection$$.getByEmail($config$$.email) : $spUser_web$$.get_currentUser(), $spUser_web$$ = Object.create($js$$.sp.user.fn, {_user:{value:$user$$}});
     $ctx$$.load($user$$);
-    $ctx$$.executeQueryAsync($js$$.alg.bindFn($spUser_userCollection$$, $__spUserSuccess$$, [$config$$]), $js$$.alg.bindFn($spUser_userCollection$$, $__spUserFailure$$, [$config$$]));
-    return $spUser_userCollection$$;
+    $ctx$$.executeQueryAsync($js$$.alg.bindFn($spUser_web$$, $__spUserSuccess$$, [$config$$, $success$$]), $js$$.alg.bindFn($spUser_web$$, $__spUserFailure$$, [$config$$, $failure$$]));
+    return $spUser_web$$;
   };
   $sp$$.user.getById = function $$sp$$$user$getById$($userid$$, $url$$) {
     return $sp$$.user({userid:$userid$$, url:$url$$});
@@ -3480,22 +3496,32 @@ js.extend.fn("sp", function() {
   $sp$$.user.getByEmail = function $$sp$$$user$getByEmail$($email$$, $url$$) {
     return $sp$$.user({email:$email$$, url:$url$$});
   };
-  $sp$$.user.fn = {_user:null, _email:null, _userid:null, _username:null, _url:null, memberOfGroup:function $$sp$$$user$fn$memberOfGroup$($group$$, $fn$$) {
-    var $yes$$ = $js$$.alg.bindFn(this, $fn$$, [!0]), $no$$ = $js$$.alg.bindFn(this, $fn$$, [!1]);
-    $sp$$.group($group$$).isMember(this._user, $yes$$, $no$$);
+  $sp$$.user.fn = {_user:null, _email:null, _userid:null, _username:null, _url:null, isMemberOfGroup:function $$sp$$$user$fn$isMemberOfGroup$($group$$, $fn$$) {
+    var $yes$$ = $js$$.alg.bindFn(this, $fn$$, [!0]), $no$$ = $js$$.alg.bindFn(this, $fn$$, [!1]), $user$$ = this._user;
+    $sp$$.group($group$$, function() {
+      this.isMember($user$$, $yes$$, $no$$);
+    }, $no$$);
     return this;
   }};
-  $sp$$.group = function $$sp$$$group$($config$$) {
-    var $groups$$ = (new window.SP.ClientContext($config$$.url)).get_web().get_siteGroups(), $group$$ = null, $spGroup$$ = null;
-    $config$$ && $config$$.isPrototypeOf($sp$$.group.fn) ? $spGroup$$ = $config$$ : ($config$$.name ? $group$$ = $groups$$.getByName($config$$.name) : $config$$.groupid && ($group$$ = $groups$$.getById($config$$.groupid)), $spGroup$$ = Object.create($sp$$.group.fn, {_url:{value:$js$$.alg.string($config$$.url, "")}, _group:{value:$group$$}}));
+  $sp$$.group = function $$sp$$$group$($config$$14_successFn$$, $success$$, $failure$$) {
+    $config$$14_successFn$$ = $config$$14_successFn$$ || {};
+    var $ctx$$ = $sp$$.exportContext($config$$14_successFn$$.url), $groups$$ = $ctx$$.get_web().get_siteGroups(), $spGroup$$ = null;
+    if ($config$$14_successFn$$ && $config$$14_successFn$$.isPrototypeOf($sp$$.group.fn)) {
+      $spGroup$$ = $config$$14_successFn$$;
+    } else {
+      $ctx$$.load($groups$$);
+      var $spGroup$$ = Object.create($sp$$.group.fn, {_url:{value:$js$$.alg.string($config$$14_successFn$$.url, "")}}), $failureFn$$ = $js$$.alg.bindFn($spGroup$$, $failure$$);
+      $config$$14_successFn$$ = $config$$14_successFn$$.name ? $js$$.alg.bindFn($spGroup$$, $__getGroupByFn$$, ["get_title", $groups$$, $config$$14_successFn$$.name, $success$$, $failure$$]) : $config$$14_successFn$$.groupid ? $js$$.alg.bindFn($spGroup$$, $__getGroupByFn$$, ["get_id", $groups$$, $config$$14_successFn$$.groupid, $success$$, $failure$$]) : $failureFn$$;
+      $ctx$$.executeQueryAsync($config$$14_successFn$$, $failureFn$$);
+    }
     return $spGroup$$;
   };
   $sp$$.group.fn = {_url:null, _group:null, isMember:function $$sp$$$group$fn$isMember$($user$$, $success$$, $failure$$) {
-    var $ctx$$ = null, $ctx$$ = new window.SP.ClientContext(this._url);
+    var $ctx$$ = null, $ctx$$ = $sp$$.exportContext(this._url);
     $ctx$$.get_web();
     $ctx$$.load($user$$);
     $ctx$$.load(this._group, "Users");
-    $ctx$$.executeQueryAsync($js$$.alg.bindFn(this, $__isMemberSuccess$$, [$success$$, $failure$$]), $js$$.alg.bindFn(this, $__isMemberFailure$$, [$failure$$]));
+    $ctx$$.executeQueryAsync($js$$.alg.bindFn(this, $__isMemberSuccess$$, [$user$$, $success$$, $failure$$]), $js$$.alg.bindFn(this, $__isMemberFailure$$, [$user$$, $failure$$]));
     return this;
   }};
   return $sp$$;
@@ -3542,9 +3568,9 @@ jspyder.extend.fn("template", function() {
   }
   var $_templates$$ = $js$$.createRegistry(), $_library$$ = $js$$.createRegistry(), $__master_key$$ = (4294967295 * Math.random() | 0).toString(32), $reFuncArgs$$ = /\s*(`(?:[^`\\]|\\.)*`|"(?:[^"\\]|\\.)*"|\d+(?:\.\d+)?|\$\{\D[a-z0-9_]*\})(?:\s*,\s*(?!\)))?/i, $reString$$ = /"(?:[^"\\]|\\.)*"/i, $reCommandLiteral$$ = /`(?:[^`\\]|\\.)*`/i, $reNumber$$ = /\d+(?:\.\d+)?/, $reVariable$$ = /\$\{\D[a-z0-9_]*\}/i, $reFuncName$$ = /\@\D[a-z0-9_]*/i, $reFunction$$ = /\@\D[a-z0-9_]*\((?:\s*(`(?:[^`\\]|\\.)*`|"(?:[^"\\]|\\.)*"|\d+(?:\.\d+)?|\$\{\D[a-z0-9_]*\})(?:\s*,\s*(?!\)))?)*\)/i, 
   $reSymbol$$ = /(\@\D[a-z0-9_]*\((?:\s*(`(?:[^`\\]|\\.)*`|"(?:[^"\\]|\\.)*"|\d+(?:\.\d+)?|\$\{\D[a-z0-9_]*\})(?:\s*,\s*(?!\)))?)*\)|\$\{\D[a-z0-9_]*\})/i;
-  $js_template$$.fn = {compile:function $$js_template$$$fn$compile$($name$$101_template$$, $data$$, $fn$$) {
-    $name$$101_template$$ = $_templates$$.fetch($name$$101_template$$);
-    return this.compileExplicit($name$$101_template$$, $data$$, $fn$$);
+  $js_template$$.fn = {compile:function $$js_template$$$fn$compile$($name$$102_template$$, $data$$, $fn$$) {
+    $name$$102_template$$ = $_templates$$.fetch($name$$102_template$$);
+    return this.compileExplicit($name$$102_template$$, $data$$, $fn$$);
   }, compileExplicit:function $$js_template$$$fn$compileExplicit$($template$$4_tmp$$, $data$$, $fn$$) {
     "function" !== typeof $data$$ || $fn$$ || ($fn$$ = $data$$, $data$$ = null);
     "undefined" === typeof $template$$4_tmp$$ && ($template$$4_tmp$$ = "");
