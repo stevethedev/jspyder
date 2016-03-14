@@ -537,7 +537,7 @@
              * Coerces a value to an array, or else returns a new array.
              */
             "array": function(a, d) {
-                return (o && o.isPrototypeOf(Array) ? o : d || []);
+                return (Array.isArray(a) ? a : d || []);
             },
 
             /**
