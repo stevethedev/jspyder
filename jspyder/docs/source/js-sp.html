@@ -1395,7 +1395,7 @@ js.extend.fn(&quot;sp&quot;, function () {
 
 <span id='js-sp-user'>    /**
 </span>     * @class js.sp.user
-     * @member js.sp
+     * @member jspyder.sp
      * @async
      * Manages User information
      *
@@ -1439,23 +1439,23 @@ js.extend.fn(&quot;sp&quot;, function () {
         return spUser;
     }
 
-<span id='js-sp-user-method-getById'>    /**
+<span id='jspyder-sp-user-method-getById'>    /**
 </span>     * @method getById
-     * @member js.sp.user
+     * @member jspyder.sp.user
      * Retrieves the user in the specified URL using the User ID
      */
     sp.user.getById = function(userid, url) { return sp.user({ &quot;userid&quot;: userid, &quot;url&quot;: url }); }
 
-<span id='js-sp-user-method-getByLogin'>    /**
+<span id='jspyder-sp-user-method-getByLogin'>    /**
 </span>     * @method getByLogin
-     * @member js.sp.user
+     * @member jspyder.sp.user
      * Retrieves the user in the specified URL using the User Login
      */
     sp.user.getByLogin = function(login, url) { return sp.user({ &quot;login&quot;: login, &quot;url&quot;: url }); }
 
-<span id='js-sp-user-method-getByEmail'>    /**
+<span id='jspyder-sp-user-method-getByEmail'>    /**
 </span>     * @method getByEmail
-     * @member js.sp.user
+     * @member jspyder.sp.user
      * Retrieves the user in the specified URL using the User Email
      */
     sp.user.getByEmail = function(email, url) { return sp.user({ &quot;email&quot;: email, &quot;url&quot;: url }); }
@@ -1505,6 +1505,8 @@ js.extend.fn(&quot;sp&quot;, function () {
 
 <span id='sp-group'>    /**
 </span>     * @class
+     * @member jspyder.sp
+     *
      * Manages information having to do with the SP User
      *
      * @param {Object} config

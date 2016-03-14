@@ -1378,7 +1378,7 @@ js.extend.fn("sp", function () {
 
     /**
      * @class js.sp.user
-     * @member js.sp
+     * @member jspyder.sp
      * @async
      * Manages User information
      *
@@ -1424,21 +1424,21 @@ js.extend.fn("sp", function () {
 
     /**
      * @method getById
-     * @member js.sp.user
+     * @member jspyder.sp.user
      * Retrieves the user in the specified URL using the User ID
      */
     sp.user.getById = function(userid, url) { return sp.user({ "userid": userid, "url": url }); }
 
     /**
      * @method getByLogin
-     * @member js.sp.user
+     * @member jspyder.sp.user
      * Retrieves the user in the specified URL using the User Login
      */
     sp.user.getByLogin = function(login, url) { return sp.user({ "login": login, "url": url }); }
 
     /**
      * @method getByEmail
-     * @member js.sp.user
+     * @member jspyder.sp.user
      * Retrieves the user in the specified URL using the User Email
      */
     sp.user.getByEmail = function(email, url) { return sp.user({ "email": email, "url": url }); }
@@ -1488,6 +1488,8 @@ js.extend.fn("sp", function () {
 
     /**
      * @class
+     * @member jspyder.sp
+     *
      * Manages information having to do with the SP User
      *
      * @param {Object} config
