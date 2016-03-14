@@ -949,14 +949,25 @@ $jscomp.string.endsWith$install = function $$jscomp$string$endsWith$install$() {
       $obj$$0$$ = this.cloneObj($obj$$0$$);
       var $depchain$$ = $js$$.alg.array($JSCompiler_OptimizeArgumentsArray_p0$$);
       $js$$.alg.each($obj$$0$$, function($value$$, $key$$, $obj$$) {
-        for (var $i$$ = 0;$i$$ < $depchain$$.length;$i$$++) {
-          if ($depchain$$[$i$$].from === $value$$) {
-            $obj$$[$key$$] = $depchain$$[$i$$].to;
+        for (var $i$$19_map$$ = 0;$i$$19_map$$ < $depchain$$.length;$i$$19_map$$++) {
+          if ($depchain$$[$i$$19_map$$].from === $value$$) {
+            $obj$$[$key$$] = $depchain$$[$i$$19_map$$].to;
             return;
           }
         }
-        $obj$$[$key$$] = $js$$.alg.deepCloneObj($value$$, $depchain$$);
-        $depchain$$.push({from:$value$$, to:$obj$$[$key$$]});
+        $i$$19_map$$ = {from:$value$$, to:{}};
+        $depchain$$.push($i$$19_map$$);
+        $i$$19_map$$.cleanup = $obj$$[$key$$] = $js$$.alg.deepCloneObj($value$$, $depchain$$);
+      });
+      $js$$.alg.each($obj$$0$$, function refill($value$$, $key$$, $obj$$) {
+        for (var $i$$ = 0;$i$$ < $depchain$$.length;$i$$++) {
+          if ($value$$ === $depchain$$[$i$$].to && $depchain$$[$i$$].cleanup) {
+            $obj$$[$key$$] = $depchain$$[$i$$].cleanup;
+            break;
+          } else {
+            "object" === typeof $value$$ && $js$$.alg.each($value$$, refill);
+          }
+        }
       });
       return $obj$$0$$;
     }, keycodes:{KC_Backspace:8, KC_Tab:9, KC_Enter:13, KC_Shift:16, KC_Ctrl:17, KC_Alt:18, KC_Pause:19, KC_Break:19, KC_CapsLock:20, KC_Escape:27, KC_Space:32, KC_PageUp:33, KC_PageDown:34, KC_End:35, KC_Home:36, KC_LeftArrow:37, KC_UpArrow:38, KC_RightArrow:39, KC_DownArrow:40, KC_Insert:45, KC_Delete:46, KC_0:48, KC_1:49, KC_2:50, KC_3:51, KC_4:52, KC_5:53, KC_6:54, KC_7:55, KC_8:56, KC_9:57, KC_A:65, KC_B:66, KC_C:67, KC_D:68, KC_E:69, KC_F:70, KC_G:71, KC_H:72, KC_I:73, KC_J:74, KC_K:75, KC_L:76, 
@@ -994,11 +1005,11 @@ $jscomp.string.endsWith$install = function $$jscomp$string$endsWith$install$() {
     function $__getDomClasses$$($element$$) {
       return $__isElement$$($element$$) ? $element$$.className.replace(/(^\s+)|(\s(?=\s))|(\s+$)/g, "").split(" ") : [];
     }
-    function $_parseHtml$$($i$$20_s$$) {
+    function $_parseHtml$$($i$$21_s$$) {
       var $div$$ = $document$$.createElement("div"), $arr$$ = [];
-      $div$$.innerHTML = $i$$20_s$$;
-      for ($i$$20_s$$ = 0;$i$$20_s$$ < $div$$.children.length;$i$$20_s$$++) {
-        $arr$$.push($div$$.children[$i$$20_s$$]);
+      $div$$.innerHTML = $i$$21_s$$;
+      for ($i$$21_s$$ = 0;$i$$21_s$$ < $div$$.children.length;$i$$21_s$$++) {
+        $arr$$.push($div$$.children[$i$$21_s$$]);
       }
       return $arr$$;
     }
@@ -2989,16 +3000,16 @@ jspyder.extend.fn("form", function() {
       }};
       return $fns$$;
     }
-    function $__searchLoop$$($text$$23_valObj$$, $i$$45_value$$, $values$$, $data$$) {
-      $i$$45_value$$ = $js$$.alg.string($text$$23_valObj$$.value);
-      $text$$23_valObj$$ = $js$$.alg.string($text$$23_valObj$$.text, $i$$45_value$$);
-      $data$$.regexp.test($text$$23_valObj$$) && $data$$.match.push('<li class="search-item" data-value="' + $i$$45_value$$ + '" title="' + $text$$23_valObj$$ + '">' + $text$$23_valObj$$ + "</li>");
+    function $__searchLoop$$($text$$23_valObj$$, $i$$46_value$$, $values$$, $data$$) {
+      $i$$46_value$$ = $js$$.alg.string($text$$23_valObj$$.value);
+      $text$$23_valObj$$ = $js$$.alg.string($text$$23_valObj$$.text, $i$$46_value$$);
+      $data$$.regexp.test($text$$23_valObj$$) && $data$$.match.push('<li class="search-item" data-value="' + $i$$46_value$$ + '" title="' + $text$$23_valObj$$ + '">' + $text$$23_valObj$$ + "</li>");
       $data$$.match.length >= $data$$.depth && this.stop();
     }
-    function $__searchValue$$($text$$24_valObj$$, $i$$46_value$$, $values$$, $data$$) {
-      $i$$46_value$$ = $js$$.alg.string($text$$24_valObj$$.value);
-      $text$$24_valObj$$ = $js$$.alg.string($text$$24_valObj$$.text, $i$$46_value$$);
-      $data$$.find.test($data$$.searchText ? $text$$24_valObj$$ : $i$$46_value$$) && ($data$$.match = {value:$i$$46_value$$, text:$text$$24_valObj$$}, this.stop());
+    function $__searchValue$$($text$$24_valObj$$, $i$$47_value$$, $values$$, $data$$) {
+      $i$$47_value$$ = $js$$.alg.string($text$$24_valObj$$.value);
+      $text$$24_valObj$$ = $js$$.alg.string($text$$24_valObj$$.text, $i$$47_value$$);
+      $data$$.find.test($data$$.searchText ? $text$$24_valObj$$ : $i$$47_value$$) && ($data$$.match = {value:$i$$47_value$$, text:$text$$24_valObj$$}, this.stop());
     }
     function $searchValue$$($config$$, $data$$86_value$$, $searchText$$) {
       $data$$86_value$$ = {match:null, find:new RegExp("^" + $data$$86_value$$ + "$"), searchText:$searchText$$};
@@ -3327,10 +3338,10 @@ js.extend.fn("sp", function() {
     this.eachDirtyRow(this._pushLoopDirtyRows, $data$$99_list$$);
     $ctx$$.executeQueryAsync($js$$.alg.bindFn(this, $__successPush$$, [$data$$99_list$$.items, $success$$]), $js$$.alg.bindFn(this, $__failurePush$$, [$data$$99_list$$.items, $failure$$]));
     return this;
-  }, _pushLoopDirtyRows:function $$sp$$$list$fn$_pushLoopDirtyRows$($row$$, $i$$52_rowID$$, $itemInfo_listItem_rows$$, $data$$) {
-    $i$$52_rowID$$ = $row$$.ID.value;
+  }, _pushLoopDirtyRows:function $$sp$$$list$fn$_pushLoopDirtyRows$($row$$, $i$$53_rowID$$, $itemInfo_listItem_rows$$, $data$$) {
+    $i$$53_rowID$$ = $row$$.ID.value;
     $itemInfo_listItem_rows$$ = $itemInfo_listItem_rows$$ = null;
-    0 > $row$$.ID.value ? ($itemInfo_listItem_rows$$ = new SP.ListItemCreationInformation, $itemInfo_listItem_rows$$ = $data$$.list.addItem($itemInfo_listItem_rows$$), $data$$.newrow = !0) : ($itemInfo_listItem_rows$$ = $data$$.list.getItemById($i$$52_rowID$$), $data$$.newrow = !1);
+    0 > $row$$.ID.value ? ($itemInfo_listItem_rows$$ = new SP.ListItemCreationInformation, $itemInfo_listItem_rows$$ = $data$$.list.addItem($itemInfo_listItem_rows$$), $data$$.newrow = !0) : ($itemInfo_listItem_rows$$ = $data$$.list.getItemById($i$$53_rowID$$), $data$$.newrow = !1);
     $data$$.listItem = $itemInfo_listItem_rows$$;
     $js$$.alg.each($row$$, $data$$.self._pushLoopDirtyRowColumns, $data$$);
     $data$$.items.push($itemInfo_listItem_rows$$);

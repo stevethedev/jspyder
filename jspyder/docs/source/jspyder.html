@@ -997,8 +997,21 @@
                         }
                     }
 
-                    obj[key] = js.alg.deepCloneObj(value, depchain);
-                    depchain.push({ &quot;from&quot;: value, &quot;to&quot;: obj[key] });
+                    var map = { &quot;from&quot;: value, &quot;to&quot;: {} };
+                    depchain.push(map);
+                    map[&quot;cleanup&quot;] = obj[key] = js.alg.deepCloneObj(value, depchain);
+                });
+
+                js.alg.each(obj, function refill(value, key, obj) {
+                    for (var i = 0; i &lt; depchain.length; i++) {
+                        if (value === depchain[i][&quot;to&quot;] &amp;&amp; depchain[i][&quot;cleanup&quot;]) {
+                            obj[key] = depchain[i][&quot;cleanup&quot;];
+                            break;
+                        }
+                        else if (typeof value === &quot;object&quot;) {
+                            js.alg.each(value, refill);
+                        }
+                    }
                 });
                 
                 return obj;
