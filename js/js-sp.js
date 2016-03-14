@@ -38,7 +38,7 @@ js.extend.fn("sp", function () {
 
     /**
      * @class jspyder.sp.list
-     * @extends jspyder.sp
+     * @member jspyder.sp
      *
      * @param {Object} config
      *      A configuration object for the initial setup of the SP list
@@ -788,7 +788,7 @@ js.extend.fn("sp", function () {
 
     /**
      * @class jspyder.sp.query
-     * @extends jspyder.sp
+     * @member jspyder.sp
      *
      * This class should not generally be directly created in scripts. Instead,
      * it should be either created by a call to jspyder.sp.list.query() or a
