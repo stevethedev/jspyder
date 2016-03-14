@@ -1,4 +1,4 @@
-/* ****************************************************************************
+/*
  * The MIT License (MIT)
  *
  * Copyright (c) 2015 Steven Jimenez
@@ -20,7 +20,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
- * ***************************************************************************/
+ */
 
 js.extend.fn("sp", function () {
     /** @ignore */
@@ -962,8 +962,8 @@ js.extend.fn("sp", function () {
             js.alg.each(row, sp.query.fn._sumColumns, columns);
         },
 
-        /** @private */
         // _sumColumns: function(value, colName, _, out) {
+        /** @private */
         _sumColumns: function(sumValue, colName, out, row) {
             var column = row[colName];
             if (!column) { return; }

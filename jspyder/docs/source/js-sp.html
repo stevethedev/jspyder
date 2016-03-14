@@ -15,7 +15,7 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js">/* ****************************************************************************
+  <pre class="prettyprint lang-js">/*
  * The MIT License (MIT)
  *
  * Copyright (c) 2015 Steven Jimenez
@@ -37,7 +37,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
- * ***************************************************************************/
+ */
 
 js.extend.fn(&quot;sp&quot;, function () {
 <span id='global-property-js'>    /** @ignore */
@@ -975,20 +975,32 @@ js.extend.fn(&quot;sp&quot;, function () {
 
 <span id='jspyder-sp-query-method-_sumRows'>        /** @private */
 </span>        _sumRows: function (row, _, rows, columns) {
+            // js.alg.each(row, sp.query.fn._sumColumns, columns);
             js.alg.each(row, sp.query.fn._sumColumns, columns);
         },
 
+        // _sumColumns: function(value, colName, _, out) {
 <span id='jspyder-sp-query-method-_sumColumns'>        /** @private */
-</span>        _sumColumns: function (value, colName, _, out) {
-            switch(value.type) {
+</span>        _sumColumns: function(sumValue, colName, out, row) {
+            var column = row[colName];
+            if (!column) { return; }
+
+            var rowValue = (column &amp;&amp; column.value);
+
+            switch(column[&quot;type&quot;]) {
                 case &quot;number&quot;:
-                    out[colName] = js.alg.number(out[colName]) + js.alg.number(value.value);
+                    // out[colName] = js.alg.number(out[colName]) + js.alg.number(value.value);
+                    out[colName] = js.alg.number(rowValue) + js.alg.number(sumValue);
                     break;
 
-                case &quot;string&quot;:
                 case &quot;bitflag&quot;:
+                    out[colName] = sumValue &amp; js.alg.number(rowValue);
+                    break;
+                    
+                case &quot;string&quot;:
                 default:
-                    out[colName] = value.value;
+                    // out[colName] = value.value;
+                    out[colName] = rowValue;
                     break;
             }
         },

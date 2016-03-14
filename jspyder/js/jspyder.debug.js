@@ -739,7 +739,7 @@ $jscomp.string.endsWith$install = function $$jscomp$string$endsWith$install$() {
       var $y$$ = Math.pow(10, ($n$$ | 0).toString().length - 1);
       return Math.ceil($n$$ / $y$$) * $y$$;
     }, escapeString:function $$js_alg$$$escapeString$($str$$) {
-      return $str$$.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+      return $js$$.alg.string($str$$).replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
     }, use:function $$js_alg$$$use$($_this$$, $fn$$, $args$$) {
       $_this$$ || ($_this$$ = null);
       return "function" === typeof $fn$$ ? $fn$$.apply($_this$$, $args$$) : void 0;
@@ -758,14 +758,16 @@ $jscomp.string.endsWith$install = function $$jscomp$string$endsWith$install$() {
       var $_n$$ = +$n$$;
       return $_n$$ == $n$$ || $_n$$ === $_n$$ ? $_n$$ : $d$$ || 0;
     }, string:function $$js_alg$$$string$($s$$, $d$$) {
-      return "string" === typeof $s$$ ? $s$$ : $s$$ || 0 === $s$$ ? "" + $s$$ : $d$$ || "";
+      return "string" === typeof $s$$ ? $s$$ : "object" === typeof $s$$ && $s$$.isPrototypeOf(RegExp) ? $s$$ = ("" + $s$$).match(/^\/(.*)\/[a-z]*$/, "$1") : $s$$ || 0 === $s$$ ? "" + $s$$ : $d$$ || "";
     }, object:function $$js_alg$$$object$($o$$, $d$$) {
       return $o$$ && "object" === typeof $o$$ ? $o$$ : $d$$ || {};
+    }, array:function $$js_alg$$$array$($a$$, $d$$) {
+      return o && o.isPrototypeOf(Array) ? o : $d$$ || [];
     }, date:function $$js_alg$$$date$($v$$, $d$$) {
-      return input instanceof Date || "[object Date]" === Object.prototype.toString.call(input) ? $v$$ : new Date;
-    }, byte:function $$js_alg$$$byte$($u$$) {
-      if ("undefined" === typeof Int8Array) {
-        $u$$ = +$u$$;
+      return input instanceof Date || "[object Date]" === Object.prototype.toString.call(input) ? $v$$ : $d$$ || new Date;
+    }, "byte":function $$js_alg$$$byte$($u$$) {
+      $js_alg$$["byte"] = "undefined" === typeof Int8Array ? function($u$$) {
+        $u$$ = $js$$.alg.number($u$$);
         for ($u$$ = ($u$$ === $u$$ ? $u$$ : 0) & 255;-128 > $u$$;) {
           $u$$ += 256;
         }
@@ -773,19 +775,24 @@ $jscomp.string.endsWith$install = function $$jscomp$string$endsWith$install$() {
           $u$$ -= 256;
         }
         return $u$$;
-      }
-      var $buffer$$ = new ArrayBuffer(1), $buffer$$ = new Int8Array($buffer$$);
-      $buffer$$[0] = $u$$;
-      return $buffer$$[0];
-    }, ubyte:function $$js_alg$$$ubyte$($u$$) {
-      if ("undefined" === typeof Uint8Array) {
-        return $u$$ = +$u$$, ($u$$ === $u$$ ? $u$$ : 0) & 255;
-      }
-      var $buffer$$10_byteArray$$ = new ArrayBuffer(1), $buffer$$10_byteArray$$ = new Uint8Array($buffer$$10_byteArray$$);
-      $buffer$$10_byteArray$$[0] = $u$$;
-      return $buffer$$10_byteArray$$[0];
-    }, short:function $$js_alg$$$short$($u$$) {
-      if ("undefined" === typeof Int16Array) {
+      } : function($u$$) {
+        var $buffer$$ = new ArrayBuffer(1), $buffer$$ = new Int8Array($buffer$$);
+        $buffer$$[0] = $u$$;
+        return $buffer$$[0];
+      };
+      return $js_alg$$["byte"]($u$$);
+    }, ubyte:function $$js_alg$$$ubyte$($u$$0$$) {
+      $js_alg$$.ubyte = "undefined" === typeof Uint8Array ? function($u$$) {
+        $u$$ = +$u$$;
+        return ($u$$ === $u$$ ? $u$$ : 0) & 255;
+      } : function($u$$) {
+        var $buffer$$10_byteArray$$ = new ArrayBuffer(1), $buffer$$10_byteArray$$ = new Uint8Array($buffer$$10_byteArray$$);
+        $buffer$$10_byteArray$$[0] = $u$$;
+        return $buffer$$10_byteArray$$[0];
+      };
+      return $js_alg$$.ubyte($u$$0$$);
+    }, "short":function $$js_alg$$$short$($u$$0$$) {
+      $js_alg$$["short"] = "undefined" === typeof Int16Array ? function($u$$) {
         $u$$ = +$u$$;
         for ($u$$ = ($u$$ === $u$$ ? $u$$ : 0) & 65535;-32768 > $u$$;) {
           $u$$ += 65536;
@@ -794,19 +801,24 @@ $jscomp.string.endsWith$install = function $$jscomp$string$endsWith$install$() {
           $u$$ -= 65536;
         }
         return $u$$;
-      }
-      var $buffer$$11_byteArray$$ = new ArrayBuffer(2), $buffer$$11_byteArray$$ = new Int16Array($buffer$$11_byteArray$$);
-      $buffer$$11_byteArray$$[0] = $u$$;
-      return $buffer$$11_byteArray$$[0];
-    }, ushort:function $$js_alg$$$ushort$($u$$) {
-      if ("undefined" === typeof Uint16Array) {
-        return $u$$ = +$u$$, ($u$$ === $u$$ ? $u$$ : 0) & 65535;
-      }
-      var $buffer$$12_byteArray$$ = new ArrayBuffer(2), $buffer$$12_byteArray$$ = new Uint16Array($buffer$$12_byteArray$$);
-      $buffer$$12_byteArray$$[0] = $u$$;
-      return $buffer$$12_byteArray$$[0];
-    }, int:function $$js_alg$$$int$($u$$) {
-      if ("undefined" === typeof Int32Array) {
+      } : function($u$$) {
+        var $buffer$$11_byteArray$$ = new ArrayBuffer(2), $buffer$$11_byteArray$$ = new Int16Array($buffer$$11_byteArray$$);
+        $buffer$$11_byteArray$$[0] = $u$$;
+        return $buffer$$11_byteArray$$[0];
+      };
+      return $js_alg$$["short"]($u$$0$$);
+    }, ushort:function $$js_alg$$$ushort$($u$$0$$) {
+      $js_alg$$.ushort = "undefined" === typeof Uint16Array ? function($u$$) {
+        $u$$ = +$u$$;
+        return ($u$$ === $u$$ ? $u$$ : 0) & 65535;
+      } : function($u$$) {
+        var $buffer$$12_byteArray$$ = new ArrayBuffer(2), $buffer$$12_byteArray$$ = new Uint16Array($buffer$$12_byteArray$$);
+        $buffer$$12_byteArray$$[0] = $u$$;
+        return $buffer$$12_byteArray$$[0];
+      };
+      return $js_alg$$.ushort($u$$0$$);
+    }, "int":function $$js_alg$$$int$($u$$0$$) {
+      $js_alg$$["int"] = "undefined" === typeof Int32Array ? function($u$$) {
         $u$$ = +$u$$;
         for ($u$$ = ($u$$ === $u$$ ? $u$$ : 0) & 4294967295;-2147483648 > $u$$;) {
           $u$$ += 4294967296;
@@ -815,31 +827,43 @@ $jscomp.string.endsWith$install = function $$jscomp$string$endsWith$install$() {
           $u$$ -= 4294967296;
         }
         return $u$$;
-      }
-      var $buffer$$13_byteArray$$ = new ArrayBuffer(4), $buffer$$13_byteArray$$ = new Int32Array($buffer$$13_byteArray$$);
-      $buffer$$13_byteArray$$[0] = $u$$;
-      return $buffer$$13_byteArray$$[0];
-    }, uint:function $$js_alg$$$uint$($u$$) {
-      if ("undefined" === typeof Int32Array) {
-        return $u$$ = +$u$$, $u$$ = ($u$$ === $u$$ ? $u$$ : 0) % 4294967296, 0 > $u$$ ? -1 * $u$$ : $u$$;
-      }
-      var $buffer$$14_byteArray$$ = new ArrayBuffer(4), $buffer$$14_byteArray$$ = new Uint32Array($buffer$$14_byteArray$$);
-      $buffer$$14_byteArray$$[0] = $u$$;
-      return $buffer$$14_byteArray$$[0];
-    }, float:function $$js_alg$$$float$($u$$) {
-      if ("undefined" === typeof Float32Array) {
-        return $u$$ = +(+$u$$).toPrecision(8), $u$$ == $u$$ ? $u$$ : 0;
-      }
-      var $buffer$$15_byteArray$$ = new ArrayBuffer(4), $buffer$$15_byteArray$$ = new Float32Array($buffer$$15_byteArray$$);
-      $buffer$$15_byteArray$$[0] = $u$$;
-      return +$buffer$$15_byteArray$$[0].toPrecision(8);
-    }, double:function $$js_alg$$$double$($u$$) {
-      if ("undefined" === typeof Float64Array) {
-        return $u$$ = +(+$u$$).toPrecision(16), $u$$ == $u$$ ? $u$$ : 0;
-      }
-      var $buffer$$16_byteArray$$ = new ArrayBuffer(8), $buffer$$16_byteArray$$ = new Float64Array($buffer$$16_byteArray$$);
-      $buffer$$16_byteArray$$[0] = $u$$;
-      return $buffer$$16_byteArray$$[0];
+      } : function($u$$) {
+        var $buffer$$13_byteArray$$ = new ArrayBuffer(4), $buffer$$13_byteArray$$ = new Int32Array($buffer$$13_byteArray$$);
+        $buffer$$13_byteArray$$[0] = $u$$;
+        return $buffer$$13_byteArray$$[0];
+      };
+      return $js_alg$$["int"]($u$$0$$);
+    }, uint:function $$js_alg$$$uint$($u$$0$$) {
+      $js_alg$$.uint = "undefined" === typeof Int32Array ? function($u$$) {
+        $u$$ = +$u$$;
+        $u$$ = ($u$$ === $u$$ ? $u$$ : 0) % 4294967296;
+        return 0 > $u$$ ? -1 * $u$$ : $u$$;
+      } : function($u$$) {
+        var $buffer$$14_byteArray$$ = new ArrayBuffer(4), $buffer$$14_byteArray$$ = new Uint32Array($buffer$$14_byteArray$$);
+        $buffer$$14_byteArray$$[0] = $u$$;
+        return $buffer$$14_byteArray$$[0];
+      };
+      return $js_alg$$.uint($u$$0$$);
+    }, "float":function $$js_alg$$$float$($u$$0$$) {
+      $js_alg$$["float"] = "undefined" === typeof Float32Array ? function($u$$) {
+        $u$$ = +(+$u$$).toPrecision(8);
+        return $u$$ == $u$$ ? $u$$ : 0;
+      } : function($u$$) {
+        var $buffer$$15_byteArray$$ = new ArrayBuffer(4), $buffer$$15_byteArray$$ = new Float32Array($buffer$$15_byteArray$$);
+        $buffer$$15_byteArray$$[0] = $u$$;
+        return +$buffer$$15_byteArray$$[0].toPrecision(8);
+      };
+      return $js_alg$$["float"]($u$$0$$);
+    }, "double":function $$js_alg$$$double$($u$$0$$) {
+      $js_alg$$["double"] = "undefined" === typeof Float64Array ? function($u$$) {
+        $u$$ = +(+$u$$).toPrecision(16);
+        return $u$$ == $u$$ ? $u$$ : 0;
+      } : function($u$$) {
+        var $buffer$$16_byteArray$$ = new ArrayBuffer(8), $buffer$$16_byteArray$$ = new Float64Array($buffer$$16_byteArray$$);
+        $buffer$$16_byteArray$$[0] = $u$$;
+        return $buffer$$16_byteArray$$[0];
+      };
+      return $js_alg$$["double"]($u$$0$$);
     }, makeEnum:function $$js_alg$$$makeEnum$($keys$$, $enm$$) {
       $enm$$ = $enm$$ || {};
       var $v$$ = 1;
@@ -849,20 +873,20 @@ $jscomp.string.endsWith$install = function $$jscomp$string$endsWith$install$() {
       });
       return $enm$$;
     }, rad2deg:function $$js_alg$$$rad2deg$($n$$, $d$$) {
-      return 180 * $js$$.alg.number($n$$, $d$$) / Math.PI;
+      return $js$$.alg.number($n$$, $d$$) * (180 / Math.PI);
     }, deg2rad:function $$js_alg$$$deg2rad$($n$$, $d$$) {
-      return $js$$.alg.number($n$$, $d$$) * Math.PI / 180;
+      return $js$$.alg.number($n$$, $d$$) * (Math.PI / 180);
     }, sliceArray:function $$js_alg$$$sliceArray$($a$$, $n$$) {
       var $ret$$ = $a$$;
       try {
-        $ret$$ = Array.prototype.slice.call($a$$ || [], $n$$ || 0);
+        $ret$$ = window.Array.prototype.slice.call($a$$ || [], $n$$ || 0);
       } catch ($e$$) {
         $ret$$ = [];
       }
       return $ret$$;
     }, sortArrayObj:function $$js_alg$$$sortArrayObj$($arr$$, $asc$$, $field$$) {
       var $list$$ = $js$$.alg.sliceArray(arguments, 2);
-      $arr$$.sort($js$$.alg.__sortArrayObj($asc$$, $list$$));
+      $js$$.alg.array($arr$$).sort($js$$.alg.__sortArrayObj($asc$$, $list$$));
       return $arr$$;
     }, __sortArrayObj:function $$js_alg$$$__sortArrayObj$($asc$$, $list$$) {
       var $__ret$$;
@@ -871,11 +895,11 @@ $jscomp.string.endsWith$install = function $$jscomp$string$endsWith$install$() {
         ;
         case "Edge":
           $__ret$$ = function $$__ret$$$($left$$, $right$$) {
-            for (var $a$$2_i$$ = 0;$left$$ && $right$$ && $a$$2_i$$ < $list$$.length;$a$$2_i$$++) {
-              $left$$ = $left$$[$list$$[$a$$2_i$$]], $right$$ = $right$$[$list$$[$a$$2_i$$]];
+            for (var $a$$3_i$$ = 0;$left$$ && $right$$ && $a$$3_i$$ < $list$$.length;$a$$3_i$$++) {
+              $left$$ = $left$$[$list$$[$a$$3_i$$]], $right$$ = $right$$[$list$$[$a$$3_i$$]];
             }
-            var $a$$2_i$$ = $asc$$ ? $left$$ : $right$$, $b$$ = $asc$$ ? $right$$ : $left$$;
-            return $a$$2_i$$ > $b$$ ? 1 : $a$$2_i$$ < $b$$ ? -1 : 0;
+            var $a$$3_i$$ = $asc$$ ? $left$$ : $right$$, $b$$ = $asc$$ ? $right$$ : $left$$;
+            return $a$$3_i$$ > $b$$ ? 1 : $a$$3_i$$ < $b$$ ? -1 : 0;
           };
           break;
         default:
@@ -888,7 +912,7 @@ $jscomp.string.endsWith$install = function $$jscomp$string$endsWith$install$() {
       }
       return $__ret$$;
     }, sortArrayNum:function $$js_alg$$$sortArrayNum$($arr$$, $asc$$) {
-      $arr$$.sort(function($left$$, $right$$) {
+      $js$$.alg.array($arr$$).sort(function($left$$, $right$$) {
         return $asc$$ ? $js$$.alg.number($left$$) - $js$$.alg.number($right$$) : $js$$.alg.number($right$$) - $js$$.alg.number($left$$);
       });
       return $arr$$;
@@ -918,13 +942,22 @@ $jscomp.string.endsWith$install = function $$jscomp$string$endsWith$install$() {
       return $base$$;
     }, cloneObj:function $$js_alg$$$cloneObj$($obj$$) {
       return $obj$$ && "object" === typeof $obj$$ ? $js$$.alg.mergeObj($obj$$.constructor(), $obj$$) : $obj$$;
-    }, deepCloneObj:function $$js_alg$$$deepCloneObj$($obj$$0$$) {
+    }, deepCloneObj:function $$js_alg$$$deepCloneObj$($obj$$0$$, $JSCompiler_OptimizeArgumentsArray_p0$$) {
       if (!$obj$$0$$ || "object" !== typeof $obj$$0$$) {
         return $obj$$0$$;
       }
       $obj$$0$$ = this.cloneObj($obj$$0$$);
+      var $depchain$$ = $js$$.alg.array($JSCompiler_OptimizeArgumentsArray_p0$$);
       $js$$.alg.each($obj$$0$$, function($value$$, $key$$, $obj$$) {
-        $obj$$[$key$$] = $js$$.alg.deepCloneObj($value$$);
+        for (var $i$$19_map$$ = 0;$i$$19_map$$ < $depchain$$.length;$i$$19_map$$++) {
+          if ($depchain$$[$i$$19_map$$].from === $value$$) {
+            $obj$$[$key$$] = $depchain$$[$i$$19_map$$].to;
+            return;
+          }
+        }
+        $i$$19_map$$ = {from:$value$$, to:{}};
+        $depchain$$.push($i$$19_map$$);
+        $i$$19_map$$.to = $obj$$[$key$$] = $js$$.alg.deepCloneObj($value$$, $depchain$$);
       });
       return $obj$$0$$;
     }, keycodes:{KC_Backspace:8, KC_Tab:9, KC_Enter:13, KC_Shift:16, KC_Ctrl:17, KC_Alt:18, KC_Pause:19, KC_Break:19, KC_CapsLock:20, KC_Escape:27, KC_Space:32, KC_PageUp:33, KC_PageDown:34, KC_End:35, KC_Home:36, KC_LeftArrow:37, KC_UpArrow:38, KC_RightArrow:39, KC_DownArrow:40, KC_Insert:45, KC_Delete:46, KC_0:48, KC_1:49, KC_2:50, KC_3:51, KC_4:52, KC_5:53, KC_6:54, KC_7:55, KC_8:56, KC_9:57, KC_A:65, KC_B:66, KC_C:67, KC_D:68, KC_E:69, KC_F:70, KC_G:71, KC_H:72, KC_I:73, KC_J:74, KC_K:75, KC_L:76, 
@@ -962,11 +995,11 @@ $jscomp.string.endsWith$install = function $$jscomp$string$endsWith$install$() {
     function $__getDomClasses$$($element$$) {
       return $__isElement$$($element$$) ? $element$$.className.replace(/(^\s+)|(\s(?=\s))|(\s+$)/g, "").split(" ") : [];
     }
-    function $_parseHtml$$($i$$19_s$$) {
+    function $_parseHtml$$($i$$20_s$$) {
       var $div$$ = $document$$.createElement("div"), $arr$$ = [];
-      $div$$.innerHTML = $i$$19_s$$;
-      for ($i$$19_s$$ = 0;$i$$19_s$$ < $div$$.children.length;$i$$19_s$$++) {
-        $arr$$.push($div$$.children[$i$$19_s$$]);
+      $div$$.innerHTML = $i$$20_s$$;
+      for ($i$$20_s$$ = 0;$i$$20_s$$ < $div$$.children.length;$i$$20_s$$++) {
+        $arr$$.push($div$$.children[$i$$20_s$$]);
       }
       return $arr$$;
     }
@@ -1439,7 +1472,7 @@ jspyder.extend.fn("canvas", function() {
   function $js_canvas$$($alt_settings$$) {
     $alt_settings$$ = $alt_settings$$ || {};
     var $c$$ = $js$$.dom("<canvas></canvas>"), $attrs$$ = {height:$js$$.alg.number($alt_settings$$.height, 150), width:$js$$.alg.number($alt_settings$$.width, 300)}, $css$$ = $alt_settings$$.css;
-    $alt_settings$$ = $alt_settings$$.alt;
+    $alt_settings$$ = $js$$.alg.string($alt_settings$$.alt, "Your browser does not support Canvas elements.");
     $c$$.setAttrs($attrs$$);
     $c$$.setCss($css$$);
     $c$$.setHtml($alt_settings$$);
@@ -1467,18 +1500,16 @@ jspyder.extend.fn("canvas", function() {
   }, remove:function $$js_canvas$$$fn$remove$() {
     this.canvas && this.canvas.remove();
     return this;
-  }, getSize:function $$js_canvas$$$fn$getSize$($o$$, $fn$$) {
-    $o$$ = $o$$ || {};
-    var $element$$ = this.canvas && this.canvas._element && this.canvas._element[0], $rect$$;
-    $element$$ && ($rect$$ = $element$$.getBoundingClientRect(), $o$$.width = $element$$.width, $o$$.height = $element$$.height, $o$$.x = $rect$$.x, $o$$.y = $rect$$.y, $js$$.alg.use(this, $fn$$, [$o$$]));
+  }, getSize:function $$js_canvas$$$fn$getSize$($fn$$) {
+    $js$$.alg.use(this, $fn$$, [this.exportSize()]);
     return this;
   }, exportSize:function $$js_canvas$$$fn$exportSize$() {
-    var $size$$ = {};
-    this.getSize($size$$);
+    var $size$$ = {height:0, width:0, x:0, y:0}, $element$$ = this.canvas && this.canvas._element && this.canvas._element[0], $rect$$;
+    $element$$ && ($rect$$ = $element$$.getBoundingClientRect(), $size$$.width = $element$$.width, $size$$.height = $element$$.height, $size$$.x = $rect$$.x, $size$$.y = $rect$$.y);
     return $size$$;
   }, clear:function $$js_canvas$$$fn$clear$() {
     var $self$$ = this;
-    this.getSize({}, function($size$$) {
+    this.getSize(function($size$$) {
       $self$$.context.clearRect(0, 0, $size$$.width, $size$$.height);
     });
     return this;
@@ -1519,25 +1550,7 @@ jspyder.extend.fn("canvas", function() {
   }, circle:function $$js_canvas$$$fn$cmd$circle$($settings$$) {
     $settings$$ = $__mergeSettings$$($settings$$);
     $settings$$.degrees = 360;
-    this.cmd.arc.call(this, $settings$$);
-  }, pie:function $$js_canvas$$$fn$cmd$pie$($settings$$) {
-    $settings$$ = $__mergeSettings$$($settings$$);
-    $settings$$.radius = $js$$.alg.number($settings$$.radius, 0);
-    $settings$$.angle = $js$$.alg.number($settings$$.angle, -90);
-    $settings$$.anticlockwise = $js$$.alg.bool($settings$$.anticlockwise, !1);
-    $settings$$.closepath = !0;
-    var $canvas$$ = this, $total$$ = 0, $angle$$ = 0;
-    $settings$$.degrees = 360;
-    $js$$.alg.use($canvas$$, $canvas$$.cmd.arc, [$settings$$]);
-    $js$$.alg.each($settings$$.sections, function($section$$) {
-      $total$$ += $js$$.alg.number($section$$.value, 0);
-    });
-    $js$$.alg.each($settings$$.sections, function($arc_section$$) {
-      var $deg$$ = $js$$.alg.number($arc_section$$.value, 0) / $total$$ * 360;
-      $arc_section$$ = $js$$.alg.mergeObj({}, $settings$$, {angle:$angle$$ + $settings$$.angle, degrees:$deg$$, fill:$arc_section$$.fill, fromcenter:!0, closepath:!0});
-      $angle$$ += $deg$$;
-      $js$$.alg.use($canvas$$, $canvas$$.cmd.arc, [$arc_section$$]);
-    });
+    $js$$.alg.use(this, this.cmd.arc, [$settings$$]);
   }, text:function $$js_canvas$$$fn$cmd$text$($settings$$) {
     $settings$$ = $settings$$ || {};
     $settings$$.size = $js$$.alg.number($settings$$.size, 16);
@@ -1568,10 +1581,29 @@ jspyder.extend.fn("canvas", function() {
     this.context.moveTo($settings$$.x, $settings$$.y);
     this.context.lineTo($settings$$.x + $settings$$.width, $settings$$.y + $settings$$.height);
     this.context.stroke();
+  }, pie:function $$js_canvas$$$fn$cmd$pie$($settings$$) {
+    $settings$$ = $__mergeSettings$$($settings$$);
+    $settings$$.radius = $js$$.alg.number($settings$$.radius, 0);
+    $settings$$.angle = $js$$.alg.number($settings$$.angle, -90);
+    $settings$$.anticlockwise = $js$$.alg.bool($settings$$.anticlockwise, !1);
+    $settings$$.closepath = !0;
+    $settings$$.degrees = 360;
+    var $canvas$$ = this, $total$$ = 0, $angle$$ = 0;
+    $js$$.alg.use($canvas$$, $canvas$$.cmd.arc, [$settings$$]);
+    $js$$.alg.each($settings$$.sections, function($section$$) {
+      $total$$ += $js$$.alg.number($section$$.value, 0);
+    });
+    $js$$.alg.each($settings$$.sections, function($arc_section$$) {
+      var $deg$$ = $js$$.alg.number($arc_section$$.value, 0) / $total$$ * 360;
+      $arc_section$$ = $js$$.alg.mergeObj({}, $settings$$, {angle:$angle$$ + $settings$$.angle, degrees:$deg$$, fill:$arc_section$$.fill, fromcenter:!0, closepath:!0});
+      $angle$$ += $deg$$;
+      $js$$.alg.use($canvas$$, $canvas$$.cmd.arc, [$arc_section$$]);
+    });
   }, barchart:function $$js_canvas$$$fn$cmd$barchart$($offsetY_settings$$) {
     $offsetY_settings$$ = $offsetY_settings$$ || {};
-    var $sections$$ = $js$$.alg.sliceArray($offsetY_settings$$.sections) || [], $chartY_size$$ = this.exportSize(), $borderWidth$$ = $js$$.alg.number($offsetY_settings$$.borderWidth, 1), $width$$ = $js$$.alg.number($offsetY_settings$$.width, $chartY_size$$.width), $height$$ = $js$$.alg.number($offsetY_settings$$.height, $chartY_size$$.height), $chartX$$ = $js$$.alg.number($offsetY_settings$$.x, 0), $chartY_size$$ = $js$$.alg.number($offsetY_settings$$.y, 0), $fill$$ = $js$$.alg.string($offsetY_settings$$.fill, 
-    "white"), $border$$ = $js$$.alg.string($offsetY_settings$$.border, "black"), $lineColor$$ = $js$$.alg.string($offsetY_settings$$.lineColor, "rgba(0, 0, 0, 0.3)"), $labels$$ = $offsetY_settings$$.labels || [], $labelSize$$ = $js$$.alg.number($offsetY_settings$$.labelSize, 16), $self$$ = this, $min$$ = $js$$.alg.number($offsetY_settings$$.min, Infinity), $max$$ = $js$$.alg.number($offsetY_settings$$.max, -Infinity), $cols$$, $colWidth$$;
+    var $sections$$ = $offsetY_settings$$.sections = $offsetY_settings$$.sections || [], $chartY_size$$ = this.exportSize(), $borderWidth$$ = $offsetY_settings$$.borderWidth = $js$$.alg.number($offsetY_settings$$.borderWidth, 1), $width$$ = $offsetY_settings$$.width = $js$$.alg.number($offsetY_settings$$.width, $chartY_size$$.width), $height$$ = $offsetY_settings$$.height = $js$$.alg.number($offsetY_settings$$.height, $chartY_size$$.height), $chartX$$ = $offsetY_settings$$.x = $js$$.alg.number($offsetY_settings$$.x, 
+    0), $chartY_size$$ = $offsetY_settings$$.y = $js$$.alg.number($offsetY_settings$$.y, 0), $fill$$ = $offsetY_settings$$.fill = $js$$.alg.string($offsetY_settings$$.fill, "white"), $border$$ = $offsetY_settings$$.border = $js$$.alg.string($offsetY_settings$$.border, "black"), $lineColor$$ = $offsetY_settings$$.lineColor = $js$$.alg.string($offsetY_settings$$.lineColor, "rgba(0, 0, 0, 0.3)"), $labels$$ = $offsetY_settings$$.labels = $offsetY_settings$$.labels || [], $labelSize$$ = $offsetY_settings$$.labelSize = 
+    $js$$.alg.number($offsetY_settings$$.labelSize, 16), $min$$ = $offsetY_settings$$.min = $js$$.alg.number($offsetY_settings$$.min, Infinity), $max$$ = $offsetY_settings$$.max = $js$$.alg.number($offsetY_settings$$.max, -Infinity), $self$$ = this, $cols$$, $colWidth$$;
     $offsetY_settings$$ = 1.2 * $labelSize$$;
     $self$$.cmd.rectangle.call(this, {width:$width$$, height:$height$$, x:$chartX$$, y:$chartY_size$$, fill:$fill$$, borderWidth:$borderWidth$$, border:$border$$});
     $width$$ -= 2 * $borderWidth$$;
@@ -1597,23 +1629,24 @@ jspyder.extend.fn("canvas", function() {
     $width$$ -= 50;
     $chartX$$ += 50;
     $colWidth$$ = $width$$ / (($sections$$.length + 1) * $cols$$);
-    var $JSCompiler_object_inline_x_42$$ = $chartX$$, $JSCompiler_object_inline_y_43$$ = $chartY_size$$, $JSCompiler_object_inline_height_44$$ = $height$$ - $chartY_size$$, $JSCompiler_object_inline_vertWidth_46$$ = ($width$$ - $chartX$$) / $cols$$;
+    var $workArea$$ = {x:$chartX$$, y:$chartY_size$$, height:$height$$ - $chartY_size$$, width:$width$$ - $chartX$$, vertWidth:($width$$ - $chartX$$) / $cols$$};
     $js$$.alg.iterate(0, $cols$$ + 1, function($i$$) {
-      $self$$.cmd.line.call($self$$, {x:$JSCompiler_object_inline_x_42$$ + $JSCompiler_object_inline_vertWidth_46$$ * $i$$, y:$JSCompiler_object_inline_y_43$$, width:0, height:$JSCompiler_object_inline_height_44$$, color:$lineColor$$});
-      $self$$.cmd.text.call($self$$, {text:$labels$$[$i$$], font:"Arial", size:$labelSize$$, x:$JSCompiler_object_inline_x_42$$ + $JSCompiler_object_inline_vertWidth_46$$ * ($i$$ + $i$$ + 1) / 2, y:$JSCompiler_object_inline_height_44$$ + $labelSize$$, textalign:"center"});
+      $self$$.cmd.line.call($self$$, {x:$workArea$$.x + $workArea$$.vertWidth * $i$$, y:$workArea$$.y, width:0, height:$workArea$$.height, color:$lineColor$$});
+      $self$$.cmd.text.call($self$$, {text:$labels$$[$i$$], font:"Arial", size:$labelSize$$, x:$workArea$$.x + $workArea$$.vertWidth * ($i$$ + $i$$ + 1) / 2, y:$workArea$$.height + $labelSize$$, textalign:"center"});
     });
     $js$$.alg.arrEach($sections$$, function($group$$, $g$$) {
-      var $barColor$$ = $js$$.alg.string($group$$.fill, "black"), $barOutline$$ = $js$$.alg.string($group$$.border, $barColor$$), $barOutlineWidth$$ = $js$$.alg.number($group$$.borderWidth, 1);
+      var $barColor$$ = $group$$.fill = $js$$.alg.string($group$$.fill, "black"), $barOutline$$ = $group$$.border = $js$$.alg.string($group$$.border, $barColor$$), $barOutlineWidth$$ = $group$$.borderWidth = $js$$.alg.number($group$$.borderWidth, 1);
       $js$$.alg.arrEach($group$$ && $group$$.values, function($bar$$, $b$$) {
         var $value$$ = $height$$ * ($js$$.alg.number($bar$$) / ($max$$ || 1));
-        $self$$.cmd.rectangle.call($self$$, {x:$JSCompiler_object_inline_x_42$$ + ($colWidth$$ / $sections$$.length + $g$$ * $colWidth$$ + $b$$ * $JSCompiler_object_inline_vertWidth_46$$), y:$JSCompiler_object_inline_y_43$$ + ($JSCompiler_object_inline_height_44$$ - $JSCompiler_object_inline_y_43$$ - $value$$), width:$colWidth$$, height:$value$$, fill:$barColor$$, border:$barOutline$$, borderWidth:$barOutlineWidth$$});
+        $self$$.cmd.rectangle.call($self$$, {x:$workArea$$.x + ($colWidth$$ / $sections$$.length + $g$$ * $colWidth$$ + $b$$ * $workArea$$.vertWidth), y:$workArea$$.y + ($workArea$$.height - $workArea$$.y - $value$$), width:$colWidth$$, height:$value$$, fill:$barColor$$, border:$barOutline$$, borderWidth:$barOutlineWidth$$});
       });
     });
   }, linechart:function $$js_canvas$$$fn$cmd$linechart$($offsetY$$1_settings$$) {
     $offsetY$$1_settings$$ = $offsetY$$1_settings$$ || {};
-    var $sections$$ = $js$$.alg.sliceArray($offsetY$$1_settings$$.sections) || [], $chartY$$1_size$$ = this.exportSize(), $borderWidth$$ = $js$$.alg.number($offsetY$$1_settings$$.borderWidth, 1), $width$$ = $js$$.alg.number($offsetY$$1_settings$$.width, $chartY$$1_size$$.width), $height$$ = $js$$.alg.number($offsetY$$1_settings$$.height, $chartY$$1_size$$.height), $chartX$$ = $js$$.alg.number($offsetY$$1_settings$$.x, 0), $chartY$$1_size$$ = $js$$.alg.number($offsetY$$1_settings$$.y, 0), $fill$$ = 
-    $js$$.alg.string($offsetY$$1_settings$$.fill, "white"), $border$$ = $js$$.alg.string($offsetY$$1_settings$$.border, "black"), $labels$$ = $offsetY$$1_settings$$.labels || [], $labelSize$$ = $js$$.alg.number($offsetY$$1_settings$$.labelSize, 16), $lineColor$$0$$ = $js$$.alg.string($offsetY$$1_settings$$.linecolor, "rgba(0, 0, 0, 0.3)"), $self$$ = this, $min$$ = $js$$.alg.number($offsetY$$1_settings$$.min, Infinity), $max$$ = $js$$.alg.number($offsetY$$1_settings$$.max, -Infinity), $cols$$;
-    $offsetY$$1_settings$$ = 1.2 * $labelSize$$;
+    var $sections$$ = $offsetY$$1_settings$$.sections = $offsetY$$1_settings$$.sections || [], $chartY$$1_size$$ = this.exportSize(), $borderWidth$$ = $offsetY$$1_settings$$.borderWidth = $js$$.alg.number($offsetY$$1_settings$$.borderWidth, 1), $width$$ = $offsetY$$1_settings$$.width = $js$$.alg.number($offsetY$$1_settings$$.width, $chartY$$1_size$$.width), $height$$ = $offsetY$$1_settings$$.height = $js$$.alg.number($offsetY$$1_settings$$.height, $chartY$$1_size$$.height), $chartX$$ = $offsetY$$1_settings$$.x = 
+    $js$$.alg.number($offsetY$$1_settings$$.x, 0), $chartY$$1_size$$ = $offsetY$$1_settings$$.y = $js$$.alg.number($offsetY$$1_settings$$.y, 0), $fill$$ = $offsetY$$1_settings$$.fill = $js$$.alg.string($offsetY$$1_settings$$.fill, "white"), $border$$ = $offsetY$$1_settings$$.border = $js$$.alg.string($offsetY$$1_settings$$.border, "black"), $labels$$ = $offsetY$$1_settings$$.labels = $offsetY$$1_settings$$.labels || [], $labelSize$$ = $offsetY$$1_settings$$.labelSize = $js$$.alg.number($offsetY$$1_settings$$.labelSize, 
+    16), $lineColor$$0$$ = $offsetY$$1_settings$$.linecolor = $js$$.alg.string($offsetY$$1_settings$$.linecolor, "rgba(0, 0, 0, 0.3)"), $min$$ = $js$$.alg.number($offsetY$$1_settings$$.min, Infinity), $max$$ = $js$$.alg.number($offsetY$$1_settings$$.max, -Infinity), $self$$ = this, $cols$$;
+    $offsetY$$1_settings$$ = 1.5 * $labelSize$$;
     $self$$.cmd.rectangle.call(this, {width:$width$$, height:$height$$, x:$chartX$$, y:$chartY$$1_size$$, fill:$fill$$, borderWidth:$borderWidth$$, border:$border$$});
     $width$$ -= 2 * $borderWidth$$;
     $height$$ -= 2 * $borderWidth$$;
@@ -1635,20 +1668,21 @@ jspyder.extend.fn("canvas", function() {
       $self$$.cmd.text.call($self$$, {x:$labelSize$$ / 3, y:$height$$ * (5 - $i$$) / 5 - $labelSize$$ / 3, size:$labelSize$$, font:"Arial", text:$i$$ / 5 * $max$$ | 0, textalign:"left"});
       $self$$.cmd.text.call($self$$, {x:$width$$ - $labelSize$$ / 3, y:$height$$ * (5 - $i$$) / 5 - $labelSize$$ / 3, size:$labelSize$$, font:"Arial", text:$i$$ / 5 * $max$$ | 0, textalign:"right"});
     });
-    var $width$$ = $width$$ - 50, $JSCompiler_object_inline_x_47$$ = $chartX$$ += 50, $JSCompiler_object_inline_y_48$$ = $chartY$$1_size$$, $JSCompiler_object_inline_height_49$$ = $height$$ - $chartY$$1_size$$, $JSCompiler_object_inline_vertWidth_51$$ = ($width$$ - $chartX$$) / ($cols$$ - 1);
+    var $width$$ = $width$$ - 50, $chartX$$ = $chartX$$ + 50, $workArea$$ = {x:$chartX$$, y:$chartY$$1_size$$, height:$height$$ - $chartY$$1_size$$, width:$width$$ - $chartX$$, vertWidth:($width$$ - $chartX$$) / ($cols$$ - 1)};
     $js$$.alg.iterate(0, $cols$$, function($i$$) {
-      var $x$$ = $JSCompiler_object_inline_x_47$$ + $JSCompiler_object_inline_vertWidth_51$$ * $i$$;
-      $self$$.cmd.line.call($self$$, {x:$x$$, y:$JSCompiler_object_inline_y_48$$, width:0, height:$JSCompiler_object_inline_height_49$$, color:$lineColor$$0$$});
-      $self$$.cmd.text.call($self$$, {text:$labels$$[$i$$], font:"Arial", size:$labelSize$$, x:$x$$, y:$JSCompiler_object_inline_height_49$$ + $labelSize$$, textalign:"center"});
+      var $x$$ = $workArea$$.x + $workArea$$.vertWidth * $i$$;
+      $self$$.cmd.line.call($self$$, {x:$x$$, y:$workArea$$.y, width:0, height:$workArea$$.height, color:$lineColor$$0$$});
+      $self$$.cmd.text.call($self$$, {text:$labels$$[$i$$], font:"Arial", size:$labelSize$$, x:$x$$, y:$workArea$$.height + $labelSize$$, textalign:"center"});
     });
     $js$$.alg.arrEach($sections$$, function($group$$, $g$$) {
-      var $lineColor$$ = $js$$.alg.string($group$$.fill, "transparent"), $lineOutline$$ = $js$$.alg.string($group$$.border, "black"), $lineOutlineWidth$$ = $js$$.alg.number($group$$.borderWidth, 1), $dotColor$$ = $js$$.alg.string($group$$.dotfill, $lineColor$$), $dotOutline$$ = $js$$.alg.string($group$$.dotBorder, $lineOutline$$), $dotOutlineWidth$$ = $js$$.alg.string($group$$.dotBorderWidth, $lineOutlineWidth$$);
-      $js$$.alg.number($group$$.dotRadius, 4);
+      var $lineColor$$ = $group$$.fill = $js$$.alg.string($group$$.fill, "transparent"), $lineOutline$$ = $group$$.border = $js$$.alg.string($group$$.border, "black"), $lineOutlineWidth$$ = $group$$.borderWidth = $js$$.alg.number($group$$.borderWidth, 1), $dotColor$$ = $group$$.dotfill = $js$$.alg.string($group$$.dotfill, $lineColor$$), $dotOutline$$ = $group$$.dotBorder = $js$$.alg.string($group$$.dotBorder, $lineOutline$$), $dotOutlineWidth$$ = $group$$.dotBorderWidth = $js$$.alg.string($group$$.dotBorderWidth, 
+      $lineOutlineWidth$$);
+      $group$$.dotRadius = $js$$.alg.number($group$$.dotRadius, 4);
       $js$$.alg.arrEach($group$$ && $group$$.values, function($v2_val$$, $b$$, $v1_values$$) {
-        $v1_values$$ = $JSCompiler_object_inline_height_49$$ - ($JSCompiler_object_inline_y_48$$ + $JSCompiler_object_inline_height_49$$ * $js$$.alg.number($v1_values$$[$b$$ - 1]) / ($max$$ || 1));
-        $v2_val$$ = $JSCompiler_object_inline_height_49$$ - ($JSCompiler_object_inline_y_48$$ + $JSCompiler_object_inline_height_49$$ * $js$$.alg.number($v2_val$$) / ($max$$ || 1));
-        var $x$$ = $JSCompiler_object_inline_x_47$$ + $JSCompiler_object_inline_vertWidth_51$$ * ($b$$ - 1), $dotX$$ = $JSCompiler_object_inline_x_47$$ + $JSCompiler_object_inline_vertWidth_51$$ * $b$$;
-        $b$$ && $self$$.cmd.line.call($self$$, {x:$x$$, y:$v1_values$$, width:$JSCompiler_object_inline_vertWidth_51$$, height:$v2_val$$ - $v1_values$$, color:$lineOutline$$, thickness:$lineOutlineWidth$$});
+        $v1_values$$ = $workArea$$.height - ($workArea$$.y + $workArea$$.height * $js$$.alg.number($v1_values$$[$b$$ - 1]) / ($max$$ || 1));
+        $v2_val$$ = $workArea$$.height - ($workArea$$.y + $workArea$$.height * $js$$.alg.number($v2_val$$) / ($max$$ || 1));
+        var $x$$ = $workArea$$.x + $workArea$$.vertWidth * ($b$$ - 1), $dotX$$ = $workArea$$.x + $workArea$$.vertWidth * $b$$;
+        $b$$ && $self$$.cmd.line.call($self$$, {x:$x$$, y:$v1_values$$, width:$workArea$$.vertWidth, height:$v2_val$$ - $v1_values$$, color:$lineOutline$$, thickness:$lineOutlineWidth$$});
         $self$$.cmd.circle.call($self$$, {y:$v2_val$$, x:$dotX$$, radius:4, fill:$dotColor$$, border:$dotOutline$$, thickness:$dotOutlineWidth$$});
         $self$$.cmd.circle.call($self$$, {y:$v1_values$$, x:$x$$, radius:4, fill:$dotColor$$, border:$dotOutline$$, thickness:$dotOutlineWidth$$});
       });
@@ -1756,8 +1790,8 @@ jspyder.extend.fn("date", function() {
     return new Date($d$$.y, $d$$.m, $d$$.d, $d$$.h + $d$$.a, $d$$.n, $d$$.s, $d$$.x);
   }
   function $__formatDate$$($date$$, $format$$, $useUTC$$) {
-    var $JSCompiler_object_inline_y_52$$ = $useUTC$$ ? $date$$.getUTCFullYear() : $date$$.getFullYear(), $JSCompiler_object_inline_m_53$$ = $useUTC$$ ? $date$$.getUTCMonth() : $date$$.getMonth(), $JSCompiler_object_inline_d_54$$ = $useUTC$$ ? $date$$.getUTCDate() : $date$$.getDate(), $JSCompiler_object_inline_h_55$$ = $useUTC$$ ? $date$$.getUTCHours() : $date$$.getHours(), $JSCompiler_object_inline_n_56$$ = $useUTC$$ ? $date$$.getUTCMinutes() : $date$$.getMinutes(), $JSCompiler_object_inline_s_57$$ = 
-    $useUTC$$ ? $date$$.getUTCSeconds() : $date$$.getSeconds(), $JSCompiler_object_inline_w_58$$ = $useUTC$$ ? $date$$.getUTCDay() : $date$$.getDay(), $JSCompiler_object_inline_x_59$$ = $useUTC$$ ? $date$$.getUTCMilliseconds() : $date$$.getMilliseconds(), $left$$ = "", $right$$ = $format$$;
+    var $JSCompiler_object_inline_y_42$$ = $useUTC$$ ? $date$$.getUTCFullYear() : $date$$.getFullYear(), $JSCompiler_object_inline_m_43$$ = $useUTC$$ ? $date$$.getUTCMonth() : $date$$.getMonth(), $JSCompiler_object_inline_d_44$$ = $useUTC$$ ? $date$$.getUTCDate() : $date$$.getDate(), $JSCompiler_object_inline_h_45$$ = $useUTC$$ ? $date$$.getUTCHours() : $date$$.getHours(), $JSCompiler_object_inline_n_46$$ = $useUTC$$ ? $date$$.getUTCMinutes() : $date$$.getMinutes(), $JSCompiler_object_inline_s_47$$ = 
+    $useUTC$$ ? $date$$.getUTCSeconds() : $date$$.getSeconds(), $JSCompiler_object_inline_w_48$$ = $useUTC$$ ? $date$$.getUTCDay() : $date$$.getDay(), $JSCompiler_object_inline_x_49$$ = $useUTC$$ ? $date$$.getUTCMilliseconds() : $date$$.getMilliseconds(), $left$$ = "", $right$$ = $format$$;
     $js$$.alg.arrEach($format$$.match($__reSearch$$), function($match$$) {
       var $collection$$ = $__formatCollection$$[$match$$] || /\[[^\\]*\]/g.test($match$$);
       if (!$collection$$) {
@@ -1770,12 +1804,12 @@ jspyder.extend.fn("date", function() {
         case "YY":
         ;
         case "yy":
-          $value$$ = $js$$.alg.string($JSCompiler_object_inline_y_52$$ % 100);
+          $value$$ = $js$$.alg.string($JSCompiler_object_inline_y_42$$ % 100);
           break;
         case "YYYY":
         ;
         case "yyyy":
-          $value$$ = $js$$.alg.string($JSCompiler_object_inline_y_52$$, "");
+          $value$$ = $js$$.alg.string($JSCompiler_object_inline_y_42$$, "");
           break;
         case "MMMM":
         ;
@@ -1792,7 +1826,7 @@ jspyder.extend.fn("date", function() {
         case "M":
         ;
         case "m":
-          $value$$ = $collection$$.lookup[$JSCompiler_object_inline_m_53$$];
+          $value$$ = $collection$$.lookup[$JSCompiler_object_inline_m_43$$];
           break;
         case "dth":
         ;
@@ -1801,7 +1835,7 @@ jspyder.extend.fn("date", function() {
         case "dd":
         ;
         case "d":
-          $value$$ = $collection$$.lookup[$JSCompiler_object_inline_d_54$$ - 1];
+          $value$$ = $collection$$.lookup[$JSCompiler_object_inline_d_44$$ - 1];
           break;
         case "DDDD":
         ;
@@ -1814,12 +1848,12 @@ jspyder.extend.fn("date", function() {
         case "DD":
         ;
         case "D":
-          $value$$ = $collection$$.lookup[$JSCompiler_object_inline_w_58$$];
+          $value$$ = $collection$$.lookup[$JSCompiler_object_inline_w_48$$];
           break;
         case "am":
         ;
         case "AM":
-          $value$$ = $collection$$.lookup[$JSCompiler_object_inline_h_55$$];
+          $value$$ = $collection$$.lookup[$JSCompiler_object_inline_h_45$$];
           break;
         case "HH":
         ;
@@ -1828,26 +1862,26 @@ jspyder.extend.fn("date", function() {
         case "hh":
         ;
         case "h":
-          $value$$ = $collection$$.lookup[$JSCompiler_object_inline_h_55$$];
+          $value$$ = $collection$$.lookup[$JSCompiler_object_inline_h_45$$];
           break;
         case "nn":
         ;
         case "n":
-          $value$$ = $collection$$.lookup[$JSCompiler_object_inline_n_56$$];
+          $value$$ = $collection$$.lookup[$JSCompiler_object_inline_n_46$$];
           break;
         case "ss":
         ;
         case "s":
-          $value$$ = $collection$$.lookup[$JSCompiler_object_inline_s_57$$];
+          $value$$ = $collection$$.lookup[$JSCompiler_object_inline_s_47$$];
           break;
         case "xxx":
-          $value$$ = ($js$$.alg.string($JSCompiler_object_inline_x_59$$) + "00").substr(0, 3);
+          $value$$ = ($js$$.alg.string($JSCompiler_object_inline_x_49$$) + "00").substr(0, 3);
           break;
         case "xx":
-          $value$$ = ($js$$.alg.string($JSCompiler_object_inline_x_59$$) + "0").substr(0, 2);
+          $value$$ = ($js$$.alg.string($JSCompiler_object_inline_x_49$$) + "0").substr(0, 2);
           break;
         case "x":
-          $value$$ = $js$$.alg.string($JSCompiler_object_inline_x_59$$).substr(0, 1);
+          $value$$ = $js$$.alg.string($JSCompiler_object_inline_x_49$$).substr(0, 1);
           break;
         default:
           $value$$ = $match$$.substring(1, $match$$.length - 1);
@@ -2956,16 +2990,16 @@ jspyder.extend.fn("form", function() {
       }};
       return $fns$$;
     }
-    function $__searchLoop$$($text$$23_valObj$$, $i$$44_value$$, $values$$, $data$$) {
-      $i$$44_value$$ = $js$$.alg.string($text$$23_valObj$$.value);
-      $text$$23_valObj$$ = $js$$.alg.string($text$$23_valObj$$.text, $i$$44_value$$);
-      $data$$.regexp.test($text$$23_valObj$$) && $data$$.match.push('<li class="search-item" data-value="' + $i$$44_value$$ + '" title="' + $text$$23_valObj$$ + '">' + $text$$23_valObj$$ + "</li>");
+    function $__searchLoop$$($text$$23_valObj$$, $i$$45_value$$, $values$$, $data$$) {
+      $i$$45_value$$ = $js$$.alg.string($text$$23_valObj$$.value);
+      $text$$23_valObj$$ = $js$$.alg.string($text$$23_valObj$$.text, $i$$45_value$$);
+      $data$$.regexp.test($text$$23_valObj$$) && $data$$.match.push('<li class="search-item" data-value="' + $i$$45_value$$ + '" title="' + $text$$23_valObj$$ + '">' + $text$$23_valObj$$ + "</li>");
       $data$$.match.length >= $data$$.depth && this.stop();
     }
-    function $__searchValue$$($text$$24_valObj$$, $i$$45_value$$, $values$$, $data$$) {
-      $i$$45_value$$ = $js$$.alg.string($text$$24_valObj$$.value);
-      $text$$24_valObj$$ = $js$$.alg.string($text$$24_valObj$$.text, $i$$45_value$$);
-      $data$$.find.test($data$$.searchText ? $text$$24_valObj$$ : $i$$45_value$$) && ($data$$.match = {value:$i$$45_value$$, text:$text$$24_valObj$$}, this.stop());
+    function $__searchValue$$($text$$24_valObj$$, $i$$46_value$$, $values$$, $data$$) {
+      $i$$46_value$$ = $js$$.alg.string($text$$24_valObj$$.value);
+      $text$$24_valObj$$ = $js$$.alg.string($text$$24_valObj$$.text, $i$$46_value$$);
+      $data$$.find.test($data$$.searchText ? $text$$24_valObj$$ : $i$$46_value$$) && ($data$$.match = {value:$i$$46_value$$, text:$text$$24_valObj$$}, this.stop());
     }
     function $searchValue$$($config$$, $data$$86_value$$, $searchText$$) {
       $data$$86_value$$ = {match:null, find:new RegExp("^" + $data$$86_value$$ + "$"), searchText:$searchText$$};
@@ -3294,10 +3328,10 @@ js.extend.fn("sp", function() {
     this.eachDirtyRow(this._pushLoopDirtyRows, $data$$99_list$$);
     $ctx$$.executeQueryAsync($js$$.alg.bindFn(this, $__successPush$$, [$data$$99_list$$.items, $success$$]), $js$$.alg.bindFn(this, $__failurePush$$, [$data$$99_list$$.items, $failure$$]));
     return this;
-  }, _pushLoopDirtyRows:function $$sp$$$list$fn$_pushLoopDirtyRows$($row$$, $i$$51_rowID$$, $itemInfo_listItem_rows$$, $data$$) {
-    $i$$51_rowID$$ = $row$$.ID.value;
+  }, _pushLoopDirtyRows:function $$sp$$$list$fn$_pushLoopDirtyRows$($row$$, $i$$52_rowID$$, $itemInfo_listItem_rows$$, $data$$) {
+    $i$$52_rowID$$ = $row$$.ID.value;
     $itemInfo_listItem_rows$$ = $itemInfo_listItem_rows$$ = null;
-    0 > $row$$.ID.value ? ($itemInfo_listItem_rows$$ = new SP.ListItemCreationInformation, $itemInfo_listItem_rows$$ = $data$$.list.addItem($itemInfo_listItem_rows$$), $data$$.newrow = !0) : ($itemInfo_listItem_rows$$ = $data$$.list.getItemById($i$$51_rowID$$), $data$$.newrow = !1);
+    0 > $row$$.ID.value ? ($itemInfo_listItem_rows$$ = new SP.ListItemCreationInformation, $itemInfo_listItem_rows$$ = $data$$.list.addItem($itemInfo_listItem_rows$$), $data$$.newrow = !0) : ($itemInfo_listItem_rows$$ = $data$$.list.getItemById($i$$52_rowID$$), $data$$.newrow = !1);
     $data$$.listItem = $itemInfo_listItem_rows$$;
     $js$$.alg.each($row$$, $data$$.self._pushLoopDirtyRowColumns, $data$$);
     $data$$.items.push($itemInfo_listItem_rows$$);
@@ -3392,13 +3426,19 @@ js.extend.fn("sp", function() {
     $columns$$[$key$$] = $column$$.value || $column$$.default;
   }, _sumRows:function $$sp$$$query$fn$_sumRows$($row$$, $_$$, $rows$$, $columns$$) {
     $js$$.alg.each($row$$, $sp$$.query.fn._sumColumns, $columns$$);
-  }, _sumColumns:function $$sp$$$query$fn$_sumColumns$($value$$, $colName$$, $_$$, $out$$) {
-    switch($value$$.type) {
-      case "number":
-        $out$$[$colName$$] = $js$$.alg.number($out$$[$colName$$]) + $js$$.alg.number($value$$.value);
-        break;
-      default:
-        $out$$[$colName$$] = $value$$.value;
+  }, _sumColumns:function $$sp$$$query$fn$_sumColumns$($sumValue$$, $colName$$, $out$$, $column$$4_row$$) {
+    if ($column$$4_row$$ = $column$$4_row$$[$colName$$]) {
+      var $rowValue$$ = $column$$4_row$$ && $column$$4_row$$.value;
+      switch($column$$4_row$$.type) {
+        case "number":
+          $out$$[$colName$$] = $js$$.alg.number($rowValue$$) + $js$$.alg.number($sumValue$$);
+          break;
+        case "bitflag":
+          $out$$[$colName$$] = $sumValue$$ & $js$$.alg.number($rowValue$$);
+          break;
+        default:
+          $out$$[$colName$$] = $rowValue$$;
+      }
     }
   }, getValues:function $$sp$$$query$fn$getValues$($columns$$, $fn$$) {
     $js$$.alg.use(this, $fn$$, [this.exportValues($columns$$)]);
