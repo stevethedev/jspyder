@@ -980,10 +980,8 @@
                         }
                     }
 
-                    var map = { "from": value, "to": {} };
-                    depchain.push(map);
-
-                    map["to"] = obj[key] = js.alg.deepCloneObj(value, depchain);
+                    obj[key] = js.alg.deepCloneObj(value, depchain);
+                    depchain.push({ "from": value, "to": obj[key] });
                 });
                 
                 return obj;

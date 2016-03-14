@@ -949,15 +949,14 @@ $jscomp.string.endsWith$install = function $$jscomp$string$endsWith$install$() {
       $obj$$0$$ = this.cloneObj($obj$$0$$);
       var $depchain$$ = $js$$.alg.array($JSCompiler_OptimizeArgumentsArray_p0$$);
       $js$$.alg.each($obj$$0$$, function($value$$, $key$$, $obj$$) {
-        for (var $i$$19_map$$ = 0;$i$$19_map$$ < $depchain$$.length;$i$$19_map$$++) {
-          if ($depchain$$[$i$$19_map$$].from === $value$$) {
-            $obj$$[$key$$] = $depchain$$[$i$$19_map$$].to;
+        for (var $i$$ = 0;$i$$ < $depchain$$.length;$i$$++) {
+          if ($depchain$$[$i$$].from === $value$$) {
+            $obj$$[$key$$] = $depchain$$[$i$$].to;
             return;
           }
         }
-        $i$$19_map$$ = {from:$value$$, to:{}};
-        $depchain$$.push($i$$19_map$$);
-        $i$$19_map$$.to = $obj$$[$key$$] = $js$$.alg.deepCloneObj($value$$, $depchain$$);
+        $obj$$[$key$$] = $js$$.alg.deepCloneObj($value$$, $depchain$$);
+        $depchain$$.push({from:$value$$, to:$obj$$[$key$$]});
       });
       return $obj$$0$$;
     }, keycodes:{KC_Backspace:8, KC_Tab:9, KC_Enter:13, KC_Shift:16, KC_Ctrl:17, KC_Alt:18, KC_Pause:19, KC_Break:19, KC_CapsLock:20, KC_Escape:27, KC_Space:32, KC_PageUp:33, KC_PageDown:34, KC_End:35, KC_Home:36, KC_LeftArrow:37, KC_UpArrow:38, KC_RightArrow:39, KC_DownArrow:40, KC_Insert:45, KC_Delete:46, KC_0:48, KC_1:49, KC_2:50, KC_3:51, KC_4:52, KC_5:53, KC_6:54, KC_7:55, KC_8:56, KC_9:57, KC_A:65, KC_B:66, KC_C:67, KC_D:68, KC_E:69, KC_F:70, KC_G:71, KC_H:72, KC_I:73, KC_J:74, KC_K:75, KC_L:76, 
