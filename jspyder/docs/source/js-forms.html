@@ -411,7 +411,7 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                             (fieldname  ? &quot;for=\&quot;&quot; + fieldname + &quot;\&quot; &quot; : &quot;&quot;), 
                             (labelclass ? &quot;class=\&quot;&quot; + labelclass + &quot;\&quot;&quot; : &quot;&quot;), 
                             (tooltip ? &quot;title=\&quot;&quot; + tooltip + &quot;\&quot;&quot; : &quot;&quot;), 
-                        &quot;&gt;&quot;, labeltext, &quot;&lt;/label&gt;&quot;].join(&#39;&#39;)
+                        &quot;&gt;&quot;, labeltext, &quot;&lt;/label&gt;&quot;].join('')
                     : &quot;&quot;);
                     
             return js.dom(html);
@@ -886,7 +886,7 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                         &quot; name=\&quot;&quot;, fieldname, &quot;\&quot;&quot;,
                         (cfg.readonly ? &quot; readonly=\&quot;readonly\&quot;&quot; : &quot;&quot;),
                         &quot; data-type=\&quot;&quot;, fieldtype, &quot;\&quot;&gt;&lt;/input&gt;&quot;
-                    ].join(&#39;&#39;);
+                    ].join('');
                     
                 cfg.setValue = setValue;
 
@@ -993,7 +993,7 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                     this.months = &quot;&quot;;
                 
                     js.alg.arrEach(
-                        this.date.getMonthList(&quot;mmm&quot;), 
+                        this.date.exportMonthList(&quot;mmm&quot;), 
                         this.monthlistBuilder, 
                         this);
                         
@@ -1012,30 +1012,30 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                     return;
                 },
                 monthlistBuilder: function (month, monthnum, months, data) {
-                    var sameYear = data.today.getYear() === data.date.getYear(),
-                        sameMonth = (monthnum + 1) === data.today.getMonth(); 
+                    var sameYear = data.today.exportYear() === data.date.exportYear(),
+                        sameMonth = (monthnum + 1) === data.today.exportMonth(); 
                         
                     data.months += [
                         &quot;&lt;div class=\&quot;month &quot;, (( sameYear &amp;&amp; sameMonth ) ? &quot;today&quot; : &quot;&quot;), &quot;\&quot;&quot;,
                             &quot; value=\&quot;&quot;, (monthnum + 1), &quot;\&quot;&gt;&quot;,
                             month,
                         &quot;&lt;/div&gt;&quot;
-                    ].join(&#39;&#39;);
+                    ].join('');
                     
                     return;
                 },
                 monthClick: function () {
                     var calStruct = this;
                     calStruct.today = js.date();
-                    var weekdays = calStruct.date.getWeekdayList(&quot;DD&quot;),
-                        daylist = calStruct.date.getDayList(&quot;d&quot;),
+                    var weekdays = calStruct.date.exportWeekdayList(&quot;DD&quot;),
+                        daylist = calStruct.date.exportDayList(&quot;d&quot;),
                         i = 0,
                         data = { 
                             html: &quot;&quot;, 
                             wlen: weekdays.length,
-                            offset: calStruct.date.getWeekdayOffset(),
+                            offset: calStruct.date.exportWeekdayOffset(),
                             calStruct: calStruct,
-                            today: (calStruct.today.getMonth() === calStruct.date.getMonth()) &amp;&amp; (js.date().getDay()) };
+                            today: (calStruct.today.exportMonth() === calStruct.date.exportMonth()) &amp;&amp; (js.date().exportDay()) };
                     
                     js.alg.arrEach(weekdays, calStruct.buildWeekdays, data);
                         
@@ -1065,13 +1065,13 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                             &quot;\&quot; style=\&quot;width:&quot;, (100 / data.wlen),&quot;%\&quot;&gt;&quot;,
                             weekday,
                         &quot;&lt;/div&gt;&quot;
-                    ].join(&#39;&#39;);
+                    ].join('');
                     return;
                 },
                 buildNumberedDays: function (day, daynum, daylist, data) {
-                    var sameYear = data.calStruct.today.getYear() === data.calStruct.date.getYear(),
-                        sameMonth = data.calStruct.today.getMonth() === data.calStruct.date.getMonth(),
-                        sameDate = data.calStruct.today.getDay() === (daynum + 1);
+                    var sameYear = data.calStruct.today.exportYear() === data.calStruct.date.exportYear(),
+                        sameMonth = data.calStruct.today.exportMonth() === data.calStruct.date.exportMonth(),
+                        sameDate = data.calStruct.today.exportDay() === (daynum + 1);
                             
                     data.html += [
                         &quot;&lt;div class=\&quot;date &quot;, (sameYear &amp;&amp; sameMonth &amp;&amp; sameDate ? &quot;today&quot;:&quot;&quot;) ,&quot;\&quot; value=\&quot;&quot;, (daynum + 1), &quot;\&quot; &quot;,
@@ -1081,7 +1081,7 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                             &quot;\&quot;&gt;&quot;,
                             day,
                         &quot;&lt;/div&gt;&quot;
-                    ].join(&#39;&#39;);
+                    ].join('');
                     return;
                 },
                 calendarHtml: [
@@ -1093,7 +1093,7 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                         &quot;&lt;/div&gt;&quot;,
                         &quot;&lt;div class=\&quot;calendar-tiles\&quot;&gt;&lt;/div&gt;&quot;,
                     &quot;&lt;/div&gt;&quot;
-                ].join(&#39;&#39;)
+                ].join('')
             };
             
             var __override = {
@@ -1176,7 +1176,7 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                                 &quot;&lt;i class=\&quot;&quot; + btnicon + &quot;\&quot;&gt;&lt;/i&gt;&quot;,
                                 &quot;&lt;span class=\&quot;button-text\&quot; data-buttontext=\&quot;&quot; + btntext + &quot;\&quot;&gt;&lt;/span&gt;&quot;,
                         &quot;&lt;/div&gt;&quot;
-                    ].join(&#39;&#39;),
+                    ].join(''),
                     
                     $button = js.dom(html)
                         .setValue(btnvalue)
@@ -1200,7 +1200,7 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                 var buttons = js.dom();
                 for (var i = 0; i &lt; cfg.buttons.length; i++) {
                     var option = js.alg.mergeObj({ &quot;readonly&quot;: cfg[&quot;readonly&quot;] }, cfg.buttons[i], __override);
-                    option.class += &#39; js-buttonset&#39;;
+                    option.class += ' js-buttonset';
                     buttons.and(this.buildControl(option, true));
                 }
                 return buttons;
@@ -1301,7 +1301,7 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                     livalue = js.alg.string(option.value, option.text);
                     
                     lihtml = [
-                        &quot;&lt;li class=\&quot;item\&quot; value=\&quot;&quot;, livalue, &quot;\&quot; title=\&quot;&quot;, litext, &quot;\&quot;&gt;&quot;, litext, &quot;&lt;/li&gt;&quot;].join(&#39;&#39;);
+                        &quot;&lt;li class=\&quot;item\&quot; value=\&quot;&quot;, livalue, &quot;\&quot; title=\&quot;&quot;, litext, &quot;\&quot;&gt;&quot;, litext, &quot;&lt;/li&gt;&quot;].join('');
                     
                     $popout.append(lihtml);
                     i++
@@ -1366,7 +1366,7 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                             &quot;&lt;i class=\&quot;dropdown-arrow arrow-drop-down\&quot;&gt;&lt;/i&gt;&quot;,
                             &quot;&lt;span class=\&quot;dropdown-text\&quot;&gt;&quot;, (cfgvalue || cfgdefault || &quot;&amp;nbsp;&quot;), &quot;&lt;/span&gt;&quot;,
                         &quot;&lt;/div&gt;&quot;
-                    ].join(&#39;&#39;),
+                    ].join(''),
                     
                     $dropdown = js.dom(html);
                     
@@ -1396,7 +1396,7 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                             (cfg.readonly ? &quot; readonly=\&quot;true\&quot;&quot; : &quot;&quot;),
                             &quot; class=\&quot;input &quot;, cfgclass, &quot;\&quot;&gt;&quot;,
                         &quot;&lt;/textarea&gt;&quot;
-                    ].join(&#39;&#39;);
+                    ].join('');
                     
                 cfg.setValue = setValue;
                     
@@ -1465,7 +1465,7 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                         &quot;&lt;textarea name=\&quot;&quot;, cfgname, &quot;\&quot;&quot;,
                             &quot; class=\&quot;input js-control js-control-autosize &quot;, cfgclass, &quot;\&quot;&gt;&quot;,
                         &quot;&lt;/textarea&gt;&quot;
-                    ].join(&#39;&#39;);
+                    ].join('');
                     
                 cfg.setValue = setValue;
                     
@@ -1493,7 +1493,7 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                             (cfg[&quot;readonly&quot;] ? &quot; readonly=\&quot;true\&quot;&quot; : &quot;&quot;),
                             &quot; class=\&quot;&quot;, cfgclass, &quot;\&quot;&gt;&quot;,
                         &quot;&lt;/input&gt;&quot;
-                    ].join(&#39;&#39;);
+                    ].join('');
                 
                 return js.dom(html).and(js.form.fn.buildLabel(cfgname, cfgtext, cfgclass));
             }
@@ -1626,7 +1626,7 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                             (cfg.readonly ? &quot; readonly=\&quot;true\&quot;&quot; : &quot;&quot;),
                             &quot; class=\&quot;&quot;, cfgclass, &quot;\&quot;&gt;&quot;,
                         &quot;&lt;/input&gt;&quot;
-                    ].join(&#39;&#39;),
+                    ].join(''),
                     $checkbox = js.dom(html).and(js.form.fn.buildLabel(cfgname, cfgtext, cfgclass));
                     
                 return $checkbox;
@@ -2074,7 +2074,7 @@ jspyder.extend.fn(&quot;form&quot;, function () {
 
                             found
                                 .setHtml(data.match.join(&quot;&quot;))
-                                .attachAfter(this)
+                                .attachEnd(this)
                                 .setCss(css)
                                 .find(&quot;.search-item&quot;).on(&quot;mousedown&quot;, searchClick);
                         }
@@ -2232,17 +2232,17 @@ jspyder.extend.fn(&quot;form&quot;, function () {
             }
             
             function toNumber(n, a) {
-                n = js.alg.string(n, &#39;&#39;);
+                n = js.alg.string(n, '');
                 
                 var reStrip = /([^\-\d\.]+)/g,
                     parts = null;
                     
-                n = n.replace(reStrip, &#39;&#39;);
-                parts = n.split(&#39;.&#39;);
+                n = n.replace(reStrip, '');
+                parts = n.split('.');
                 if (parts) {
                     parts[0] = js.alg.number(parts[0], 0);
                     parts[1] = js.alg.string(parts[1], &quot;0&quot;);
-                    n = js.alg.number(parts[0] + &#39;.&#39; + parts[1], 0);
+                    n = js.alg.number(parts[0] + '.' + parts[1], 0);
                 }
                 else {
                     n = 0;
@@ -2260,8 +2260,8 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                     return n;
                 }
                 n = js.alg.number(n, 0);
-                c = js.alg.string(c, &#39;,&#39;);
-                d = js.alg.string(d, &#39;.&#39;);
+                c = js.alg.string(c, ',');
+                d = js.alg.string(d, '.');
                 
                 if (typeof a !== &quot;undefined&quot;) {
                     n = n.toFixed(a);
@@ -2269,7 +2269,7 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                 
                 var reCommaSearch = /\B(?=(\d{3})+(?!\d))/g,
                     str = js.alg.string(n, &quot;&quot;),
-                    part = str.split(&#39;.&#39;),
+                    part = str.split('.'),
                     num = [];
                     
                 num[0] = (part[0] || &quot;&quot;).replace(reCommaSearch, c);

@@ -1,4 +1,4 @@
-/* ****************************************************************************
+/*
  * The MIT License (MIT)
  *
  * Copyright (c) 2015 Steven Jimenez
@@ -22,10 +22,9 @@
  * IN THE SOFTWARE.
  * 
  * @author Steven Jimenez
- * */
+ */
 
 (function (global, alias) {
-    // Ensure that all jspyder references point to the same jspyder object.
     /** 
      * @class jspyder
      */
@@ -60,7 +59,9 @@
         
         // Extensible
         js.extend = function js_extend(name, obj) {
-            Object.defineProperty(this, name, { value: obj });
+            if(!this.hasOwnProperty(name)) {
+                Object.defineProperty(this, name, { value: obj });
+            }
             return this;
         };
         js.extend.fn = function js_extend_fn(name, fn, args) {
@@ -73,8 +74,6 @@
         _bootstrapLog(js);
         _bootstrapEnv(js);
         _bootstrapLib(js);
-
-        // JSpyder Algorithms
         _bootstrapAlg(js);
         _bootstrapDom(js);
         
@@ -174,8 +173,8 @@
      */
     function _bootstrapEnv(js) {
         var VERSION_OBJ = {
-                MAJOR_VERSION: 1,
-                MINOR_VERSION: 0,
+                MAJOR_VERSION: 0,
+                MINOR_VERSION: 1,
                 PATCH_VERSION: 0 },
             VERSION_STR = VERSION_OBJ.MAJOR_VERSION + "." + VERSION_OBJ.MINOR_VERSION + "." + VERSION_OBJ.PATCH_VERSION,
             BROWSER_NAME = "",
@@ -373,6 +372,10 @@
 
                 return js;
             },
+
+            /**
+             * Specialized variant of js.alg.each for Array-like objects.
+             */
             arrEach: function each(obj, fn, data) {
                 var ctl = {
                         "stop": function () {
@@ -397,7 +400,13 @@
 
                 return js;
             },
-            
+
+            /**
+             * Iterates from [start] to [end], executing [fn] on each step and
+             * using [data] as the fourth parameter to [data].  Other than not
+             * iterating numerically rather than traversing an array, this
+             * function operates exactly like js.alg.arrEach and js.alg.each
+             */
             iterate: function(start, end, fn, data) {
                 start = js.alg.number(start);
                 end = js.alg.number(end);
@@ -418,15 +427,28 @@
                 
                 return js;
             },
-            
+
+            /**
+             * Rounds up to the nearest multiple of the order of magnitude for
+             * the value [n].  For example, js.alg.magnitude(1) = 1, js.alg.magnitude(12) = 20,
+             * js.alg.magnitude(123) = 200.
+             *
+             * @param {Number} n        The number to calculate a magnitude from.
+             */
             magnitude: function(n) {
                 n = js.alg.number(n);
                 var y = Math.pow(10, (n | 0).toString().length-1);
-                return Math.ceil(n/y)*y;
+                return Math.ceil(n / y) * y;
             },
-            
+
+            /**
+             * Escapes the string [str] to be safe for consumption in other functions.
+             *
+             * @param {String} str
+             *      The string to convert.
+             */
             escapeString: function (str) {
-                return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+                return js.alg.string(str).replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
             },
 
             /**
@@ -451,16 +473,24 @@
                     ? fn.apply(_this, args)
                     : undefined);
             },
-            
-            run: function (fn) {
+
+            /**
+             * Executes the function, provided, if it is actually a function.
+             *
+             * @param {Function} fn     Function to execute
+             */
+            "run": function (fn) {
                 if (typeof fn === "function") { fn(); }
                 return this;
             },
 
             /**
              * Coerces any value to a boolean
+             *
+             * @param {Mixed} b             Value to convert to a boolean.
+             * @param {Boolean} [d=false]   Value to use if b is undefined.
              */
-            bool: function bool(b, d) {
+            "bool": function bool(b, d) {
                 switch (typeof b) {
                     case "undefined":
                         return d || false;
@@ -472,6 +502,9 @@
             
             /**
              * Coerces any value to a Javascript Number object
+             *
+             * @param {Mixed} n
+             * @param {Number} [d=0]
              */
             "number": function (n, d) {
                 var _n = +n;
@@ -482,147 +515,225 @@
              * coerces any value to a string
              */
             "string": function(s, d) {
-                return (typeof s === "string" ? s :
-                    (s || s === 0) ? "" + s : d || "");
+                if (typeof s === "string") {
+                    return s;
+                }
+                else if (s !== null && typeof s === "object" && s.isPrototypeOf(RegExp)) {
+                    s = ('' + s).match(/^\/(.*)\/[a-z]*$/, "$1");
+                    return s;
+                }
+                else if (s || s === 0) {
+                    return "" + s;
+                }
+                return d || "";
             },
-            
+
+            /**
+             * Coerces a value to an object, or else returns a new object.
+             */
             "object": function(o, d) {
                 return (o && typeof o === "object" ? o : d || {});
             },
-            
+
+            /**
+             * Coerces a value to an array, or else returns a new array.
+             */
+            "array": function(a, d) {
+                return (Array.isArray(a) ? a : d || []);
+            },
+
+            /**
+             * Coerces a value to a date, or else returns a new date object.
+             */
             "date": function(v, d) {
                 return ((input instanceof Date || Object.prototype.toString.call(input) === '[object Date]')
                     ? v
-                    : new Date());
+                    : d || new Date());
             },
             
             /**
              * Coerces any value to a INT8 value
              */
-            byte: function (u) {
+            "byte": function(u) {
                 if (typeof Int8Array === "undefined") {
-                    u = +u;
-                    u = (u === u ? u : 0) & 0xFF;
-                    while (u < -0x80) { u += 0x100; }
-                    while (u > 0x7F) { u -= 0x100; }
-                    return u;
+                    js_alg["byte"] = function(u) {
+                        u = js.alg.number(u);
+                        u = (u === u ? u : 0) & 0xFF;
+                        while (u < -0x80) { u += 0x100; }
+                        while (u > 0x7F) { u -= 0x100; }
+                        return u;
+                    };
                 }
-                var buffer = new ArrayBuffer(1);
-                var byteArray = new Int8Array(buffer);
-                byteArray[0] = u;
-                return byteArray[0];
+                else {
+                    js_alg["byte"] = function(u) {
+                        var buffer = new ArrayBuffer(1);
+                        var byteArray = new Int8Array(buffer);
+                        byteArray[0] = u;
+                        return byteArray[0];
+                    };
+                }
+                return js_alg["byte"](u);
             },
             
             /**
              * Coerces any value to a UNSIGNED INT8 value
              */
-            ubyte: function (u) {
+            "ubyte": function (u) {
                 if (typeof Uint8Array === "undefined") {
-                    u = +u;
-                    return (u === u ? u : 0) & 0xFF;
+                    js_alg["ubyte"] = function(u) {
+                        u = +u;
+                        return (u === u ? u : 0) & 0xFF;
+                    };
                 }
-                var buffer = new ArrayBuffer(1);
-                var byteArray = new Uint8Array(buffer);
-                byteArray[0] = u;
-                return byteArray[0];
+                else {
+                    js_alg["ubyte"] = function(u) {
+                        var buffer = new ArrayBuffer(1);
+                        var byteArray = new Uint8Array(buffer);
+                        byteArray[0] = u;
+                        return byteArray[0];
+                    };
+                }
+                return js_alg["ubyte"](u);
             },
             
             /**
              * Coerces any value to a INT16 value
              */
-            short: function (u) {
+            "short": function(u) {
                 if (typeof Int16Array === "undefined") {
-                    u = +u;
-                    u = (u === u ? u : 0) & 0xFFFF;
-                    while (u < -0x8000) { u += 0x10000; }
-                    while (u > 0x7FFF) { u -= 0x10000; }
-                    return u;
+                    js_alg["short"] = function(u) {
+                        u = +u;
+                        u = (u === u ? u : 0) & 0xFFFF;
+                        while (u < -0x8000) { u += 0x10000; }
+                        while (u > 0x7FFF) { u -= 0x10000; }
+                        return u;
+                    }
                 }
-                var buffer = new ArrayBuffer(2);
-                var byteArray = new Int16Array(buffer);
-                byteArray[0] = u;
-                return byteArray[0];
+                else {
+                    js_alg["short"] = function(u) {
+                        var buffer = new ArrayBuffer(2);
+                        var byteArray = new Int16Array(buffer);
+                        byteArray[0] = u;
+                        return byteArray[0];
+                    };
+                }
+                return js_alg["short"](u);
             },
             
             /**
              * Coerces any value to a UNSIGNED INT16 value
              */
-            ushort: function (u) {
+            "ushort": function (u) {
                 if (typeof Uint16Array === "undefined") {
-                    u = +u;
-                    return (u === u ? u : 0) & 0xFFFF;
+                    js_alg["ushort"] = function(u) {
+                        u = +u;
+                        return (u === u ? u : 0) & 0xFFFF;
+                    };
                 }
-                var buffer = new ArrayBuffer(2);
-                var byteArray = new Uint16Array(buffer);
-                byteArray[0] = u;
-                return byteArray[0];
+                else {
+                    js_alg["ushort"] = function(u) {
+                        var buffer = new ArrayBuffer(2);
+                        var byteArray = new Uint16Array(buffer);
+                        byteArray[0] = u;
+                        return byteArray[0];
+                    };
+                }
+                return js_alg["ushort"](u);
             },
             
             /**
              * Coerces any value to a INT32 value
              */
-            int: function (u) {
+            "int": function (u) {
                 if (typeof Int32Array === "undefined") {
-                    u = +u;
-                    u = (u === u ? u : 0) & 0xFFFFFFFF;
-                    while (u < -0x80000000) { u += 0x100000000; }
-                    while (u > 0x7FFFFFFF) { u -= 0x100000000; }
-                    return u;
+                    js_alg["int"] = function(u) {
+                        u = +u;
+                        u = (u === u ? u : 0) & 0xFFFFFFFF;
+                        while (u < -0x80000000) { u += 0x100000000; }
+                        while (u > 0x7FFFFFFF) { u -= 0x100000000; }
+                        return u;
+                    };
                 }
-                var buffer = new ArrayBuffer(4);
-                var byteArray = new Int32Array(buffer);
-                byteArray[0] = u;
-                return byteArray[0];
+                else {
+                    js_alg["int"] = function(u) {
+                        var buffer = new ArrayBuffer(4);
+                        var byteArray = new Int32Array(buffer);
+                        byteArray[0] = u;
+                        return byteArray[0];
+                    };
+                }
+                return js_alg["int"](u);
             },
             
             /**
              * Coerces any value to a UNSIGNED INT32 value
              */
-            uint: function (u) {
+            "uint": function (u) {
                 if (typeof Int32Array === "undefined") {
-                    u = +u;
-                    u = (u === u ? u : 0) % 0x100000000;
-                    return (u < 0 ? u * -1 : u);
+                    js_alg["uint"] = function(u) {
+                        u = +u;
+                        u = (u === u ? u : 0) % 0x100000000;
+                        return (u < 0 ? u * -1 : u);
+                    };
                 }
-                var buffer = new ArrayBuffer(4);
-                var byteArray = new Uint32Array(buffer);
-                byteArray[0] = u;
-                return byteArray[0];
+                else {
+                    js_alg["uint"] = function(u) {
+                        var buffer = new ArrayBuffer(4);
+                        var byteArray = new Uint32Array(buffer);
+                        byteArray[0] = u;
+                        return byteArray[0];
+                    };
+                }
+                return js_alg["uint"](u);                
             },
             
             /**
              * Coerces any value to a FLOAT value
              */
-            float: function (u) {
+            "float": function (u) {
                 if (typeof Float32Array === "undefined") {
-                    u = +((+u).toPrecision(8));
-                    return (u == u ? u : 0);
+                    js_alg["float"] = function(u) {
+                        u = +((+u).toPrecision(8));
+                        return (u == u ? u : 0);
+                    };
                 }
-                var buffer = new ArrayBuffer(4);
-                var byteArray = new Float32Array(buffer);
-                byteArray[0] = u;
-                return +(byteArray[0].toPrecision(8));
+                else {
+                    js_alg["float"] = function(u) {
+                        var buffer = new ArrayBuffer(4);
+                        var byteArray = new Float32Array(buffer);
+                        byteArray[0] = u;
+                        return +(byteArray[0].toPrecision(8));
+                    };
+                }
+                return js_alg["float"](u);                
             },
             
             /**
              * Coerces any value to a DOUBLE value
              */
-            double: function (u) {
+            "double": function (u) {
                 if (typeof Float64Array === "undefined") {
-                    u = +((+u).toPrecision(16));
-                    return (u == u ? u : 0);
+                    js_alg["double"] = function(u) {
+                        u = +((+u).toPrecision(16));
+                        return (u == u ? u : 0);
+                    };
                 }
-                var buffer = new ArrayBuffer(8);
-                var byteArray = new Float64Array(buffer);
-                byteArray[0] = u;
-                return byteArray[0];
+                else {
+                    js_alg["double"] = function(u) {
+                        var buffer = new ArrayBuffer(8);
+                        var byteArray = new Float64Array(buffer);
+                        byteArray[0] = u;
+                        return byteArray[0];
+                    };
+                }
+                return js_alg["double"](u);                
             },
             
             /**
              * Takes an array of keys, and generates an enumerated
              * object with them.
              */
-            makeEnum: function (keys, enm) {
+            "makeEnum": function (keys, enm) {
                 enm = enm || {};
                 var v = 1;
                     
@@ -633,13 +744,21 @@
                 
                 return enm;
             },
-            
-            rad2deg: function (n, d) {
-                return js.alg.number(n, d) * 180 / Math.PI;
+
+            /**
+             * Converts radians to degrees, taking the same argument set as
+             * jspyder.alg.number
+             */
+            "rad2deg": function (n, d) {
+                return js.alg.number(n, d) * (180 / Math.PI);
             },
-            
-            deg2rad: function (n, d) {
-                return js.alg.number(n, d) * Math.PI / 180;
+
+            /**
+             * Converts degrees to radians, taking the same argument set as
+             * jspyder.alg.number
+             */
+            "deg2rad": function (n, d) {
+                return js.alg.number(n, d) * (Math.PI / 180);
             },
             
             /**
@@ -653,25 +772,44 @@
              * @param {Number} [n = 0]
              *      The argument to pass to the slice attempt.
              */
-            sliceArray: function(a, n) {
+            "sliceArray": function(a, n) {
                 var ret = a;
                 try {
-                    ret = Array.prototype.slice.call(a || [], n || 0);
+                    ret = window.Array.prototype.slice.call(a || [], n || 0);
                 }
-                catch(e) { ret = []; }
+                catch(e) { 
+                    ret = [];
+                }
                 return ret;
             },
-            
-            sortArrayObj: function(arr, asc, field /*, ... */) {
+
+            /**
+             * Sorts an array of objects, based on a specified key-tree.  For
+             * example:
+             *
+             *      var a1 = { foo: { bar: 1 } },
+             *          a2 = { foo: { bar: 2 } },
+             *          a3 = { foo: { bar: 3 } },
+             *          array = [ a2 , a3 , a1 ];
+             *
+             *      js.alg.sortArrayObj(arr, true, "foo", "bar"); // a1, a2, a3
+             *      js.alg.sortArrayObj(arr, false, "foo", "bar"); // a3, a2, a1
+             *
+             * @param {Object[]} arr
+             * @param {Boolean} asc     TRUE for ascending sort
+             * @param {String} field
+             */
+            "sortArrayObj": function(arr, asc, field /*, ... */) {
                 var list = js.alg.sliceArray(arguments, 2);
-                arr.sort(js.alg.__sortArrayObj(asc, list));
+                js.alg.array(arr).sort(js.alg.__sortArrayObj(asc, list));
                 return arr;
             },
             
-            /** 
+            /**
+             * @private
              * @return {Function}
              */
-            __sortArrayObj: function (asc, list) {
+            "__sortArrayObj": function (asc, list) {
                 var __ret;
                 switch (js.env.browser.name) {
                     case "IE":
@@ -700,9 +838,21 @@
                 }
                 return __ret;
             },
-            
-            sortArrayNum: function(arr, asc) {
-                arr.sort(function (left, right) {
+
+            /**
+             * Sorts an array of numbers, to compensate for the fact that vanilla
+             * JavaScript coerces array values to a string when comparing during a
+             * sort.
+             *
+             *      var array = [ 1, 2, 3, 10, 20, 30 ];
+             *      array.sort(); // [1, 10, 2, 20, 3, 30]
+             *      js.alg.sortArrayNum(array); // [1, 2, 3, 10, 20, 30]
+             *
+             * @param {Number[]} arr
+             * @param {Boolean} asc
+             */
+            "sortArrayNum": function(arr, asc) {
+                js.alg.array(arr).sort(function (left, right) {
                     return (asc
                         ? js.alg.number(left) - js.alg.number(right)
                         : js.alg.number(right) - js.alg.number(left));
@@ -722,7 +872,7 @@
              * 
              * @return {Array} arrRef parameter
              */
-            joinArray: function(arrRef, arrFrom /*, ... */) {
+            "joinArray": function(arrRef, arrFrom /*, ... */) {
                 // limit pulled from Google's closure library:
                 // https://github.com/google/closure-library/commit/da353e0265ea32583ea1db9e7520dce5cceb6f6a
                 var CHUNK_SIZE = 8192; 
@@ -761,7 +911,7 @@
              * @return {Function}
              *      A prepared function, which will trigger [fn] when executed. 
              */
-            bindFn: function(thisArg, fn, args) {
+            "bindFn": function(thisArg, fn, args) {
                 args = (args && args.length
                     ? js.alg.sliceArray(args)
                     : !args
@@ -784,7 +934,7 @@
              * 
              * @return {Object} Returns [base].
              */
-            mergeObj: function(base /*, ... */) {
+            "mergeObj": function(base /*, ... */) {
                 var into = base,
                     args = js.alg.sliceArray(arguments, 1);
                     
@@ -806,125 +956,139 @@
 
                 return base;
             },
-            cloneObj: function(obj) {
+
+            /**
+             * Creates a copy of the passed object.
+             */
+            "cloneObj": function(obj) {
                 if(!obj || typeof obj !== "object") { return obj; }
                 return js.alg.mergeObj(obj.constructor(), obj);
             },
-            deepCloneObj: function(obj) {
+
+            /**
+             * Creates a deep copy of the passed object.
+             */
+            "deepCloneObj": function(obj) {
                 if(!obj || typeof obj !== "object") { return obj; }
                 obj = this.cloneObj(obj);
-                
+
                 js.alg.each(obj, function(value, key, obj) {
                     obj[key] = js.alg.deepCloneObj(value);
                 });
                 
                 return obj;
             },
-            
-            keycodes: {
-                KC_Backspace: 8,
-                KC_Tab: 9,
-                KC_Enter: 13,
-                KC_Shift: 16,
-                KC_Ctrl: 17,
-                KC_Alt: 18,
-                KC_Pause: 19,
-                KC_Break: 19,
-                KC_CapsLock: 20,
-                KC_Escape: 27,
-                KC_Space: 32,
-                KC_PageUp: 33,
-                KC_PageDown: 34,
-                KC_End: 35,
-                KC_Home: 36,
-                KC_LeftArrow: 37,
-                KC_UpArrow: 38,
-                KC_RightArrow: 39,
-                KC_DownArrow: 40,
-                KC_Insert: 45,
-                KC_Delete: 46,
-                KC_0: 48,
-                KC_1: 49,
-                KC_2: 50,
-                KC_3: 51,
-                KC_4: 52,
-                KC_5: 53,
-                KC_6: 54,
-                KC_7: 55,
-                KC_8: 56,
-                KC_9: 57,
-                KC_A: 65,
-                KC_B: 66,
-                KC_C: 67,
-                KC_D: 68,
-                KC_E: 69,
-                KC_F: 70,
-                KC_G: 71,
-                KC_H: 72,
-                KC_I: 73,
-                KC_J: 74,
-                KC_K: 75,
-                KC_L: 76,
-                KC_M: 77,
-                KC_N: 78,
-                KC_O: 79,
-                KC_P: 80,
-                KC_Q: 81,
-                KC_R: 82,
-                KC_S: 83,
-                KC_T: 84,
-                KC_U: 85,
-                KC_V: 86,
-                KC_W: 87,
-                KC_X: 88,
-                KC_Y: 89,
-                KC_Z: 90,
-                KC_LWin: 91,
-                KC_RWin: 92,
-                KC_Select: 93,
-                KC_Num0: 96,
-                KC_Num1: 97,
-                KC_Num2: 98,
-                KC_Num3: 99,
-                KC_Num4: 100,
-                KC_Num5: 101,
-                KC_Num6: 102,
-                KC_Num7: 103,
-                KC_Num8: 104,
-                KC_Num9: 105,
-                KC_NumAsterisk: 106,
-                KC_NumPlus: 107,
-                KC_NumMinus: 109,
-                KC_NumPeriod: 110,
-                KC_NumSlash: 111,
-                KC_F1: 112,
-                KC_F2: 113,
-                KC_F3: 114,
-                KC_F4: 115,
-                KC_F5: 116,
-                KC_F6: 117,
-                KC_F7: 118,
-                KC_F8: 119,
-                KC_F9: 120,
-                KC_F10: 121,
-                KC_F11: 122,
-                KC_F12: 123,
-                KC_NumLock: 144,
-                KC_ScrollLock: 145,
-                KC_SemiColon: 186,
-                KC_Equal: 187,
-                KC_Comma: 188,
-                KC_Dash: 189,
-                KC_Period: 190,
-                KC_FSlash: 191,
-                KC_BSlash: 220,
-                KC_Grave: 192,
-                KC_LBracket: 219,
-                KC_RBracket: 221,
-                KC_Apos: 222
+
+            /**
+             * JavaScript Key Codes
+             */
+            "keycodes": {
+                "KC_Backspace": 8,
+                "KC_Tab": 9,
+                "KC_Enter": 13,
+                "KC_Shift": 16,
+                "KC_Ctrl": 17,
+                "KC_Alt": 18,
+                "KC_Pause": 19,
+                "KC_Break": 19,
+                "KC_CapsLock": 20,
+                "KC_Escape": 27,
+                "KC_Space": 32,
+                "KC_PageUp": 33,
+                "KC_PageDown": 34,
+                "KC_End": 35,
+                "KC_Home": 36,
+                "KC_LeftArrow": 37,
+                "KC_UpArrow": 38,
+                "KC_RightArrow": 39,
+                "KC_DownArrow": 40,
+                "KC_Insert": 45,
+                "KC_Delete": 46,
+                "KC_0": 48,
+                "KC_1": 49,
+                "KC_2": 50,
+                "KC_3": 51,
+                "KC_4": 52,
+                "KC_5": 53,
+                "KC_6": 54,
+                "KC_7": 55,
+                "KC_8": 56,
+                "KC_9": 57,
+                "KC_A": 65,
+                "KC_B": 66,
+                "KC_C": 67,
+                "KC_D": 68,
+                "KC_E": 69,
+                "KC_F": 70,
+                "KC_G": 71,
+                "KC_H": 72,
+                "KC_I": 73,
+                "KC_J": 74,
+                "KC_K": 75,
+                "KC_L": 76,
+                "KC_M": 77,
+                "KC_N": 78,
+                "KC_O": 79,
+                "KC_P": 80,
+                "KC_Q": 81,
+                "KC_R": 82,
+                "KC_S": 83,
+                "KC_T": 84,
+                "KC_U": 85,
+                "KC_V": 86,
+                "KC_W": 87,
+                "KC_X": 88,
+                "KC_Y": 89,
+                "KC_Z": 90,
+                "KC_LWin": 91,
+                "KC_RWin": 92,
+                "KC_Select": 93,
+                "KC_Num0": 96,
+                "KC_Num1": 97,
+                "KC_Num2": 98,
+                "KC_Num3": 99,
+                "KC_Num4": 100,
+                "KC_Num5": 101,
+                "KC_Num6": 102,
+                "KC_Num7": 103,
+                "KC_Num8": 104,
+                "KC_Num9": 105,
+                "KC_NumAsterisk": 106,
+                "KC_NumPlus": 107,
+                "KC_NumMinus": 109,
+                "KC_NumPeriod": 110,
+                "KC_NumSlash": 111,
+                "KC_F1": 112,
+                "KC_F2": 113,
+                "KC_F3": 114,
+                "KC_F4": 115,
+                "KC_F5": 116,
+                "KC_F6": 117,
+                "KC_F7": 118,
+                "KC_F8": 119,
+                "KC_F9": 120,
+                "KC_F10": 121,
+                "KC_F11": 122,
+                "KC_F12": 123,
+                "KC_NumLock": 144,
+                "KC_ScrollLock": 145,
+                "KC_SemiColon": 186,
+                "KC_Equal": 187,
+                "KC_Comma": 188,
+                "KC_Dash": 189,
+                "KC_Period": 190,
+                "KC_FSlash": 191,
+                "KC_BSlash": 220,
+                "KC_Grave": 192,
+                "KC_LBracket": 219,
+                "KC_RBracket": 221,
+                "KC_Apos": 222
             },
-            
-            min: function(a,b) {
+
+            /**
+             * Returns the smallest value from the list of arguments.
+             */
+            "min": function(a,b) {
                 var min = a;
                 js.alg.each(arguments, function(arg) {
                     min = (typeof min === "undefined" ? arg : min);
@@ -932,8 +1096,11 @@
                 });
                 return min;
             },
-            
-            max: function(a, b) {
+
+            /**
+             * Returns the largest value from the list of arguments.
+             */
+            "max": function(a, b) {
                 var max = a;
                 js.alg.each(arguments, function(arg) {
                     max = (typeof max === "undefined" ? arg : max);
@@ -1220,6 +1387,21 @@
                 return this;
             },
             
+            /**
+             * Exports the value of js.dom.getCss to a return variable.
+             */
+            exportCss: function(css) {
+                css = css || {};
+                this.getCss(css);
+                return css;
+            },
+            
+            /**
+             * Retrieves the current position for each of the elements in the JS-Dom
+             * node, and pushes their values into the function identified.
+             * 
+             * @param {Function} fn
+             */
             getPosition: function (fn) {
                 this.each(function (el) {
                     var pos = el.getBoundingClientRect();
@@ -1227,6 +1409,10 @@
                 })
                 return this;
             },
+            
+            /**
+             * Exports the value returned by js.dom.getPosition()
+             */
             exportPosition: function () {
                 var pos = null;
                 this.at(0).use(function() {
@@ -1236,9 +1422,15 @@
                 return pos;
             },
             
+            /**
+             * Calculates the offset position of each of the elements in the JS-Dom node,
+             * and pushes the values into the function identified.
+             * 
+             * @param {Function} fn
+             */
             getOffsetPosition: function(fn) {
-                this.each(function () {
-                    var el = this.parentNode,
+                this.each(function (self) {
+                    var el = self.parentNode,
                         ret = {
                             top: 0, left: 0, bottom: 0, right: 0, x: 0, y: 0, height: 0, width: 0
                         };
@@ -1247,7 +1439,7 @@
                     }
                     
                     if (el) {
-                        var me = this.getBoundingClientRect(),
+                        var me = self.getBoundingClientRect(),
                             pr = el.getBoundingClientRect();
                             
                         js.each(ret, function (v, p, ret) {
@@ -1255,10 +1447,19 @@
                         });
                     }
                     
-                    js_dom(this).use(fn, [ret]);
+                    js_dom(el).use(fn, [ret]);
                     return;
                 });
                 return this;
+            },
+            
+            /**
+             * Returns the value calculated in the first call of js.dom.getOffsetPosition
+             */
+            exportOffsetPosition: function() {
+                var first = null;
+                this.getOffsetPosition(function(v) { if(!first) { first = v; }});
+                return first;
             },
 
             /**
@@ -1291,6 +1492,15 @@
                     }, { first: attrs, others: o });
                 }
                 return this;
+            },
+            
+            /**
+             * Exports the value returned by js.dom.getAttrs
+             */
+            exportAttrs: function(attrs) {
+                attrs = attrs || {};
+                this.getAttrs(attrs);
+                return attrs;
             },
             
             /**
@@ -1418,7 +1628,11 @@
                 return this;
             },
             
-            attachBefore: function (parent, fn) {
+            /**
+             * Inserts this set of nodes to the identified node's parent, immediately
+             * preceding that element.
+             */
+            attachStart: function (parent, fn) {
                 var children = this;
                 js_dom(parent).element(0, function (p) {
                     var doc = document.createDocumentFragment();
@@ -1429,7 +1643,11 @@
                 return this;
             },
             
-            attachAfter: function (parent, fn) {
+            /**
+             * Inserst this set of nodes to the identified node's parent, immediately
+             * following that element.
+             */
+            attachEnd: function (parent, fn) {
                 var children = this;
                 js_dom(parent).element(0, function (p) {
                     var doc = document.createDocumentFragment();
@@ -1457,11 +1675,19 @@
                 return this;
             },
             
+            /** @ignore */
             _append: function (c, _1, _2, doc) {
                 doc.appendChild(c);
             },
             
-            insertBefore: function (child) {
+            /**
+             * Attaches the element to the identified node's parent, immediately
+             * preceding the identified child.
+             * 
+             * @param {Mixed} child
+             *      JS-Dom identifier for the element to prepend.
+             */
+            appendBefore: function (child) {
                 this.element(0, function () {
                     var doc = document.createDocumentFragment();
                     js_dom(child).each(js_dom.fn._append, doc);
@@ -1470,7 +1696,14 @@
                 return this;
             },
             
-            insertAfter: function (child) {
+            /**
+             * Attaches the element to the identified node's parent, immediately
+             * following the identifed child.
+             * 
+             * @param {Mixed} child
+             *      JS-Dom identifier for the element to prepend.
+             */
+            appendAfter: function (child) {
                 this.element(0, function () {
                     var doc = document.createDocumentFragment();
                     js_dom(child).each(js_dom.fn._append, doc);
@@ -1575,6 +1808,15 @@
             },
             
             /**
+             * Exports the values found by js.dom.getClasses
+             */
+            exportClasses: function(classes) {
+                classes = classes || {};
+                this.getClasses(classes);
+                return classes;
+            },
+            
+            /**
              * Inserts an event handler on all of the jsDom elements, for each
              * event in a space-separated list.
              *
@@ -1603,6 +1845,9 @@
                 return this;
             },
             
+            /**
+             * Turns off the identified event handler.
+             */
             off: function(events, handler) {
                 events = (events || "").split(/\s+/);
                 var self = this;
@@ -1622,7 +1867,6 @@
                 });
             },
 
-            /// triggers the event(s) provided
             /**
              * Dispatches the event(s) identified for all of the wrapped DOM
              * elements.
@@ -1645,6 +1889,7 @@
                 return this;
             },
             
+            /** @private */
             _eventConstructor: function(type, bubbles, cancelable) {
                 js_dom.fn._eventConstructor = ("function" === typeof window.Event
                     ? function(type, bubbles, cancelable) { return new Event(type, { "bubbles": bubbles, "cancelable": cancelable }); }
@@ -1654,8 +1899,7 @@
             },
 
             /**
-             * Sets the innerHTML For each of the wrapped elements with the
-             * identified value.
+             * Sets the innerHTML for each of the wrapped elements.
              * 
              * @param {String} html
              *      New HTML to push into the wrapped elements.
@@ -1667,7 +1911,12 @@
                 return this;
             },
 
-            /// gets the inner html value.
+            /**
+             * Retrieves the innerHTML for each of the wrapped elements,
+             * and passes the values into the identified function.
+             * 
+             * @param {Function} fn 
+             */
             getHtml: function (fn) {
                 if (typeof fn === "function") {
                     this.each(function (element) {
@@ -1677,18 +1926,59 @@
                 return this;
             },
             
+            /**
+             * Retrieves and returns the value retrieved by js.dom.getHtml
+             */
+            exportHtml: function() {
+                var html = null;
+                    
+                this.getHtml(function(h) {
+                    if(!html) { 
+                        html = h;
+                    }
+                });
+                
+                return html;
+            },
+            
+            /**
+             * Retrieves the text content for each of the wrapped elements,
+             * and passes the values into the identified function.
+             * 
+             * @param {Function} fn 
+             */
             getText: function(fn) {
                 if(typeof fn === "function") {
+                    var t = typeof document.documentElement["textContent"] === "undefined" ? "innerText" : "textContent";
                     this.each(function(element) {
-                        fn.call(element, element.textContent || "");
+                        fn.call(element, js.alg.string(element[t]));
                     });
                 }
                 return this;
             },
             
+            /**
+             * Retrieves and returns the first value to be returned in js.dom.getText
+             */
+            exportText: function() {
+                var text = null;
+                this.getText(function(t) {
+                    if(!text) { text = t; }
+                });
+                return text;
+            },
+            
+            /**
+             * Sets the text content of each of the elements to the specified value
+             * 
+             * @param {String} text
+             *      New text value to use on each of the wrapped element.
+             */
             setText: function(text) {
+                text = js.alg.string(text);
+                fn = typeof document.documentElement["textContent"] === "undefined" ? "innerText" : "textContent";
                 this.each(function(element) {
-                    element.textContent = text || "";
+                    element[fn] = text;
                 });
                 return this;
             },
@@ -1719,6 +2009,10 @@
                 return $found;
             },
             
+            /**
+             * searchs through the wrapped objects, and excludes any elements
+             * which do not meet the identified CSS selector.
+             */
             filter: function (cssSelector) {
                 var $found = js_dom(),
                     _found = $found._element;
@@ -1731,6 +2025,8 @@
                 
                 return $found;
             },
+            
+            /** @private */
             _matches: function (element, selector) {
                 var fn = "";
                 if(element.matches) { fn = "matches"; }
@@ -1830,7 +2126,6 @@
                     .each(function(element) {
                         parent.insertBefore(element, next);
                     });
-                // parent.insertBefore(element, next);
                 return true;
             },
             
@@ -1848,38 +2143,15 @@
                 }).use(fn);
             },
             
-            setOverride: function(name, fn) {
-                this.each(function(element) {
-                    element.__jspyder.override = (element.__jspyder.override || {});
-                    element.__jspyder.override[name] = fn; 
-                });
-                return this;
-            },
-            getOverride: function(name) {
-                var fn = null;
-                this.each(function(element) {
-                    if(element.__jspyder.override && element.__jspyder.override[name]) {
-                        fn = element.__jspyder.override[name];
-                        this.stop();
-                    }
-                });
-                return fn;
-            },
-            
             /**
-             * Gets the value of the wrapped elements
+             * Gets the value of the wrapped elements and pushes the values
+             * into the identified function.
+             * 
+             * @param {Function} fn
              */
             getValue: function(fn) {
                 var self = this;
                 return self.each(function(element) {
-                    var $me = js_dom(element),
-                        override = $me.getOverride("getValue");
-                        
-                    if(override) {
-                        $me.use(override, [fn]);
-                        return;
-                    }
-                    
                     var value = (typeof element.value !== "undefined"
                         ? element.value : element.getAttribute("value"));
                         
@@ -1893,11 +2165,27 @@
                     }
                 });
             },
+            
+            /**
+             * Exports the value retrieved by js.dom.getValue
+             */
             exportValue: function() {
                 var value = null;
                 this.getValue(function(v) { value = v; });
                 return value;
             },
+            
+            /**
+             * Retrieves the identified properties in [obj] and passes the
+             * value into [fn].
+             * 
+             * @param {Object} obj
+             *      An object where keys correspond to properties, and the values
+             *      will be overwritten with the actual properties.
+             * 
+             * @param {Function} fn
+             *      The function to receive the output value.
+             */
             getProps: function(obj, fn) {
                 this.each(function(element) {
                     js.alg.each(obj, function(val, name, obj) {
@@ -1907,6 +2195,29 @@
                 this.use(fn, [obj]);
                 return this;
             },
+            
+            /**
+             * Exports the first value in js.dom.getProps
+             * 
+             * @param {Object} obj
+             *      An object where keys correspond to properties, and the values
+             *      will be overwritten with the actual properties.
+             */
+            exportProps: function(obj) {
+                obj = obj || {};
+                this.getProps(obj);
+                return obj;
+            },
+            
+            /**
+             * Sets the properties of the wrapped elements to the values specified in
+             * [obj], where keys identify properties and values identify the values to 
+             * set.
+             * 
+             * @param {Object} obj
+             *      An object where keys correspond to properties, and the properties
+             *      will be overwritten with the actual values.
+             */
             setProps: function(obj) {
                 this.each(function(element) {
                     js.alg.each(obj, function(val, name) {
