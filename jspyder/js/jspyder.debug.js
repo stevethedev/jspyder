@@ -762,7 +762,7 @@ $jscomp.string.endsWith$install = function $$jscomp$string$endsWith$install$() {
     }, object:function $$js_alg$$$object$($o$$, $d$$) {
       return $o$$ && "object" === typeof $o$$ ? $o$$ : $d$$ || {};
     }, array:function $$js_alg$$$array$($a$$, $d$$) {
-      return o && o.isPrototypeOf(Array) ? o : $d$$ || [];
+      return Array.isArray($a$$) ? $a$$ : $d$$ || [];
     }, date:function $$js_alg$$$date$($v$$, $d$$) {
       return input instanceof Date || "[object Date]" === Object.prototype.toString.call(input) ? $v$$ : $d$$ || new Date;
     }, "byte":function $$js_alg$$$byte$($u$$) {

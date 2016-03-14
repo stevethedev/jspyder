@@ -554,7 +554,7 @@
 </span>             * Coerces a value to an array, or else returns a new array.
              */
             &quot;array&quot;: function(a, d) {
-                return (o &amp;&amp; o.isPrototypeOf(Array) ? o : d || []);
+                return (Array.isArray(a) ? a : d || []);
             },
 
 <span id='jspyder-alg-method-date'>            /**
