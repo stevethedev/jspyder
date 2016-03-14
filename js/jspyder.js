@@ -59,7 +59,9 @@
         
         // Extensible
         js.extend = function js_extend(name, obj) {
-            Object.defineProperty(this, name, { value: obj });
+            if(!this.hasOwnProperty(name)) {
+                Object.defineProperty(this, name, { value: obj });
+            }
             return this;
         };
         js.extend.fn = function js_extend_fn(name, fn, args) {

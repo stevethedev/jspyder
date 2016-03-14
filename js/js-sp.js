@@ -35,6 +35,26 @@ js.extend.fn("sp", function () {
      * ## JSpyder SharePoint Query Reference (jspyder.sp.query)
      */
     function sp() { };
+    
+    /**
+     * Gets the client context
+     * 
+     * @param {String} [url]
+     * @param {Function} [fn]
+     */
+    sp.getContext = function(url, fn) {
+        js.alg.use(sp.exportContext(url), fn);
+        return sp;
+    };
+    
+    /**
+     * Exports the client context
+     * 
+     * @param {String} [url]
+     */
+    sp.exportContext = function(url) {
+        return (url ? new window.SP.ClientContext(url) : window.SP.ClientContext.get_current());
+    };
 
     /**
      * @class jspyder.sp.list
@@ -355,7 +375,7 @@ js.extend.fn("sp", function () {
          * @async
          */
         pull: function (success, failure) {
-            var ctx = new window.SP.ClientContext(this._url),
+            var ctx = sp.exportContext(this._url),
                 list = ctx.get_web().get_lists().getByTitle(this._name),
                 caml = new window.SP.CamlQuery(),
                 successFn = (typeof success === "function"
@@ -421,7 +441,7 @@ js.extend.fn("sp", function () {
          *      The function to execute if the push failed
          */
         push: function(success, failure) {
-            var ctx = new window.SP.ClientContext(this._url),
+            var ctx = sp.exportContext(this._url),
                 list = ctx.get_web().get_lists().getByTitle(this._name),
                 data = {
                     clientContext: ctx,
@@ -570,7 +590,7 @@ js.extend.fn("sp", function () {
          *      The function to execute if the permissions failed to retrieve.
          */
         getPermissions: function (success, failure) {
-            var ctx = new window.SP.ClientContext(this._url),
+            var ctx = sp.exportContext(this._url),
                 web = ctx.get_web(),
                 data = {
                     currentUser: web.get_currentUser(),
@@ -1382,15 +1402,13 @@ js.extend.fn("sp", function () {
      * @param {String} [config.userid]
      * @param {String} [config.login]
      * @param {String} [config.email]
-     * @param {Function} [config.success]
-     * @param {Function} [config.failure]
      */
-    sp.user = function(config) {
-        var ctx = new window["SP"].ClientContext(config["url"]),
-            web = ctx.get_web(),
-            userCollection = web.get_siteUsers(),
-            user = null,
+    sp.user = function(config, success, failure) {
             config = (config || {});
+        var ctx = sp.exportContext(config["url"]),
+            web = ctx.get_web(),
+            userCollection = web.get_siteUserInfoList(),
+            user = null;
 
         if(config["userid"]) {
             user = userCollection.getById(config["userid"]);
@@ -1402,17 +1420,17 @@ js.extend.fn("sp", function () {
             user = userCollection.getByEmail(config["email"]);
         }
         else {
-            user = userCollection.get_currentUser();
+            user = web.get_currentUser();
         }
 
-        var spUser = Object.create(sp.user, {
+        var spUser = Object.create(js.sp.user.fn, {
             _user: { value: user }
         });
 
         ctx.load(user);
         ctx.executeQueryAsync(
-            js.alg.bindFn(spUser, __spUserSuccess, [config]),
-            js.alg.bindFn(spUser, __spUserFailure, [config]));
+            js.alg.bindFn(spUser, __spUserSuccess, [config, success]),
+            js.alg.bindFn(spUser, __spUserFailure, [config, failure]));
 
         return spUser;
     }
@@ -1459,31 +1477,33 @@ js.extend.fn("sp", function () {
          *      The function to execute when the check completes:
          *      fn(isMember, sender, args);
          */
-        memberOfGroup: function(group, fn) {
+        "isMemberOfGroup": function(group, fn) {
             var yes = js.alg.bindFn(this, fn, [true]),
-                no = js.alg.bindFn(this, fn, [false]);
+                no = js.alg.bindFn(this, fn, [false]),
+                user = this["_user"];
 
-            sp.group(group).isMember(this["_user"], yes, no);
+            sp.group(group, function() { this.isMember(user, yes, no); }, no);
             return this;
         }
     };
 
     /** @private */
-    function __spUserSuccess(config, sender, args) {
+    function __spUserSuccess(config, success, sender, args) {
         this._email = this._user.get_email();
         this._username = this._user.get_loginName();
-        this._userid = this._user.get_userId();
-        js.alg.use(this, config["success"], [sender, args]);
+        this._userid = this._user.get_id();
+        js.alg.use(this, success, [sender, args]);
     }
 
     /** @private */
-    function __spUserFailure(config, sender, args) {
-        js.alg.use(this, config["failure"], [sender, args]);
+    function __spUserFailure(config, failure, sender, args) {
+        js.alg.use(this, failure, [sender, args]);
     }
 
     /**
      * @class jspyder.sp.group
      * @member jspyder.sp
+     * @async
      *
      * Manages information having to do with the SP User
      *
@@ -1495,32 +1515,64 @@ js.extend.fn("sp", function () {
      *      The name of the group
      * @param {String} [config.groupid]
      */
-    sp.group = function(config) {
-        var ctx = new window["SP"].ClientContext(config["url"]),
+    sp.group = function(config, success, failure) {
+            config = config || {};
+        var ctx = sp.exportContext(config["url"]),
             web = ctx.get_web(),
             groups = web.get_siteGroups(),
-            group = null,
             spGroup = null;
 
         if(config && config.isPrototypeOf(sp.group.fn)) {
             spGroup = config;
         }
         else {
-            if(config["name"]) {
-                group = groups.getByName(config["name"]);
-            }
-            else if(config["groupid"]) {
-                group = groups.getById(config["groupid"]);
-            }
+            ctx.load(groups);
 
             spGroup = Object.create(sp.group.fn, {
-                "_url": { "value": js.alg.string(config["url"],"") },
-                "_group": { "value": group }
+                "_url": { "value": js.alg.string(config["url"],"") }
             });
+            
+            var successFn, 
+                failureFn = js.alg.bindFn(spGroup, failure);
+            
+            if(config["name"]) {
+                // group = groups.getByName(config["name"]);
+                successFn = js.alg.bindFn(spGroup, __getGroupByFn, ["get_title", groups, config["name"], success, failure]);
+            }
+            else if(config["groupid"]) {
+                // group = groups.getById(config["groupid"]);
+                successFn = js.alg.bindFn(spGroup, __getGroupByFn, ["get_id", groups, config["groupid"], success, failure]);
+            }
+            else {
+                successFn = failureFn;
+            }
+            
+            ctx.executeQueryAsync(successFn, failureFn);
         }
 
         return spGroup;
     }
+    /** @ignore */
+    function __getGroupByFn(testFn, groups, name, success, failure, sender, args) {
+        var e = groups.getEnumerator(),
+            group = null;
+            
+        while(e.moveNext()) {
+            group = e.get_current();
+            if(group[testFn]() === name) {
+                Object.defineProperties(this, {
+                    "_group": { "value": group },
+                    "_id": { "value": group.get_id() },
+                    "_name": { "value": group.get_title() }
+                });
+                js.alg.use(this, success, [group]);
+                return;
+            }
+        }
+        
+        js.alg.use(this, failure, [sender, args]);
+    }
+    
     sp.group.fn = {
         "_url": null,
         "_group": null,
@@ -1534,21 +1586,21 @@ js.extend.fn("sp", function () {
             var ctx = null,
                 web = null;
 
-            ctx = new window["SP"].ClientContext(this["_url"]);
+            ctx = sp.exportContext(this["_url"]);
             web = ctx.get_web();
 
             ctx.load(user);
             ctx.load(this._group, "Users");
             ctx.executeQueryAsync(
-                js.alg.bindFn(this, __isMemberSuccess, [success, failure]),
-                js.alg.bindFn(this, __isMemberFailure, [failure]));
+                js.alg.bindFn(this, __isMemberSuccess, [user, success, failure]),
+                js.alg.bindFn(this, __isMemberFailure, [user, failure]));
 
             return this;
         }
     };
 
     /** @ignore */
-    function __isMemberSuccess(successFn, failureFn, sender, args) {
+    function __isMemberSuccess(user, successFn, failureFn, sender, args) {
         var userInGroup = false,
             enumerator = this._group.get_users().getEnumerator(),
             groupUser = null;
@@ -1563,7 +1615,7 @@ js.extend.fn("sp", function () {
         js.alg.use(this, userInGroup ? successFn : failureFn, [sender, args]);
     }
     /** @ignore */
-    function __isMemberFailure(failureFn, sender, args) {
+    function __isMemberFailure(user, failureFn, sender, args) {
         js.alg.use(this, failureFn, [sender, args]);
     }
 

@@ -52,6 +52,26 @@ js.extend.fn(&quot;sp&quot;, function () {
      * ## JSpyder SharePoint Query Reference (jspyder.sp.query)
      */
     function sp() { };
+    
+<span id='jspyder-sp-method-getContext'>    /**
+</span>     * Gets the client context
+     * 
+     * @param {String} [url]
+     * @param {Function} [fn]
+     */
+    sp.getContext = function(url, fn) {
+        js.alg.use(sp.exportContext(url), fn);
+        return sp;
+    };
+    
+<span id='jspyder-sp-method-exportContext'>    /**
+</span>     * Exports the client context
+     * 
+     * @param {String} [url]
+     */
+    sp.exportContext = function(url) {
+        return (url ? new window.SP.ClientContext(url) : window.SP.ClientContext.get_current());
+    };
 
 <span id='jspyder-sp-list'>    /**
 </span>     * @class jspyder.sp.list
@@ -372,7 +392,7 @@ js.extend.fn(&quot;sp&quot;, function () {
          * @async
          */
         pull: function (success, failure) {
-            var ctx = new window.SP.ClientContext(this._url),
+            var ctx = sp.exportContext(this._url),
                 list = ctx.get_web().get_lists().getByTitle(this._name),
                 caml = new window.SP.CamlQuery(),
                 successFn = (typeof success === &quot;function&quot;
@@ -438,7 +458,7 @@ js.extend.fn(&quot;sp&quot;, function () {
          *      The function to execute if the push failed
          */
         push: function(success, failure) {
-            var ctx = new window.SP.ClientContext(this._url),
+            var ctx = sp.exportContext(this._url),
                 list = ctx.get_web().get_lists().getByTitle(this._name),
                 data = {
                     clientContext: ctx,
@@ -587,7 +607,7 @@ js.extend.fn(&quot;sp&quot;, function () {
          *      The function to execute if the permissions failed to retrieve.
          */
         getPermissions: function (success, failure) {
-            var ctx = new window.SP.ClientContext(this._url),
+            var ctx = sp.exportContext(this._url),
                 web = ctx.get_web(),
                 data = {
                     currentUser: web.get_currentUser(),
@@ -1399,15 +1419,13 @@ js.extend.fn(&quot;sp&quot;, function () {
      * @param {String} [config.userid]
      * @param {String} [config.login]
      * @param {String} [config.email]
-     * @param {Function} [config.success]
-     * @param {Function} [config.failure]
      */
-    sp.user = function(config) {
-        var ctx = new window[&quot;SP&quot;].ClientContext(config[&quot;url&quot;]),
-            web = ctx.get_web(),
-            userCollection = web.get_siteUsers(),
-            user = null,
+    sp.user = function(config, success, failure) {
             config = (config || {});
+        var ctx = sp.exportContext(config[&quot;url&quot;]),
+            web = ctx.get_web(),
+            userCollection = web.get_siteUserInfoList(),
+            user = null;
 
         if(config[&quot;userid&quot;]) {
             user = userCollection.getById(config[&quot;userid&quot;]);
@@ -1419,17 +1437,17 @@ js.extend.fn(&quot;sp&quot;, function () {
             user = userCollection.getByEmail(config[&quot;email&quot;]);
         }
         else {
-            user = userCollection.get_currentUser();
+            user = web.get_currentUser();
         }
 
-        var spUser = Object.create(sp.user, {
+        var spUser = Object.create(js.sp.user.fn, {
             _user: { value: user }
         });
 
         ctx.load(user);
         ctx.executeQueryAsync(
-            js.alg.bindFn(spUser, __spUserSuccess, [config]),
-            js.alg.bindFn(spUser, __spUserFailure, [config]));
+            js.alg.bindFn(spUser, __spUserSuccess, [config, success]),
+            js.alg.bindFn(spUser, __spUserFailure, [config, failure]));
 
         return spUser;
     }
@@ -1462,7 +1480,7 @@ js.extend.fn(&quot;sp&quot;, function () {
         &quot;_username&quot;: null,
         &quot;_url&quot;: null,
 
-<span id='jspyder-sp-user-method-memberOfGroup'>        /**
+<span id='jspyder-sp-user-method-isMemberOfGroup'>        /**
 </span>         * @async
          *
          * Executes the specified function, with the first parameter as &quot;true&quot;
@@ -1476,31 +1494,33 @@ js.extend.fn(&quot;sp&quot;, function () {
          *      The function to execute when the check completes:
          *      fn(isMember, sender, args);
          */
-        memberOfGroup: function(group, fn) {
+        &quot;isMemberOfGroup&quot;: function(group, fn) {
             var yes = js.alg.bindFn(this, fn, [true]),
-                no = js.alg.bindFn(this, fn, [false]);
+                no = js.alg.bindFn(this, fn, [false]),
+                user = this[&quot;_user&quot;];
 
-            sp.group(group).isMember(this[&quot;_user&quot;], yes, no);
+            sp.group(group, function() { this.isMember(user, yes, no); }, no);
             return this;
         }
     };
 
 <span id='jspyder-sp-user-method-__spUserSuccess'>    /** @private */
-</span>    function __spUserSuccess(config, sender, args) {
+</span>    function __spUserSuccess(config, success, sender, args) {
         this._email = this._user.get_email();
         this._username = this._user.get_loginName();
-        this._userid = this._user.get_userId();
-        js.alg.use(this, config[&quot;success&quot;], [sender, args]);
+        this._userid = this._user.get_id();
+        js.alg.use(this, success, [sender, args]);
     }
 
 <span id='jspyder-sp-user-method-__spUserFailure'>    /** @private */
-</span>    function __spUserFailure(config, sender, args) {
-        js.alg.use(this, config[&quot;failure&quot;], [sender, args]);
+</span>    function __spUserFailure(config, failure, sender, args) {
+        js.alg.use(this, failure, [sender, args]);
     }
 
 <span id='jspyder-sp-group'>    /**
 </span>     * @class jspyder.sp.group
      * @member jspyder.sp
+     * @async
      *
      * Manages information having to do with the SP User
      *
@@ -1512,32 +1532,64 @@ js.extend.fn(&quot;sp&quot;, function () {
      *      The name of the group
      * @param {String} [config.groupid]
      */
-    sp.group = function(config) {
-        var ctx = new window[&quot;SP&quot;].ClientContext(config[&quot;url&quot;]),
+    sp.group = function(config, success, failure) {
+            config = config || {};
+        var ctx = sp.exportContext(config[&quot;url&quot;]),
             web = ctx.get_web(),
             groups = web.get_siteGroups(),
-            group = null,
             spGroup = null;
 
         if(config &amp;&amp; config.isPrototypeOf(sp.group.fn)) {
             spGroup = config;
         }
         else {
-            if(config[&quot;name&quot;]) {
-                group = groups.getByName(config[&quot;name&quot;]);
-            }
-            else if(config[&quot;groupid&quot;]) {
-                group = groups.getById(config[&quot;groupid&quot;]);
-            }
+            ctx.load(groups);
 
             spGroup = Object.create(sp.group.fn, {
-                &quot;_url&quot;: { &quot;value&quot;: js.alg.string(config[&quot;url&quot;],&quot;&quot;) },
-                &quot;_group&quot;: { &quot;value&quot;: group }
+                &quot;_url&quot;: { &quot;value&quot;: js.alg.string(config[&quot;url&quot;],&quot;&quot;) }
             });
+            
+            var successFn, 
+                failureFn = js.alg.bindFn(spGroup, failure);
+            
+            if(config[&quot;name&quot;]) {
+                // group = groups.getByName(config[&quot;name&quot;]);
+                successFn = js.alg.bindFn(spGroup, __getGroupByFn, [&quot;get_title&quot;, groups, config[&quot;name&quot;], success, failure]);
+            }
+            else if(config[&quot;groupid&quot;]) {
+                // group = groups.getById(config[&quot;groupid&quot;]);
+                successFn = js.alg.bindFn(spGroup, __getGroupByFn, [&quot;get_id&quot;, groups, config[&quot;groupid&quot;], success, failure]);
+            }
+            else {
+                successFn = failureFn;
+            }
+            
+            ctx.executeQueryAsync(successFn, failureFn);
         }
 
         return spGroup;
     }
+<span id='global-property-'>    /** @ignore */
+</span>    function __getGroupByFn(testFn, groups, name, success, failure, sender, args) {
+        var e = groups.getEnumerator(),
+            group = null;
+            
+        while(e.moveNext()) {
+            group = e.get_current();
+            if(group[testFn]() === name) {
+                Object.defineProperties(this, {
+                    &quot;_group&quot;: { &quot;value&quot;: group },
+                    &quot;_id&quot;: { &quot;value&quot;: group.get_id() },
+                    &quot;_name&quot;: { &quot;value&quot;: group.get_title() }
+                });
+                js.alg.use(this, success, [group]);
+                return;
+            }
+        }
+        
+        js.alg.use(this, failure, [sender, args]);
+    }
+    
     sp.group.fn = {
         &quot;_url&quot;: null,
         &quot;_group&quot;: null,
@@ -1551,21 +1603,21 @@ js.extend.fn(&quot;sp&quot;, function () {
             var ctx = null,
                 web = null;
 
-            ctx = new window[&quot;SP&quot;].ClientContext(this[&quot;_url&quot;]);
+            ctx = sp.exportContext(this[&quot;_url&quot;]);
             web = ctx.get_web();
 
             ctx.load(user);
             ctx.load(this._group, &quot;Users&quot;);
             ctx.executeQueryAsync(
-                js.alg.bindFn(this, __isMemberSuccess, [success, failure]),
-                js.alg.bindFn(this, __isMemberFailure, [failure]));
+                js.alg.bindFn(this, __isMemberSuccess, [user, success, failure]),
+                js.alg.bindFn(this, __isMemberFailure, [user, failure]));
 
             return this;
         }
     };
 
 <span id='global-method-__isMemberSuccess'>    /** @ignore */
-</span>    function __isMemberSuccess(successFn, failureFn, sender, args) {
+</span>    function __isMemberSuccess(user, successFn, failureFn, sender, args) {
         var userInGroup = false,
             enumerator = this._group.get_users().getEnumerator(),
             groupUser = null;
@@ -1580,7 +1632,7 @@ js.extend.fn(&quot;sp&quot;, function () {
         js.alg.use(this, userInGroup ? successFn : failureFn, [sender, args]);
     }
 <span id='global-method-__isMemberFailure'>    /** @ignore */
-</span>    function __isMemberFailure(failureFn, sender, args) {
+</span>    function __isMemberFailure(user, failureFn, sender, args) {
         js.alg.use(this, failureFn, [sender, args]);
     }
 
