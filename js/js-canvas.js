@@ -398,6 +398,7 @@ jspyder.extend.fn("canvas", function () {
              * @param {String} [settings.linecolor]
              * @param {Number} [settings.min]
              * @param {Number} [settings.max]
+             * @param {Function} [settings.format]
              */
             "barchart": function (settings) {
                 settings = settings || {};
@@ -415,6 +416,7 @@ jspyder.extend.fn("canvas", function () {
                     labelSize = settings["labelSize"] = js.alg.number(settings["labelSize"], 16),
                     min = settings["min"] = js.alg.number(settings["min"], Infinity),
                     max = settings["max"] = js.alg.number(settings["max"], -Infinity),
+                    format = js.alg.bindFn(this, settings["format"] || function(n) { return n; }),
                     self = this,
                     cols,
                     columnSplit,
@@ -467,7 +469,7 @@ jspyder.extend.fn("canvas", function () {
                         "y": ((height * (5 - i)) / 5) - (labelSize / 3),
                         "size": labelSize,
                         "font": "Arial",
-                        "text": ((i / 5) * max)|0,
+                        "text": format(((i / 5) * max)|0),
                         "textalign": "left"
                     });
                     self.cmd.text.call(self, {
@@ -475,7 +477,7 @@ jspyder.extend.fn("canvas", function () {
                         "y": ((height * (5 - i)) / 5) - (labelSize / 3),
                         "size": labelSize,
                         "font": "Arial",
-                        "text": ((i / 5) * max)|0,
+                        "text": format(((i / 5) * max)|0),
                         "textalign": "right"
                     });
                 });
@@ -555,6 +557,7 @@ jspyder.extend.fn("canvas", function () {
              * @param {String} [settings.linecolor]
              * @param {Number} [settings.min]
              * @param {Number} [settings.max]
+             * @param {Function} [settings.format]
              */
             "linechart": function (settings) {
                 settings = settings || {};
@@ -572,6 +575,7 @@ jspyder.extend.fn("canvas", function () {
                     lineColor = settings["linecolor"] = js.alg.string(settings["linecolor"], "rgba(0, 0, 0, 0.3)"),
                     min = js.alg.number(settings["min"], Infinity),
                     max = js.alg.number(settings["max"], -Infinity),
+                    format = js.alg.bindFn(this, settings["format"] || function(n) { return n; }),
                     self = this,
                     cols,
                     offsetX = 50,
@@ -622,7 +626,7 @@ jspyder.extend.fn("canvas", function () {
                         y: ((height * (5 - i)) / 5) - (labelSize / 3),
                         size: labelSize,
                         font: "Arial",
-                        text: ((i / 5) * max)|0,
+                        text: format(((i / 5) * max)|0),
                         textalign: "left"
                     });
 
@@ -631,7 +635,7 @@ jspyder.extend.fn("canvas", function () {
                         y: ((height * (5 - i)) / 5) - (labelSize / 3),
                         size: labelSize,
                         font: "Arial",
-                        text: ((i / 5) * max)|0,
+                        text: format(((i / 5) * max)|0),
                         textalign: "right"
                     });
                 });
@@ -696,7 +700,7 @@ jspyder.extend.fn("canvas", function () {
                         self.cmd.circle.call(self, {
                             "y": v2,
                             "x": dotX,
-                            "radius": 4,
+                            "radius": dotRadius,
                             "fill": dotColor,
                             "border": dotOutline,
                             "thickness": dotOutlineWidth
@@ -705,7 +709,7 @@ jspyder.extend.fn("canvas", function () {
                         self.cmd.circle.call(self, {
                             "y": v1,
                             "x": x,
-                            "radius": 4,
+                            "radius": dotRadius,
                             "fill": dotColor,
                             "border": dotOutline,
                             "thickness": dotOutlineWidth
