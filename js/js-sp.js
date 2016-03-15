@@ -463,7 +463,7 @@ js.extend.fn("sp", function () {
          * @private
          */
         _pushLoopDirtyRows: function(row, i, rows, data) {
-            var rowID = row._columns && row._columns["ID"].value,
+            var rowID = row["ID"].value,
                 itemInfo = null,
                 listItem = null;
 
@@ -1332,22 +1332,32 @@ js.extend.fn("sp", function () {
             var __rows = [];
 
             __rows.push("<ss:Row ss:StyleID=\"1\">");
-            js.alg.arrEach(columns, __pushRow, "text");
+            js.alg.arrEach(columns, function(colName) {
+                __rows.push(__cell(table.exportColumn(colName).text))
+            });
             __rows.push("</ss:Row>");
-
-            js.alg.arrEach(rows, function(row, i) {
+            
+            js.alg.arrEach(rows, function(row) {
                 __rows.push("<ss:Row>");
-                js.alg.arrEach(columns, __pushRow, "value");
+                __rows.push(__row(row, columns, "value"));
                 __rows.push("</ss:Row>");
             });
 
-            function __pushRow (col, i, cols, data) {
-                __rows.push([
-                    "<ss:Cell><ss:Data ss:Type=\"String\">", rows[col][data], "</ss:Data></ss:Cell>"
-                ].join(''))
-            }
-
             return __rows.join('');
+        }
+        
+        function __row(row, columns, src) {
+            var __row = [];
+            
+            js.alg.arrEach(columns, function(colName) {
+                __row.push(__cell(row[colName][src]));
+            });
+            
+            return __row.join('');
+        }
+        
+        function __cell(content) {
+            return ["<ss:Cell><ss:Data ss:Type=\"String\">", content, "</ss:Data></ss:Cell>"].join('');
         }
 
         return xml.join('');
@@ -1366,7 +1376,7 @@ js.extend.fn("sp", function () {
         function __headers(table, columns) {
             var __headers = [];
             js.alg.arrEach(columns, function(column) {
-                __headers.push(["\"", table.getColumn(column).text || " ", "\""].join(''));
+                __headers.push(["\"", table.exportColumn(column).text || " ", "\""].join(''));
             });
             return __headers.join(',');
         }

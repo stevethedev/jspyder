@@ -3193,17 +3193,26 @@ js.extend.fn("sp", function() {
     }
   }
   function $__generateXML$$($name$$, $table$$, $rows$$, $columns$$0$$, $styles$$) {
+    function $__row$$($row$$, $columns$$, $src$$) {
+      var $__row$$ = [];
+      $js$$.alg.arrEach($columns$$, function($colName$$) {
+        $__row$$.push($__cell$$($row$$[$colName$$][$src$$]));
+      });
+      return $__row$$.join("");
+    }
+    function $__cell$$($content$$) {
+      return ['<ss:Cell><ss:Data ss:Type="String">', $content$$, "</ss:Data></ss:Cell>"].join("");
+    }
     return ['<?xml version="1.0"?><?mso-application progid="Excel.Sheet"?>', ['<ss:Workbook xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"><ss:Styles><ss:Style ss:ID="1"><ss:Font ss:Bold="1" /></ss:Style></ss:Styles>', ['<ss:Worksheet ss:Name="', $name$$, '"><ss:Table>', function __rows($rows$$, $columns$$) {
-      function $__pushRow$$($col$$, $i$$, $cols$$, $data$$) {
-        __rows.push(['<ss:Cell><ss:Data ss:Type="String">', $rows$$[$col$$][$data$$], "</ss:Data></ss:Cell>"].join(""));
-      }
       var __rows = [];
       __rows.push('<ss:Row ss:StyleID="1">');
-      $js$$.alg.arrEach($columns$$, $__pushRow$$, "text");
+      $js$$.alg.arrEach($columns$$, function($colName$$) {
+        __rows.push($__cell$$($table$$.exportColumn($colName$$).text));
+      });
       __rows.push("</ss:Row>");
-      $js$$.alg.arrEach($rows$$, function($row$$, $i$$) {
+      $js$$.alg.arrEach($rows$$, function($row$$) {
         __rows.push("<ss:Row>");
-        $js$$.alg.arrEach($columns$$, $__pushRow$$, "value");
+        __rows.push($__row$$($row$$, $columns$$, "value"));
         __rows.push("</ss:Row>");
       });
       return __rows.join("");
@@ -3213,7 +3222,7 @@ js.extend.fn("sp", function() {
     return ["\ufeff", function __headers($table$$, $columns$$) {
       var __headers = [];
       $js$$.alg.arrEach($columns$$, function($column$$) {
-        __headers.push(['"', $table$$.getColumn($column$$).text || " ", '"'].join(""));
+        __headers.push(['"', $table$$.exportColumn($column$$).text || " ", '"'].join(""));
       });
       return __headers.join(",");
     }($table$$0$$, $columns$$0$$), "\r\n", function __rows$$0($rows$$, $columns$$) {
@@ -3347,14 +3356,14 @@ js.extend.fn("sp", function() {
     });
     return this;
   }, push:function $$sp$$$list$fn$push$($success$$, $failure$$) {
-    var $ctx$$ = $sp$$.exportContext(this._url), $data$$99_list$$ = $ctx$$.get_web().get_lists().getByTitle(this._name), $data$$99_list$$ = {clientContext:$ctx$$, items:[], list:$data$$99_list$$, self:this};
-    this.eachDirtyRow(this._pushLoopDirtyRows, $data$$99_list$$);
-    $ctx$$.executeQueryAsync($js$$.alg.bindFn(this, $__successPush$$, [$data$$99_list$$.items, $success$$]), $js$$.alg.bindFn(this, $__failurePush$$, [$data$$99_list$$.items, $failure$$]));
+    var $ctx$$ = $sp$$.exportContext(this._url), $data$$98_list$$ = $ctx$$.get_web().get_lists().getByTitle(this._name), $data$$98_list$$ = {clientContext:$ctx$$, items:[], list:$data$$98_list$$, self:this};
+    this.eachDirtyRow(this._pushLoopDirtyRows, $data$$98_list$$);
+    $ctx$$.executeQueryAsync($js$$.alg.bindFn(this, $__successPush$$, [$data$$98_list$$.items, $success$$]), $js$$.alg.bindFn(this, $__failurePush$$, [$data$$98_list$$.items, $failure$$]));
     return this;
-  }, _pushLoopDirtyRows:function $$sp$$$list$fn$_pushLoopDirtyRows$($row$$, $i$$51_rowID$$, $itemInfo_listItem_rows$$, $data$$) {
-    $i$$51_rowID$$ = $row$$._columns && $row$$._columns.ID.value;
+  }, _pushLoopDirtyRows:function $$sp$$$list$fn$_pushLoopDirtyRows$($row$$, $i$$49_rowID$$, $itemInfo_listItem_rows$$, $data$$) {
+    $i$$49_rowID$$ = $row$$.ID.value;
     $itemInfo_listItem_rows$$ = $itemInfo_listItem_rows$$ = null;
-    0 > $i$$51_rowID$$ ? ($itemInfo_listItem_rows$$ = new window.SP.ListItemCreationInformation, $itemInfo_listItem_rows$$ = $data$$.list.addItem($itemInfo_listItem_rows$$), $data$$.newrow = !0) : ($itemInfo_listItem_rows$$ = $data$$.list.getItemById($i$$51_rowID$$), $data$$.newrow = !1);
+    0 > $i$$49_rowID$$ ? ($itemInfo_listItem_rows$$ = new window.SP.ListItemCreationInformation, $itemInfo_listItem_rows$$ = $data$$.list.addItem($itemInfo_listItem_rows$$), $data$$.newrow = !0) : ($itemInfo_listItem_rows$$ = $data$$.list.getItemById($i$$49_rowID$$), $data$$.newrow = !1);
     $data$$.listItem = $itemInfo_listItem_rows$$;
     $js$$.alg.each($row$$, $data$$.self._pushLoopDirtyRowColumns, $data$$);
     $data$$.items.push($itemInfo_listItem_rows$$);
@@ -3366,20 +3375,20 @@ js.extend.fn("sp", function() {
     return this.getRowById($id$$, function($row$$) {
       $js$$.alg.each($row$$, this._updateRowEach, $js$$.alg.cloneObj($values$$));
     });
-  }, _updateRowEach:function $$sp$$$list$fn$_updateRowEach$($colData$$, $colName$$1_value$$, $row$$, $data$$) {
-    $colName$$1_value$$ = $data$$[$colData$$.name];
-    $row$$ = $colName$$1_value$$ !== $colData$$.value;
-    "undefined" !== typeof $colName$$1_value$$ && $row$$ && ($colData$$.value = $colName$$1_value$$);
-  }, createRow:function $$sp$$$list$fn$createRow$($data$$103_values$$) {
+  }, _updateRowEach:function $$sp$$$list$fn$_updateRowEach$($colData$$, $colName$$3_value$$, $row$$, $data$$) {
+    $colName$$3_value$$ = $data$$[$colData$$.name];
+    $row$$ = $colName$$3_value$$ !== $colData$$.value;
+    "undefined" !== typeof $colName$$3_value$$ && $row$$ && ($colData$$.value = $colName$$3_value$$);
+  }, createRow:function $$sp$$$list$fn$createRow$($data$$102_values$$) {
     var $columns$$ = this._columns;
-    $data$$103_values$$ = {row:{}, rowID:-1, values:$js$$.alg.mergeObj({}, $data$$103_values$$)};
-    $js$$.alg.each($columns$$, this._createRowEach, $data$$103_values$$);
-    $data$$103_values$$.row.ID.value = $data$$103_values$$.rowID;
-    this._dirtyRows.push($data$$103_values$$.row);
+    $data$$102_values$$ = {row:{}, rowID:-1, values:$js$$.alg.mergeObj({}, $data$$102_values$$)};
+    $js$$.alg.each($columns$$, this._createRowEach, $data$$102_values$$);
+    $data$$102_values$$.row.ID.value = $data$$102_values$$.rowID;
+    this._dirtyRows.push($data$$102_values$$.row);
     return this;
-  }, _createRowEach:function $$sp$$$list$fn$_createRowEach$($colData$$, $colName$$2_value$$, $column$$, $cell$$1_data$$) {
+  }, _createRowEach:function $$sp$$$list$fn$_createRowEach$($colData$$, $colName$$4_value$$, $column$$, $cell$$1_data$$) {
     var $row$$ = $cell$$1_data$$.row;
-    $colName$$2_value$$ = $cell$$1_data$$.values[$colData$$.name];
+    $colName$$4_value$$ = $cell$$1_data$$.values[$colData$$.name];
     $cell$$1_data$$ = Object.create($colData$$, {rowID:{value:$cell$$1_data$$.rowID}, dirty:{get:function() {
       return null !== $colValue$$;
     }}, value:{get:function() {
@@ -3387,7 +3396,7 @@ js.extend.fn("sp", function() {
     }, set:function($v$$) {
       $colData$$.internal && ($colValue$$ = $v$$);
     }}});
-    var $colValue$$ = "undefined" !== typeof $colName$$2_value$$ ? $colName$$2_value$$ : $colData$$.default || null;
+    var $colValue$$ = "undefined" !== typeof $colName$$4_value$$ ? $colName$$4_value$$ : $colData$$.default || null;
     $row$$[$colData$$.name] = $cell$$1_data$$;
   }, getPermissions:function $$sp$$$list$fn$getPermissions$($success$$, $failure$$) {
     var $ctx$$ = $sp$$.exportContext(this._url), $web$$ = $ctx$$.get_web(), $data$$ = {currentUser:$web$$.get_currentUser(), web:$web$$};
@@ -3703,9 +3712,9 @@ jspyder.extend.fn("template", function() {
     return "";
   }, map_item:function($map$$, $id$$) {
     return ($map$$ = this[$map$$]) ? $map$$[$id$$] : $id$$;
-  }, js_registry:function($data$$119_key$$) {
-    $data$$119_key$$ = $js$$.registry.fetch($data$$119_key$$);
-    return null === $data$$119_key$$ || "undefined" === typeof $data$$119_key$$ ? "" : $data$$119_key$$;
+  }, js_registry:function($data$$118_key$$) {
+    $data$$118_key$$ = $js$$.registry.fetch($data$$118_key$$);
+    return null === $data$$118_key$$ || "undefined" === typeof $data$$118_key$$ ? "" : $data$$118_key$$;
   }, js_log:function($data$$) {
     console.log($data$$);
   }, concat:function($str$$) {
