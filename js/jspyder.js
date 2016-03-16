@@ -518,6 +518,9 @@
                 if (typeof s === "string") {
                     return s;
                 }
+                else if(s && typeof s.toString === "function") {
+                    return s.toString();
+                }
                 else if (s !== null && typeof s === "object" && s.isPrototypeOf(RegExp)) {
                     s = ('' + s).match(/^\/(.*)\/[a-z]*$/, "$1");
                     return s;
@@ -695,7 +698,7 @@
                     js_alg["float"] = function(u) {
                         var sign = 2 * (x > 0) - 1,
                             exp = 0,
-                            base = x,
+                            base = x * sign,
                             frac = 0;
 
                         while(base >= 2 || base < 1) {
