@@ -583,7 +583,7 @@ jspyder.extend.fn("form", function () {
                 $field.getValue(_export);
             }
                 
-            fn.apply(this, [values]);
+            js.alg.use(this, fn, [valid, invalid]);
             return this;
         },
         
