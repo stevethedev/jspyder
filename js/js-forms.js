@@ -683,7 +683,7 @@ jspyder.extend.fn("form", function () {
                 return;
             });
             
-            fn.apply(this, [valid, invalid]);
+            js.alg.use(this, fn, [valid, invalid]);
             
             return this;
         },
@@ -1035,11 +1035,13 @@ jspyder.extend.fn("form", function () {
                         js.dom(this).getValue(function(v) {
                             calStruct.date.setDay(v);
                             calStruct.setTitle(true);
+                            js.dom(calStruct.input).trigger("change");
                         });
                         calStruct.enableClose();
                     });
                     calStruct.setTitle();
                     calStruct.preventClose();
+                    js.dom(calStruct.input).trigger("change");
                     return;
                 },
                 buildWeekdays: function (weekday, daynum, daylist, data) {

@@ -2430,7 +2430,7 @@ jspyder.extend.fn("form", function() {
         ($isValid$$ ? $valid$$ : $invalid$$ || ($invalid$$ = {}))[$name$$] = $value$$;
       }
     });
-    $fn$$.apply(this, [$valid$$, $invalid$$]);
+    $js$$.alg.use(this, $fn$$, [$valid$$, $invalid$$]);
     return this;
   }, attach:function $$js_form$$$fn$attach$($fn$$, $data$$) {
     var $dom$$ = this._dom, $fields$$ = this._fields, $name$$;
@@ -2560,11 +2560,13 @@ jspyder.extend.fn("form", function() {
         $js$$.dom(this).getValue(function($v$$) {
           $calStruct$$.date.setDay($v$$);
           $calStruct$$.setTitle(!0);
+          $js$$.dom($calStruct$$.input).trigger("change");
         });
         $calStruct$$.enableClose();
       });
       $calStruct$$.setTitle();
       $calStruct$$.preventClose();
+      $js$$.dom($calStruct$$.input).trigger("change");
     }, buildWeekdays:function $$__calStructFactory$$$fn$buildWeekdays$($weekday$$, $daynum$$, $daylist$$, $data$$) {
       $data$$.html += ['<div class="date-title date-title-index-', $daynum$$ + 1, '" style="width:', 100 / $data$$.wlen, '%">', $weekday$$, "</div>"].join("");
     }, buildNumberedDays:function $$__calStructFactory$$$fn$buildNumberedDays$($day$$, $daynum$$, $daylist$$, $data$$) {
