@@ -814,6 +814,40 @@ jspyder.extend.fn("dtype", function () {
         }),
         
         // enum type
+        
+        /**
+         * Boolean
+         */
+        "bool": js.alg.use(js_dtype, function bootstrap() {
+            js_alg.bool();
+            var bool = js_alg["bool"];
+            
+            return function attachBoolean(name, value, strict, constant) {
+                var _obj = this.obj,
+                    _interface = _createInterface(name, "boolean", "bool", bool, value, constant, strict);
+                    
+                _createBinding(_obj, name, _interface);
+                return this;
+            };
+        }),
+        
+        /**
+         * Bit (1/0)
+         */
+        "bit": js.alg.use(js_dtype, function bootstrap() {
+            js_alg.bool();
+            var bool = js_alg["bool"],
+                bit = function(v) { return +bool(v); },
+                test = function(v) { return (typeof v === "number" && (v === 1 || v === 0) ) || (typeof v === "boolean"); }
+                
+            return function attachBit(name, value, strict, constant) {
+                var _obj = this.obj,
+                    _interface = _createInterface(name, "number", "bit", bit, value, constant, strict, null, null, test);
+                    
+                _createBinding(_obj, name, _interface);
+                return this;
+            }
+        }),
 
         /** Creates a jspyder-string object, which can (itself) be passed as a reference */
         // "jsstring": js.alg.use(js_dtype, function bootstrap() {
