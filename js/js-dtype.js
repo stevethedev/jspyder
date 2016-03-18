@@ -127,6 +127,9 @@ jspyder.extend.fn("dtype", function () {
         return _interface;                    
     }
     
+    /**
+     * Binds the interface to the wrapped object.
+     */
     function _createBinding(obj, name, _interface) {
         Object.defineProperty(obj, name, _interface);
         
@@ -813,8 +816,6 @@ jspyder.extend.fn("dtype", function () {
             };
         }),
         
-        // enum type
-        
         /**
          * Boolean
          */
@@ -846,101 +847,15 @@ jspyder.extend.fn("dtype", function () {
                     
                 _createBinding(_obj, name, _interface);
                 return this;
-            }
+            };
         }),
-
-        /** Creates a jspyder-string object, which can (itself) be passed as a reference */
-        // "jsstring": js.alg.use(js_dtype, function bootstrap() {
-        //     js_alg.string();
-            
-        //     var nodes = {
-        //             uchar: null,
-        //             next: null,
-        //             prev: null
-        //         },
-        //         proto = {
-        //             root: null,
-        //             length: 0,
-        //             toString: function() {
-        //                 var value = [],
-        //                     node = this.root;
-                            
-        //                 while(node) {
-        //                     value.push(String.fromCharCode(node.uchar));
-        //                     node = node.next;
-        //                 }
-                        
-        //                 return value.join('');
-        //             },
-        //             setString: function(v) {
-        //                 v = js.alg.string(v);
-        //                 var node = null, 
-        //                     prev = null,
-        //                     i;
-                            
-        //                 for(i = 0; i < v.length; i++) {
-        //                     node = Object.create(nodes);
-        //                     js_dtype(node).uchar("uchar", v[i]);
-        //                     node.prev = prev;
-        //                     prev.next = node;
-        //                 }
-                        
-        //                 return;
-        //             }
-        //         },
-        //         jsstring = function(v) {
-        //             if(v.isPrototypeOf(proto)) {
-        //                 // do prototype stuff
-        //                 return v;
-        //             }
-        //             else {
-        //                 v = js.alg.string(v);
-        //                 var o = Object.create(proto);
-        //                 o.setString(v);
-        //                 return o;
-        //             }
-        //         };
-            
-        //     return function jsstring(name, value, strict, constant) {
-        //         var _obj = this.obj,
-        //             _interface = _createInterface(name, null, "jsstring", jsstring, value, constant, strict);
-                    
-        //         _createBinding(_obj, name, _interface);
-        //         return this;
-        //     };
-        // }),
-        // "_jsstring": function attachJsString(name, value, strict, constant) {
-        //     var data = "",
-        //         _constant = false,
-        //         o = this.obj;
-
-        //     var _interface = {
-        //         get: function() {
-        //             return data.join('');
-        //         },
-        //         set: function(v) {
-        //             if (!_constant) {
-        //                 if (strict && typeof v !== "string") {
-        //                     throw _typeError(name, v, "jsstring");
-        //                 }
-        //                 else {
-        //                     if (typeof v === "undefined" || v === null) {
-        //                         v = "";
-        //                     }
-        //                     data = v;
-        //                 }
-        //             }
-        //             else {
-        //                 throw _constError(name, "jsstring");
-        //             }
-        //         },
-        //         enumerable: true
-        //     };
-        //     _interface.set(value);
-        //     _constant = constant;
-        //     Object.defineProperty(o, name, _interface);
-        //     return this;
-        // }
+        
+        "enum": js.alg.use(js_dtype, function bootstrap() {
+            js_alg.enum();
+            return function attachEnum(name, value, values, strict, constant) {
+                
+            };
+        })
     };
     
     js.alg.use(js_dtype.fn, function() {
