@@ -2309,7 +2309,7 @@ jspyder.extend.fn("form", function() {
   function $js_form$$($config$$, $fn$$) {
     var $form$$ = Object.create($js_form$$.fn, {_dom:{value:$js$$.dom("<form></form>")}, _template:{value:{}}});
     $config$$ && ($config$$.success && ($form$$._success = $config$$.success), $config$$.failure && ($form$$._failure = $config$$.failure), $config$$.reset && ($form$$._reset = $config$$.reset), $config$$.fields && $form$$.addFields($config$$.fields));
-    "function" === typeof $fn$$ && $fn$$.apply(this);
+    $js$$.alg.use(this, $fn$$);
     return $form$$;
   }
   var $js$$ = this;
@@ -2395,13 +2395,12 @@ jspyder.extend.fn("form", function() {
     }]) : $value$$ = $field$$6_name$$.exportValue());
     return $value$$;
   }, templates:{}, values:function $$js_form$$$fn$values$($fn$$) {
-    var $values$$ = {}, $$field$$, $name$$, $_export$$ = function $$_export$$$($v$$) {
-      $values$$[$name$$] = $$field$$;
+    var $$field$$, $name$$, $_export$$ = function $$_export$$$($v$$) {
     };
     for ($name$$ in this._fields) {
-      $$field$$ = this._fields[$name$$].field, $values$$[$name$$] = null, $$field$$.getValue($_export$$);
+      $$field$$ = this._fields[$name$$].field, $$field$$.getValue($_export$$);
     }
-    $fn$$.apply(this, [$values$$]);
+    $js$$.alg.use(this, $fn$$, [valid, invalid]);
     return this;
   }, fieldTemplate:{type:"input", values:[]}, submit:function $$js_form$$$fn$submit$($onSuccess$$, $onFail$$) {
     $onSuccess$$ = "function" === typeof $onSuccess$$ ? $onSuccess$$ : this._success;
@@ -2436,7 +2435,7 @@ jspyder.extend.fn("form", function() {
     var $dom$$ = this._dom, $fields$$ = this._fields, $name$$;
     for ($name$$ in $fields$$) {
     }
-    "function" === typeof $fn$$ && $fn$$.apply($dom$$, [this, $dom$$, $data$$]);
+    $js$$.alg.use($dom$$, $fn$$, [this, $dom$$, $data$$]);
     return this;
   }, compile:function $$js_form$$$fn$compile$($templateId$$, $data$$, $fn$$) {
     return this._compiler($templateId$$, $data$$, $fn$$, "compile");
@@ -2465,7 +2464,7 @@ jspyder.extend.fn("form", function() {
       $fields$$[$name$$] = $fieldSet$$.field;
     });
     $dom$$.template($fields$$ || {});
-    "function" === typeof $fn$$ && $fn$$.apply(this, [$dom$$]);
+    $js$$.alg.use(this, $fn$$, [$dom$$]);
     return $dom$$;
   }};
   $js_form$$.registerControl = $js_form$$.fn.registerControl;

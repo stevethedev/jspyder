@@ -2074,8 +2074,9 @@ a {
       background-color: #bdbdbd; }
       .js-dialog-background .js-dialog .js-dialog-footer .footer-container {
         min-height: 0;
-        text-align: right; }
+        text-align: right;
+        padding: 0.4em 0 0.4em 0.4em; }
         .js-dialog-background .js-dialog .js-dialog-footer .footer-container .js-control-button {
-          margin: 0.4em 0.4em 0.4em 0; }
+          margin-right: 0.4em; }
 
 /*# sourceMappingURL=jspyder.css.map */
