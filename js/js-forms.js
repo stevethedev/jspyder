@@ -89,9 +89,7 @@ jspyder.extend.fn("form", function () {
             }
         }
 
-        if (typeof fn === "function") {
-            fn.apply(this);
-        }
+        js.alg.use(this, fn);
 
         return form;
     }
@@ -583,7 +581,7 @@ jspyder.extend.fn("form", function () {
                 $field.getValue(_export);
             }
                 
-            fn.apply(this, [values]);
+            js.alg.use(this, fn, [valid, invalid]);
             return this;
         },
         
@@ -719,10 +717,7 @@ jspyder.extend.fn("form", function () {
             }
             
             // cycle through fields
-            
-            if(typeof fn === "function") {
-                fn.apply(dom, [this, dom, data]);
-            }
+            js.alg.use(dom, fn, [this, dom, data]);
             
             return this; 
         },
@@ -841,7 +836,7 @@ jspyder.extend.fn("form", function () {
             });
             
             dom.template(fields || {});
-            (typeof fn === "function") && fn.apply(this, [dom]);
+            js.alg.use(this, fn, [dom]);
                 
             return dom;
         }
