@@ -1800,8 +1800,8 @@ jspyder.extend.fn("date", function() {
     return new Date($d$$.y, $d$$.m, $d$$.d, $d$$.h + $d$$.a, $d$$.n, $d$$.s, $d$$.x);
   }
   function $__formatDate$$($date$$, $format$$, $useUTC$$) {
-    var $JSCompiler_object_inline_y_45$$ = $useUTC$$ ? $date$$.getUTCFullYear() : $date$$.getFullYear(), $JSCompiler_object_inline_m_46$$ = $useUTC$$ ? $date$$.getUTCMonth() : $date$$.getMonth(), $JSCompiler_object_inline_d_47$$ = $useUTC$$ ? $date$$.getUTCDate() : $date$$.getDate(), $JSCompiler_object_inline_h_48$$ = $useUTC$$ ? $date$$.getUTCHours() : $date$$.getHours(), $JSCompiler_object_inline_n_49$$ = $useUTC$$ ? $date$$.getUTCMinutes() : $date$$.getMinutes(), $JSCompiler_object_inline_s_50$$ = 
-    $useUTC$$ ? $date$$.getUTCSeconds() : $date$$.getSeconds(), $JSCompiler_object_inline_w_51$$ = $useUTC$$ ? $date$$.getUTCDay() : $date$$.getDay(), $JSCompiler_object_inline_x_52$$ = $useUTC$$ ? $date$$.getUTCMilliseconds() : $date$$.getMilliseconds(), $left$$ = "", $right$$ = $format$$;
+    var $JSCompiler_object_inline_y_42$$ = $useUTC$$ ? $date$$.getUTCFullYear() : $date$$.getFullYear(), $JSCompiler_object_inline_m_43$$ = $useUTC$$ ? $date$$.getUTCMonth() : $date$$.getMonth(), $JSCompiler_object_inline_d_44$$ = $useUTC$$ ? $date$$.getUTCDate() : $date$$.getDate(), $JSCompiler_object_inline_h_45$$ = $useUTC$$ ? $date$$.getUTCHours() : $date$$.getHours(), $JSCompiler_object_inline_n_46$$ = $useUTC$$ ? $date$$.getUTCMinutes() : $date$$.getMinutes(), $JSCompiler_object_inline_s_47$$ = 
+    $useUTC$$ ? $date$$.getUTCSeconds() : $date$$.getSeconds(), $JSCompiler_object_inline_w_48$$ = $useUTC$$ ? $date$$.getUTCDay() : $date$$.getDay(), $JSCompiler_object_inline_x_49$$ = $useUTC$$ ? $date$$.getUTCMilliseconds() : $date$$.getMilliseconds(), $left$$ = "", $right$$ = $format$$;
     $js$$.alg.arrEach($format$$.match($__reSearch$$), function($match$$) {
       var $collection$$ = $__formatCollection$$[$match$$] || /\[[^\\]*\]/g.test($match$$);
       if (!$collection$$) {
@@ -1814,12 +1814,12 @@ jspyder.extend.fn("date", function() {
         case "YY":
         ;
         case "yy":
-          $value$$ = $js$$.alg.string($JSCompiler_object_inline_y_45$$ % 100);
+          $value$$ = $js$$.alg.string($JSCompiler_object_inline_y_42$$ % 100);
           break;
         case "YYYY":
         ;
         case "yyyy":
-          $value$$ = $js$$.alg.string($JSCompiler_object_inline_y_45$$, "");
+          $value$$ = $js$$.alg.string($JSCompiler_object_inline_y_42$$, "");
           break;
         case "MMMM":
         ;
@@ -1836,7 +1836,7 @@ jspyder.extend.fn("date", function() {
         case "M":
         ;
         case "m":
-          $value$$ = $collection$$.lookup[$JSCompiler_object_inline_m_46$$];
+          $value$$ = $collection$$.lookup[$JSCompiler_object_inline_m_43$$];
           break;
         case "dth":
         ;
@@ -1845,7 +1845,7 @@ jspyder.extend.fn("date", function() {
         case "dd":
         ;
         case "d":
-          $value$$ = $collection$$.lookup[$JSCompiler_object_inline_d_47$$ - 1];
+          $value$$ = $collection$$.lookup[$JSCompiler_object_inline_d_44$$ - 1];
           break;
         case "DDDD":
         ;
@@ -1858,12 +1858,12 @@ jspyder.extend.fn("date", function() {
         case "DD":
         ;
         case "D":
-          $value$$ = $collection$$.lookup[$JSCompiler_object_inline_w_51$$];
+          $value$$ = $collection$$.lookup[$JSCompiler_object_inline_w_48$$];
           break;
         case "am":
         ;
         case "AM":
-          $value$$ = $collection$$.lookup[$JSCompiler_object_inline_h_48$$];
+          $value$$ = $collection$$.lookup[$JSCompiler_object_inline_h_45$$];
           break;
         case "HH":
         ;
@@ -1872,26 +1872,26 @@ jspyder.extend.fn("date", function() {
         case "hh":
         ;
         case "h":
-          $value$$ = $collection$$.lookup[$JSCompiler_object_inline_h_48$$];
+          $value$$ = $collection$$.lookup[$JSCompiler_object_inline_h_45$$];
           break;
         case "nn":
         ;
         case "n":
-          $value$$ = $collection$$.lookup[$JSCompiler_object_inline_n_49$$];
+          $value$$ = $collection$$.lookup[$JSCompiler_object_inline_n_46$$];
           break;
         case "ss":
         ;
         case "s":
-          $value$$ = $collection$$.lookup[$JSCompiler_object_inline_s_50$$];
+          $value$$ = $collection$$.lookup[$JSCompiler_object_inline_s_47$$];
           break;
         case "xxx":
-          $value$$ = ($js$$.alg.string($JSCompiler_object_inline_x_52$$) + "00").substr(0, 3);
+          $value$$ = ($js$$.alg.string($JSCompiler_object_inline_x_49$$) + "00").substr(0, 3);
           break;
         case "xx":
-          $value$$ = ($js$$.alg.string($JSCompiler_object_inline_x_52$$) + "0").substr(0, 2);
+          $value$$ = ($js$$.alg.string($JSCompiler_object_inline_x_49$$) + "0").substr(0, 2);
           break;
         case "x":
-          $value$$ = $js$$.alg.string($JSCompiler_object_inline_x_52$$).substr(0, 1);
+          $value$$ = $js$$.alg.string($JSCompiler_object_inline_x_49$$).substr(0, 1);
           break;
         default:
           $value$$ = $match$$.substring(1, $match$$.length - 1);
@@ -2320,6 +2320,9 @@ jspyder.extend.fn("dtype", function() {
   function $_typeError$$($name$$, $val$$, $eType$$) {
     throw new TypeError("Attempted to assign " + typeof $val$$ + "(" + $val$$ + ") to " + $eType$$ + ' "' + $name$$ + '"');
   }
+  function $_constError$$($name$$, $eType$$) {
+    throw new TypeError("Attempted to set a value to a constant " + $eType$$ + ' "' + $name$$ + '"');
+  }
   function $_createInterface$$($_name$$, $_jstype$$, $_dtypeText__interface$$, $_dtype$$, $_value$$, $_constant$$, $_strict$$, $_setFn$$, $_getFn$$, $_validateFn$$) {
     $_dtypeText__interface$$ = {};
     var $_baseSet$$ = "function" === typeof $_setFn$$ ? function($v$$) {
@@ -2333,7 +2336,7 @@ jspyder.extend.fn("dtype", function() {
       $_validateFn$$($v$$) || $_typeError$$($_name$$, $v$$, _jsType);
       $_baseSet$$($v$$);
     }, $_constSet$$ = function $$_constSet$$$($v$$) {
-      throw new TypeError("Attempted to set a value to a constant " + $_jstype$$ + ' "' + $_name$$ + '"');
+      $_constError$$($_name$$, $_jstype$$);
     }, $_baseGet$$ = "function" === typeof $_getFn$$ ? function() {
       return $_getFn$$($_dtype$$($_value$$));
     } : function() {
@@ -2481,6 +2484,80 @@ jspyder.extend.fn("dtype", function() {
       var $_obj$$ = this.obj;
       $_interface$$13_value$$ = $_createInterface$$($name$$, null, "uchar", $uchar$$, $_interface$$13_value$$, $constant$$, $strict$$, null, null, $validate$$);
       $_createBinding$$($_obj$$, $name$$, $_interface$$13_value$$);
+      return this;
+    };
+  }), bool:js.alg.use($js_dtype$$, function bootstrap() {
+    $js_alg$$.bool();
+    var $bool$$ = $js_alg$$.bool;
+    return function attachBoolean($name$$, $_interface$$14_value$$, $strict$$, $constant$$) {
+      var $_obj$$ = this.obj;
+      $_interface$$14_value$$ = $_createInterface$$($name$$, "boolean", "bool", $bool$$, $_interface$$14_value$$, $constant$$, $strict$$);
+      $_createBinding$$($_obj$$, $name$$, $_interface$$14_value$$);
+      return this;
+    };
+  }), bit:js.alg.use($js_dtype$$, function bootstrap() {
+    $js_alg$$.bool();
+    var $bool$$ = $js_alg$$.bool, $bit$$ = function $$bit$$$($v$$) {
+      return +$bool$$($v$$);
+    }, $test$$ = function $$test$$$($v$$) {
+      return "number" === typeof $v$$ && (1 === $v$$ || 0 === $v$$) || "boolean" === typeof $v$$;
+    };
+    return function attachBit($name$$, $_interface$$15_value$$, $strict$$, $constant$$) {
+      var $_obj$$ = this.obj;
+      $_interface$$15_value$$ = $_createInterface$$($name$$, "number", "bit", $bit$$, $_interface$$15_value$$, $constant$$, $strict$$, null, null, $test$$);
+      $_createBinding$$($_obj$$, $name$$, $_interface$$15_value$$);
+      return this;
+    };
+  }), "enum":js.alg.use($js_dtype$$, function bootstrap() {
+    $js_alg$$.makeEnum();
+    var $makeEnum$$ = $js_alg$$.makeEnum, $enumFactory$$ = function $$enumFactory$$$($name$$, $values$$, $value$$, $strict$$, $constant$$) {
+      function $setEnumConst$$($v$$) {
+        $_constError$$($name$$, "enum");
+      }
+      function $setEnumStrict$$($v$$) {
+        "number" !== typeof $v$$ && $_typeError$$($name$$, $v$$, "enum");
+        $setEnumBasic$$($v$$);
+      }
+      function $setEnumBasic$$($v$$) {
+        $v$$ = js.alg.number($v$$) | 0;
+        var $val$$ = 0;
+        js.alg.arrEach(bitValues, function($bit$$) {
+          ($v$$ & $bit$$) === $bit$$ && ($val$$ |= $bit$$);
+          $v$$ < $bit$$ && this.stop();
+        });
+        $value$$ = $val$$;
+      }
+      var $_proxy$$ = {}, $_interface$$ = {valueOf:function() {
+        return $value$$;
+      }};
+      $value$$ = js.alg.number($value$$);
+      bitValues = [];
+      js.alg.each($values$$, function($bits$$, $key$$) {
+        if ("valueOf" !== $key$$) {
+          var $setStrict$$ = function $$setStrict$$$($v$$) {
+            "boolean" !== typeof $v$$ && "number" !== typeof $v$$ && $_typeError$$($name$$ + "." + $key$$, $v$$, "number/boolean");
+            $setBasic$$($v$$);
+          }, $setBasic$$ = function $$setBasic$$$($v$$) {
+            $value$$ = js.alg.number($v$$ ? $value$$ | $bits$$ : $value$$ - ($value$$ & $bits$$)) | 0;
+          }, $setConst$$ = function $$setConst$$$($v$$) {
+            $_constError$$($name$$ + "." + $key$$, "number");
+          };
+          bitValues.push($bits$$);
+          $_proxy$$[$key$$] = {enumerable:!0, get:function $$_proxy$$$$key$$$get$() {
+            return js.alg.number($value$$ & $bits$$) | 0;
+          }, set:$constant$$ ? $setConst$$ : $strict$$ ? $setStrict$$ : $setBasic$$};
+        }
+      });
+      js.alg.sortArrayNum(bitValues, !0);
+      Object.defineProperties($_interface$$, $_proxy$$);
+      return {enumerable:!0, get:function() {
+        return $_interface$$;
+      }, set:$constant$$ ? $setEnumConst$$ : $strict$$ ? $setEnumStrict$$ : $setEnumBasic$$};
+    };
+    return function attachEnum($name$$, $_interface$$17_value$$, $values$$, $strict$$, $constant$$) {
+      var $_obj$$ = this.obj;
+      $_interface$$17_value$$ = $enumFactory$$($name$$, Array.isArray($values$$) ? $makeEnum$$($values$$) : $values$$, $_interface$$17_value$$, $strict$$, $constant$$);
+      $_createBinding$$($_obj$$, $name$$, $_interface$$17_value$$);
       return this;
     };
   })};
@@ -3235,11 +3312,11 @@ jspyder.extend.fn("form", function() {
         if ($attrs$$37_c$$["data-focus"]) {
           $v$$ = $toNumber$$($v$$, $data$$.config.acc);
         } else {
-          var $n$$inline_19_part$$ = $v$$;
+          var $n$$inline_16_part$$ = $v$$;
           $attrs$$37_c$$ = $data$$.config.tsep;
-          var $d$$ = $data$$.config.dec, $a$$inline_22_num$$ = $data$$.config.acc;
-          "" === $js$$.alg.string($n$$inline_19_part$$, "") ? $v$$ = $n$$inline_19_part$$ : ($n$$inline_19_part$$ = $js$$.alg.number($n$$inline_19_part$$, 0), $attrs$$37_c$$ = $js$$.alg.string($attrs$$37_c$$, ","), $d$$ = $js$$.alg.string($d$$, "."), "undefined" !== typeof $a$$inline_22_num$$ && ($n$$inline_19_part$$ = $n$$inline_19_part$$.toFixed($a$$inline_22_num$$)), $n$$inline_19_part$$ = $js$$.alg.string($n$$inline_19_part$$, "").split("."), $a$$inline_22_num$$ = [], $a$$inline_22_num$$[0] = 
-          ($n$$inline_19_part$$[0] || "").replace(/\B(?=(\d{3})+(?!\d))/g, $attrs$$37_c$$), $n$$inline_19_part$$[1] && $a$$inline_22_num$$.push($n$$inline_19_part$$[1]), $v$$ = $a$$inline_22_num$$.join($d$$));
+          var $d$$ = $data$$.config.dec, $a$$inline_19_num$$ = $data$$.config.acc;
+          "" === $js$$.alg.string($n$$inline_16_part$$, "") ? $v$$ = $n$$inline_16_part$$ : ($n$$inline_16_part$$ = $js$$.alg.number($n$$inline_16_part$$, 0), $attrs$$37_c$$ = $js$$.alg.string($attrs$$37_c$$, ","), $d$$ = $js$$.alg.string($d$$, "."), "undefined" !== typeof $a$$inline_19_num$$ && ($n$$inline_16_part$$ = $n$$inline_16_part$$.toFixed($a$$inline_19_num$$)), $n$$inline_16_part$$ = $js$$.alg.string($n$$inline_16_part$$, "").split("."), $a$$inline_19_num$$ = [], $a$$inline_19_num$$[0] = 
+          ($n$$inline_16_part$$[0] || "").replace(/\B(?=(\d{3})+(?!\d))/g, $attrs$$37_c$$), $n$$inline_16_part$$[1] && $a$$inline_19_num$$.push($n$$inline_16_part$$[1]), $v$$ = $a$$inline_19_num$$.join($d$$));
         }
         this.setValue($v$$);
       });
@@ -3744,24 +3821,24 @@ jspyder.extend.fn("template", function() {
     }}});
   }
   function $__parse$$($tmp$$, $data$$) {
-    for (var $ctx$$ = {data:$data$$, tmp:$tmp$$, lib:$_library$$}, $found$$2_name$$inline_39_tmp$$ = null, $str$$ = "", $ctx$$inline_29_index$$54_value$$ = 0, $args$$inline_31_length$$;$found$$2_name$$inline_39_tmp$$ = $reSymbol$$.exec($ctx$$.tmp);) {
-      $ctx$$inline_29_index$$54_value$$ = $found$$2_name$$inline_39_tmp$$.index;
-      $found$$2_name$$inline_39_tmp$$ = $found$$2_name$$inline_39_tmp$$[0];
-      $args$$inline_31_length$$ = $found$$2_name$$inline_39_tmp$$.length;
-      $str$$ += $ctx$$.tmp.substring(0, $ctx$$inline_29_index$$54_value$$);
-      $ctx$$.tmp = $ctx$$.tmp.substring($ctx$$inline_29_index$$54_value$$ + $args$$inline_31_length$$);
-      if ($reFunction$$.test($found$$2_name$$inline_39_tmp$$)) {
-        var $ctx$$inline_29_index$$54_value$$ = $ctx$$, $name$$inline_30_result$$ = void 0;
-        $args$$inline_31_length$$ = [];
-        for (var $arg$$inline_32_fn$$ = void 0, $len$$ = $name$$inline_30_result$$ = void 0, $cut$$ = void 0, $name$$inline_30_result$$ = $found$$2_name$$inline_39_tmp$$.match($reFuncName$$)[0].substring(1), $found$$2_name$$inline_39_tmp$$ = $found$$2_name$$inline_39_tmp$$.substring($found$$2_name$$inline_39_tmp$$.indexOf("(") + 1, $found$$2_name$$inline_39_tmp$$.lastIndexOf(")"));$arg$$inline_32_fn$$ = $reFuncArgs$$.exec($found$$2_name$$inline_39_tmp$$);) {
-          $cut$$ = $arg$$inline_32_fn$$[0].length, $len$$ = $arg$$inline_32_fn$$.length, $arg$$inline_32_fn$$ = $arg$$inline_32_fn$$[$len$$ - 1], $found$$2_name$$inline_39_tmp$$ = $found$$2_name$$inline_39_tmp$$.substring($cut$$), $arg$$inline_32_fn$$.search($reFunction$$) ? $arg$$inline_32_fn$$.search($reCommandLiteral$$) ? $arg$$inline_32_fn$$.search($reString$$) ? $arg$$inline_32_fn$$.search($reVariable$$) ? $arg$$inline_32_fn$$.search($reNumber$$) ? $args$$inline_31_length$$.push($__parse$$($arg$$inline_32_fn$$, 
-          $ctx$$inline_29_index$$54_value$$.data)) : $args$$inline_31_length$$.push(+$arg$$inline_32_fn$$) : $args$$inline_31_length$$.push($__parse$$($arg$$inline_32_fn$$, $ctx$$inline_29_index$$54_value$$.data)) : $args$$inline_31_length$$.push($arg$$inline_32_fn$$.substring(1, $arg$$inline_32_fn$$.length - 1)) : $args$$inline_31_length$$.push($__parse$$($arg$$inline_32_fn$$.substring(1, $arg$$inline_32_fn$$.length - 1), $ctx$$inline_29_index$$54_value$$.data)) : $args$$inline_31_length$$.push($__parse$$($arg$$inline_32_fn$$, 
-          $ctx$$inline_29_index$$54_value$$.data));
+    for (var $ctx$$ = {data:$data$$, tmp:$tmp$$, lib:$_library$$}, $found$$2_name$$inline_36_tmp$$ = null, $str$$ = "", $ctx$$inline_26_index$$54_value$$ = 0, $args$$inline_28_length$$;$found$$2_name$$inline_36_tmp$$ = $reSymbol$$.exec($ctx$$.tmp);) {
+      $ctx$$inline_26_index$$54_value$$ = $found$$2_name$$inline_36_tmp$$.index;
+      $found$$2_name$$inline_36_tmp$$ = $found$$2_name$$inline_36_tmp$$[0];
+      $args$$inline_28_length$$ = $found$$2_name$$inline_36_tmp$$.length;
+      $str$$ += $ctx$$.tmp.substring(0, $ctx$$inline_26_index$$54_value$$);
+      $ctx$$.tmp = $ctx$$.tmp.substring($ctx$$inline_26_index$$54_value$$ + $args$$inline_28_length$$);
+      if ($reFunction$$.test($found$$2_name$$inline_36_tmp$$)) {
+        var $ctx$$inline_26_index$$54_value$$ = $ctx$$, $name$$inline_27_result$$ = void 0;
+        $args$$inline_28_length$$ = [];
+        for (var $arg$$inline_29_fn$$ = void 0, $len$$ = $name$$inline_27_result$$ = void 0, $cut$$ = void 0, $name$$inline_27_result$$ = $found$$2_name$$inline_36_tmp$$.match($reFuncName$$)[0].substring(1), $found$$2_name$$inline_36_tmp$$ = $found$$2_name$$inline_36_tmp$$.substring($found$$2_name$$inline_36_tmp$$.indexOf("(") + 1, $found$$2_name$$inline_36_tmp$$.lastIndexOf(")"));$arg$$inline_29_fn$$ = $reFuncArgs$$.exec($found$$2_name$$inline_36_tmp$$);) {
+          $cut$$ = $arg$$inline_29_fn$$[0].length, $len$$ = $arg$$inline_29_fn$$.length, $arg$$inline_29_fn$$ = $arg$$inline_29_fn$$[$len$$ - 1], $found$$2_name$$inline_36_tmp$$ = $found$$2_name$$inline_36_tmp$$.substring($cut$$), $arg$$inline_29_fn$$.search($reFunction$$) ? $arg$$inline_29_fn$$.search($reCommandLiteral$$) ? $arg$$inline_29_fn$$.search($reString$$) ? $arg$$inline_29_fn$$.search($reVariable$$) ? $arg$$inline_29_fn$$.search($reNumber$$) ? $args$$inline_28_length$$.push($__parse$$($arg$$inline_29_fn$$, 
+          $ctx$$inline_26_index$$54_value$$.data)) : $args$$inline_28_length$$.push(+$arg$$inline_29_fn$$) : $args$$inline_28_length$$.push($__parse$$($arg$$inline_29_fn$$, $ctx$$inline_26_index$$54_value$$.data)) : $args$$inline_28_length$$.push($arg$$inline_29_fn$$.substring(1, $arg$$inline_29_fn$$.length - 1)) : $args$$inline_28_length$$.push($__parse$$($arg$$inline_29_fn$$.substring(1, $arg$$inline_29_fn$$.length - 1), $ctx$$inline_26_index$$54_value$$.data)) : $args$$inline_28_length$$.push($__parse$$($arg$$inline_29_fn$$, 
+          $ctx$$inline_26_index$$54_value$$.data));
         }
-        ($arg$$inline_32_fn$$ = $ctx$$inline_29_index$$54_value$$.lib.fetch($name$$inline_30_result$$)) ? ($name$$inline_30_result$$ = $arg$$inline_32_fn$$.apply($ctx$$inline_29_index$$54_value$$.data, $args$$inline_31_length$$), "undefined" !== typeof $name$$inline_30_result$$ && null !== $name$$inline_30_result$$ && ($found$$2_name$$inline_39_tmp$$ = $name$$inline_30_result$$)) : $found$$2_name$$inline_39_tmp$$ = "@" + $name$$inline_30_result$$ + "(" + $args$$inline_31_length$$.join(", ") + ")";
+        ($arg$$inline_29_fn$$ = $ctx$$inline_26_index$$54_value$$.lib.fetch($name$$inline_27_result$$)) ? ($name$$inline_27_result$$ = $arg$$inline_29_fn$$.apply($ctx$$inline_26_index$$54_value$$.data, $args$$inline_28_length$$), "undefined" !== typeof $name$$inline_27_result$$ && null !== $name$$inline_27_result$$ && ($found$$2_name$$inline_36_tmp$$ = $name$$inline_27_result$$)) : $found$$2_name$$inline_36_tmp$$ = "@" + $name$$inline_27_result$$ + "(" + $args$$inline_28_length$$.join(", ") + ")";
       }
-      $reVariable$$.test($found$$2_name$$inline_39_tmp$$) && ($ctx$$inline_29_index$$54_value$$ = $ctx$$.data[$found$$2_name$$inline_39_tmp$$.substring(2, $found$$2_name$$inline_39_tmp$$.length - 1)], $found$$2_name$$inline_39_tmp$$ = "undefined" === typeof $ctx$$inline_29_index$$54_value$$ ? $found$$2_name$$inline_39_tmp$$ : null !== $ctx$$inline_29_index$$54_value$$ ? $ctx$$inline_29_index$$54_value$$ : "");
-      $str$$ += $found$$2_name$$inline_39_tmp$$;
+      $reVariable$$.test($found$$2_name$$inline_36_tmp$$) && ($ctx$$inline_26_index$$54_value$$ = $ctx$$.data[$found$$2_name$$inline_36_tmp$$.substring(2, $found$$2_name$$inline_36_tmp$$.length - 1)], $found$$2_name$$inline_36_tmp$$ = "undefined" === typeof $ctx$$inline_26_index$$54_value$$ ? $found$$2_name$$inline_36_tmp$$ : null !== $ctx$$inline_26_index$$54_value$$ ? $ctx$$inline_26_index$$54_value$$ : "");
+      $str$$ += $found$$2_name$$inline_36_tmp$$;
     }
     return $str$$ += $ctx$$.tmp;
   }
@@ -3771,9 +3848,9 @@ jspyder.extend.fn("template", function() {
   }
   var $_templates$$ = $js$$.createRegistry(), $_library$$ = $js$$.createRegistry(), $__master_key$$ = (4294967295 * Math.random() | 0).toString(32), $reFuncArgs$$ = /\s*(`(?:[^`\\]|\\.)*`|"(?:[^"\\]|\\.)*"|\d+(?:\.\d+)?|\$\{\D[a-z0-9_]*\})(?:\s*,\s*(?!\)))?/i, $reString$$ = /"(?:[^"\\]|\\.)*"/i, $reCommandLiteral$$ = /`(?:[^`\\]|\\.)*`/i, $reNumber$$ = /\d+(?:\.\d+)?/, $reVariable$$ = /\$\{\D[a-z0-9_]*\}/i, $reFuncName$$ = /\@\D[a-z0-9_]*/i, $reFunction$$ = /\@\D[a-z0-9_]*\((?:\s*(`(?:[^`\\]|\\.)*`|"(?:[^"\\]|\\.)*"|\d+(?:\.\d+)?|\$\{\D[a-z0-9_]*\})(?:\s*,\s*(?!\)))?)*\)/i, 
   $reSymbol$$ = /(\@\D[a-z0-9_]*\((?:\s*(`(?:[^`\\]|\\.)*`|"(?:[^"\\]|\\.)*"|\d+(?:\.\d+)?|\$\{\D[a-z0-9_]*\})(?:\s*,\s*(?!\)))?)*\)|\$\{\D[a-z0-9_]*\})/i;
-  $js_template$$.fn = {compile:function $$js_template$$$fn$compile$($name$$118_template$$, $data$$, $fn$$) {
-    $name$$118_template$$ = $_templates$$.fetch($name$$118_template$$);
-    return this.compileExplicit($name$$118_template$$, $data$$, $fn$$);
+  $js_template$$.fn = {compile:function $$js_template$$$fn$compile$($name$$122_template$$, $data$$, $fn$$) {
+    $name$$122_template$$ = $_templates$$.fetch($name$$122_template$$);
+    return this.compileExplicit($name$$122_template$$, $data$$, $fn$$);
   }, compileExplicit:function $$js_template$$$fn$compileExplicit$($template$$4_tmp$$, $data$$, $fn$$) {
     "function" !== typeof $data$$ || $fn$$ || ($fn$$ = $data$$, $data$$ = null);
     "undefined" === typeof $template$$4_tmp$$ && ($template$$4_tmp$$ = "");

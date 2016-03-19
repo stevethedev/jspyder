@@ -850,10 +850,66 @@ jspyder.extend.fn("dtype", function () {
             };
         }),
         
+        /**
+         * Enum
+         */
         "enum": js.alg.use(js_dtype, function bootstrap() {
-            js_alg.enum();
+            js_alg.makeEnum();
+            var makeEnum = js_alg["makeEnum"],
+                enumFactory = function(name, values, value, strict, constant) {
+                    var _proxy = {},
+                        _interface = {
+                            valueOf: function() { return value; }
+                        };
+                        value = js.alg.number(value),
+                        bitValues = [];
+                        
+                    js.alg.each(values, function(bits, key) {
+                        if(key !== "valueOf") {
+                            bitValues.push(bits);
+                            function setConst(v) { _constError(name + "." + key, "number"); }
+                            function setBasic(v) { value = js.alg.number((v) ? (value | bits) : (value - (value & bits)))|0; }
+                            function setStrict(v) { if(typeof v !== "boolean" && typeof v !== "number") { _typeError(name + "." + key, v, "number/boolean"); } setBasic(v); }
+                            _proxy[key] = {
+                                "enumerable": true,
+                                "get": function() { return js.alg.number(value & bits)|0; },
+                                "set": (constant ? setConst : strict ? setStrict : setBasic)
+                            };
+                        }
+                    });
+                    js.alg.sortArrayNum(bitValues, true);
+                    
+                    Object.defineProperties(_interface, _proxy);
+                    
+                    function setEnumConst(v) { _constError(name, "enum"); }
+                    function setEnumStrict(v) { if(typeof v !== "number") { _typeError(name, v, "enum"); } setEnumBasic(v); }
+                    function setEnumBasic(v) {
+                        v = js.alg.number(v)|0;
+                        var val = 0;
+                        js.alg.arrEach(bitValues, function(bit) {
+                            if( (v & bit) === bit ) {
+                                val |= bit;
+                            }
+                            if( v < bit ) {
+                                this.stop();
+                            }
+                        });
+                        value = val;
+                    }
+                    
+                    return {
+                        "enumerable": true,
+                        "get": function() { return _interface; },
+                        "set": (constant ? setEnumConst : strict ? setEnumStrict : setEnumBasic)
+                    };
+                };
+            
             return function attachEnum(name, value, values, strict, constant) {
+                var _obj = this.obj,
+                    _interface = enumFactory(name, Array.isArray(values) ? makeEnum(values) : values, value, strict, constant);
                 
+                _createBinding(_obj, name, _interface);
+                return this;
             };
         })
     };
