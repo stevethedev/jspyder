@@ -186,6 +186,8 @@ jspyder.extend.fn("dtype", function () {
          *      Whether to mark this object as a constant.  If identified as a
          *      constant, then the value cannot be changed from the value assigned
          *      by parameter [value].
+         * 
+         * @alias jspyder.dtype.int8
          */
         "byte": js.alg.use(js_dtype, function bootstrap() {
             js_alg.byte();
@@ -240,6 +242,8 @@ jspyder.extend.fn("dtype", function () {
          *      Whether to mark this object as a constant.  If identified as a
          *      constant, then the value cannot be changed from the value assigned
          *      by parameter [value].
+         * 
+         * @alias jspyder.dtype.uint8
          */
         "ubyte": js.alg.use(js_dtype, function bootstrap() {
             js_alg.ubyte();
@@ -294,6 +298,8 @@ jspyder.extend.fn("dtype", function () {
          *      Whether to mark this object as a constant.  If identified as a
          *      constant, then the value cannot be changed from the value assigned
          *      by parameter [value].
+         * 
+         * @alias jspyder.dtype.int16
          */
         "short": js.alg.use(js_dtype, function bootstrap() {
             js_alg.short();
@@ -348,6 +354,8 @@ jspyder.extend.fn("dtype", function () {
          *      Whether to mark this object as a constant.  If identified as a
          *      constant, then the value cannot be changed from the value assigned
          *      by parameter [value].
+         * 
+         * @alias jspyder.dtype.uint16
          */
         "ushort": js.alg.use(js_dtype, function bootstrap() {
             js_alg.short();
@@ -402,6 +410,8 @@ jspyder.extend.fn("dtype", function () {
          *      Whether to mark this object as a constant.  If identified as a
          *      constant, then the value cannot be changed from the value assigned
          *      by parameter [value].
+         * 
+         * @alias jspyder.dtype.int32
          */
         "int": js.alg.use(js_dtype, function bootstrap() {
             js_alg.int();
@@ -456,6 +466,8 @@ jspyder.extend.fn("dtype", function () {
          *      Whether to mark this object as a constant.  If identified as a
          *      constant, then the value cannot be changed from the value assigned
          *      by parameter [value].
+         * 
+         * @alias jspyder.dtype.uint32
          */
         "uint": js.alg.use(js_dtype, function bootstrap() {
             js_alg.uint();
@@ -1084,34 +1096,11 @@ jspyder.extend.fn("dtype", function () {
     };
     
     js.alg.use(js_dtype.fn, function() {
-        /**
-         * @alias jspyder.dtype.byte
-         */
         this["int8"] = this["byte"];
-
-        /**
-         * @alias jspyder.dtype.ubyte
-         */
         this["uint8"] = this["ubyte"];
-
-        /**
-         * @alias jspyder.dtype.short
-         */
         this["int16"] = this["short"];
-
-        /**
-         * @alias jspyder.dtype.ushort
-         */
         this["uint16"] = this["ushort"];
-
-        /**
-         * @alias jspyder.dtype.int
-         */
         this["int32"] = this["int"];
-
-        /**
-         * @alias jspyder.dtype.uint
-         */
         this["uint32"] = this["uint"];
     });
 
