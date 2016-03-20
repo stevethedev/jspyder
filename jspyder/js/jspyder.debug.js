@@ -736,8 +736,8 @@ $jscomp.string.endsWith$install = function $$jscomp$string$endsWith$install$() {
       return $js$$;
     }, magnitude:function $$js_alg$$$magnitude$($n$$) {
       $n$$ = $js$$.alg.number($n$$);
-      var $y$$ = Math.pow(10, ($n$$ | 0).toString().length - 1);
-      return Math.ceil($n$$ / $y$$) * $y$$;
+      var $y$$ = Math.pow(10, ((0 > $n$$ ? -$n$$ : $n$$) | 0).toString().length - 1);
+      return Math[0 > $n$$ ? "floor" : "ceil"]($n$$ / $y$$) * $y$$;
     }, escapeString:function $$js_alg$$$escapeString$($str$$) {
       return $js$$.alg.string($str$$).replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
     }, use:function $$js_alg$$$use$($_this$$, $fn$$, $args$$) {
@@ -758,7 +758,7 @@ $jscomp.string.endsWith$install = function $$jscomp$string$endsWith$install$() {
       var $_n$$ = +$n$$;
       return $_n$$ == $n$$ || $_n$$ === $_n$$ ? $_n$$ : $d$$ || 0;
     }, string:function $$js_alg$$$string$($s$$, $d$$) {
-      return "string" === typeof $s$$ ? $s$$ : null !== $s$$ && "object" === typeof $s$$ && $s$$.isPrototypeOf(RegExp) ? $s$$ = ("" + $s$$).match(/^\/(.*)\/[a-z]*$/, "$1") : $s$$ || 0 === $s$$ ? "" + $s$$ : $d$$ || "";
+      return "string" === typeof $s$$ ? $s$$ : $s$$ && "function" === typeof $s$$.toString ? $s$$.toString() : null !== $s$$ && "object" === typeof $s$$ && $s$$.isPrototypeOf(RegExp) ? $s$$ = ("" + $s$$).match(/^\/(.*)\/[a-z]*$/, "$1") : $s$$ || 0 === $s$$ ? "" + $s$$ : $d$$ || "";
     }, object:function $$js_alg$$$object$($o$$, $d$$) {
       return $o$$ && "object" === typeof $o$$ ? $o$$ : $d$$ || {};
     }, array:function $$js_alg$$$array$($a$$, $d$$) {
@@ -845,9 +845,14 @@ $jscomp.string.endsWith$install = function $$jscomp$string$endsWith$install$() {
       };
       return $js_alg$$.uint($u$$0$$);
     }, "float":function $$js_alg$$$float$($u$$0$$) {
-      $js_alg$$["float"] = "undefined" === typeof Float32Array ? function($u$$) {
-        $u$$ = +(+$u$$).toPrecision(8);
-        return $u$$ == $u$$ ? $u$$ : 0;
+      $js_alg$$["float"] = "undefined" === typeof window.Float32Array ? function($sign_u$$) {
+        $sign_u$$ = 2 * (0 < x) - 1;
+        for (var $exp$$ = 0, $base$$ = x * $sign_u$$, $frac$$ = 0;2 <= $base$$ || 1 > $base$$;) {
+          2 <= $base$$ && ($base$$ /= 2, $exp$$++), 1 > $base$$ && ($base$$ *= 2, $exp$$--);
+        }
+        $frac$$ = x / Math.pow(2, $exp$$) - 1;
+        $frac$$ = 1 + Math.round(8388608 * $frac$$) / 8388608;
+        return +($sign_u$$ * $frac$$ * Math.pow(2, $exp$$)).toPrecision(8);
       } : function($u$$) {
         var $buffer$$15_byteArray$$ = new ArrayBuffer(4), $buffer$$15_byteArray$$ = new Float32Array($buffer$$15_byteArray$$);
         $buffer$$15_byteArray$$[0] = $u$$;
@@ -2305,6 +2310,267 @@ js.extend.fn("download", function() {
   };
   return $download$$;
 });
+jspyder.extend.fn("dtype", function() {
+  function $js_dtype$$($obj$$, $fn$$) {
+    var $dtype$$ = Object.create($js_dtype$$.fn);
+    $dtype$$.obj = $obj$$;
+    js.alg.use($dtype$$, $obj$$);
+    return $dtype$$;
+  }
+  function $_typeError$$($name$$, $val$$, $eType$$) {
+    throw new TypeError("Attempted to assign " + typeof $val$$ + "(" + $val$$ + ") to " + $eType$$ + ' "' + $name$$ + '"');
+  }
+  function $_constError$$($name$$, $eType$$) {
+    throw new TypeError("Attempted to set a value to a constant " + $eType$$ + ' "' + $name$$ + '"');
+  }
+  function $_createInterface$$($_name$$, $_jstype$$, $_dtypeText__interface$$, $_dtype$$, $_value$$, $_constant$$, $_strict$$, $_setFn$$, $_getFn$$, $_validateFn$$) {
+    $_dtypeText__interface$$ = {};
+    var $_baseSet$$ = "function" === typeof $_setFn$$ ? function($v$$) {
+      $_value$$ = $_dtype$$($_setFn$$($v$$));
+    } : function($v$$) {
+      $_value$$ = $_dtype$$($v$$);
+    }, $_strictSet$$ = "function" === typeof $_validateFn$$ ? function($v$$) {
+      typeof $v$$ === $_jstype$$ || $_typeError$$($_name$$, $v$$, $_jstype$$);
+      $_baseSet$$($v$$);
+    } : function($v$$) {
+      $_validateFn$$($v$$) || $_typeError$$($_name$$, $v$$, _jsType);
+      $_baseSet$$($v$$);
+    }, $_constSet$$ = function $$_constSet$$$($v$$) {
+      $_constError$$($_name$$, $_jstype$$);
+    }, $_baseGet$$ = "function" === typeof $_getFn$$ ? function() {
+      return $_getFn$$($_dtype$$($_value$$));
+    } : function() {
+      return $_dtype$$($_value$$);
+    };
+    $_baseSet$$($_value$$);
+    $_dtypeText__interface$$.get = $_baseGet$$;
+    $_dtypeText__interface$$.enumerable = !0;
+    $_dtypeText__interface$$.set = $_constant$$ ? $_constSet$$ : $_strict$$ ? $_strictSet$$ : $_baseSet$$;
+    return $_dtypeText__interface$$;
+  }
+  function $_createBinding$$($obj$$, $name$$, $_interface$$) {
+    Object.defineProperty($obj$$, $name$$, $_interface$$);
+    return $obj$$;
+  }
+  var $js_alg$$ = js.alg;
+  $js_dtype$$.fn = {"byte":js.alg.use($js_dtype$$, function bootstrap() {
+    $js_alg$$.byte();
+    var $byte$$ = $js_alg$$["byte"];
+    return function attachInt8($name$$, $_interface$$2_value$$, $strict$$, $constant$$) {
+      var $_obj$$ = this.obj;
+      $_interface$$2_value$$ = $_createInterface$$($name$$, "number", "byte", $byte$$, $_interface$$2_value$$, $constant$$, $strict$$);
+      $_createBinding$$($_obj$$, $name$$, $_interface$$2_value$$);
+      return this;
+    };
+  }), ubyte:js.alg.use($js_dtype$$, function bootstrap() {
+    $js_alg$$.ubyte();
+    var $ubyte$$ = $js_alg$$.ubyte;
+    return function attachUInt8($name$$, $_interface$$3_value$$, $strict$$, $constant$$) {
+      var $_obj$$ = this.obj;
+      $_interface$$3_value$$ = $_createInterface$$($name$$, "number", "unsigned byte", $ubyte$$, $_interface$$3_value$$, $constant$$, $strict$$);
+      $_createBinding$$($_obj$$, $name$$, $_interface$$3_value$$);
+      return this;
+    };
+  }), "short":js.alg.use($js_dtype$$, function bootstrap() {
+    $js_alg$$.short();
+    var $short$$ = $js_alg$$["short"];
+    return function attachInt16($name$$, $_interface$$4_value$$, $strict$$, $constant$$) {
+      var $_obj$$ = this.obj;
+      $_interface$$4_value$$ = $_createInterface$$($name$$, "number", "short", $short$$, $_interface$$4_value$$, $constant$$, $strict$$);
+      $_createBinding$$($_obj$$, $name$$, $_interface$$4_value$$);
+      return this;
+    };
+  }), ushort:js.alg.use($js_dtype$$, function bootstrap() {
+    $js_alg$$.short();
+    return function attachUInt16($name$$, $_interface$$5_value$$, $strict$$, $constant$$) {
+      var $_obj$$ = this.obj;
+      $_interface$$5_value$$ = $_createInterface$$($name$$, "number", "unsigned short", ushort, $_interface$$5_value$$, $constant$$, $strict$$);
+      $_createBinding$$($_obj$$, $name$$, $_interface$$5_value$$);
+      return this;
+    };
+  }), "int":js.alg.use($js_dtype$$, function bootstrap() {
+    $js_alg$$.int();
+    var $int$$ = $js_alg$$["int"];
+    return function attachInt32($name$$, $_interface$$6_value$$, $strict$$, $constant$$) {
+      var $_obj$$ = this.obj;
+      $_interface$$6_value$$ = $_createInterface$$($name$$, "number", "integer", $int$$, $_interface$$6_value$$, $constant$$, $strict$$);
+      $_createBinding$$($_obj$$, $name$$, $_interface$$6_value$$);
+      return this;
+    };
+  }), uint:js.alg.use($js_dtype$$, function bootstrap() {
+    $js_alg$$.uint();
+    return function attachUInt32($name$$, $_interface$$7_value$$, $strict$$, $constant$$) {
+      var $_obj$$ = this.obj;
+      $_interface$$7_value$$ = $_createInterface$$($name$$, "number", "unsigned integer", uint, $_interface$$7_value$$, $constant$$, $strict$$);
+      $_createBinding$$($_obj$$, $name$$, $_interface$$7_value$$);
+      return this;
+    };
+  }), "float":js.alg.use($js_dtype$$, function bootstrap() {
+    $js_alg$$.float();
+    var $float$$ = $js_alg$$["float"];
+    return function attachFloat($name$$, $_interface$$8_value$$, $strict$$, $constant$$) {
+      var $_obj$$ = this.obj;
+      $_interface$$8_value$$ = $_createInterface$$($name$$, "number", "float", $float$$, $_interface$$8_value$$, $constant$$, $strict$$);
+      $_createBinding$$($_obj$$, $name$$, $_interface$$8_value$$);
+      return this;
+    };
+  }), "double":js.alg.use($js_dtype$$, function bootstrap() {
+    $js_alg$$.double();
+    var $double$$ = $js_alg$$["double"];
+    return function attachDouble($name$$, $_interface$$9_value$$, $strict$$, $constant$$) {
+      var $_obj$$ = this.obj;
+      $_interface$$9_value$$ = $_createInterface$$($name$$, "number", "double", $double$$, $_interface$$9_value$$, $constant$$, $strict$$);
+      $_createBinding$$($_obj$$, $name$$, $_interface$$9_value$$);
+      return this;
+    };
+  }), fixed:js.alg.use($js_dtype$$, function bootstrap() {
+    function $fixed$$($decimals$$) {
+      $decimals$$ = $js_alg$$.int($decimals$$);
+      $decimals$$ = Math.pow(10, $decimals$$);
+      return function($value$$) {
+        return $int$$($value$$ * $decimals$$) / $decimals$$;
+      };
+    }
+    $js_alg$$.int();
+    var $int$$ = $js_alg$$.int;
+    return function attachFixed($name$$, $_interface$$10_value$$, $_obj$$8_decimals$$, $strict$$, $constant$$) {
+      var $_fixed$$ = $fixed$$($_obj$$8_decimals$$);
+      $_obj$$8_decimals$$ = this.obj;
+      $_interface$$10_value$$ = $_createInterface$$($name$$, "number", "fixed", $_fixed$$, $_interface$$10_value$$, $constant$$, $strict$$);
+      $_createBinding$$($_obj$$8_decimals$$, $name$$, $_interface$$10_value$$);
+      return this;
+    };
+  }), ufixed:js.alg.use($js_dtype$$, function bootstrap() {
+    function $fixed$$($decimals$$) {
+      $decimals$$ = $js_alg$$.int($decimals$$);
+      $decimals$$ = Math.pow(10, $decimals$$);
+      return function($value$$) {
+        return $uint$$($value$$ * $decimals$$) / $decimals$$;
+      };
+    }
+    $js_alg$$.int();
+    var $uint$$ = $js_alg$$.int;
+    return function attachFixed($name$$, $_interface$$11_value$$, $_obj$$9_decimals$$, $strict$$, $constant$$) {
+      var $_fixed$$ = $fixed$$($_obj$$9_decimals$$);
+      $_obj$$9_decimals$$ = this.obj;
+      $_interface$$11_value$$ = $_createInterface$$($name$$, "number", "fixed", $_fixed$$, $_interface$$11_value$$, $constant$$, $strict$$);
+      $_createBinding$$($_obj$$9_decimals$$, $name$$, $_interface$$11_value$$);
+      return this;
+    };
+  }), currency:function $$js_dtype$$$fn$currency$($name$$, $value$$, $strict$$, $constant$$) {
+    return this.fixed($name$$, $value$$, 2, $strict$$, $constant$$);
+  }, string:js.alg.use($js_dtype$$, function bootstrap() {
+    $js_alg$$.string();
+    var $string$$ = $js_alg$$.string;
+    return function attachDouble($name$$, $_interface$$12_value$$, $strict$$, $constant$$) {
+      var $_obj$$ = this.obj;
+      $_interface$$12_value$$ = $_createInterface$$($name$$, "string", "string", $string$$, $_interface$$12_value$$, $constant$$, $strict$$);
+      $_createBinding$$($_obj$$, $name$$, $_interface$$12_value$$);
+      return this;
+    };
+  }), uchar:js.alg.use($js_dtype$$, function bootstrap() {
+    $js_alg$$.string();
+    $js_alg$$.ushort();
+    var $string$$ = $js_alg$$.string, $uint16$$ = $js_alg$$.ushort, $uchar$$ = function $$uchar$$$($v$$) {
+      if ("number" === typeof $v$$) {
+        return $uint16$$($v$$);
+      }
+      $v$$ = $string$$($v$$);
+      return $v$$.length ? $v$$.charCodeAt(0) : 0;
+    }, $validate$$ = function $$validate$$$($v$$) {
+      return "string" === typeof $v$$ && 1 === $v$$.length || "number" === typeof $v$$;
+    };
+    return function attachUChar($name$$, $_interface$$13_value$$, $strict$$, $constant$$) {
+      var $_obj$$ = this.obj;
+      $_interface$$13_value$$ = $_createInterface$$($name$$, null, "uchar", $uchar$$, $_interface$$13_value$$, $constant$$, $strict$$, null, null, $validate$$);
+      $_createBinding$$($_obj$$, $name$$, $_interface$$13_value$$);
+      return this;
+    };
+  }), bool:js.alg.use($js_dtype$$, function bootstrap() {
+    $js_alg$$.bool();
+    var $bool$$ = $js_alg$$.bool;
+    return function attachBoolean($name$$, $_interface$$14_value$$, $strict$$, $constant$$) {
+      var $_obj$$ = this.obj;
+      $_interface$$14_value$$ = $_createInterface$$($name$$, "boolean", "bool", $bool$$, $_interface$$14_value$$, $constant$$, $strict$$);
+      $_createBinding$$($_obj$$, $name$$, $_interface$$14_value$$);
+      return this;
+    };
+  }), bit:js.alg.use($js_dtype$$, function bootstrap() {
+    $js_alg$$.bool();
+    var $bool$$ = $js_alg$$.bool, $bit$$ = function $$bit$$$($v$$) {
+      return +$bool$$($v$$);
+    }, $test$$ = function $$test$$$($v$$) {
+      return "number" === typeof $v$$ && (1 === $v$$ || 0 === $v$$) || "boolean" === typeof $v$$;
+    };
+    return function attachBit($name$$, $_interface$$15_value$$, $strict$$, $constant$$) {
+      var $_obj$$ = this.obj;
+      $_interface$$15_value$$ = $_createInterface$$($name$$, "number", "bit", $bit$$, $_interface$$15_value$$, $constant$$, $strict$$, null, null, $test$$);
+      $_createBinding$$($_obj$$, $name$$, $_interface$$15_value$$);
+      return this;
+    };
+  }), "enum":js.alg.use($js_dtype$$, function bootstrap() {
+    $js_alg$$.makeEnum();
+    var $makeEnum$$ = $js_alg$$.makeEnum, $enumFactory$$ = function $$enumFactory$$$($name$$, $values$$, $value$$, $strict$$, $constant$$) {
+      function $setEnumConst$$($v$$) {
+        $_constError$$($name$$, "enum");
+      }
+      function $setEnumStrict$$($v$$) {
+        "number" !== typeof $v$$ && $_typeError$$($name$$, $v$$, "enum");
+        $setEnumBasic$$($v$$);
+      }
+      function $setEnumBasic$$($v$$) {
+        $v$$ = js.alg.number($v$$) | 0;
+        var $val$$ = 0;
+        js.alg.arrEach(bitValues, function($bit$$) {
+          ($v$$ & $bit$$) === $bit$$ && ($val$$ |= $bit$$);
+          $v$$ < $bit$$ && this.stop();
+        });
+        $value$$ = $val$$;
+      }
+      var $_proxy$$ = {}, $_interface$$ = {valueOf:function() {
+        return $value$$;
+      }};
+      $value$$ = js.alg.number($value$$);
+      bitValues = [];
+      js.alg.each($values$$, function($bits$$, $key$$) {
+        if ("valueOf" !== $key$$) {
+          var $setStrict$$ = function $$setStrict$$$($v$$) {
+            "boolean" !== typeof $v$$ && "number" !== typeof $v$$ && $_typeError$$($name$$ + "." + $key$$, $v$$, "number/boolean");
+            $setBasic$$($v$$);
+          }, $setBasic$$ = function $$setBasic$$$($v$$) {
+            $value$$ = js.alg.number($v$$ ? $value$$ | $bits$$ : $value$$ - ($value$$ & $bits$$)) | 0;
+          }, $setConst$$ = function $$setConst$$$($v$$) {
+            $_constError$$($name$$ + "." + $key$$, "number");
+          };
+          bitValues.push($bits$$);
+          $_proxy$$[$key$$] = {enumerable:!0, get:function $$_proxy$$$$key$$$get$() {
+            return js.alg.number($value$$ & $bits$$) | 0;
+          }, set:$constant$$ ? $setConst$$ : $strict$$ ? $setStrict$$ : $setBasic$$};
+        }
+      });
+      js.alg.sortArrayNum(bitValues, !0);
+      Object.defineProperties($_interface$$, $_proxy$$);
+      return {enumerable:!0, get:function() {
+        return $_interface$$;
+      }, set:$constant$$ ? $setEnumConst$$ : $strict$$ ? $setEnumStrict$$ : $setEnumBasic$$};
+    };
+    return function attachEnum($name$$, $_interface$$17_value$$, $values$$, $strict$$, $constant$$) {
+      var $_obj$$ = this.obj;
+      $_interface$$17_value$$ = $enumFactory$$($name$$, Array.isArray($values$$) ? $makeEnum$$($values$$) : $values$$, $_interface$$17_value$$, $strict$$, $constant$$);
+      $_createBinding$$($_obj$$, $name$$, $_interface$$17_value$$);
+      return this;
+    };
+  })};
+  js.alg.use($js_dtype$$.fn, function() {
+    this.int8 = this["byte"];
+    this.uint8 = this.ubyte;
+    this.int16 = this["short"];
+    this.uint16 = this.ushort;
+    this.int32 = this["int"];
+    this.uint32 = this.uint;
+  });
+  return $js_dtype$$;
+});
 jspyder.extend.fn("form", function() {
   function $js_form$$($config$$, $fn$$) {
     var $form$$ = Object.create($js_form$$.fn, {_dom:{value:$js$$.dom("<form></form>")}, _template:{value:{}}});
@@ -3592,9 +3858,9 @@ jspyder.extend.fn("template", function() {
   }
   var $_templates$$ = $js$$.createRegistry(), $_library$$ = $js$$.createRegistry(), $__master_key$$ = (4294967295 * Math.random() | 0).toString(32), $reFuncArgs$$ = /\s*(`(?:[^`\\]|\\.)*`|"(?:[^"\\]|\\.)*"|\d+(?:\.\d+)?|\$\{\D[a-z0-9_]*\})(?:\s*,\s*(?!\)))?/i, $reString$$ = /"(?:[^"\\]|\\.)*"/i, $reCommandLiteral$$ = /`(?:[^`\\]|\\.)*`/i, $reNumber$$ = /\d+(?:\.\d+)?/, $reVariable$$ = /\$\{\D[a-z0-9_]*\}/i, $reFuncName$$ = /\@\D[a-z0-9_]*/i, $reFunction$$ = /\@\D[a-z0-9_]*\((?:\s*(`(?:[^`\\]|\\.)*`|"(?:[^"\\]|\\.)*"|\d+(?:\.\d+)?|\$\{\D[a-z0-9_]*\})(?:\s*,\s*(?!\)))?)*\)/i, 
   $reSymbol$$ = /(\@\D[a-z0-9_]*\((?:\s*(`(?:[^`\\]|\\.)*`|"(?:[^"\\]|\\.)*"|\d+(?:\.\d+)?|\$\{\D[a-z0-9_]*\})(?:\s*,\s*(?!\)))?)*\)|\$\{\D[a-z0-9_]*\})/i;
-  $js_template$$.fn = {compile:function $$js_template$$$fn$compile$($name$$102_template$$, $data$$, $fn$$) {
-    $name$$102_template$$ = $_templates$$.fetch($name$$102_template$$);
-    return this.compileExplicit($name$$102_template$$, $data$$, $fn$$);
+  $js_template$$.fn = {compile:function $$js_template$$$fn$compile$($name$$122_template$$, $data$$, $fn$$) {
+    $name$$122_template$$ = $_templates$$.fetch($name$$122_template$$);
+    return this.compileExplicit($name$$122_template$$, $data$$, $fn$$);
   }, compileExplicit:function $$js_template$$$fn$compileExplicit$($template$$4_tmp$$, $data$$, $fn$$) {
     "function" !== typeof $data$$ || $fn$$ || ($fn$$ = $data$$, $data$$ = null);
     "undefined" === typeof $template$$4_tmp$$ && ($template$$4_tmp$$ = "");
