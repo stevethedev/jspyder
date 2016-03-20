@@ -644,7 +644,7 @@ jspyder.extend.fn(&quot;canvas&quot;, function () {
                     lineColor = settings[&quot;linecolor&quot;] = js.alg.string(settings[&quot;linecolor&quot;], &quot;rgba(0, 0, 0, 0.3)&quot;),
                     min = js.alg.number(settings[&quot;min&quot;], Infinity),
                     max = js.alg.number(settings[&quot;max&quot;], -Infinity),
-                    format = js.alg.bindFn(this, settings[&quot;format&quot;] || function(n) { return n; }),
+                    format = js.alg.bindFn(this, settings[&quot;format&quot;] || function(n) { return n|0; }),
                     self = this,
                     cols,
                     offsetX = 50,
@@ -695,7 +695,7 @@ jspyder.extend.fn(&quot;canvas&quot;, function () {
                         y: ((height * (5 - i)) / 5) - (labelSize / 3),
                         size: labelSize,
                         font: &quot;Arial&quot;,
-                        text: format(((i / 5) * max)|0),
+                        text: format(((i / 5) * max)),
                         textalign: &quot;left&quot;
                     });
 
@@ -704,7 +704,7 @@ jspyder.extend.fn(&quot;canvas&quot;, function () {
                         y: ((height * (5 - i)) / 5) - (labelSize / 3),
                         size: labelSize,
                         font: &quot;Arial&quot;,
-                        text: format(((i / 5) * max)|0),
+                        text: format(((i / 5) * max)),
                         textalign: &quot;right&quot;
                     });
                 });

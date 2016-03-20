@@ -19,30 +19,30 @@
  * The MIT License (MIT)
  *
  * Copyright (c) 2015 Steven Jimenez
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the &quot;Software&quot;), to 
- * deal in the Software without restriction, including without limitation the 
- * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or 
- * sell copies of the Software, and to permit persons to whom the Software is 
+ * of this software and associated documentation files (the &quot;Software&quot;), to
+ * deal in the Software without restriction, including without limitation the
+ * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+ * sell copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *  
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+ *
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
- * 
+ *
  * @author Steven Jimenez
  */
 
 (function (global, alias) {
-<span id='jspyder'>    /** 
+<span id='jspyder'>    /**
 </span>     * @class jspyder
      */
     var jspyder = global[&quot;jspyder&quot;],
@@ -58,7 +58,7 @@
 <span id='jspyder-method-_bootstrap'>    /**
 </span>     * @private
      * @member jspyder
-     * 
+     *
      * Bootstraps (create/configure) JSpyder engine.  Basic modules are:
      *  - lib
      *  - alg
@@ -73,7 +73,7 @@
 
         }
         var js = global[&quot;jspyder&quot;] = jspyder;
-        
+
         // Extensible
         js.extend = function js_extend(name, obj) {
             if(!this.hasOwnProperty(name)) {
@@ -93,7 +93,7 @@
         _bootstrapLib(js);
         _bootstrapAlg(js);
         _bootstrapDom(js);
-        
+
         js.loadScript = function(url) {
             js.ajax(url)
                 .get(function(data) {
@@ -107,23 +107,23 @@
 <span id='jspyder-method-_bootstrapLog'>    /**
 </span>     * @private
      * @member jspyder
-     * 
+     *
      * Bootstrap jspyder to be able to log to the console with jspyder.log
-     * 
+     *
      * @param {Object} js Jspyder Object
      */
     function _bootstrapLog(js) {
-        // levels: 0 (log), 1 (warn), 2 (error) 
-        
+        // levels: 0 (log), 1 (warn), 2 (error)
+
 <span id='jspyder-method-log'>        /**
 </span>         * @method log
          * @member jspyder
-         * 
+         *
          * Logging library for jspyder, to output data to the console.
-         * 
+         *
          * @param {Number} level
          *      The error level to use (0: routine, 1: warning, 2: error).
-         * 
+         *
          * @param {String} text
          *      The text to output to the console.
          */
@@ -131,30 +131,30 @@
             var offset = (arguments.length &gt; 1 ? 1 : 0),
                 args = js.alg.sliceArray(arguments, offset),
                 err, warn, log;
-                
+
             if(arguments.length === 1 || arguments) {
                 level = 0;
             }
-            
+
             if(console) {
                 log = console.log || function() {};
                 warn = console.warn || log;
                 err = console.error || err;
-                
+
                 if(level === 2) { js.alg.use(console, err, args); }
                 else if(level === 1) { js.alg.use(console, warn, args); }
                 else { js.alg.use(console, log, args); }
             }
-            
+
             return this;
         }
-        
+
 <span id='jspyder-log-method-err'>        /**
 </span>         * @method err
          * @member jspyder.log
-         * 
+         *
          * Explicitly logs an error, without needing an initial parameter.
-         * 
+         *
          * @param {String} text
          *      The text to output to the console.
          */
@@ -162,13 +162,13 @@
             js.alg.use(js, log, [2].concat(js.alg.sliceArray(arguments, 0)));
             return this;
         }
-        
+
 <span id='jspyder-log-method-warn'>        /**
 </span>         * @method warn
          * @member jspyder.log
-         * 
+         *
          * Explicitly logs a warning, without needing an initial parameter.
-         * 
+         *
          * @param {String} text
          *      The text to output to the console.
          */
@@ -176,16 +176,16 @@
             js.alg.use(js, log, [1].concat(js.alg.sliceArray(arguments, 0)));
             return this;
         }
-        
+
         js.extend(&quot;log&quot;, log);
     }
 
 <span id='jspyder-method-_bootstrapEnv'>    /**
 </span>     * @private
      * @member jspyder
-     * 
-     * Bootstrap jspyder's environment variable collection.
-     * 
+     *
+     * Bootstrap jspyder&#39;s environment variable collection.
+     *
      * @param {Object} js Jspyder Object
      */
     function _bootstrapEnv(js) {
@@ -206,7 +206,7 @@
                 else if (!window.addEventListener) { BROWSER_VERSION = 8; }
                 else { BROWSER_VERSION = 7; }
             }
-            else if (typeof window.InstallTrigger !== 'undefined') {
+            else if (typeof window.InstallTrigger !== &#39;undefined&#39;) {
                 BROWSER_NAME = &quot;Firefox&quot;;
 
                 if (Int8Array &amp;&amp; Int8Array.prototype.sort) { BROWSER_VERSION = 7; }
@@ -216,7 +216,7 @@
                 else if (typeof window.Reflect !== &quot;undefined&quot;) { BROWSER_VERSION = 42; }
                 else { BROWSER_VERSION = 41; }
             }
-            else if (!!window.opera || navigator.userAgent.indexOf(' OPR/') &gt;= 0) {
+            else if (!!window.opera || navigator.userAgent.indexOf(&#39; OPR/&#39;) &gt;= 0) {
                 BROWSER_NAME = &quot;Opera&quot;;
                 BROWSER_VERSION = 1;
             }
@@ -225,7 +225,7 @@
                 BROWSER_VERSION = 45;
                 //45 - 51;
             }
-            else if (Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') &gt; 0) {
+            else if (Object.prototype.toString.call(window.HTMLElement).indexOf(&#39;Constructor&#39;) &gt; 0) {
                 BROWSER_NAME = &quot;Safari&quot;;
                 if (window.CSS.supports) { BROWSER_VERSION = 9; }
                 else if (!window.CSS.supports) { BROWSER_VERSION = 8; }
@@ -270,30 +270,30 @@
 </span>         * @property env
          * @member jspyder
          * @singleton
-         * 
+         *
          * JSpyder environment variables. The values in this object are
          * immutable and cannot be changed once JSpyder has been bootstrapped.
-         * 
+         *
          * @property {String} env.version
          *      A 3-number string for the jspyder version number, represented
          *      as &quot;M.N.P,&quot; where M is the major version, N is the minor
          *      version, and P is the patch version.
-         * 
+         *
          * @property {Number} env.versionNo
-         *      An integer value representing the version of the jspyder 
+         *      An integer value representing the version of the jspyder
          *      library.  The numbers help to compare version numbers without
          *      having to parse the 3-decimal.  For example, differentiating
          *      between JSpyder v1.1.0 and JSpyder v1.10.0 would be a multi-
-         *      step solution.  However, their numerical values (65792 and 
+         *      step solution.  However, their numerical values (65792 and
          *      68096, respectively) are easily differentiable.
-         * 
+         *
          * @property {Object} env.browser
          *      A collection of browser information
-         * 
+         *
          * @property {String} env.browser.name
          *      The name of the browser being used (e.g. Firefox, IE, Chrome)
          *      based on feature testing.
-         * 
+         *
          * @property {Number} env.browser.version
          *      The version of the browser being used, based on feature-testing.
          */
@@ -309,13 +309,13 @@
 
         js.extend(&quot;env&quot;, js_env);
     }
-    
+
 <span id='jspyder-method-_bootstrapAlg'>    /**
 </span>     * @private
      * @member jspyder
-     * 
-     * Bootstrap jspyder's algorithm collection.
-     * 
+     *
+     * Bootstrap jspyder&#39;s algorithm collection.
+     *
      * @param {Object} js Jspyder Object
      */
     function _bootstrapAlg(js) {
@@ -328,7 +328,7 @@
 <span id='jspyder-alg'>        /**
 </span>         * @class jspyder.alg
          * @member jspyder
-         * 
+         *
          * JSpyder algorithm collection.
          */
         js_alg = {
@@ -340,31 +340,31 @@
 <span id='jspyder-alg-method-each'>            /**
 </span>             * Iterates through a provided object and executes fn() on each
              * step.  Uses a controller to manage the loop.
-             * 
+             *
              * @param {Object} obj
              *      An object or array to iterate through.  If the element is
              *      invalid, then this function fails quietly and continues
              *      on.
-             * 
+             *
              * @param {Function} fn
              *      Function with the following parameters:
              *       1: The value of the current item
              *       2: The key of the current item
              *       3: A reference to [obj]
              *       4: A reference to [data]
-             * 
+             *
              *      The context of this variable points to a controller object
              *      with the members:
              *       - stop() -- stops iterations and breaks from the function
              *       - drop(n) -- deletes the current item from the array
-             * 
+             *
              *      If the Function returns a value, then that value will be
              *      inserted in the array at that position.
-             * 
-             * @param {Mixed} data 
+             *
+             * @param {Mixed} data
              *      A data source to pass as the fourth value in [fn]
-             * 
-             * @return {Object} JSpyder 
+             *
+             * @return {Object} JSpyder
              */
             each: function each(obj, fn, data) {
                 var ctl = {
@@ -436,12 +436,12 @@
                 },
                 _break = false,
                 step = (end &lt; start ? -1 : 1), i;
-                
+
                 for(i = start; i !== end; i += step) {
                     fn.apply(ctl, [i, data]);
                     if(_break) { break; }
                 }
-                
+
                 return js;
             },
 
@@ -454,8 +454,8 @@
              */
             magnitude: function(n) {
                 n = js.alg.number(n);
-                var y = Math.pow(10, (n | 0).toString().length-1);
-                return Math.ceil(n / y) * y;
+                var y = Math.pow(10, ( (n &lt; 0 ? -n : n) | 0).toString().length-1);
+                return Math[n &lt; 0 ? &quot;floor&quot; : &quot;ceil&quot;](n / y) * y;
             },
 
 <span id='jspyder-alg-method-escapeString'>            /**
@@ -469,18 +469,18 @@
             },
 
 <span id='jspyder-alg-method-use'>            /**
-</span>             * Uses the selected object as the [this] parameter for the 
+</span>             * Uses the selected object as the [this] parameter for the
              * executed function [fn].
-             * 
+             *
              * @param {Mixed} _this
              *      The [this] context to apply
-             * 
+             *
              * @param {Function} fn
              *      The function to run
-             * 
+             *
              * @param {Array} args
              *      Any parameters to pass to the function, in &quot;apply&quot; format
-             * 
+             *
              * @return
              *      The value returned by fn
              */
@@ -513,10 +513,10 @@
                         return d || false;
                     case &quot;string&quot;:
                         return (/true/i.test(b));
-                } 
+                }
                 return b ? true : false
             },
-            
+
 <span id='jspyder-alg-method-number'>            /**
 </span>             * Coerces any value to a Javascript Number object
              *
@@ -527,7 +527,7 @@
                 var _n = +n;
                 return ((_n == n || _n === _n) ? _n : d || 0);
             },
-            
+
 <span id='jspyder-alg-method-string'>            /**
 </span>             * coerces any value to a string
              */
@@ -535,8 +535,11 @@
                 if (typeof s === &quot;string&quot;) {
                     return s;
                 }
+                else if(s &amp;&amp; typeof s.toString === &quot;function&quot;) {
+                    return s.toString();
+                }
                 else if (s !== null &amp;&amp; typeof s === &quot;object&quot; &amp;&amp; s.isPrototypeOf(RegExp)) {
-                    s = ('' + s).match(/^\/(.*)\/[a-z]*$/, &quot;$1&quot;);
+                    s = (&#39;&#39; + s).match(/^\/(.*)\/[a-z]*$/, &quot;$1&quot;);
                     return s;
                 }
                 else if (s || s === 0) {
@@ -563,11 +566,11 @@
 </span>             * Coerces a value to a date, or else returns a new date object.
              */
             &quot;date&quot;: function(v, d) {
-                return ((input instanceof Date || Object.prototype.toString.call(input) === '[object Date]')
+                return ((input instanceof Date || Object.prototype.toString.call(input) === &#39;[object Date]&#39;)
                     ? v
                     : d || new Date());
             },
-            
+
 <span id='jspyder-alg-method-byte'>            /**
 </span>             * Coerces any value to a INT8 value
              */
@@ -591,7 +594,7 @@
                 }
                 return js_alg[&quot;byte&quot;](u);
             },
-            
+
 <span id='jspyder-alg-method-ubyte'>            /**
 </span>             * Coerces any value to a UNSIGNED INT8 value
              */
@@ -612,7 +615,7 @@
                 }
                 return js_alg[&quot;ubyte&quot;](u);
             },
-            
+
 <span id='jspyder-alg-method-short'>            /**
 </span>             * Coerces any value to a INT16 value
              */
@@ -636,7 +639,7 @@
                 }
                 return js_alg[&quot;short&quot;](u);
             },
-            
+
 <span id='jspyder-alg-method-ushort'>            /**
 </span>             * Coerces any value to a UNSIGNED INT16 value
              */
@@ -657,7 +660,7 @@
                 }
                 return js_alg[&quot;ushort&quot;](u);
             },
-            
+
 <span id='jspyder-alg-method-int'>            /**
 </span>             * Coerces any value to a INT32 value
              */
@@ -681,7 +684,7 @@
                 }
                 return js_alg[&quot;int&quot;](u);
             },
-            
+
 <span id='jspyder-alg-method-uint'>            /**
 </span>             * Coerces any value to a UNSIGNED INT32 value
              */
@@ -701,17 +704,29 @@
                         return byteArray[0];
                     };
                 }
-                return js_alg[&quot;uint&quot;](u);                
+                return js_alg[&quot;uint&quot;](u);
             },
-            
+
 <span id='jspyder-alg-method-float'>            /**
-</span>             * Coerces any value to a FLOAT value
+</span>             * Coerces any value to a FLOAT value.
              */
             &quot;float&quot;: function (u) {
-                if (typeof Float32Array === &quot;undefined&quot;) {
+                if (typeof window[&quot;Float32Array&quot;] === &quot;undefined&quot;) {
                     js_alg[&quot;float&quot;] = function(u) {
-                        u = +((+u).toPrecision(8));
-                        return (u == u ? u : 0);
+                        var sign = 2 * (x &gt; 0) - 1,
+                            exp = 0,
+                            base = x * sign,
+                            frac = 0;
+
+                        while(base &gt;= 2 || base &lt; 1) {
+                            if(base &gt;= 2) { base /= 2; exp++; }
+                            if(base &lt; 1) { base *= 2; exp--; }
+                        }
+
+                        frac = (x / Math.pow(2, exp)) - 1;
+                        frac = (1 + Math.round(frac*0x800000)/0x800000);
+
+                        return +((sign * frac * Math.pow(2, exp) ).toPrecision(8));
                     };
                 }
                 else {
@@ -722,9 +737,9 @@
                         return +(byteArray[0].toPrecision(8));
                     };
                 }
-                return js_alg[&quot;float&quot;](u);                
+                return js_alg[&quot;float&quot;](u);
             },
-            
+
 <span id='jspyder-alg-method-double'>            /**
 </span>             * Coerces any value to a DOUBLE value
              */
@@ -743,9 +758,9 @@
                         return byteArray[0];
                     };
                 }
-                return js_alg[&quot;double&quot;](u);                
+                return js_alg[&quot;double&quot;](u);
             },
-            
+
 <span id='jspyder-alg-method-makeEnum'>            /**
 </span>             * Takes an array of keys, and generates an enumerated
              * object with them.
@@ -753,12 +768,12 @@
             &quot;makeEnum&quot;: function (keys, enm) {
                 enm = enm || {};
                 var v = 1;
-                    
+
                 js.alg.arrEach(keys, function (key, val) {
                     enm[key] = v;
                     v *= 2;
                 });
-                
+
                 return enm;
             },
 
@@ -777,15 +792,15 @@
             &quot;deg2rad&quot;: function (n, d) {
                 return js.alg.number(n, d) * (Math.PI / 180);
             },
-            
+
 <span id='jspyder-alg-method-sliceArray'>            /**
 </span>             * Applies an array slice against an object, if it is capable of
              * being performed.  If it cannot be performed, then returns a
              * blank array.
-             * 
+             *
              * @param {Object} a
              *      The object to attempt a slice against.
-             * 
+             *
              * @param {Number} [n = 0]
              *      The argument to pass to the slice attempt.
              */
@@ -794,7 +809,7 @@
                 try {
                     ret = window.Array.prototype.slice.call(a || [], n || 0);
                 }
-                catch(e) { 
+                catch(e) {
                     ret = [];
                 }
                 return ret;
@@ -821,7 +836,7 @@
                 js.alg.array(arr).sort(js.alg.__sortArrayObj(asc, list));
                 return arr;
             },
-            
+
 <span id='jspyder-alg-method-__sortArrayObj'>            /**
 </span>             * @private
              * @return {Function}
@@ -849,7 +864,7 @@
                                 left = left[list[i]];
                                 right = right[list[i]];
                             }
-                            
+
                             return (asc ? left &gt;= right : left &lt;= right);
                         };
                 }
@@ -876,57 +891,57 @@
                 });
                 return arr;
             },
-            
+
 <span id='jspyder-alg-method-joinArray'>            /**
 </span>             * Performs an in-place concatenation of the 2nd-Nth parameter
              * arrays into arrRef.  Variadic function.
-             * 
+             *
              * @param {Array} arrRef
              *      The array to merge into.
-             * 
+             *
              * @param {Array} [arrFrom]
              *      (Variadic) The arrays to merge from.
-             * 
+             *
              * @return {Array} arrRef parameter
              */
             &quot;joinArray&quot;: function(arrRef, arrFrom /*, ... */) {
-                // limit pulled from Google's closure library:
+                // limit pulled from Google&#39;s closure library:
                 // https://github.com/google/closure-library/commit/da353e0265ea32583ea1db9e7520dce5cceb6f6a
-                var CHUNK_SIZE = 8192; 
-                
+                var CHUNK_SIZE = 8192;
+
                 var i, chunk, j;
                 for(i = 1; i &lt; arguments.length; i++) {
                     // ensure we convert this to an array
                     arrFrom = js.alg.sliceArray(arguments[i]);
-                    
+
                     // skip blank arrays
                     for(j = 0; j &lt; arrFrom.length; j += CHUNK_SIZE) {
                         chunk = arrFrom.slice(j, j + CHUNK_SIZE);
                         Array.prototype.push.apply(arrRef, chunk);
                     }
                 }
-                
+
                 return arrRef;
             },
-            
+
 <span id='jspyder-alg-method-bindFn'>            /**
 </span>             * Prepares a function for execution. If the function cannot be
              * executed, then returns null.
-             * 
+             *
              * @param {Object} thisArg
              *      The context to use with the function.
-             * 
+             *
              * @param {Function} fn
              *      The function to execute when the returned function is
              *      executed.
-             * 
+             *
              * @param {Array} args
              *      An array of arguments to pass to [fn] when it is executed.
              *      Any additional functions passed to the prepared function
              *      will be appended to the end of args.
-             * 
+             *
              * @return {Function}
-             *      A prepared function, which will trigger [fn] when executed. 
+             *      A prepared function, which will trigger [fn] when executed.
              */
             &quot;bindFn&quot;: function(thisArg, fn, args) {
                 args = (args &amp;&amp; args.length
@@ -934,36 +949,36 @@
                     : !args
                         ? []
                         : [args]);
-                        
+
                 return function() {
                     var ret = null;
                     if(typeof fn === &quot;function&quot;) { ret = fn.apply(thisArg, args.concat(js.alg.sliceArray(arguments))); }
                     return ret;
                 };
             },
-            
+
 <span id='jspyder-alg-method-mergeObj'>            /**
-</span>             * Variadic function to perform a shallow merge of two or more 
+</span>             * Variadic function to perform a shallow merge of two or more
              * objects.
-             * 
+             *
              * @param {Object} base
              *      The object to merge all other traits into.
-             * 
+             *
              * @return {Object} Returns [base].
              */
             &quot;mergeObj&quot;: function(base /*, ... */) {
                 var into = base,
                     args = js.alg.sliceArray(arguments, 1);
-                    
+
                 js.alg.each(args, __eachObject, into);
-                
+
                 function __eachObject(from, _1, _2, into) {
                     if(from &amp;&amp; into) {
                         js.alg.each(from, __eachProperty, into);
                     }
                     return;
                 }
-                
+
                 function __eachProperty(val, prop, from, into) {
                     if(from.hasOwnProperty(prop)) {
                         into[prop] = val;
@@ -992,7 +1007,7 @@
                 js.alg.each(obj, function(value, key, obj) {
                     obj[key] = js.alg.deepCloneObj(value);
                 });
-                
+
                 return obj;
             },
 
@@ -1136,42 +1151,42 @@
 <span id='jspyder-method-_bootstrapDom'>    /**
 </span>     * @private
      * @member jspyder
-     * 
+     *
      * Bootstraps the jspyder.dom library
      */
     function _bootstrapDom(js) {
         if (js[&quot;dom&quot;]) {
             return js[&quot;dom&quot;];
         }
-        
+
 <span id='jspyder-dom'>        /**
 </span>         * @class jspyder.dom
-         * 
+         *
          * @member jspyder
-         * 
+         *
          * Creates a wrapper around the DOM element and allows chaining of
          * function calls against it.
-         * 
-         * @param {String|Object} element 
+         *
+         * @param {String|Object} element
          *      - If a string is passed, then determines whether it represents
-         *      a CSS selector or a set of HTML tags.  If the former, then 
+         *      a CSS selector or a set of HTML tags.  If the former, then
          *      attempts a CSS Selector Query to get the data.  If the latter,
          *      then builds the DOM elements, and stores them as the affected
          *      elements.
          *      - If a DOM element is passed, then directly wraps the DOM element.
          *      - If a jspyder.dom object is passed, then returns the object.
-         * 
+         *
          * @param {Function} [fn]
          *      The function to run against all of the DOM elements stored in
          *      the object immediately after initialization but before the
          *      next command.  It should accept parameters in the same format
          *      as jspyder.dom.each, where the fourth parameter is [args].
-         * 
-         * @param {Array} [args] 
+         *
+         * @param {Array} [args]
          *      The fourth parameter to pass into [fn] when it is run against
          *      all of the elements in the object.
-         * 
-         * @return {Object} 
+         *
+         * @return {Object}
          *      Object, based on js.dom.fn as the prototype
          */
         function js_dom(element, fn, args) {
@@ -1181,7 +1196,7 @@
             if (!(js_dom.fn.isPrototypeOf(element))) {
 
                 if (typeof s === &quot;string&quot;) {
-                    if((s.match(/(^\\\&lt;|\&lt;)/g) || []).indexOf('&lt;') === -1) {
+                    if((s.match(/(^\\\&lt;|\&lt;)/g) || []).indexOf(&#39;&lt;&#39;) === -1) {
                         element = document.querySelectorAll(s);
                     }
                     else {
@@ -1228,23 +1243,23 @@
          * Returns TRUE if the node is a DOM Element
          */
         function __isElement(o) {
-            return js.alg.bool( (typeof HTMLElement === &quot;object&quot; &amp;&amp; o instanceof HTMLElement) || 
+            return js.alg.bool( (typeof HTMLElement === &quot;object&quot; &amp;&amp; o instanceof HTMLElement) ||
                 (o &amp;&amp; typeof o === &quot;object&quot; &amp;&amp; o.nodeType === 1 &amp;&amp; typeof o.nodeName === &quot;string&quot;));
         }
-        
+
 <span id='jspyder-dom-method-__getDomClasses'>        /**
 </span>         * @private
-         * Gets the DOM object's classes as an array
+         * Gets the DOM object&#39;s classes as an array
          */
         function __getDomClasses(element) {
             return (__isElement(element)
                 ? element.className.replace(/(^\s+)|(\s(?=\s))|(\s+$)/g, &quot;&quot;).split(&quot; &quot;)
                 : []);
         }
-        
+
 <span id='jspyder-dom-method-_setDomClass'>        /**
 </span>         * @private
-         * Sets the DOM object's class based on the enable flag
+         * Sets the DOM object&#39;s class based on the enable flag
          */
         function _setDomClass(element, cls, enable) {
             var clss = __getDomClasses(element),
@@ -1266,10 +1281,10 @@
 
             return change;
         }
-        
+
 <span id='jspyder-dom-method-_getDomClass'>        /**
 </span>         * @private
-         * Sets the DOM object's class based on the enable flag
+         * Sets the DOM object&#39;s class based on the enable flag
          */
         function _getDomClass(element, cls) {
             return (__getDomClasses(element).indexOf(cls) !== -1);
@@ -1300,22 +1315,22 @@
 
 <span id='jspyder-dom-method-each'>            /**
 </span>             * Iterates through all of the elements in the jsDom object.
-             * 
+             *
              * @param {Function} fn
              *      Function with the following parameters:
              *       1. The value of the current item
              *       2. The key of the current item
              *       3. A reference to [obj]
              *       4. A reference to [data]
-             * 
+             *
              *      The context of this variable points to a controller object
              *      with the members:
              *       - stop() -- stops iterations and breaks from the function
-             * 
+             *
              *      If the Function returns a value, then that value will be
              *      inserted in the array at that position.
-             * 
-             * @param {Mixed} data 
+             *
+             * @param {Mixed} data
              *      A data source to pass as the fourth value in [fn]
              */
             each: function (fn, data) {
@@ -1325,10 +1340,10 @@
 
 <span id='jspyder-dom-method-use'>            /**
 </span>             * Uses the current jsDom object within the specified function
-             * 
+             *
              * @param {Function} fn
              *      The function to run
-             * 
+             *
              * @param {Array} args
              *      Any parameters to pass to the function, in &quot;apply&quot; format
              */
@@ -1340,13 +1355,13 @@
 <span id='jspyder-dom-method-setCss'>            /**
 </span>             * Applies the specified CSS template to all of the elements in
              * the jsDom object
-             * 
+             *
              * @param {Object} css
              *      A JavaScript Object where keys correspond to attributes.
              *      If more than one value must be applied, then both values
              *      should be placed in an array; or can be passed as a comma-
              *      separated list in a string.
-             * 
+             *
              * @param {Function} fn
              *      A callback, which takes [css] as a parameter and uses
              *      [this] as the context.
@@ -1372,11 +1387,11 @@
 </span>             * Gathers whether the specified CSS attributes have been assigned,
              * and then calls [fn] with the context of the jsDom object, and
              * the parameter being the css object passed in.
-             * 
+             *
              * @param {Object} css
              *      A JavaScript Object where keys correspond to attributes.
              *      Values will be loaded into the object reference.
-             * 
+             *
              * @param {Function} fn
              *      A callback, which takes [css] as a parameter and uses
              *      [this] as the context.
@@ -1403,7 +1418,7 @@
                 }
                 return this;
             },
-            
+
 <span id='jspyder-dom-method-exportCss'>            /**
 </span>             * Exports the value of js.dom.getCss to a return variable.
              */
@@ -1412,11 +1427,11 @@
                 this.getCss(css);
                 return css;
             },
-            
+
 <span id='jspyder-dom-method-getPosition'>            /**
 </span>             * Retrieves the current position for each of the elements in the JS-Dom
              * node, and pushes their values into the function identified.
-             * 
+             *
              * @param {Function} fn
              */
             getPosition: function (fn) {
@@ -1426,7 +1441,7 @@
                 })
                 return this;
             },
-            
+
 <span id='jspyder-dom-method-exportPosition'>            /**
 </span>             * Exports the value returned by js.dom.getPosition()
              */
@@ -1435,14 +1450,14 @@
                 this.at(0).use(function() {
                     pos = this._element[0].getBoundingClientRect();
                 });
-                
+
                 return pos;
             },
-            
+
 <span id='jspyder-dom-method-getOffsetPosition'>            /**
 </span>             * Calculates the offset position of each of the elements in the JS-Dom node,
              * and pushes the values into the function identified.
-             * 
+             *
              * @param {Function} fn
              */
             getOffsetPosition: function(fn) {
@@ -1454,22 +1469,22 @@
                     while (el &amp;&amp; getComputedStyle(el).position === &quot;static&quot;) {
                         el = el.parentNode;
                     }
-                    
+
                     if (el) {
                         var me = self.getBoundingClientRect(),
                             pr = el.getBoundingClientRect();
-                            
+
                         js.each(ret, function (v, p, ret) {
                             ret[p] = pr[p] - me[p];
                         });
                     }
-                    
+
                     js_dom(el).use(fn, [ret]);
                     return;
                 });
                 return this;
             },
-            
+
 <span id='jspyder-dom-method-exportOffsetPosition'>            /**
 </span>             * Returns the value calculated in the first call of js.dom.getOffsetPosition
              */
@@ -1483,11 +1498,11 @@
 </span>             * Gathers whether the specified DOM attributes have been assigned,
              * and then calls [fn] with the context of the jsDom object, and
              * the parameter being the [attrs] object passed in.
-             * 
+             *
              * @param {Object} attrs
              *      A JavaScript Object where keys correspond to attributes.
              *      Values will be loaded into the object reference.
-             * 
+             *
              * @param {Function} fn
              *      A callback, which takes [attrs] as a parameter and uses
              *      [this] as the context.
@@ -1510,7 +1525,7 @@
                 }
                 return this;
             },
-            
+
 <span id='jspyder-dom-method-exportAttrs'>            /**
 </span>             * Exports the value returned by js.dom.getAttrs
              */
@@ -1519,16 +1534,16 @@
                 this.getAttrs(attrs);
                 return attrs;
             },
-            
+
 <span id='jspyder-dom-method-setAttrs'>            /**
 </span>             * Gathers whether the specified DOM attributes have been assigned,
              * and then calls [fn] with the context of the jsDom object, and
              * the parameter being the [attrs] object passed in.
-             * 
+             *
              * @param {Object} attrs
              *      A JavaScript Object where keys correspond to attributes.
              *      Values will be loaded into the object reference.
-             * 
+             *
              * @param {Function} fn
              *      A callback, which takes [attrs] as a parameter and uses
              *      [this] as the context.
@@ -1556,11 +1571,11 @@
                 }
                 return this;
             },
-            
+
 <span id='jspyder-dom-method-parents'>            /**
 </span>             * Gets the parent(s) of the elements in the node, and runs the
              * function [fn].  Exports the first DOM node.
-             * 
+             *
              * @param {Function} fn
              */
             parents: function (fn) {
@@ -1569,10 +1584,10 @@
                 });
                 return this;
             },
-            
+
 <span id='jspyder-dom-method-children'>            /**
 </span>             * Gets the children of the elements in the node
-             * 
+             *
              * @param {Function} fn
              * @param {Mixed} [data]
              *      Information to pass to the parameter [fn].
@@ -1587,28 +1602,28 @@
                 });
                 return this;
             },
-            
+
 <span id='jspyder-dom-method-at'>            /**
 </span>             * Applies function [fn] to the [n]th item in the jsDom using the
              * same format as if it were selected with js.dom().
              *
              * @param {Number} n
-             *      Index of the item to grab  
-             * 
+             *      Index of the item to grab
+             *
              * @param {Function} fn
              */
             at: function (n, fn) {
                 n = js.alg.uint(n);
                 return js_dom(this._element[n] || null, fn);
             },
-            
+
 <span id='jspyder-dom-method-element'>            /**
 </span>             * Applies function [fn] to the [n]th element in the jsDom using
              * the same format as if it were selected with js.dom().
              *
-             * @param {Number} n 
+             * @param {Number} n
              *      Index of the element to grab
-             * 
+             *
              * @param {Function} fn
              */
             element: function (n, fn) {
@@ -1621,15 +1636,15 @@
                 });
                 return this;
             },
-            
+
 <span id='jspyder-dom-method-attach'>            /**
 </span>             * Attaches the elements from the jsDom to the first element
              * identified in the parent object.
              *
              * @param {Mixed} parent
-             *      The element/string/etc. to which this jsDom shuld be 
+             *      The element/string/etc. to which this jsDom shuld be
              *      attached
-             * 
+             *
              * @param {Function} fn
              *      A callback which takes the parent as the context, and
              *      this jsDom object as the first parameter.
@@ -1644,9 +1659,9 @@
                 });
                 return this;
             },
-            
+
 <span id='jspyder-dom-method-attachStart'>            /**
-</span>             * Inserts this set of nodes to the identified node's parent, immediately
+</span>             * Inserts this set of nodes to the identified node&#39;s parent, immediately
              * preceding that element.
              */
             attachStart: function (parent, fn) {
@@ -1659,9 +1674,9 @@
                 });
                 return this;
             },
-            
+
 <span id='jspyder-dom-method-attachEnd'>            /**
-</span>             * Inserst this set of nodes to the identified node's parent, immediately
+</span>             * Inserst this set of nodes to the identified node&#39;s parent, immediately
              * following that element.
              */
             attachEnd: function (parent, fn) {
@@ -1674,7 +1689,7 @@
                 });
                 return this;
             },
-            
+
 <span id='jspyder-dom-method-append'>            /**
 </span>             * Attaches the element identified by [child] to the first element
              * identified in the jsDom object..
@@ -1691,16 +1706,16 @@
                 })
                 return this;
             },
-            
+
 <span id='global-method-_append'>            /** @ignore */
 </span>            _append: function (c, _1, _2, doc) {
                 doc.appendChild(c);
             },
-            
+
 <span id='jspyder-dom-method-appendBefore'>            /**
-</span>             * Attaches the element to the identified node's parent, immediately
+</span>             * Attaches the element to the identified node&#39;s parent, immediately
              * preceding the identified child.
-             * 
+             *
              * @param {Mixed} child
              *      JS-Dom identifier for the element to prepend.
              */
@@ -1712,11 +1727,11 @@
                 });
                 return this;
             },
-            
+
 <span id='jspyder-dom-method-appendAfter'>            /**
-</span>             * Attaches the element to the identified node's parent, immediately
+</span>             * Attaches the element to the identified node&#39;s parent, immediately
              * following the identifed child.
-             * 
+             *
              * @param {Mixed} child
              *      JS-Dom identifier for the element to prepend.
              */
@@ -1728,13 +1743,13 @@
                 });
                 return this;
             },
-            
+
 <span id='jspyder-dom-method-prepend'>            /**
 </span>             * Attaches the element identified by [child] to the first element
              * identified in the jsDom object..
              *
              * @param {Mixed} child
-             *      The element/string/etc. which should be attached to the top 
+             *      The element/string/etc. which should be attached to the top
              *      of this jsDom object.
              */
             prepend: function(child) {
@@ -1747,7 +1762,7 @@
                 })
                 return this;
             },
-            
+
 <span id='jspyder-dom-method-remove'>            /**
 </span>             * Removes all of the elements defined in this jsDom object from
              * their parent nodes.
@@ -1762,9 +1777,9 @@
                 });
                 return this;
             },
-            
+
 <span id='jspyder-dom-method-setClasses'>            /**
-</span>             * Adds the defined classes to all of the elements in this jsDom 
+</span>             * Adds the defined classes to all of the elements in this jsDom
              * object.
              *
              * @param {Object} classes
@@ -1772,8 +1787,8 @@
              *      whether they should be defined as the value.  For example,
              *      the following line would turn one class on, another off,
              *      and a third class would toggle:
-             * 
-             *      js.dom(&quot;#test&quot;).setClasses({ 
+             *
+             *      js.dom(&quot;#test&quot;).setClasses({
              *          &quot;turn-on&quot;: true, //&lt; truthy
              *          &quot;turn-off&quot;: false, //&lt; falsy
              *          &quot;toggle-class&quot;: &quot;toggle&quot; //&lt; string literal
@@ -1792,9 +1807,9 @@
                 }, classes);
                 return this;
             },
-            
+
 <span id='jspyder-dom-method-getClasses'>            /**
-</span>             * Retrieves the defined classes from all of the elements in this 
+</span>             * Retrieves the defined classes from all of the elements in this
              * jsDom object, and then runs the designated callback function.
              *
              * @param {Object} classes
@@ -1802,8 +1817,8 @@
              *      whether they should be defined as the value.  For example,
              *      the following line would turn one class on, another off,
              *      and a third class would toggle:
-             * 
-             *      js.dom(&quot;#test&quot;).setClasses({ 
+             *
+             *      js.dom(&quot;#test&quot;).setClasses({
              *          &quot;turn-on&quot;: true, //&lt; truthy
              *          &quot;turn-off&quot;: false, //&lt; falsy
              *          &quot;toggle-class&quot;: &quot;toggle&quot; //&lt; string literal
@@ -1817,13 +1832,13 @@
                     js.alg.each(classes, function (_1, className, _2, o) {
                         o.classes[className] = _getDomClass(o.el, className);
                     }, { el: element, classes: classes });
-                    
+
                     // run the callback
                     js_dom(element, fn, [classes]);
                 }, { first: classes, second: Object.create(classes) });
                 return this;
             },
-            
+
 <span id='jspyder-dom-method-exportClasses'>            /**
 </span>             * Exports the values found by js.dom.getClasses
              */
@@ -1832,7 +1847,7 @@
                 this.getClasses(classes);
                 return classes;
             },
-            
+
 <span id='jspyder-dom-method-on'>            /**
 </span>             * Inserts an event handler on all of the jsDom elements, for each
              * event in a space-separated list.
@@ -1840,7 +1855,7 @@
              * @param {String} events
              *      An space-separated list of event types to trigger the
              *      callback on.
-             * 
+             *
              * @param {Function} handler
              *      A callback function to use for the event callback.
              */
@@ -1861,7 +1876,7 @@
 
                 return this;
             },
-            
+
 <span id='jspyder-dom-method-off'>            /**
 </span>             * Turns off the identified event handler.
              */
@@ -1872,7 +1887,7 @@
                 js.alg.each(events, function(event) {
                     js.alg.each(self._element, function(element) {
                         var elist = element.__jspyder.fetch(&quot;js-events-&quot; + event),
-                            index = -1; 
+                            index = -1;
                         element.removeEventListener(event, handler);
                         if(elist) {
                             while((index = elist.indexOf(handler)) &gt;= 0) {
@@ -1887,7 +1902,7 @@
 <span id='jspyder-dom-method-trigger'>            /**
 </span>             * Dispatches the event(s) identified for all of the wrapped DOM
              * elements.
-             * 
+             *
              * @param {String} event
              *      All of the events to trigger for the wrapped DOM elements.
              */
@@ -1905,19 +1920,19 @@
 
                 return this;
             },
-            
+
 <span id='jspyder-dom-method-_eventConstructor'>            /** @private */
 </span>            _eventConstructor: function(type, bubbles, cancelable) {
                 js_dom.fn._eventConstructor = (&quot;function&quot; === typeof window.Event
                     ? function(type, bubbles, cancelable) { return new Event(type, { &quot;bubbles&quot;: bubbles, &quot;cancelable&quot;: cancelable }); }
                     : function(type, bubbles, cancelable) { var e = window.document.createEvent(&quot;Event&quot;); e.initEvent(type, bubbles, cancelable); return e; });
-                    
+
                 return js_dom.fn._eventConstructor.apply(this, arguments);
             },
 
 <span id='jspyder-dom-method-setHtml'>            /**
 </span>             * Sets the innerHTML for each of the wrapped elements.
-             * 
+             *
              * @param {String} html
              *      New HTML to push into the wrapped elements.
              */
@@ -1931,8 +1946,8 @@
 <span id='jspyder-dom-method-getHtml'>            /**
 </span>             * Retrieves the innerHTML for each of the wrapped elements,
              * and passes the values into the identified function.
-             * 
-             * @param {Function} fn 
+             *
+             * @param {Function} fn
              */
             getHtml: function (fn) {
                 if (typeof fn === &quot;function&quot;) {
@@ -1942,27 +1957,27 @@
                 }
                 return this;
             },
-            
+
 <span id='jspyder-dom-method-exportHtml'>            /**
 </span>             * Retrieves and returns the value retrieved by js.dom.getHtml
              */
             exportHtml: function() {
                 var html = null;
-                    
+
                 this.getHtml(function(h) {
-                    if(!html) { 
+                    if(!html) {
                         html = h;
                     }
                 });
-                
+
                 return html;
             },
-            
+
 <span id='jspyder-dom-method-getText'>            /**
 </span>             * Retrieves the text content for each of the wrapped elements,
              * and passes the values into the identified function.
-             * 
-             * @param {Function} fn 
+             *
+             * @param {Function} fn
              */
             getText: function(fn) {
                 if(typeof fn === &quot;function&quot;) {
@@ -1973,7 +1988,7 @@
                 }
                 return this;
             },
-            
+
 <span id='jspyder-dom-method-exportText'>            /**
 </span>             * Retrieves and returns the first value to be returned in js.dom.getText
              */
@@ -1984,10 +1999,10 @@
                 });
                 return text;
             },
-            
+
 <span id='jspyder-dom-method-setText'>            /**
 </span>             * Sets the text content of each of the elements to the specified value
-             * 
+             *
              * @param {String} text
              *      New text value to use on each of the wrapped element.
              */
@@ -1999,33 +2014,33 @@
                 });
                 return this;
             },
-            
+
 <span id='jspyder-dom-method-find'>            /**
 </span>             * Searches through each object in the jspyder.dom element, and
-             * returns an object containing the DOM nodes which match the 
+             * returns an object containing the DOM nodes which match the
              * provided CSS selector.
-             * 
+             *
              * @param {Mixed} cssSelector
              *      CSS Selector to search for.
-             * 
+             *
              * @return {Object}
-             *      JSpyder DOM Element (jspyder.dom) containing all of the 
+             *      JSpyder DOM Element (jspyder.dom) containing all of the
              *      found elements.
              */
             find: function(cssSelector) {
                 var $found = js_dom(),
                     _found = $found._element;
-                    
+
                 this.each(function(element) {
                     if(cssSelector) {
                         var children = element.querySelectorAll(cssSelector);
                         js.alg.joinArray(_found, js_dom(children)._element);
                     }
                 });
-                
+
                 return $found;
             },
-            
+
 <span id='jspyder-dom-method-filter'>            /**
 </span>             * searchs through the wrapped objects, and excludes any elements
              * which do not meet the identified CSS selector.
@@ -2033,16 +2048,16 @@
             filter: function (cssSelector) {
                 var $found = js_dom(),
                     _found = $found._element;
-                    
+
                 this.each(function (element) {
                     if (js_dom.fn._matches(element, cssSelector)) {
                         _found.push(element);
                     }
                 });
-                
+
                 return $found;
             },
-            
+
 <span id='jspyder-dom-method-_matches'>            /** @private */
 </span>            _matches: function (element, selector) {
                 var fn = &quot;&quot;;
@@ -2061,13 +2076,13 @@
                         return i &gt; -1;
                     }
                 }
-                
+
                 js_dom.fn._matches = function (element, selector) {
                     return fn &amp;&amp; element[fn](selector);
                 }
                 return this._matches(element, selector);
             },
-            
+
 <span id='jspyder-dom-method-and'>            /**
 </span>             * Adds the specified elements to this selection.  Takes the same
              * selection format as jspyder.dom.
@@ -2076,24 +2091,24 @@
                 js_dom(elements, this._and, [this._element]);
                 return this;
             },
-            
+
 <span id='jspyder-dom-method-_and'>            /** @private */
 </span>            _and: function(_elements) {
                 js.alg.joinArray(_elements, this._element);
             },
-            
+
 <span id='jspyder-dom-method-template'>            /**
-</span>             * Cycles through the wrapped elements to input the identified 
-             * objects 
+</span>             * Cycles through the wrapped elements to input the identified
+             * objects
              */
             template: function(fields) {
-                this.each(this._template, { 
-                    self: this,  
+                this.each(this._template, {
+                    self: this,
                     fields: fields
                 });
                 return this;
             },
-            
+
 <span id='jspyder-dom-method-_template'>            /** @private */
 </span>            _template: function(element, i, elements, o) {
                 o.self._template_parse(element, o.fields);
@@ -2108,7 +2123,7 @@
                     name = names[n];
                     field = fields[name];
 
-                    this._template_insert(tDOM, '${' + name + '}', field);
+                    this._template_insert(tDOM, &#39;${&#39; + name + &#39;}&#39;, field);
                 }
                 return tDOM;
             },
@@ -2136,7 +2151,7 @@
                     next;
 
                 if (index === -1) { return false; }
-                
+
                 next = node.splitText(index);
                 next.data = next.data.substr(text.length);
                 js_dom(element)
@@ -2145,7 +2160,7 @@
                     });
                 return true;
             },
-            
+
 <span id='jspyder-dom-method-setValue'>            /**
 </span>             * Sets the value of the selected elements
              */
@@ -2159,11 +2174,11 @@
                     }
                 }).use(fn);
             },
-            
+
 <span id='jspyder-dom-method-getValue'>            /**
 </span>             * Gets the value of the wrapped elements and pushes the values
              * into the identified function.
-             * 
+             *
              * @param {Function} fn
              */
             getValue: function(fn) {
@@ -2171,18 +2186,18 @@
                 return self.each(function(element) {
                     var value = (typeof element.value !== &quot;undefined&quot;
                         ? element.value : element.getAttribute(&quot;value&quot;));
-                        
+
                     if(element.tagName === &quot;LI&quot;) {
                         value = element.getAttribute(&quot;value&quot;);
                     }
-                         
+
                     if(value !== &quot;undefined&quot;) {
                         // get value types
                         self.use(fn, [value]);
                     }
                 });
             },
-            
+
 <span id='jspyder-dom-method-exportValue'>            /**
 </span>             * Exports the value retrieved by js.dom.getValue
              */
@@ -2191,15 +2206,15 @@
                 this.getValue(function(v) { value = v; });
                 return value;
             },
-            
+
 <span id='jspyder-dom-method-getProps'>            /**
 </span>             * Retrieves the identified properties in [obj] and passes the
              * value into [fn].
-             * 
+             *
              * @param {Object} obj
              *      An object where keys correspond to properties, and the values
              *      will be overwritten with the actual properties.
-             * 
+             *
              * @param {Function} fn
              *      The function to receive the output value.
              */
@@ -2212,10 +2227,10 @@
                 this.use(fn, [obj]);
                 return this;
             },
-            
+
 <span id='jspyder-dom-method-exportProps'>            /**
 </span>             * Exports the first value in js.dom.getProps
-             * 
+             *
              * @param {Object} obj
              *      An object where keys correspond to properties, and the values
              *      will be overwritten with the actual properties.
@@ -2225,12 +2240,12 @@
                 this.getProps(obj);
                 return obj;
             },
-            
+
 <span id='jspyder-dom-method-setProps'>            /**
 </span>             * Sets the properties of the wrapped elements to the values specified in
-             * [obj], where keys identify properties and values identify the values to 
+             * [obj], where keys identify properties and values identify the values to
              * set.
-             * 
+             *
              * @param {Object} obj
              *      An object where keys correspond to properties, and the properties
              *      will be overwritten with the actual values.
@@ -2244,7 +2259,7 @@
                 return this;
             }
         };
-        
+
         js_dom.doc = js_dom(document.documentElement);
 
         if (js) {
@@ -2255,17 +2270,17 @@
 
 <span id='jspyder-method-_bootstrapLib'>    /**
 </span>     * Bootstraps the jspyder lib plugin
-     * 
+     *
      * @private
      * @member jspyder
      */
     function _bootstrapLib(js) {
         var _js_lib_repo = _createRegistry();
-        
+
 <span id='jspyder-method-lib'>        /**
 </span>         * @method lib
          * @member jspyder
-         * 
+         *
          * Retrieves the stored functions pushed in by jspyder.lib.register
          */
         function js_lib(name, args, fn) {
@@ -2282,8 +2297,8 @@
 <span id='jspyder-lib-method-register'>        /**
 </span>         * @method register
          * @member jspyder.lib
-         * 
-         * Stores custom functions in the jspyder registry 
+         *
+         * Stores custom functions in the jspyder registry
          */
         js_lib.register = function (name, fn) {
             if (typeof name == &quot;string&quot;) {
@@ -2297,7 +2312,7 @@
 <span id='jspyder-lib-method-registerSet'>        /**
 </span>         * @method registerSet
          * @member jspyder.lib
-         * 
+         *
          * Stores a set of custom functions in the jspyder registry, where the
          * name of the function is defined by the object keys and the function
          * definitions are stored as the object values.
@@ -2313,12 +2328,12 @@
 
         js.extend(&quot;lib&quot;, js_lib);
     }
-    
+
 <span id='jspyder-dom-method-_createRegistry'>    /**
 </span>     * Creates a hidden registry, and returns an interface to interact with it
-     * 
-     * - fetch(key, Function({ key: key, value: value })) 
-     * - stash(key, value)  
+     *
+     * - fetch(key, Function({ key: key, value: value }))
+     * - stash(key, value)
      */
     function _createRegistry() {
         var _registry = {};
