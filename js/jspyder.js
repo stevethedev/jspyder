@@ -1457,7 +1457,7 @@
                         var me = self.getBoundingClientRect(),
                             pr = el.getBoundingClientRect();
 
-                        js.each(ret, function (v, p, ret) {
+                        js.alg.each(ret, function (v, p, ret) {
                             ret[p] = pr[p] - me[p];
                         });
                     }

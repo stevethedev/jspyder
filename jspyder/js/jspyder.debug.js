@@ -1058,7 +1058,7 @@ $jscomp.string.endsWith$install = function $$jscomp$string$endsWith$install$() {
         }
         if ($el$$) {
           var $me$$ = $self$$.getBoundingClientRect(), $pr$$ = $el$$.getBoundingClientRect();
-          $js$$.each($ret$$0$$, function($v$$, $p$$, $ret$$) {
+          $js$$.alg.each($ret$$0$$, function($v$$, $p$$, $ret$$) {
             $ret$$[$p$$] = $pr$$[$p$$] - $me$$[$p$$];
           });
         }
