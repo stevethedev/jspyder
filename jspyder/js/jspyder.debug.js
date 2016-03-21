@@ -1134,7 +1134,7 @@ $jscomp.string.endsWith$install = function $$jscomp$string$endsWith$install$() {
       $js_dom$$($parent$$).element(0, function($p$$) {
         var $doc$$ = $document$$.createDocumentFragment();
         $children$$.each($js_dom$$.fn._append, $doc$$);
-        this.parentNode && this.parentNode.insertBefore($doc$$, $p$$);
+        this.parentNode && this.parentNode.insertBefore($doc$$, $p$$._element[0] || null);
         $p$$.use($fn$$, $children$$);
       });
       return this;

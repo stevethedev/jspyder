@@ -1610,7 +1610,6 @@
              * @param {Function} fn
              */
             element: function (n, fn) {
-                var self = this;
                 this.at(n, function () {
                     var el = this._element[0];
                     if (el && typeof fn === "function") {
@@ -1652,7 +1651,7 @@
                 js_dom(parent).element(0, function (p) {
                     var doc = document.createDocumentFragment();
                     children.each(js_dom.fn._append, doc);
-                    this.parentNode && this.parentNode.insertBefore(doc, p);
+                    this.parentNode && this.parentNode.insertBefore(doc, p._element[0] || null);
                     p.use(fn, children);
                 });
                 return this;
