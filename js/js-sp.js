@@ -517,8 +517,7 @@ js.extend.fn("sp", function () {
 
         /** @private */
         _updateRowEach: function (colData, colName, row, data) {
-            var row = data.row,
-                value = data[colData.name],
+            var value = data[colData.name],
                 valDefined = (typeof value !== "undefined"),
                 valDifferent = (value !== colData.value);
 

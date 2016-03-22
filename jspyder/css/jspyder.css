@@ -1619,6 +1619,120 @@ html {
 
   .screen-lg-left {
     left: 0; } }
+.cursor-auto {
+  cursor: auto; }
+
+.cursor-default {
+  cursor: default; }
+
+.cursor-none {
+  cursor: none; }
+
+.cursor-context-menu {
+  cursor: context-menu; }
+
+.cursor-help {
+  cursor: help; }
+
+.cursor-pointer {
+  cursor: pointer; }
+
+.cursor-progress {
+  cursor: progress; }
+
+.cursor-wait {
+  cursor: pointer; }
+
+.cursor-cell {
+  cursor: cell; }
+
+.cursor-crosshair {
+  cursor: crosshair; }
+
+.cursor-text {
+  cursor: text; }
+
+.cursor-vtext {
+  cursor: vertical-text; }
+
+.cursor-alias {
+  cursor: alias; }
+
+.cursor-copy {
+  cursor: copy; }
+
+.cursor-move {
+  cursor: move; }
+
+.cursor-nodrop {
+  cursor: no-drop; }
+
+.cursor-noallow {
+  cursor: not-allowed; }
+
+.cursor-scroll {
+  cursor: all-scroll; }
+
+.cursor-col-resize {
+  cursor: col-resize; }
+
+.cursor-row-resize {
+  cursor: row-resize; }
+
+.cursor-nresize {
+  cursor: n-resize; }
+
+.cursor-eresize {
+  cursor: e-resize; }
+
+.cursor-sresize {
+  cursor: s-resize; }
+
+.cursor-wresize {
+  cursor: w-resize; }
+
+.cursor-neresize {
+  cursor: ne-resize; }
+
+.cursor-nwresize {
+  cursor: nw-resize; }
+
+.cursor-swresize {
+  cursor: sw-resize; }
+
+.cursor-seresize {
+  cursor: se-resize; }
+
+.cursor-ewresize {
+  cursor: ew-resize; }
+
+.cursor-nsresize {
+  cursor: ns-resize; }
+
+.cursor-neswresize {
+  cursor: nesw-resize; }
+
+.cursor-nwseresize {
+  cursor: nwse-resize; }
+
+.cursor-zin {
+  cursor: zoom-in; }
+
+.cursor-zout {
+  cursor: zoom-out; }
+
+.cursor-grab {
+  cursor: pointer;
+  cursor: grab;
+  cursor: -moz-grab;
+  cursor: -webkit-grab; }
+
+.cursor-grabbing {
+  cursor: move;
+  cursor: grabbing;
+  cursor: -moz-grabbing;
+  cursor: -webkit-grabbing; }
+
 /** FORM ELEMENTS ************************************************************/
 label {
   display: block; }
@@ -2078,5 +2192,20 @@ a {
         padding: 0.4em 0 0.4em 0.4em; }
         .js-dialog-background .js-dialog .js-dialog-footer .footer-container .js-control-button {
           margin-right: 0.4em; }
+
+.noselect {
+  -webkit-touch-callout: none;
+  /* iOS Safari */
+  -webkit-user-select: none;
+  /* Chrome/Safari/Opera */
+  -khtml-user-select: none;
+  /* Konqueror */
+  -moz-user-select: none;
+  /* Firefox */
+  -ms-user-select: none;
+  /* IE/Edge */
+  user-select: none;
+  /* non-prefixed version, currently
+     not supported by any browser */ }
 
 /*# sourceMappingURL=jspyder.css.map */
