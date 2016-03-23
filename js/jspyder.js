@@ -1449,18 +1449,16 @@
                         ret = {
                             top: 0, left: 0, bottom: 0, right: 0, x: 0, y: 0, height: 0, width: 0
                         };
-                    while (el && getComputedStyle(el).position === "static") {
+                    while (el && !/absolute|fixed|relative/i.test(getComputedStyle(el).position)) {
                         el = el.parentNode;
                     }
 
-                    if (el) {
-                        var me = self.getBoundingClientRect(),
-                            pr = el.getBoundingClientRect();
+                    var me = self.getBoundingClientRect(),
+                        pr = (el || document.body).getBoundingClientRect();
 
-                        js.alg.each(ret, function (v, p, ret) {
-                            ret[p] = pr[p] - me[p];
-                        });
-                    }
+                    js.alg.each(ret, function (v, p, ret) {
+                        ret[p] = me[p] - pr[p];
+                    });
 
                     js_dom(el).use(fn, [ret]);
                     return;

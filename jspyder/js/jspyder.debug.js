@@ -1053,15 +1053,13 @@ $jscomp.string.endsWith$install = function $$jscomp$string$endsWith$install$() {
       return $pos$$;
     }, getOffsetPosition:function $$js_dom$$$fn$getOffsetPosition$($fn$$) {
       this.each(function($self$$) {
-        for (var $el$$ = $self$$.parentNode, $ret$$0$$ = {top:0, left:0, bottom:0, right:0, x:0, y:0, height:0, width:0};$el$$ && "static" === getComputedStyle($el$$).position;) {
+        for (var $el$$ = $self$$.parentNode, $ret$$0$$ = {top:0, left:0, bottom:0, right:0, x:0, y:0, height:0, width:0};$el$$ && !/absolute|fixed|relative/i.test(getComputedStyle($el$$).position);) {
           $el$$ = $el$$.parentNode;
         }
-        if ($el$$) {
-          var $me$$ = $self$$.getBoundingClientRect(), $pr$$ = $el$$.getBoundingClientRect();
-          $js$$.alg.each($ret$$0$$, function($v$$, $p$$, $ret$$) {
-            $ret$$[$p$$] = $pr$$[$p$$] - $me$$[$p$$];
-          });
-        }
+        var $me$$ = $self$$.getBoundingClientRect(), $pr$$ = ($el$$ || $document$$.body).getBoundingClientRect();
+        $js$$.alg.each($ret$$0$$, function($v$$, $p$$, $ret$$) {
+          $ret$$[$p$$] = $me$$[$p$$] - $pr$$[$p$$];
+        });
         $js_dom$$($el$$).use($fn$$, [$ret$$0$$]);
       });
       return this;
