@@ -100,10 +100,15 @@ jspyder.extend.fn("storage", function() {
     function __decode(encodedString) {
         var json_parse = js.alg.bindFn(
             window["JSON"], 
-            window["JSON"]["stringify"]);
+            window["JSON"]["parse"]);
             
         __decode = function(encodedString) {
-            return json_parse(encodedString);
+            try {
+                return json_parse(encodedString);
+            }
+            catch(e) {
+                return encodedString || null;
+            }
         };
         
         return __decode(encodedString);
@@ -206,9 +211,6 @@ jspyder.extend.fn("storage", function() {
                 },
                 "setValue": function(key, value) {
                     __set(storage, key, value);
-                    
-                    
-                    
                     return this;
                 },
                 "dropValue": function(key) {
@@ -243,7 +245,7 @@ jspyder.extend.fn("storage", function() {
         
         function __set(storage, key, value) {
             var newVal = __encode(value),
-                oldVal = __decode(__get(storage, key));
+                oldVal = __get(storage, key);
                 key = prefix + string(key);
                 value = __decode(newVal);
 
@@ -253,8 +255,12 @@ jspyder.extend.fn("storage", function() {
         }
         
         function __del(storage, key) {
-            key = prefix + string(key);
+            var oldVal = __get(storage, key);
+                key = prefix + string(key);
+                value = null;
+
             storage.removeItem(key);
+            __onStorage(storage, key, oldVal, value);
             return;
         }
         
