@@ -1500,13 +1500,13 @@
                         _each(attrs, function (_, a, attrs) {
                             switch (typeof attrs[a]) {
                                 case "number":
-                                    attrs[a] = js.alg.number(el.getAttribute(a));
+                                    attrs[a] = js.alg.number(el.getAttribute(a), _);
                                     break;
                                 case "string":
-                                    attrs[a] = js.alg.string(el.getAttribute(a));
+                                    attrs[a] = js.alg.string(el.getAttribute(a), _);
                                     break;
                                 case "boolean":
-                                    attrs[a] = js.alg.bool(el.getAttribute(a));
+                                    attrs[a] = js.alg.bool(el.getAttribute(a), _);
                                 default:
                                     attrs[a] = el.getAttribute(a);
                             }
