@@ -634,7 +634,7 @@ jspyder.extend.fn("date", function () {
          */
         setSeconds: function (seconds) {
             seconds = js.alg.number(seconds);
-            __processDateFraction(this._value, "setDate", "getDate", seconds);
+            __processDateFraction(this._value, "setSeconds", "getSeconds", seconds);
             return this;
         },
         
@@ -676,7 +676,7 @@ jspyder.extend.fn("date", function () {
          */
         setMinute: function (minutes) {
             minutes = js.alg.number(minutes);
-            __processDateFraction(this._value, "setDate", "getDate", minutes);
+            __processDateFraction(this._value, "setMinutes", "getMinutes", minutes);
             return this;
         },
         
