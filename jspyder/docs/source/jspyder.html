@@ -15,35 +15,34 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js">/* ****************************************************************************
+  <pre class="prettyprint lang-js">/*
  * The MIT License (MIT)
  *
  * Copyright (c) 2015 Steven Jimenez
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the &quot;Software&quot;), to 
- * deal in the Software without restriction, including without limitation the 
- * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or 
- * sell copies of the Software, and to permit persons to whom the Software is 
+ * of this software and associated documentation files (the &quot;Software&quot;), to
+ * deal in the Software without restriction, including without limitation the
+ * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+ * sell copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *  
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+ *
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
- * 
+ *
  * @author Steven Jimenez
- * */
+ */
 
 (function (global, alias) {
-    // Ensure that all jspyder references point to the same jspyder object.
-<span id='jspyder'>    /** 
+<span id='jspyder'>    /**
 </span>     * @class jspyder
      */
     var jspyder = global[&quot;jspyder&quot;],
@@ -59,7 +58,7 @@
 <span id='jspyder-method-_bootstrap'>    /**
 </span>     * @private
      * @member jspyder
-     * 
+     *
      * Bootstraps (create/configure) JSpyder engine.  Basic modules are:
      *  - lib
      *  - alg
@@ -74,10 +73,12 @@
 
         }
         var js = global[&quot;jspyder&quot;] = jspyder;
-        
+
         // Extensible
         js.extend = function js_extend(name, obj) {
-            Object.defineProperty(this, name, { value: obj });
+            if(!this.hasOwnProperty(name)) {
+                Object.defineProperty(this, name, { value: obj });
+            }
             return this;
         };
         js.extend.fn = function js_extend_fn(name, fn, args) {
@@ -90,11 +91,9 @@
         _bootstrapLog(js);
         _bootstrapEnv(js);
         _bootstrapLib(js);
-
-        // JSpyder Algorithms
         _bootstrapAlg(js);
         _bootstrapDom(js);
-        
+
         js.loadScript = function(url) {
             js.ajax(url)
                 .get(function(data) {
@@ -108,23 +107,23 @@
 <span id='jspyder-method-_bootstrapLog'>    /**
 </span>     * @private
      * @member jspyder
-     * 
+     *
      * Bootstrap jspyder to be able to log to the console with jspyder.log
-     * 
+     *
      * @param {Object} js Jspyder Object
      */
     function _bootstrapLog(js) {
-        // levels: 0 (log), 1 (warn), 2 (error) 
-        
+        // levels: 0 (log), 1 (warn), 2 (error)
+
 <span id='jspyder-method-log'>        /**
 </span>         * @method log
          * @member jspyder
-         * 
+         *
          * Logging library for jspyder, to output data to the console.
-         * 
+         *
          * @param {Number} level
          *      The error level to use (0: routine, 1: warning, 2: error).
-         * 
+         *
          * @param {String} text
          *      The text to output to the console.
          */
@@ -132,30 +131,30 @@
             var offset = (arguments.length &gt; 1 ? 1 : 0),
                 args = js.alg.sliceArray(arguments, offset),
                 err, warn, log;
-                
+
             if(arguments.length === 1 || arguments) {
                 level = 0;
             }
-            
+
             if(console) {
                 log = console.log || function() {};
                 warn = console.warn || log;
                 err = console.error || err;
-                
+
                 if(level === 2) { js.alg.use(console, err, args); }
                 else if(level === 1) { js.alg.use(console, warn, args); }
                 else { js.alg.use(console, log, args); }
             }
-            
+
             return this;
         }
-        
+
 <span id='jspyder-log-method-err'>        /**
 </span>         * @method err
          * @member jspyder.log
-         * 
+         *
          * Explicitly logs an error, without needing an initial parameter.
-         * 
+         *
          * @param {String} text
          *      The text to output to the console.
          */
@@ -163,13 +162,13 @@
             js.alg.use(js, log, [2].concat(js.alg.sliceArray(arguments, 0)));
             return this;
         }
-        
+
 <span id='jspyder-log-method-warn'>        /**
 </span>         * @method warn
          * @member jspyder.log
-         * 
+         *
          * Explicitly logs a warning, without needing an initial parameter.
-         * 
+         *
          * @param {String} text
          *      The text to output to the console.
          */
@@ -177,22 +176,22 @@
             js.alg.use(js, log, [1].concat(js.alg.sliceArray(arguments, 0)));
             return this;
         }
-        
+
         js.extend(&quot;log&quot;, log);
     }
 
 <span id='jspyder-method-_bootstrapEnv'>    /**
 </span>     * @private
      * @member jspyder
-     * 
+     *
      * Bootstrap jspyder&#39;s environment variable collection.
-     * 
+     *
      * @param {Object} js Jspyder Object
      */
     function _bootstrapEnv(js) {
         var VERSION_OBJ = {
-                MAJOR_VERSION: 1,
-                MINOR_VERSION: 0,
+                MAJOR_VERSION: 0,
+                MINOR_VERSION: 1,
                 PATCH_VERSION: 0 },
             VERSION_STR = VERSION_OBJ.MAJOR_VERSION + &quot;.&quot; + VERSION_OBJ.MINOR_VERSION + &quot;.&quot; + VERSION_OBJ.PATCH_VERSION,
             BROWSER_NAME = &quot;&quot;,
@@ -271,30 +270,30 @@
 </span>         * @property env
          * @member jspyder
          * @singleton
-         * 
+         *
          * JSpyder environment variables. The values in this object are
          * immutable and cannot be changed once JSpyder has been bootstrapped.
-         * 
+         *
          * @property {String} env.version
          *      A 3-number string for the jspyder version number, represented
          *      as &quot;M.N.P,&quot; where M is the major version, N is the minor
          *      version, and P is the patch version.
-         * 
+         *
          * @property {Number} env.versionNo
-         *      An integer value representing the version of the jspyder 
+         *      An integer value representing the version of the jspyder
          *      library.  The numbers help to compare version numbers without
          *      having to parse the 3-decimal.  For example, differentiating
          *      between JSpyder v1.1.0 and JSpyder v1.10.0 would be a multi-
-         *      step solution.  However, their numerical values (65792 and 
+         *      step solution.  However, their numerical values (65792 and
          *      68096, respectively) are easily differentiable.
-         * 
+         *
          * @property {Object} env.browser
          *      A collection of browser information
-         * 
+         *
          * @property {String} env.browser.name
          *      The name of the browser being used (e.g. Firefox, IE, Chrome)
          *      based on feature testing.
-         * 
+         *
          * @property {Number} env.browser.version
          *      The version of the browser being used, based on feature-testing.
          */
@@ -310,13 +309,13 @@
 
         js.extend(&quot;env&quot;, js_env);
     }
-    
+
 <span id='jspyder-method-_bootstrapAlg'>    /**
 </span>     * @private
      * @member jspyder
-     * 
+     *
      * Bootstrap jspyder&#39;s algorithm collection.
-     * 
+     *
      * @param {Object} js Jspyder Object
      */
     function _bootstrapAlg(js) {
@@ -329,7 +328,7 @@
 <span id='jspyder-alg'>        /**
 </span>         * @class jspyder.alg
          * @member jspyder
-         * 
+         *
          * JSpyder algorithm collection.
          */
         js_alg = {
@@ -341,31 +340,31 @@
 <span id='jspyder-alg-method-each'>            /**
 </span>             * Iterates through a provided object and executes fn() on each
              * step.  Uses a controller to manage the loop.
-             * 
+             *
              * @param {Object} obj
              *      An object or array to iterate through.  If the element is
              *      invalid, then this function fails quietly and continues
              *      on.
-             * 
+             *
              * @param {Function} fn
              *      Function with the following parameters:
              *       1: The value of the current item
              *       2: The key of the current item
              *       3: A reference to [obj]
              *       4: A reference to [data]
-             * 
+             *
              *      The context of this variable points to a controller object
              *      with the members:
              *       - stop() -- stops iterations and breaks from the function
              *       - drop(n) -- deletes the current item from the array
-             * 
+             *
              *      If the Function returns a value, then that value will be
              *      inserted in the array at that position.
-             * 
-             * @param {Mixed} data 
+             *
+             * @param {Mixed} data
              *      A data source to pass as the fourth value in [fn]
-             * 
-             * @return {Object} JSpyder 
+             *
+             * @return {Object} JSpyder
              */
             each: function each(obj, fn, data) {
                 var ctl = {
@@ -390,6 +389,10 @@
 
                 return js;
             },
+
+<span id='jspyder-alg-method-arrEach'>            /**
+</span>             * Specialized variant of js.alg.each for Array-like objects.
+             */
             arrEach: function each(obj, fn, data) {
                 var ctl = {
                         &quot;stop&quot;: function () {
@@ -414,7 +417,13 @@
 
                 return js;
             },
-            
+
+<span id='jspyder-alg-method-iterate'>            /**
+</span>             * Iterates from [start] to [end], executing [fn] on each step and
+             * using [data] as the fourth parameter to [data].  Other than not
+             * iterating numerically rather than traversing an array, this
+             * function operates exactly like js.alg.arrEach and js.alg.each
+             */
             iterate: function(start, end, fn, data) {
                 start = js.alg.number(start);
                 end = js.alg.number(end);
@@ -427,38 +436,51 @@
                 },
                 _break = false,
                 step = (end &lt; start ? -1 : 1), i;
-                
+
                 for(i = start; i !== end; i += step) {
                     fn.apply(ctl, [i, data]);
                     if(_break) { break; }
                 }
-                
+
                 return js;
             },
-            
+
+<span id='jspyder-alg-method-magnitude'>            /**
+</span>             * Rounds up to the nearest multiple of the order of magnitude for
+             * the value [n].  For example, js.alg.magnitude(1) = 1, js.alg.magnitude(12) = 20,
+             * js.alg.magnitude(123) = 200.
+             *
+             * @param {Number} n        The number to calculate a magnitude from.
+             */
             magnitude: function(n) {
                 n = js.alg.number(n);
-                var y = Math.pow(10, (n | 0).toString().length-1);
-                return Math.ceil(n/y)*y;
+                var y = Math.pow(10, ( (n &lt; 0 ? -n : n) | 0).toString().length-1);
+                return Math[n &lt; 0 ? &quot;floor&quot; : &quot;ceil&quot;](n / y) * y;
             },
-            
+
+<span id='jspyder-alg-method-escapeString'>            /**
+</span>             * Escapes the string [str] to be safe for consumption in other functions.
+             *
+             * @param {String} str
+             *      The string to convert.
+             */
             escapeString: function (str) {
-                return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, &quot;\\$&amp;&quot;);
+                return js.alg.string(str).replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, &quot;\\$&amp;&quot;);
             },
 
 <span id='jspyder-alg-method-use'>            /**
-</span>             * Uses the selected object as the [this] parameter for the 
+</span>             * Uses the selected object as the [this] parameter for the
              * executed function [fn].
-             * 
+             *
              * @param {Mixed} _this
              *      The [this] context to apply
-             * 
+             *
              * @param {Function} fn
              *      The function to run
-             * 
+             *
              * @param {Array} args
              *      Any parameters to pass to the function, in &quot;apply&quot; format
-             * 
+             *
              * @return
              *      The value returned by fn
              */
@@ -468,227 +490,358 @@
                     ? fn.apply(_this, args)
                     : undefined);
             },
-            
-            run: function (fn) {
+
+<span id='jspyder-alg-method-run'>            /**
+</span>             * Executes the function, provided, if it is actually a function.
+             *
+             * @param {Function} fn     Function to execute
+             */
+            &quot;run&quot;: function (fn) {
                 if (typeof fn === &quot;function&quot;) { fn(); }
                 return this;
             },
 
 <span id='jspyder-alg-method-bool'>            /**
 </span>             * Coerces any value to a boolean
+             *
+             * @param {Mixed} b             Value to convert to a boolean.
+             * @param {Boolean} [d=false]   Value to use if b is undefined.
              */
-            bool: function bool(b, d) {
+            &quot;bool&quot;: function bool(b, d) {
                 switch (typeof b) {
                     case &quot;undefined&quot;:
                         return d || false;
                     case &quot;string&quot;:
                         return (/true/i.test(b));
-                } 
+                }
                 return b ? true : false
             },
-            
+
 <span id='jspyder-alg-method-number'>            /**
 </span>             * Coerces any value to a Javascript Number object
+             *
+             * @param {Mixed} n
+             * @param {Number} [d=0]
              */
             &quot;number&quot;: function (n, d) {
                 var _n = +n;
                 return ((_n == n || _n === _n) ? _n : d || 0);
             },
-            
+
 <span id='jspyder-alg-method-string'>            /**
 </span>             * coerces any value to a string
              */
             &quot;string&quot;: function(s, d) {
-                return (typeof s === &quot;string&quot; ? s :
-                    (s || s === 0) ? &quot;&quot; + s : d || &quot;&quot;);
+                if (typeof s === &quot;string&quot;) {
+                    return s;
+                }
+                else if(s &amp;&amp; typeof s.toString === &quot;function&quot;) {
+                    return s.toString();
+                }
+                else if (s !== null &amp;&amp; typeof s === &quot;object&quot; &amp;&amp; s.isPrototypeOf(RegExp)) {
+                    s = (&#39;&#39; + s).match(/^\/(.*)\/[a-z]*$/, &quot;$1&quot;);
+                    return s;
+                }
+                else if (s || s === 0) {
+                    return &quot;&quot; + s;
+                }
+                return d || &quot;&quot;;
             },
-            
+
+<span id='jspyder-alg-method-object'>            /**
+</span>             * Coerces a value to an object, or else returns a new object.
+             */
             &quot;object&quot;: function(o, d) {
                 return (o &amp;&amp; typeof o === &quot;object&quot; ? o : d || {});
             },
-            
+
+<span id='jspyder-alg-method-array'>            /**
+</span>             * Coerces a value to an array, or else returns a new array.
+             */
+            &quot;array&quot;: function(a, d) {
+                return (Array.isArray(a) ? a : d || []);
+            },
+
+<span id='jspyder-alg-method-date'>            /**
+</span>             * Coerces a value to a date, or else returns a new date object.
+             */
             &quot;date&quot;: function(v, d) {
                 return ((input instanceof Date || Object.prototype.toString.call(input) === &#39;[object Date]&#39;)
                     ? v
-                    : new Date());
+                    : d || new Date());
             },
-            
+
 <span id='jspyder-alg-method-byte'>            /**
 </span>             * Coerces any value to a INT8 value
              */
-            byte: function (u) {
+            &quot;byte&quot;: function(u) {
                 if (typeof Int8Array === &quot;undefined&quot;) {
-                    u = +u;
-                    u = (u === u ? u : 0) &amp; 0xFF;
-                    while (u &lt; -0x80) { u += 0x100; }
-                    while (u &gt; 0x7F) { u -= 0x100; }
-                    return u;
+                    js_alg[&quot;byte&quot;] = function(u) {
+                        u = js.alg.number(u);
+                        u = (u === u ? u : 0) &amp; 0xFF;
+                        while (u &lt; -0x80) { u += 0x100; }
+                        while (u &gt; 0x7F) { u -= 0x100; }
+                        return u;
+                    };
                 }
-                var buffer = new ArrayBuffer(1);
-                var byteArray = new Int8Array(buffer);
-                byteArray[0] = u;
-                return byteArray[0];
+                else {
+                    js_alg[&quot;byte&quot;] = function(u) {
+                        var buffer = new ArrayBuffer(1);
+                        var byteArray = new Int8Array(buffer);
+                        byteArray[0] = u;
+                        return byteArray[0];
+                    };
+                }
+                return js_alg[&quot;byte&quot;](u);
             },
-            
+
 <span id='jspyder-alg-method-ubyte'>            /**
 </span>             * Coerces any value to a UNSIGNED INT8 value
              */
-            ubyte: function (u) {
+            &quot;ubyte&quot;: function (u) {
                 if (typeof Uint8Array === &quot;undefined&quot;) {
-                    u = +u;
-                    return (u === u ? u : 0) &amp; 0xFF;
+                    js_alg[&quot;ubyte&quot;] = function(u) {
+                        u = +u;
+                        return (u === u ? u : 0) &amp; 0xFF;
+                    };
                 }
-                var buffer = new ArrayBuffer(1);
-                var byteArray = new Uint8Array(buffer);
-                byteArray[0] = u;
-                return byteArray[0];
+                else {
+                    js_alg[&quot;ubyte&quot;] = function(u) {
+                        var buffer = new ArrayBuffer(1);
+                        var byteArray = new Uint8Array(buffer);
+                        byteArray[0] = u;
+                        return byteArray[0];
+                    };
+                }
+                return js_alg[&quot;ubyte&quot;](u);
             },
-            
+
 <span id='jspyder-alg-method-short'>            /**
 </span>             * Coerces any value to a INT16 value
              */
-            short: function (u) {
+            &quot;short&quot;: function(u) {
                 if (typeof Int16Array === &quot;undefined&quot;) {
-                    u = +u;
-                    u = (u === u ? u : 0) &amp; 0xFFFF;
-                    while (u &lt; -0x8000) { u += 0x10000; }
-                    while (u &gt; 0x7FFF) { u -= 0x10000; }
-                    return u;
+                    js_alg[&quot;short&quot;] = function(u) {
+                        u = +u;
+                        u = (u === u ? u : 0) &amp; 0xFFFF;
+                        while (u &lt; -0x8000) { u += 0x10000; }
+                        while (u &gt; 0x7FFF) { u -= 0x10000; }
+                        return u;
+                    }
                 }
-                var buffer = new ArrayBuffer(2);
-                var byteArray = new Int16Array(buffer);
-                byteArray[0] = u;
-                return byteArray[0];
+                else {
+                    js_alg[&quot;short&quot;] = function(u) {
+                        var buffer = new ArrayBuffer(2);
+                        var byteArray = new Int16Array(buffer);
+                        byteArray[0] = u;
+                        return byteArray[0];
+                    };
+                }
+                return js_alg[&quot;short&quot;](u);
             },
-            
+
 <span id='jspyder-alg-method-ushort'>            /**
 </span>             * Coerces any value to a UNSIGNED INT16 value
              */
-            ushort: function (u) {
+            &quot;ushort&quot;: function (u) {
                 if (typeof Uint16Array === &quot;undefined&quot;) {
-                    u = +u;
-                    return (u === u ? u : 0) &amp; 0xFFFF;
+                    js_alg[&quot;ushort&quot;] = function(u) {
+                        u = +u;
+                        return (u === u ? u : 0) &amp; 0xFFFF;
+                    };
                 }
-                var buffer = new ArrayBuffer(2);
-                var byteArray = new Uint16Array(buffer);
-                byteArray[0] = u;
-                return byteArray[0];
+                else {
+                    js_alg[&quot;ushort&quot;] = function(u) {
+                        var buffer = new ArrayBuffer(2);
+                        var byteArray = new Uint16Array(buffer);
+                        byteArray[0] = u;
+                        return byteArray[0];
+                    };
+                }
+                return js_alg[&quot;ushort&quot;](u);
             },
-            
+
 <span id='jspyder-alg-method-int'>            /**
 </span>             * Coerces any value to a INT32 value
              */
-            int: function (u) {
+            &quot;int&quot;: function (u) {
                 if (typeof Int32Array === &quot;undefined&quot;) {
-                    u = +u;
-                    u = (u === u ? u : 0) &amp; 0xFFFFFFFF;
-                    while (u &lt; -0x80000000) { u += 0x100000000; }
-                    while (u &gt; 0x7FFFFFFF) { u -= 0x100000000; }
-                    return u;
+                    js_alg[&quot;int&quot;] = function(u) {
+                        u = +u;
+                        u = (u === u ? u : 0) &amp; 0xFFFFFFFF;
+                        while (u &lt; -0x80000000) { u += 0x100000000; }
+                        while (u &gt; 0x7FFFFFFF) { u -= 0x100000000; }
+                        return u;
+                    };
                 }
-                var buffer = new ArrayBuffer(4);
-                var byteArray = new Int32Array(buffer);
-                byteArray[0] = u;
-                return byteArray[0];
+                else {
+                    js_alg[&quot;int&quot;] = function(u) {
+                        var buffer = new ArrayBuffer(4);
+                        var byteArray = new Int32Array(buffer);
+                        byteArray[0] = u;
+                        return byteArray[0];
+                    };
+                }
+                return js_alg[&quot;int&quot;](u);
             },
-            
+
 <span id='jspyder-alg-method-uint'>            /**
 </span>             * Coerces any value to a UNSIGNED INT32 value
              */
-            uint: function (u) {
+            &quot;uint&quot;: function (u) {
                 if (typeof Int32Array === &quot;undefined&quot;) {
-                    u = +u;
-                    u = (u === u ? u : 0) % 0x100000000;
-                    return (u &lt; 0 ? u * -1 : u);
+                    js_alg[&quot;uint&quot;] = function(u) {
+                        u = +u;
+                        u = (u === u ? u : 0) % 0x100000000;
+                        return (u &lt; 0 ? u * -1 : u);
+                    };
                 }
-                var buffer = new ArrayBuffer(4);
-                var byteArray = new Uint32Array(buffer);
-                byteArray[0] = u;
-                return byteArray[0];
+                else {
+                    js_alg[&quot;uint&quot;] = function(u) {
+                        var buffer = new ArrayBuffer(4);
+                        var byteArray = new Uint32Array(buffer);
+                        byteArray[0] = u;
+                        return byteArray[0];
+                    };
+                }
+                return js_alg[&quot;uint&quot;](u);
             },
-            
+
 <span id='jspyder-alg-method-float'>            /**
-</span>             * Coerces any value to a FLOAT value
+</span>             * Coerces any value to a FLOAT value.
              */
-            float: function (u) {
-                if (typeof Float32Array === &quot;undefined&quot;) {
-                    u = +((+u).toPrecision(8));
-                    return (u == u ? u : 0);
+            &quot;float&quot;: function (u) {
+                if (typeof window[&quot;Float32Array&quot;] === &quot;undefined&quot;) {
+                    js_alg[&quot;float&quot;] = function(u) {
+                        var sign = 2 * (x &gt; 0) - 1,
+                            exp = 0,
+                            base = x * sign,
+                            frac = 0;
+
+                        while(base &gt;= 2 || base &lt; 1) {
+                            if(base &gt;= 2) { base /= 2; exp++; }
+                            if(base &lt; 1) { base *= 2; exp--; }
+                        }
+
+                        frac = (x / Math.pow(2, exp)) - 1;
+                        frac = (1 + Math.round(frac*0x800000)/0x800000);
+
+                        return +((sign * frac * Math.pow(2, exp) ).toPrecision(8));
+                    };
                 }
-                var buffer = new ArrayBuffer(4);
-                var byteArray = new Float32Array(buffer);
-                byteArray[0] = u;
-                return +(byteArray[0].toPrecision(8));
+                else {
+                    js_alg[&quot;float&quot;] = function(u) {
+                        var buffer = new ArrayBuffer(4);
+                        var byteArray = new Float32Array(buffer);
+                        byteArray[0] = u;
+                        return +(byteArray[0].toPrecision(8));
+                    };
+                }
+                return js_alg[&quot;float&quot;](u);
             },
-            
+
 <span id='jspyder-alg-method-double'>            /**
 </span>             * Coerces any value to a DOUBLE value
              */
-            double: function (u) {
+            &quot;double&quot;: function (u) {
                 if (typeof Float64Array === &quot;undefined&quot;) {
-                    u = +((+u).toPrecision(16));
-                    return (u == u ? u : 0);
+                    js_alg[&quot;double&quot;] = function(u) {
+                        u = +((+u).toPrecision(16));
+                        return (u == u ? u : 0);
+                    };
                 }
-                var buffer = new ArrayBuffer(8);
-                var byteArray = new Float64Array(buffer);
-                byteArray[0] = u;
-                return byteArray[0];
+                else {
+                    js_alg[&quot;double&quot;] = function(u) {
+                        var buffer = new ArrayBuffer(8);
+                        var byteArray = new Float64Array(buffer);
+                        byteArray[0] = u;
+                        return byteArray[0];
+                    };
+                }
+                return js_alg[&quot;double&quot;](u);
             },
-            
+
 <span id='jspyder-alg-method-makeEnum'>            /**
 </span>             * Takes an array of keys, and generates an enumerated
              * object with them.
              */
-            makeEnum: function (keys, enm) {
+            &quot;makeEnum&quot;: function (keys, enm) {
                 enm = enm || {};
                 var v = 1;
-                    
+
                 js.alg.arrEach(keys, function (key, val) {
                     enm[key] = v;
                     v *= 2;
                 });
-                
+
                 return enm;
             },
-            
-            rad2deg: function (n, d) {
-                return js.alg.number(n, d) * 180 / Math.PI;
+
+<span id='jspyder-alg-method-rad2deg'>            /**
+</span>             * Converts radians to degrees, taking the same argument set as
+             * jspyder.alg.number
+             */
+            &quot;rad2deg&quot;: function (n, d) {
+                return js.alg.number(n, d) * (180 / Math.PI);
             },
-            
-            deg2rad: function (n, d) {
-                return js.alg.number(n, d) * Math.PI / 180;
+
+<span id='jspyder-alg-method-deg2rad'>            /**
+</span>             * Converts degrees to radians, taking the same argument set as
+             * jspyder.alg.number
+             */
+            &quot;deg2rad&quot;: function (n, d) {
+                return js.alg.number(n, d) * (Math.PI / 180);
             },
-            
+
 <span id='jspyder-alg-method-sliceArray'>            /**
 </span>             * Applies an array slice against an object, if it is capable of
              * being performed.  If it cannot be performed, then returns a
              * blank array.
-             * 
+             *
              * @param {Object} a
              *      The object to attempt a slice against.
-             * 
+             *
              * @param {Number} [n = 0]
              *      The argument to pass to the slice attempt.
              */
-            sliceArray: function(a, n) {
+            &quot;sliceArray&quot;: function(a, n) {
                 var ret = a;
                 try {
-                    ret = Array.prototype.slice.call(a || [], n || 0);
+                    ret = window.Array.prototype.slice.call(a || [], n || 0);
                 }
-                catch(e) { ret = []; }
+                catch(e) {
+                    ret = [];
+                }
                 return ret;
             },
-            
-            sortArrayObj: function(arr, asc, field /*, ... */) {
+
+<span id='jspyder-alg-method-sortArrayObj'>            /**
+</span>             * Sorts an array of objects, based on a specified key-tree.  For
+             * example:
+             *
+             *      var a1 = { foo: { bar: 1 } },
+             *          a2 = { foo: { bar: 2 } },
+             *          a3 = { foo: { bar: 3 } },
+             *          array = [ a2 , a3 , a1 ];
+             *
+             *      js.alg.sortArrayObj(arr, true, &quot;foo&quot;, &quot;bar&quot;); // a1, a2, a3
+             *      js.alg.sortArrayObj(arr, false, &quot;foo&quot;, &quot;bar&quot;); // a3, a2, a1
+             *
+             * @param {Object[]} arr
+             * @param {Boolean} asc     TRUE for ascending sort
+             * @param {String} field
+             */
+            &quot;sortArrayObj&quot;: function(arr, asc, field /*, ... */) {
                 var list = js.alg.sliceArray(arguments, 2);
-                arr.sort(js.alg.__sortArrayObj(asc, list));
+                js.alg.array(arr).sort(js.alg.__sortArrayObj(asc, list));
                 return arr;
             },
-            
-<span id='jspyder-alg-method-__sortArrayObj'>            /** 
-</span>             * @return {Function}
+
+<span id='jspyder-alg-method-__sortArrayObj'>            /**
+</span>             * @private
+             * @return {Function}
              */
-            __sortArrayObj: function (asc, list) {
+            &quot;__sortArrayObj&quot;: function (asc, list) {
                 var __ret;
                 switch (js.env.browser.name) {
                     case &quot;IE&quot;:
@@ -711,109 +864,121 @@
                                 left = left[list[i]];
                                 right = right[list[i]];
                             }
-                            
+
                             return (asc ? left &gt;= right : left &lt;= right);
                         };
                 }
                 return __ret;
             },
-            
-            sortArrayNum: function(arr, asc) {
-                arr.sort(function (left, right) {
+
+<span id='jspyder-alg-method-sortArrayNum'>            /**
+</span>             * Sorts an array of numbers, to compensate for the fact that vanilla
+             * JavaScript coerces array values to a string when comparing during a
+             * sort.
+             *
+             *      var array = [ 1, 2, 3, 10, 20, 30 ];
+             *      array.sort(); // [1, 10, 2, 20, 3, 30]
+             *      js.alg.sortArrayNum(array); // [1, 2, 3, 10, 20, 30]
+             *
+             * @param {Number[]} arr
+             * @param {Boolean} asc
+             */
+            &quot;sortArrayNum&quot;: function(arr, asc) {
+                js.alg.array(arr).sort(function (left, right) {
                     return (asc
                         ? js.alg.number(left) - js.alg.number(right)
                         : js.alg.number(right) - js.alg.number(left));
                 });
                 return arr;
             },
-            
+
 <span id='jspyder-alg-method-joinArray'>            /**
 </span>             * Performs an in-place concatenation of the 2nd-Nth parameter
              * arrays into arrRef.  Variadic function.
-             * 
+             *
              * @param {Array} arrRef
              *      The array to merge into.
-             * 
+             *
              * @param {Array} [arrFrom]
              *      (Variadic) The arrays to merge from.
-             * 
+             *
              * @return {Array} arrRef parameter
              */
-            joinArray: function(arrRef, arrFrom /*, ... */) {
+            &quot;joinArray&quot;: function(arrRef, arrFrom /*, ... */) {
                 // limit pulled from Google&#39;s closure library:
                 // https://github.com/google/closure-library/commit/da353e0265ea32583ea1db9e7520dce5cceb6f6a
-                var CHUNK_SIZE = 8192; 
-                
+                var CHUNK_SIZE = 8192;
+
                 var i, chunk, j;
                 for(i = 1; i &lt; arguments.length; i++) {
                     // ensure we convert this to an array
                     arrFrom = js.alg.sliceArray(arguments[i]);
-                    
+
                     // skip blank arrays
                     for(j = 0; j &lt; arrFrom.length; j += CHUNK_SIZE) {
                         chunk = arrFrom.slice(j, j + CHUNK_SIZE);
                         Array.prototype.push.apply(arrRef, chunk);
                     }
                 }
-                
+
                 return arrRef;
             },
-            
+
 <span id='jspyder-alg-method-bindFn'>            /**
 </span>             * Prepares a function for execution. If the function cannot be
              * executed, then returns null.
-             * 
+             *
              * @param {Object} thisArg
              *      The context to use with the function.
-             * 
+             *
              * @param {Function} fn
              *      The function to execute when the returned function is
              *      executed.
-             * 
+             *
              * @param {Array} args
              *      An array of arguments to pass to [fn] when it is executed.
              *      Any additional functions passed to the prepared function
              *      will be appended to the end of args.
-             * 
+             *
              * @return {Function}
-             *      A prepared function, which will trigger [fn] when executed. 
+             *      A prepared function, which will trigger [fn] when executed.
              */
-            bindFn: function(thisArg, fn, args) {
+            &quot;bindFn&quot;: function(thisArg, fn, args) {
                 args = (args &amp;&amp; args.length
                     ? js.alg.sliceArray(args)
                     : !args
                         ? []
                         : [args]);
-                        
+
                 return function() {
                     var ret = null;
                     if(typeof fn === &quot;function&quot;) { ret = fn.apply(thisArg, args.concat(js.alg.sliceArray(arguments))); }
                     return ret;
                 };
             },
-            
+
 <span id='jspyder-alg-method-mergeObj'>            /**
-</span>             * Variadic function to perform a shallow merge of two or more 
+</span>             * Variadic function to perform a shallow merge of two or more
              * objects.
-             * 
+             *
              * @param {Object} base
              *      The object to merge all other traits into.
-             * 
+             *
              * @return {Object} Returns [base].
              */
-            mergeObj: function(base /*, ... */) {
+            &quot;mergeObj&quot;: function(base /*, ... */) {
                 var into = base,
                     args = js.alg.sliceArray(arguments, 1);
-                    
+
                 js.alg.each(args, __eachObject, into);
-                
+
                 function __eachObject(from, _1, _2, into) {
                     if(from &amp;&amp; into) {
                         js.alg.each(from, __eachProperty, into);
                     }
                     return;
                 }
-                
+
                 function __eachProperty(val, prop, from, into) {
                     if(from.hasOwnProperty(prop)) {
                         into[prop] = val;
@@ -823,125 +988,139 @@
 
                 return base;
             },
-            cloneObj: function(obj) {
+
+<span id='jspyder-alg-method-cloneObj'>            /**
+</span>             * Creates a copy of the passed object.
+             */
+            &quot;cloneObj&quot;: function(obj) {
                 if(!obj || typeof obj !== &quot;object&quot;) { return obj; }
                 return js.alg.mergeObj(obj.constructor(), obj);
             },
-            deepCloneObj: function(obj) {
+
+<span id='jspyder-alg-method-deepCloneObj'>            /**
+</span>             * Creates a deep copy of the passed object.
+             */
+            &quot;deepCloneObj&quot;: function(obj) {
                 if(!obj || typeof obj !== &quot;object&quot;) { return obj; }
                 obj = this.cloneObj(obj);
-                
+
                 js.alg.each(obj, function(value, key, obj) {
                     obj[key] = js.alg.deepCloneObj(value);
                 });
-                
+
                 return obj;
             },
-            
-            keycodes: {
-                KC_Backspace: 8,
-                KC_Tab: 9,
-                KC_Enter: 13,
-                KC_Shift: 16,
-                KC_Ctrl: 17,
-                KC_Alt: 18,
-                KC_Pause: 19,
-                KC_Break: 19,
-                KC_CapsLock: 20,
-                KC_Escape: 27,
-                KC_Space: 32,
-                KC_PageUp: 33,
-                KC_PageDown: 34,
-                KC_End: 35,
-                KC_Home: 36,
-                KC_LeftArrow: 37,
-                KC_UpArrow: 38,
-                KC_RightArrow: 39,
-                KC_DownArrow: 40,
-                KC_Insert: 45,
-                KC_Delete: 46,
-                KC_0: 48,
-                KC_1: 49,
-                KC_2: 50,
-                KC_3: 51,
-                KC_4: 52,
-                KC_5: 53,
-                KC_6: 54,
-                KC_7: 55,
-                KC_8: 56,
-                KC_9: 57,
-                KC_A: 65,
-                KC_B: 66,
-                KC_C: 67,
-                KC_D: 68,
-                KC_E: 69,
-                KC_F: 70,
-                KC_G: 71,
-                KC_H: 72,
-                KC_I: 73,
-                KC_J: 74,
-                KC_K: 75,
-                KC_L: 76,
-                KC_M: 77,
-                KC_N: 78,
-                KC_O: 79,
-                KC_P: 80,
-                KC_Q: 81,
-                KC_R: 82,
-                KC_S: 83,
-                KC_T: 84,
-                KC_U: 85,
-                KC_V: 86,
-                KC_W: 87,
-                KC_X: 88,
-                KC_Y: 89,
-                KC_Z: 90,
-                KC_LWin: 91,
-                KC_RWin: 92,
-                KC_Select: 93,
-                KC_Num0: 96,
-                KC_Num1: 97,
-                KC_Num2: 98,
-                KC_Num3: 99,
-                KC_Num4: 100,
-                KC_Num5: 101,
-                KC_Num6: 102,
-                KC_Num7: 103,
-                KC_Num8: 104,
-                KC_Num9: 105,
-                KC_NumAsterisk: 106,
-                KC_NumPlus: 107,
-                KC_NumMinus: 109,
-                KC_NumPeriod: 110,
-                KC_NumSlash: 111,
-                KC_F1: 112,
-                KC_F2: 113,
-                KC_F3: 114,
-                KC_F4: 115,
-                KC_F5: 116,
-                KC_F6: 117,
-                KC_F7: 118,
-                KC_F8: 119,
-                KC_F9: 120,
-                KC_F10: 121,
-                KC_F11: 122,
-                KC_F12: 123,
-                KC_NumLock: 144,
-                KC_ScrollLock: 145,
-                KC_SemiColon: 186,
-                KC_Equal: 187,
-                KC_Comma: 188,
-                KC_Dash: 189,
-                KC_Period: 190,
-                KC_FSlash: 191,
-                KC_BSlash: 220,
-                KC_Grave: 192,
-                KC_LBracket: 219,
-                KC_RBracket: 221,
-                KC_Apos: 222
+
+<span id='jspyder-alg-property-keycodes'>            /**
+</span>             * JavaScript Key Codes
+             */
+            &quot;keycodes&quot;: {
+                &quot;KC_Backspace&quot;: 8,
+                &quot;KC_Tab&quot;: 9,
+                &quot;KC_Enter&quot;: 13,
+                &quot;KC_Shift&quot;: 16,
+                &quot;KC_Ctrl&quot;: 17,
+                &quot;KC_Alt&quot;: 18,
+                &quot;KC_Pause&quot;: 19,
+                &quot;KC_Break&quot;: 19,
+                &quot;KC_CapsLock&quot;: 20,
+                &quot;KC_Escape&quot;: 27,
+                &quot;KC_Space&quot;: 32,
+                &quot;KC_PageUp&quot;: 33,
+                &quot;KC_PageDown&quot;: 34,
+                &quot;KC_End&quot;: 35,
+                &quot;KC_Home&quot;: 36,
+                &quot;KC_LeftArrow&quot;: 37,
+                &quot;KC_UpArrow&quot;: 38,
+                &quot;KC_RightArrow&quot;: 39,
+                &quot;KC_DownArrow&quot;: 40,
+                &quot;KC_Insert&quot;: 45,
+                &quot;KC_Delete&quot;: 46,
+                &quot;KC_0&quot;: 48,
+                &quot;KC_1&quot;: 49,
+                &quot;KC_2&quot;: 50,
+                &quot;KC_3&quot;: 51,
+                &quot;KC_4&quot;: 52,
+                &quot;KC_5&quot;: 53,
+                &quot;KC_6&quot;: 54,
+                &quot;KC_7&quot;: 55,
+                &quot;KC_8&quot;: 56,
+                &quot;KC_9&quot;: 57,
+                &quot;KC_A&quot;: 65,
+                &quot;KC_B&quot;: 66,
+                &quot;KC_C&quot;: 67,
+                &quot;KC_D&quot;: 68,
+                &quot;KC_E&quot;: 69,
+                &quot;KC_F&quot;: 70,
+                &quot;KC_G&quot;: 71,
+                &quot;KC_H&quot;: 72,
+                &quot;KC_I&quot;: 73,
+                &quot;KC_J&quot;: 74,
+                &quot;KC_K&quot;: 75,
+                &quot;KC_L&quot;: 76,
+                &quot;KC_M&quot;: 77,
+                &quot;KC_N&quot;: 78,
+                &quot;KC_O&quot;: 79,
+                &quot;KC_P&quot;: 80,
+                &quot;KC_Q&quot;: 81,
+                &quot;KC_R&quot;: 82,
+                &quot;KC_S&quot;: 83,
+                &quot;KC_T&quot;: 84,
+                &quot;KC_U&quot;: 85,
+                &quot;KC_V&quot;: 86,
+                &quot;KC_W&quot;: 87,
+                &quot;KC_X&quot;: 88,
+                &quot;KC_Y&quot;: 89,
+                &quot;KC_Z&quot;: 90,
+                &quot;KC_LWin&quot;: 91,
+                &quot;KC_RWin&quot;: 92,
+                &quot;KC_Select&quot;: 93,
+                &quot;KC_Num0&quot;: 96,
+                &quot;KC_Num1&quot;: 97,
+                &quot;KC_Num2&quot;: 98,
+                &quot;KC_Num3&quot;: 99,
+                &quot;KC_Num4&quot;: 100,
+                &quot;KC_Num5&quot;: 101,
+                &quot;KC_Num6&quot;: 102,
+                &quot;KC_Num7&quot;: 103,
+                &quot;KC_Num8&quot;: 104,
+                &quot;KC_Num9&quot;: 105,
+                &quot;KC_NumAsterisk&quot;: 106,
+                &quot;KC_NumPlus&quot;: 107,
+                &quot;KC_NumMinus&quot;: 109,
+                &quot;KC_NumPeriod&quot;: 110,
+                &quot;KC_NumSlash&quot;: 111,
+                &quot;KC_F1&quot;: 112,
+                &quot;KC_F2&quot;: 113,
+                &quot;KC_F3&quot;: 114,
+                &quot;KC_F4&quot;: 115,
+                &quot;KC_F5&quot;: 116,
+                &quot;KC_F6&quot;: 117,
+                &quot;KC_F7&quot;: 118,
+                &quot;KC_F8&quot;: 119,
+                &quot;KC_F9&quot;: 120,
+                &quot;KC_F10&quot;: 121,
+                &quot;KC_F11&quot;: 122,
+                &quot;KC_F12&quot;: 123,
+                &quot;KC_NumLock&quot;: 144,
+                &quot;KC_ScrollLock&quot;: 145,
+                &quot;KC_SemiColon&quot;: 186,
+                &quot;KC_Equal&quot;: 187,
+                &quot;KC_Comma&quot;: 188,
+                &quot;KC_Dash&quot;: 189,
+                &quot;KC_Period&quot;: 190,
+                &quot;KC_FSlash&quot;: 191,
+                &quot;KC_BSlash&quot;: 220,
+                &quot;KC_Grave&quot;: 192,
+                &quot;KC_LBracket&quot;: 219,
+                &quot;KC_RBracket&quot;: 221,
+                &quot;KC_Apos&quot;: 222
             },
-            
-            min: function(a,b) {
+
+<span id='jspyder-alg-method-min'>            /**
+</span>             * Returns the smallest value from the list of arguments.
+             */
+            &quot;min&quot;: function(a,b) {
                 var min = a;
                 js.alg.each(arguments, function(arg) {
                     min = (typeof min === &quot;undefined&quot; ? arg : min);
@@ -949,8 +1128,11 @@
                 });
                 return min;
             },
-            
-            max: function(a, b) {
+
+<span id='jspyder-alg-method-max'>            /**
+</span>             * Returns the largest value from the list of arguments.
+             */
+            &quot;max&quot;: function(a, b) {
                 var max = a;
                 js.alg.each(arguments, function(arg) {
                     max = (typeof max === &quot;undefined&quot; ? arg : max);
@@ -969,42 +1151,42 @@
 <span id='jspyder-method-_bootstrapDom'>    /**
 </span>     * @private
      * @member jspyder
-     * 
+     *
      * Bootstraps the jspyder.dom library
      */
     function _bootstrapDom(js) {
         if (js[&quot;dom&quot;]) {
             return js[&quot;dom&quot;];
         }
-        
+
 <span id='jspyder-dom'>        /**
 </span>         * @class jspyder.dom
-         * 
+         *
          * @member jspyder
-         * 
+         *
          * Creates a wrapper around the DOM element and allows chaining of
          * function calls against it.
-         * 
-         * @param {String|Object} element 
+         *
+         * @param {String|Object} element
          *      - If a string is passed, then determines whether it represents
-         *      a CSS selector or a set of HTML tags.  If the former, then 
+         *      a CSS selector or a set of HTML tags.  If the former, then
          *      attempts a CSS Selector Query to get the data.  If the latter,
          *      then builds the DOM elements, and stores them as the affected
          *      elements.
          *      - If a DOM element is passed, then directly wraps the DOM element.
          *      - If a jspyder.dom object is passed, then returns the object.
-         * 
+         *
          * @param {Function} [fn]
          *      The function to run against all of the DOM elements stored in
          *      the object immediately after initialization but before the
          *      next command.  It should accept parameters in the same format
          *      as jspyder.dom.each, where the fourth parameter is [args].
-         * 
-         * @param {Array} [args] 
+         *
+         * @param {Array} [args]
          *      The fourth parameter to pass into [fn] when it is run against
          *      all of the elements in the object.
-         * 
-         * @return {Object} 
+         *
+         * @return {Object}
          *      Object, based on js.dom.fn as the prototype
          */
         function js_dom(element, fn, args) {
@@ -1061,10 +1243,10 @@
          * Returns TRUE if the node is a DOM Element
          */
         function __isElement(o) {
-            return js.alg.bool( (typeof HTMLElement === &quot;object&quot; &amp;&amp; o instanceof HTMLElement) || 
+            return js.alg.bool( (typeof HTMLElement === &quot;object&quot; &amp;&amp; o instanceof HTMLElement) ||
                 (o &amp;&amp; typeof o === &quot;object&quot; &amp;&amp; o.nodeType === 1 &amp;&amp; typeof o.nodeName === &quot;string&quot;));
         }
-        
+
 <span id='jspyder-dom-method-__getDomClasses'>        /**
 </span>         * @private
          * Gets the DOM object&#39;s classes as an array
@@ -1074,7 +1256,7 @@
                 ? element.className.replace(/(^\s+)|(\s(?=\s))|(\s+$)/g, &quot;&quot;).split(&quot; &quot;)
                 : []);
         }
-        
+
 <span id='jspyder-dom-method-_setDomClass'>        /**
 </span>         * @private
          * Sets the DOM object&#39;s class based on the enable flag
@@ -1099,7 +1281,7 @@
 
             return change;
         }
-        
+
 <span id='jspyder-dom-method-_getDomClass'>        /**
 </span>         * @private
          * Sets the DOM object&#39;s class based on the enable flag
@@ -1133,22 +1315,22 @@
 
 <span id='jspyder-dom-method-each'>            /**
 </span>             * Iterates through all of the elements in the jsDom object.
-             * 
+             *
              * @param {Function} fn
              *      Function with the following parameters:
              *       1. The value of the current item
              *       2. The key of the current item
              *       3. A reference to [obj]
              *       4. A reference to [data]
-             * 
+             *
              *      The context of this variable points to a controller object
              *      with the members:
              *       - stop() -- stops iterations and breaks from the function
-             * 
+             *
              *      If the Function returns a value, then that value will be
              *      inserted in the array at that position.
-             * 
-             * @param {Mixed} data 
+             *
+             * @param {Mixed} data
              *      A data source to pass as the fourth value in [fn]
              */
             each: function (fn, data) {
@@ -1158,10 +1340,10 @@
 
 <span id='jspyder-dom-method-use'>            /**
 </span>             * Uses the current jsDom object within the specified function
-             * 
+             *
              * @param {Function} fn
              *      The function to run
-             * 
+             *
              * @param {Array} args
              *      Any parameters to pass to the function, in &quot;apply&quot; format
              */
@@ -1173,13 +1355,13 @@
 <span id='jspyder-dom-method-setCss'>            /**
 </span>             * Applies the specified CSS template to all of the elements in
              * the jsDom object
-             * 
+             *
              * @param {Object} css
              *      A JavaScript Object where keys correspond to attributes.
              *      If more than one value must be applied, then both values
              *      should be placed in an array; or can be passed as a comma-
              *      separated list in a string.
-             * 
+             *
              * @param {Function} fn
              *      A callback, which takes [css] as a parameter and uses
              *      [this] as the context.
@@ -1205,11 +1387,11 @@
 </span>             * Gathers whether the specified CSS attributes have been assigned,
              * and then calls [fn] with the context of the jsDom object, and
              * the parameter being the css object passed in.
-             * 
+             *
              * @param {Object} css
              *      A JavaScript Object where keys correspond to attributes.
              *      Values will be loaded into the object reference.
-             * 
+             *
              * @param {Function} fn
              *      A callback, which takes [css] as a parameter and uses
              *      [this] as the context.
@@ -1236,7 +1418,22 @@
                 }
                 return this;
             },
-            
+
+<span id='jspyder-dom-method-exportCss'>            /**
+</span>             * Exports the value of js.dom.getCss to a return variable.
+             */
+            exportCss: function(css) {
+                css = css || {};
+                this.getCss(css);
+                return css;
+            },
+
+<span id='jspyder-dom-method-getPosition'>            /**
+</span>             * Retrieves the current position for each of the elements in the JS-Dom
+             * node, and pushes their values into the function identified.
+             *
+             * @param {Function} fn
+             */
             getPosition: function (fn) {
                 this.each(function (el) {
                     var pos = el.getBoundingClientRect();
@@ -1244,49 +1441,68 @@
                 })
                 return this;
             },
+
+<span id='jspyder-dom-method-exportPosition'>            /**
+</span>             * Exports the value returned by js.dom.getPosition()
+             */
             exportPosition: function () {
                 var pos = null;
                 this.at(0).use(function() {
                     pos = this._element[0].getBoundingClientRect();
                 });
-                
+
                 return pos;
             },
-            
+
+<span id='jspyder-dom-method-getOffsetPosition'>            /**
+</span>             * Calculates the offset position of each of the elements in the JS-Dom node,
+             * and pushes the values into the function identified.
+             *
+             * @param {Function} fn
+             */
             getOffsetPosition: function(fn) {
-                this.each(function () {
-                    var el = this.parentNode,
+                this.each(function (self) {
+                    var el = self.parentNode,
                         ret = {
                             top: 0, left: 0, bottom: 0, right: 0, x: 0, y: 0, height: 0, width: 0
                         };
                     while (el &amp;&amp; getComputedStyle(el).position === &quot;static&quot;) {
                         el = el.parentNode;
                     }
-                    
+
                     if (el) {
-                        var me = this.getBoundingClientRect(),
+                        var me = self.getBoundingClientRect(),
                             pr = el.getBoundingClientRect();
-                            
+
                         js.each(ret, function (v, p, ret) {
                             ret[p] = pr[p] - me[p];
                         });
                     }
-                    
-                    js_dom(this).use(fn, [ret]);
+
+                    js_dom(el).use(fn, [ret]);
                     return;
                 });
                 return this;
+            },
+
+<span id='jspyder-dom-method-exportOffsetPosition'>            /**
+</span>             * Returns the value calculated in the first call of js.dom.getOffsetPosition
+             */
+            exportOffsetPosition: function() {
+                var first = null;
+                this.getOffsetPosition(function(v) { if(!first) { first = v; }});
+                return first;
             },
 
 <span id='jspyder-dom-method-getAttrs'>            /**
 </span>             * Gathers whether the specified DOM attributes have been assigned,
              * and then calls [fn] with the context of the jsDom object, and
              * the parameter being the [attrs] object passed in.
-             * 
+             *
              * @param {Object} attrs
              *      A JavaScript Object where keys correspond to attributes.
              *      Values will be loaded into the object reference.
-             * 
+             *
              * @param {Function} fn
              *      A callback, which takes [attrs] as a parameter and uses
              *      [this] as the context.
@@ -1309,16 +1525,25 @@
                 }
                 return this;
             },
-            
+
+<span id='jspyder-dom-method-exportAttrs'>            /**
+</span>             * Exports the value returned by js.dom.getAttrs
+             */
+            exportAttrs: function(attrs) {
+                attrs = attrs || {};
+                this.getAttrs(attrs);
+                return attrs;
+            },
+
 <span id='jspyder-dom-method-setAttrs'>            /**
 </span>             * Gathers whether the specified DOM attributes have been assigned,
              * and then calls [fn] with the context of the jsDom object, and
              * the parameter being the [attrs] object passed in.
-             * 
+             *
              * @param {Object} attrs
              *      A JavaScript Object where keys correspond to attributes.
              *      Values will be loaded into the object reference.
-             * 
+             *
              * @param {Function} fn
              *      A callback, which takes [attrs] as a parameter and uses
              *      [this] as the context.
@@ -1346,11 +1571,11 @@
                 }
                 return this;
             },
-            
+
 <span id='jspyder-dom-method-parents'>            /**
 </span>             * Gets the parent(s) of the elements in the node, and runs the
              * function [fn].  Exports the first DOM node.
-             * 
+             *
              * @param {Function} fn
              */
             parents: function (fn) {
@@ -1359,10 +1584,10 @@
                 });
                 return this;
             },
-            
+
 <span id='jspyder-dom-method-children'>            /**
 </span>             * Gets the children of the elements in the node
-             * 
+             *
              * @param {Function} fn
              * @param {Mixed} [data]
              *      Information to pass to the parameter [fn].
@@ -1377,28 +1602,28 @@
                 });
                 return this;
             },
-            
+
 <span id='jspyder-dom-method-at'>            /**
 </span>             * Applies function [fn] to the [n]th item in the jsDom using the
              * same format as if it were selected with js.dom().
              *
              * @param {Number} n
-             *      Index of the item to grab  
-             * 
+             *      Index of the item to grab
+             *
              * @param {Function} fn
              */
             at: function (n, fn) {
                 n = js.alg.uint(n);
                 return js_dom(this._element[n] || null, fn);
             },
-            
+
 <span id='jspyder-dom-method-element'>            /**
 </span>             * Applies function [fn] to the [n]th element in the jsDom using
              * the same format as if it were selected with js.dom().
              *
-             * @param {Number} n 
+             * @param {Number} n
              *      Index of the element to grab
-             * 
+             *
              * @param {Function} fn
              */
             element: function (n, fn) {
@@ -1411,15 +1636,15 @@
                 });
                 return this;
             },
-            
+
 <span id='jspyder-dom-method-attach'>            /**
 </span>             * Attaches the elements from the jsDom to the first element
              * identified in the parent object.
              *
              * @param {Mixed} parent
-             *      The element/string/etc. to which this jsDom shuld be 
+             *      The element/string/etc. to which this jsDom shuld be
              *      attached
-             * 
+             *
              * @param {Function} fn
              *      A callback which takes the parent as the context, and
              *      this jsDom object as the first parameter.
@@ -1434,8 +1659,12 @@
                 });
                 return this;
             },
-            
-            attachBefore: function (parent, fn) {
+
+<span id='jspyder-dom-method-attachStart'>            /**
+</span>             * Inserts this set of nodes to the identified node&#39;s parent, immediately
+             * preceding that element.
+             */
+            attachStart: function (parent, fn) {
                 var children = this;
                 js_dom(parent).element(0, function (p) {
                     var doc = document.createDocumentFragment();
@@ -1445,8 +1674,12 @@
                 });
                 return this;
             },
-            
-            attachAfter: function (parent, fn) {
+
+<span id='jspyder-dom-method-attachEnd'>            /**
+</span>             * Inserst this set of nodes to the identified node&#39;s parent, immediately
+             * following that element.
+             */
+            attachEnd: function (parent, fn) {
                 var children = this;
                 js_dom(parent).element(0, function (p) {
                     var doc = document.createDocumentFragment();
@@ -1456,7 +1689,7 @@
                 });
                 return this;
             },
-            
+
 <span id='jspyder-dom-method-append'>            /**
 </span>             * Attaches the element identified by [child] to the first element
              * identified in the jsDom object..
@@ -1473,12 +1706,20 @@
                 })
                 return this;
             },
-            
-            _append: function (c, _1, _2, doc) {
+
+<span id='global-method-_append'>            /** @ignore */
+</span>            _append: function (c, _1, _2, doc) {
                 doc.appendChild(c);
             },
-            
-            insertBefore: function (child) {
+
+<span id='jspyder-dom-method-appendBefore'>            /**
+</span>             * Attaches the element to the identified node&#39;s parent, immediately
+             * preceding the identified child.
+             *
+             * @param {Mixed} child
+             *      JS-Dom identifier for the element to prepend.
+             */
+            appendBefore: function (child) {
                 this.element(0, function () {
                     var doc = document.createDocumentFragment();
                     js_dom(child).each(js_dom.fn._append, doc);
@@ -1486,8 +1727,15 @@
                 });
                 return this;
             },
-            
-            insertAfter: function (child) {
+
+<span id='jspyder-dom-method-appendAfter'>            /**
+</span>             * Attaches the element to the identified node&#39;s parent, immediately
+             * following the identifed child.
+             *
+             * @param {Mixed} child
+             *      JS-Dom identifier for the element to prepend.
+             */
+            appendAfter: function (child) {
                 this.element(0, function () {
                     var doc = document.createDocumentFragment();
                     js_dom(child).each(js_dom.fn._append, doc);
@@ -1495,13 +1743,13 @@
                 });
                 return this;
             },
-            
+
 <span id='jspyder-dom-method-prepend'>            /**
 </span>             * Attaches the element identified by [child] to the first element
              * identified in the jsDom object..
              *
              * @param {Mixed} child
-             *      The element/string/etc. which should be attached to the top 
+             *      The element/string/etc. which should be attached to the top
              *      of this jsDom object.
              */
             prepend: function(child) {
@@ -1514,7 +1762,7 @@
                 })
                 return this;
             },
-            
+
 <span id='jspyder-dom-method-remove'>            /**
 </span>             * Removes all of the elements defined in this jsDom object from
              * their parent nodes.
@@ -1529,9 +1777,9 @@
                 });
                 return this;
             },
-            
+
 <span id='jspyder-dom-method-setClasses'>            /**
-</span>             * Adds the defined classes to all of the elements in this jsDom 
+</span>             * Adds the defined classes to all of the elements in this jsDom
              * object.
              *
              * @param {Object} classes
@@ -1539,8 +1787,8 @@
              *      whether they should be defined as the value.  For example,
              *      the following line would turn one class on, another off,
              *      and a third class would toggle:
-             * 
-             *      js.dom(&quot;#test&quot;).setClasses({ 
+             *
+             *      js.dom(&quot;#test&quot;).setClasses({
              *          &quot;turn-on&quot;: true, //&lt; truthy
              *          &quot;turn-off&quot;: false, //&lt; falsy
              *          &quot;toggle-class&quot;: &quot;toggle&quot; //&lt; string literal
@@ -1559,9 +1807,9 @@
                 }, classes);
                 return this;
             },
-            
+
 <span id='jspyder-dom-method-getClasses'>            /**
-</span>             * Retrieves the defined classes from all of the elements in this 
+</span>             * Retrieves the defined classes from all of the elements in this
              * jsDom object, and then runs the designated callback function.
              *
              * @param {Object} classes
@@ -1569,8 +1817,8 @@
              *      whether they should be defined as the value.  For example,
              *      the following line would turn one class on, another off,
              *      and a third class would toggle:
-             * 
-             *      js.dom(&quot;#test&quot;).setClasses({ 
+             *
+             *      js.dom(&quot;#test&quot;).setClasses({
              *          &quot;turn-on&quot;: true, //&lt; truthy
              *          &quot;turn-off&quot;: false, //&lt; falsy
              *          &quot;toggle-class&quot;: &quot;toggle&quot; //&lt; string literal
@@ -1584,13 +1832,22 @@
                     js.alg.each(classes, function (_1, className, _2, o) {
                         o.classes[className] = _getDomClass(o.el, className);
                     }, { el: element, classes: classes });
-                    
+
                     // run the callback
                     js_dom(element, fn, [classes]);
                 }, { first: classes, second: Object.create(classes) });
                 return this;
             },
-            
+
+<span id='jspyder-dom-method-exportClasses'>            /**
+</span>             * Exports the values found by js.dom.getClasses
+             */
+            exportClasses: function(classes) {
+                classes = classes || {};
+                this.getClasses(classes);
+                return classes;
+            },
+
 <span id='jspyder-dom-method-on'>            /**
 </span>             * Inserts an event handler on all of the jsDom elements, for each
              * event in a space-separated list.
@@ -1598,7 +1855,7 @@
              * @param {String} events
              *      An space-separated list of event types to trigger the
              *      callback on.
-             * 
+             *
              * @param {Function} handler
              *      A callback function to use for the event callback.
              */
@@ -1619,7 +1876,10 @@
 
                 return this;
             },
-            
+
+<span id='jspyder-dom-method-off'>            /**
+</span>             * Turns off the identified event handler.
+             */
             off: function(events, handler) {
                 events = (events || &quot;&quot;).split(/\s+/);
                 var self = this;
@@ -1627,7 +1887,7 @@
                 js.alg.each(events, function(event) {
                     js.alg.each(self._element, function(element) {
                         var elist = element.__jspyder.fetch(&quot;js-events-&quot; + event),
-                            index = -1; 
+                            index = -1;
                         element.removeEventListener(event, handler);
                         if(elist) {
                             while((index = elist.indexOf(handler)) &gt;= 0) {
@@ -1639,11 +1899,10 @@
                 });
             },
 
-            /// triggers the event(s) provided
 <span id='jspyder-dom-method-trigger'>            /**
 </span>             * Dispatches the event(s) identified for all of the wrapped DOM
              * elements.
-             * 
+             *
              * @param {String} event
              *      All of the events to trigger for the wrapped DOM elements.
              */
@@ -1661,19 +1920,19 @@
 
                 return this;
             },
-            
-            _eventConstructor: function(type, bubbles, cancelable) {
+
+<span id='jspyder-dom-method-_eventConstructor'>            /** @private */
+</span>            _eventConstructor: function(type, bubbles, cancelable) {
                 js_dom.fn._eventConstructor = (&quot;function&quot; === typeof window.Event
                     ? function(type, bubbles, cancelable) { return new Event(type, { &quot;bubbles&quot;: bubbles, &quot;cancelable&quot;: cancelable }); }
                     : function(type, bubbles, cancelable) { var e = window.document.createEvent(&quot;Event&quot;); e.initEvent(type, bubbles, cancelable); return e; });
-                    
+
                 return js_dom.fn._eventConstructor.apply(this, arguments);
             },
 
 <span id='jspyder-dom-method-setHtml'>            /**
-</span>             * Sets the innerHTML For each of the wrapped elements with the
-             * identified value.
-             * 
+</span>             * Sets the innerHTML for each of the wrapped elements.
+             *
              * @param {String} html
              *      New HTML to push into the wrapped elements.
              */
@@ -1684,7 +1943,12 @@
                 return this;
             },
 
-            /// gets the inner html value.
+<span id='jspyder-dom-method-getHtml'>            /**
+</span>             * Retrieves the innerHTML for each of the wrapped elements,
+             * and passes the values into the identified function.
+             *
+             * @param {Function} fn
+             */
             getHtml: function (fn) {
                 if (typeof fn === &quot;function&quot;) {
                     this.each(function (element) {
@@ -1693,62 +1957,109 @@
                 }
                 return this;
             },
-            
+
+<span id='jspyder-dom-method-exportHtml'>            /**
+</span>             * Retrieves and returns the value retrieved by js.dom.getHtml
+             */
+            exportHtml: function() {
+                var html = null;
+
+                this.getHtml(function(h) {
+                    if(!html) {
+                        html = h;
+                    }
+                });
+
+                return html;
+            },
+
+<span id='jspyder-dom-method-getText'>            /**
+</span>             * Retrieves the text content for each of the wrapped elements,
+             * and passes the values into the identified function.
+             *
+             * @param {Function} fn
+             */
             getText: function(fn) {
                 if(typeof fn === &quot;function&quot;) {
+                    var t = typeof document.documentElement[&quot;textContent&quot;] === &quot;undefined&quot; ? &quot;innerText&quot; : &quot;textContent&quot;;
                     this.each(function(element) {
-                        fn.call(element, element.textContent || &quot;&quot;);
+                        fn.call(element, js.alg.string(element[t]));
                     });
                 }
                 return this;
             },
-            
+
+<span id='jspyder-dom-method-exportText'>            /**
+</span>             * Retrieves and returns the first value to be returned in js.dom.getText
+             */
+            exportText: function() {
+                var text = null;
+                this.getText(function(t) {
+                    if(!text) { text = t; }
+                });
+                return text;
+            },
+
+<span id='jspyder-dom-method-setText'>            /**
+</span>             * Sets the text content of each of the elements to the specified value
+             *
+             * @param {String} text
+             *      New text value to use on each of the wrapped element.
+             */
             setText: function(text) {
+                text = js.alg.string(text);
+                fn = typeof document.documentElement[&quot;textContent&quot;] === &quot;undefined&quot; ? &quot;innerText&quot; : &quot;textContent&quot;;
                 this.each(function(element) {
-                    element.textContent = text || &quot;&quot;;
+                    element[fn] = text;
                 });
                 return this;
             },
-            
+
 <span id='jspyder-dom-method-find'>            /**
 </span>             * Searches through each object in the jspyder.dom element, and
-             * returns an object containing the DOM nodes which match the 
+             * returns an object containing the DOM nodes which match the
              * provided CSS selector.
-             * 
+             *
              * @param {Mixed} cssSelector
              *      CSS Selector to search for.
-             * 
+             *
              * @return {Object}
-             *      JSpyder DOM Element (jspyder.dom) containing all of the 
+             *      JSpyder DOM Element (jspyder.dom) containing all of the
              *      found elements.
              */
             find: function(cssSelector) {
                 var $found = js_dom(),
                     _found = $found._element;
-                    
+
                 this.each(function(element) {
                     if(cssSelector) {
                         var children = element.querySelectorAll(cssSelector);
                         js.alg.joinArray(_found, js_dom(children)._element);
                     }
                 });
-                
+
                 return $found;
             },
-            
+
+<span id='jspyder-dom-method-filter'>            /**
+</span>             * searchs through the wrapped objects, and excludes any elements
+             * which do not meet the identified CSS selector.
+             */
             filter: function (cssSelector) {
                 var $found = js_dom(),
                     _found = $found._element;
-                    
+
                 this.each(function (element) {
                     if (js_dom.fn._matches(element, cssSelector)) {
                         _found.push(element);
                     }
                 });
-                
+
                 return $found;
             },
-            _matches: function (element, selector) {
+
+<span id='jspyder-dom-method-_matches'>            /** @private */
+</span>            _matches: function (element, selector) {
                 var fn = &quot;&quot;;
                 if(element.matches) { fn = &quot;matches&quot;; }
                 else if (element.matchesSelector) { fn = &quot;matchesSelector&quot;; }
@@ -1765,13 +2076,13 @@
                         return i &gt; -1;
                     }
                 }
-                
+
                 js_dom.fn._matches = function (element, selector) {
                     return fn &amp;&amp; element[fn](selector);
                 }
                 return this._matches(element, selector);
             },
-            
+
 <span id='jspyder-dom-method-and'>            /**
 </span>             * Adds the specified elements to this selection.  Takes the same
              * selection format as jspyder.dom.
@@ -1780,24 +2091,24 @@
                 js_dom(elements, this._and, [this._element]);
                 return this;
             },
-            
+
 <span id='jspyder-dom-method-_and'>            /** @private */
 </span>            _and: function(_elements) {
                 js.alg.joinArray(_elements, this._element);
             },
-            
+
 <span id='jspyder-dom-method-template'>            /**
-</span>             * Cycles through the wrapped elements to input the identified 
-             * objects 
+</span>             * Cycles through the wrapped elements to input the identified
+             * objects
              */
             template: function(fields) {
-                this.each(this._template, { 
-                    self: this,  
+                this.each(this._template, {
+                    self: this,
                     fields: fields
                 });
                 return this;
             },
-            
+
 <span id='jspyder-dom-method-_template'>            /** @private */
 </span>            _template: function(element, i, elements, o) {
                 o.self._template_parse(element, o.fields);
@@ -1840,17 +2151,16 @@
                     next;
 
                 if (index === -1) { return false; }
-                
+
                 next = node.splitText(index);
                 next.data = next.data.substr(text.length);
                 js_dom(element)
                     .each(function(element) {
                         parent.insertBefore(element, next);
                     });
-                // parent.insertBefore(element, next);
                 return true;
             },
-            
+
 <span id='jspyder-dom-method-setValue'>            /**
 </span>             * Sets the value of the selected elements
              */
@@ -1864,57 +2174,50 @@
                     }
                 }).use(fn);
             },
-            
-            setOverride: function(name, fn) {
-                this.each(function(element) {
-                    element.__jspyder.override = (element.__jspyder.override || {});
-                    element.__jspyder.override[name] = fn; 
-                });
-                return this;
-            },
-            getOverride: function(name) {
-                var fn = null;
-                this.each(function(element) {
-                    if(element.__jspyder.override &amp;&amp; element.__jspyder.override[name]) {
-                        fn = element.__jspyder.override[name];
-                        this.stop();
-                    }
-                });
-                return fn;
-            },
-            
+
 <span id='jspyder-dom-method-getValue'>            /**
-</span>             * Gets the value of the wrapped elements
+</span>             * Gets the value of the wrapped elements and pushes the values
+             * into the identified function.
+             *
+             * @param {Function} fn
              */
             getValue: function(fn) {
                 var self = this;
                 return self.each(function(element) {
-                    var $me = js_dom(element),
-                        override = $me.getOverride(&quot;getValue&quot;);
-                        
-                    if(override) {
-                        $me.use(override, [fn]);
-                        return;
-                    }
-                    
                     var value = (typeof element.value !== &quot;undefined&quot;
                         ? element.value : element.getAttribute(&quot;value&quot;));
-                        
+
                     if(element.tagName === &quot;LI&quot;) {
                         value = element.getAttribute(&quot;value&quot;);
                     }
-                         
+
                     if(value !== &quot;undefined&quot;) {
                         // get value types
                         self.use(fn, [value]);
                     }
                 });
             },
+
+<span id='jspyder-dom-method-exportValue'>            /**
+</span>             * Exports the value retrieved by js.dom.getValue
+             */
             exportValue: function() {
                 var value = null;
                 this.getValue(function(v) { value = v; });
                 return value;
             },
+
+<span id='jspyder-dom-method-getProps'>            /**
+</span>             * Retrieves the identified properties in [obj] and passes the
+             * value into [fn].
+             *
+             * @param {Object} obj
+             *      An object where keys correspond to properties, and the values
+             *      will be overwritten with the actual properties.
+             *
+             * @param {Function} fn
+             *      The function to receive the output value.
+             */
             getProps: function(obj, fn) {
                 this.each(function(element) {
                     js.alg.each(obj, function(val, name, obj) {
@@ -1924,6 +2227,29 @@
                 this.use(fn, [obj]);
                 return this;
             },
+
+<span id='jspyder-dom-method-exportProps'>            /**
+</span>             * Exports the first value in js.dom.getProps
+             *
+             * @param {Object} obj
+             *      An object where keys correspond to properties, and the values
+             *      will be overwritten with the actual properties.
+             */
+            exportProps: function(obj) {
+                obj = obj || {};
+                this.getProps(obj);
+                return obj;
+            },
+
+<span id='jspyder-dom-method-setProps'>            /**
+</span>             * Sets the properties of the wrapped elements to the values specified in
+             * [obj], where keys identify properties and values identify the values to
+             * set.
+             *
+             * @param {Object} obj
+             *      An object where keys correspond to properties, and the properties
+             *      will be overwritten with the actual values.
+             */
             setProps: function(obj) {
                 this.each(function(element) {
                     js.alg.each(obj, function(val, name) {
@@ -1933,7 +2259,7 @@
                 return this;
             }
         };
-        
+
         js_dom.doc = js_dom(document.documentElement);
 
         if (js) {
@@ -1944,17 +2270,17 @@
 
 <span id='jspyder-method-_bootstrapLib'>    /**
 </span>     * Bootstraps the jspyder lib plugin
-     * 
+     *
      * @private
      * @member jspyder
      */
     function _bootstrapLib(js) {
         var _js_lib_repo = _createRegistry();
-        
+
 <span id='jspyder-method-lib'>        /**
 </span>         * @method lib
          * @member jspyder
-         * 
+         *
          * Retrieves the stored functions pushed in by jspyder.lib.register
          */
         function js_lib(name, args, fn) {
@@ -1971,8 +2297,8 @@
 <span id='jspyder-lib-method-register'>        /**
 </span>         * @method register
          * @member jspyder.lib
-         * 
-         * Stores custom functions in the jspyder registry 
+         *
+         * Stores custom functions in the jspyder registry
          */
         js_lib.register = function (name, fn) {
             if (typeof name == &quot;string&quot;) {
@@ -1986,7 +2312,7 @@
 <span id='jspyder-lib-method-registerSet'>        /**
 </span>         * @method registerSet
          * @member jspyder.lib
-         * 
+         *
          * Stores a set of custom functions in the jspyder registry, where the
          * name of the function is defined by the object keys and the function
          * definitions are stored as the object values.
@@ -2002,12 +2328,12 @@
 
         js.extend(&quot;lib&quot;, js_lib);
     }
-    
+
 <span id='jspyder-dom-method-_createRegistry'>    /**
 </span>     * Creates a hidden registry, and returns an interface to interact with it
-     * 
-     * - fetch(key, Function({ key: key, value: value })) 
-     * - stash(key, value)  
+     *
+     * - fetch(key, Function({ key: key, value: value }))
+     * - stash(key, value)
      */
     function _createRegistry() {
         var _registry = {};

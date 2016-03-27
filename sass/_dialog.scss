@@ -5,6 +5,7 @@
     bottom: 0;
     left: 0;
     right: 0;
+    z-index: 2147483647; //< MAX SAFE INTEGER
 
     .js-dialog {
         position: absolute;
@@ -65,15 +66,15 @@
             }
         }
         .js-dialog-footer {
-            // padding: $padding;
             background-color: $color-divider;
             
             .footer-container {
                 min-height:0;
                 text-align: right;
+                padding: $padding 0 $padding $padding;
                 
                 .js-control-button {
-                    margin: $padding $padding $padding 0;
+                    margin-right: $padding;
                 }
             }
         }
