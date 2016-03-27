@@ -593,7 +593,7 @@ jspyder.extend.fn("date", function () {
          */
         setYear: function (years) {
             years = js.alg.number(years);
-            __processDateFraction(this._value, "setFullYear", "getFullYear", current + years);
+            __processDateFraction(this._value, "setFullYear", "getFullYear", years);
             return this;
         },
         
