@@ -1498,7 +1498,18 @@
                         attrs = (!i ? attrs.first : attrs.others);
                         // iterate each attribute
                         _each(attrs, function (_, a, attrs) {
-                            attrs[a] = el.getAttribute(a);
+                            switch (typeof attrs[a]) {
+                                case "number":
+                                    attrs[a] = js.alg.number(el.getAttribute(a), _);
+                                    break;
+                                case "string":
+                                    attrs[a] = js.alg.string(el.getAttribute(a), _);
+                                    break;
+                                case "boolean":
+                                    attrs[a] = js.alg.bool(el.getAttribute(a), _);
+                                default:
+                                    attrs[a] = el.getAttribute(a);
+                            }
                         });
                         // callback
                         if (typeof fn === "function") { js_dom(el, fn, [attrs]); }
