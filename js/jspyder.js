@@ -1659,9 +1659,10 @@
                 var children = this;
                 js_dom(parent).element(0, function (p) {
                     var doc = document.createDocumentFragment(),
-                        parent = this.parentNode;
+                        parent = this.parentNode,
+                        el = p._element[0];
                     children.each(js_dom.fn._append, doc);
-                    parent && parent.insertBefore(doc, p._element[0] || null);
+                    parent && parent.insertBefore(doc, (el && el !== this) ? el : parent.children[0]);
                     p.use(fn, children);
                 });
                 return this;
