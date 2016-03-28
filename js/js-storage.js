@@ -23,7 +23,35 @@
  */
 
 jspyder.extend.fn("storage", function() {
-    var js = this;
+    var js = this,
+        json_stringify = js.alg.bindFn(
+            window["JSON"], 
+            window["JSON"]["stringify"]),
+        json_parse = js.alg.bindFn(
+            window["JSON"], 
+            window["JSON"]["parse"]),
+        emulatedStorageTemplate = {
+            data: {},
+            "setItem": function(key, value) {
+                this.data[key] = value;
+                return;
+            },
+            "getItem": function(key) {
+                var value = this.data[key];
+                return ("undefined" === typeof value ? null : value);
+            },
+            "removeItem": function(key) {
+                js.data[key] = null;
+                return;
+            }
+        },
+        toString = js.alg.bindFn(js.alg, js.alg["string"]),
+        location = window["location"],
+        url      = location.toString(),
+        scheme   = location["protocol"],
+        hostname = location["hostname"],
+        port     = location["port"],
+        prefix   = "jspyder::" + scheme + ":" + hostname + "::" + port + "::";
         
     /**
      * @property storage
@@ -74,15 +102,7 @@ jspyder.extend.fn("storage", function() {
      * @return {String}         Encoded data
      */
     function __encode(data) {
-        var json_stringify = js.alg.bindFn(
-            window["JSON"], 
-            window["JSON"]["stringify"]);
-        
-        __encode = function(data) {
-            return json_stringify(data);
-        };
-        
-        return __encode(data);
+        return json_stringify(data);
     }
     
     /**
@@ -98,20 +118,12 @@ jspyder.extend.fn("storage", function() {
      * @param {Mixed}                   Decoded data
      */
     function __decode(encodedString) {
-        var json_parse = js.alg.bindFn(
-            window["JSON"], 
-            window["JSON"]["parse"]);
-            
-        __decode = function(encodedString) {
-            try {
-                return json_parse(encodedString);
-            }
-            catch(e) {
-                return encodedString || null;
-            }
-        };
-        
-        return __decode(encodedString);
+        try {
+            return json_parse(encodedString);
+        }
+        catch(e) {
+            return encodedString || null;
+        }
     }
     
     /**
@@ -125,27 +137,7 @@ jspyder.extend.fn("storage", function() {
      * @return {Object} Emulated storage object.
      */
     function __emulateStorage() {
-        var emulatedStorageTemplate = {
-            data: {},
-            "setItem": function(key, value) {
-                this.data[key] = value;
-                return;
-            },
-            "getItem": function(key) {
-                var value = this.data[key];
-                return ("undefined" === typeof value ? null : value);
-            },
-            "removeItem": function(key) {
-                js.data[key] = null;
-                return;
-            }
-        };
-        
-        __emulateStorage = function() {
-            return Object.create(emulatedStorageTemplate);
-        };
-        
-        return __emulateStorage();
+        return Object.create(emulatedStorageTemplate);
     }
     
     /**
@@ -172,7 +164,7 @@ jspyder.extend.fn("storage", function() {
             
             storage.setItem(test, test);
             
-            if(!storage.getItem(test) === test) {
+            if(storage.getItem(test) !== test) {
                 return false;
             }
             
@@ -196,100 +188,135 @@ jspyder.extend.fn("storage", function() {
      * @param {String} name     The name of the interface to retrieve.
      */
     function __getInterface(name) {
-        __getInterface = function(name) {
-            var storage = (__storageAvailable(name)
-                    ? window[name]
-                    : __emulateStorage());
-                
-            return {
-                "exportValue": function(key) {
-                    return __get(storage, key);
-                },
-                "getValue": function(key, fn) {
-                    js.alg.use(this, fn, [this.exportValue(key)]);
-                    return this;
-                },
-                "setValue": function(key, value) {
-                    __set(storage, key, value);
-                    return this;
-                },
-                "dropValue": function(key) {
-                    __del(storage, key);
-                    return this;
-                },
-                "listen": function(fn) {
-                    var storageEvent = function(event) {
-                        event
-                            && event["storageArea"] 
-                            && event["storageArea"] === storage
-                            && js.alg.use(this, fn, arguments);
-                    }
-                    window.addEventListener("storage", storageEvent, false);
+        var storage = (__storageAvailable(name)
+                ? window[name]
+                : __emulateStorage());
+            
+        return {
+            "exportValue": function(key) {
+                return __get(storage, key);
+            },
+            "getValue": function(key, fn) {
+                js.alg.use(this, fn, [this.exportValue(key)]);
+                return this;
+            },
+            "setValue": function(key, value) {
+                __set(storage, key, value);
+                return this;
+            },
+            "dropValue": function(key) {
+                __del(storage, key);
+                return this;
+            },
+            "listen": function(fn) {
+                var storageEvent = function(event) {
+                    event
+                        && event["storageArea"] 
+                        && event["storageArea"] === storage
+                        && js.alg.use(this, fn, arguments);
                 }
-            };
+                window.addEventListener("storage", storageEvent, false);
+            }
         };
-        
-        var string   = js.alg.bindFn(js.alg, js.alg["string"]),
-            location = window["location"],
-            url      = location.toString(),
-            scheme   = location["protocol"],
-            hostname = location["hostname"],
-            port     = location["port"],
-            prefix   = "jspyder::" + scheme + ":" + hostname + "::" + port + "::";
-        
-        function __get(storage, key) {
-            key = prefix + string(key);
-            var value = storage.getItem(key);
-            return __decode(value);
-        }
-        
-        function __set(storage, key, value) {
-            var newVal = __encode(value),
-                oldVal = __get(storage, key);
-                key = prefix + string(key);
-                value = __decode(newVal);
+    }
 
-            storage.setItem(key, newVal);
-            __onStorage(storage, key, oldVal, value);
-            return;
-        }
-        
-        function __del(storage, key) {
-            var oldVal = __get(storage, key);
-                key = prefix + string(key);
-                value = null;
+    /**
+     * @private
+     * @method __get
+     * @member jspyder.storage
+     * 
+     * Retrieves the value stored in [key] from [storage]
+     * 
+     * @param {Object} storage      The storage interface to read from
+     * @param {String} key          The key the data is stored under
+     * 
+     * @return {Mixed}              The stored value, decoded
+     */
+    function __get(storage, key) {
+        key = prefix + toString(key);
+        var value = storage.getItem(key);
+        return __decode(value);
+    }
 
-            storage.removeItem(key);
-            __onStorage(storage, key, oldVal, value);
-            return;
-        }
-        
-        function __onStorage(storage, key, oldVal, newVal) {
-            var evt = window["document"].createEvent("StorageEvent"),
-                eventType = "storage",
-                canBubble = false,
-                cancelable = false,
-                keyArg = key,
-                oldValueArg = oldVal,
-                newValueArg = newVal,
-                urlArg = url,
-                storageAreaArg = storage;
-                
-            evt.initStorageEvent(
-                eventType,
-                canBubble,
-                cancelable,
-                keyArg,
-                oldValueArg,
-                newValueArg,
-                urlArg,
-                storageAreaArg
-            );
+    /**
+     * @private
+     * @method __set
+     * @member jspyder.storage
+     * 
+     * Stashes the [value] in [storage] under the designated [key]
+     * 
+     * @param {Object} storage      The storage interface to write to
+     * @param {String} key          The key the data is stored under
+     * @param {Mixed} value         The value to store
+     */
+    function __set(storage, key, value) {
+        var newVal = __encode(value),
+            oldVal = __get(storage, key);
+            key = prefix + toString(key);
+            value = __decode(newVal);
 
-            window.dispatchEvent(evt);
-        }
-        
-        return __getInterface(name);
+        storage.setItem(key, newVal);
+        __onStorage(storage, key, oldVal, value);
+        return;
+    }
+
+
+    /**
+     * @private
+     * @method __del
+     * @member jspyder.storage
+     * 
+     * Removes the value stored under [key] in interface [storage]
+     * 
+     * @param {Object} storage      The storage interface to remove from
+     * @param {String} key          The key the data is stored under
+     */
+    function __del(storage, key) {
+        var oldVal = __get(storage, key),
+            value = null;
+            key = prefix + toString(key);
+
+        storage.removeItem(key);
+        __onStorage(storage, key, oldVal, value);
+        return;
+    }
+
+
+    /**
+     * @private
+     * @method __onStorage
+     * @member jspyder.storage
+     * 
+     * Triggers the storage event in the proper context
+     * 
+     * @param {Object} storage      The storage interface being modified
+     * @param {String} key          The key being modified
+     * @param {Mixed} oldVal        The value being overwritten
+     * @param {Mixed} newVal        The value being written
+     */
+    function __onStorage(storage, key, oldVal, newVal) {
+        var evt = window["document"].createEvent("StorageEvent"),
+            eventType = "storage",
+            canBubble = false,
+            cancelable = false,
+            keyArg = key,
+            oldValueArg = oldVal,
+            newValueArg = newVal,
+            urlArg = url,
+            storageAreaArg = storage;
+            
+        evt.initStorageEvent(
+            eventType,
+            canBubble,
+            cancelable,
+            keyArg,
+            oldValueArg,
+            newValueArg,
+            urlArg,
+            storageAreaArg
+        );
+
+        window.dispatchEvent(evt);
     }
     
     return js_storage;

@@ -15,7 +15,7 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js">/* ****************************************************************************
+  <pre class="prettyprint lang-js">/*
  * The MIT License (MIT)
  *
  * Copyright (c) 2015 Steven Jimenez
@@ -37,7 +37,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
- * ***************************************************************************/
+ */
 
 jspyder.extend.fn(&quot;date&quot;, function () {
     var js = this;
@@ -116,7 +116,6 @@ jspyder.extend.fn(&quot;date&quot;, function () {
     }
     
     js_date.fn = js_date.prototype = {
-        // private values
 <span id='jspyder-date-property-_value'>        /** 
 </span>         * @private
          * Date value
@@ -135,17 +134,25 @@ jspyder.extend.fn(&quot;date&quot;, function () {
         
 <span id='jspyder-date-method-clone'>        /**
 </span>         * @method
-         * 
          * Clones the current object
          */
         clone: function () {
             return js_date(new Date(this._value), this._format, this._useUTC);
         },
 
+<span id='jspyder-date-method-utcOffset'>        /**
+</span>         * @method
+         * Retrieves the timezone offset of the wrapped date.
+         */
         utcOffset: function () {
             return this._value.getTimezoneOffset();
         },
 
+<span id='jspyder-date-method-isDst'>        /**
+</span>         * @method
+         * Determines and calculates whether the currently wrapped
+         * time is observing DST.
+         */
         isDst: function () {
             var offset = this.utcOffset(),
                 clone = this.clone();
@@ -168,7 +175,13 @@ jspyder.extend.fn(&quot;date&quot;, function () {
             return this;
         },
         
+<span id='jspyder-date-method-isUTC'>        /**
+</span>         * @method
+         * 
+         * Corresponds to whether this date should use UTC values.
+         */
         isUTC: function() { return this._useUTC; },
+        
 <span id='jspyder-date-method-useLocal'>        /**
 </span>         * @method
          * 
@@ -276,7 +289,11 @@ jspyder.extend.fn(&quot;date&quot;, function () {
             
             return Date.prototype.getTime.call(d);
         },
-        
+
+<span id='jspyder-date-method-isValid'>        /**
+</span>         * @method
+         * Returns TRUE if this object represents a valid date.
+         */
         isValid: function() {
             return this._value &amp;&amp; !isNaN(this._value.getYear());
         },
@@ -286,8 +303,10 @@ jspyder.extend.fn(&quot;date&quot;, function () {
          * 
          * Adds the specified number of days to the wrapped date value.
          */
-        addDays: function (days) {
-            this._value.setDate(this._value.getDate() + js.alg.number(days));
+        addDays: function (days) {            
+            var current = this._value.getDate();
+                days = js.alg.number(days);
+            __processDateFraction(this._value, &quot;setDate&quot;, &quot;getDate&quot;, current + days);
             return this;
         },
         
@@ -299,7 +318,7 @@ jspyder.extend.fn(&quot;date&quot;, function () {
          */
         setDay: function (days) {
             days = js.alg.number(days);
-            this._value.setDate(days);
+            __processDateFraction(this._value, &quot;setDate&quot;, &quot;getDate&quot;, days);
             return this;
         },
         
@@ -436,7 +455,7 @@ jspyder.extend.fn(&quot;date&quot;, function () {
         
 <span id='jspyder-date-method-exportWeekdayOffset'>        /**
 </span>         * Calculates and returns the number of days into the week that
-         * the currently wrapped date&#39;s month starts.
+         * the currently wrapped date's month starts.
          */
         exportWeekdayOffset: function() {
             var data = { 
@@ -460,7 +479,7 @@ jspyder.extend.fn(&quot;date&quot;, function () {
         
 <span id='jspyder-date-method-getWeekdayOffset'>        /**
 </span>         * Calculates the number of days into the week that the currently wrapped
-         * date&#39;s month starts, and pushes the return value into the identified 
+         * date's month starts, and pushes the return value into the identified 
          * function.
          * 
          * @param {Function} fn
@@ -476,7 +495,9 @@ jspyder.extend.fn(&quot;date&quot;, function () {
          * @param {Number} months
          */
         addMonths: function (months) {
-            this._value.setMonth(this._value.getMonth() + js.alg.number(months));
+            var current = this._value.getMonth();
+                months = js.alg.number(months);
+            __processDateFraction(this._value, &quot;setMonth&quot;, &quot;getMonth&quot;, current + months);
             return this;
         },
         
@@ -487,7 +508,8 @@ jspyder.extend.fn(&quot;date&quot;, function () {
          * @param {Number} month
          */
         setMonth: function (month) {
-            this._value.setMonth(js.alg.number(month) - 1);
+            month = js.alg.number(month) - 1;
+            __processDateFraction(this._value, &quot;setMonth&quot;, &quot;getMonth&quot;, month);
             return this;
         },
         
@@ -575,7 +597,9 @@ jspyder.extend.fn(&quot;date&quot;, function () {
          * @param {Number} years
          */
         addYears: function (years) {
-            this._value.setFullYear(this._value.getFullYear() + js.alg.number(years));
+            var current = this._value.getFullYear();
+                years = js.alg.number(years);
+            __processDateFraction(this._value, &quot;setFullYear&quot;, &quot;getFullYear&quot;, current + years);
             return this;
         },
         
@@ -585,7 +609,8 @@ jspyder.extend.fn(&quot;date&quot;, function () {
          * @param {Number} years
          */
         setYear: function (years) {
-            this._value.setFullYear(js.alg.number(years));
+            years = js.alg.number(years);
+            __processDateFraction(this._value, &quot;setFullYear&quot;, &quot;getFullYear&quot;, years);
             return this;
         },
         
@@ -613,7 +638,9 @@ jspyder.extend.fn(&quot;date&quot;, function () {
          * @param {Number} seconds
          */
         addSeconds: function (seconds) {
-            this._value.setSeconds(this._value.getSeconds() + js.alg.number(seconds));
+            var current = this._value.getSeconds();
+                seconds = js.alg.number(seconds);
+            __processDateFraction(this._value, &quot;setSeconds&quot;, &quot;getSeconds&quot;, current + seconds);
             return this;
         },
         
@@ -623,7 +650,8 @@ jspyder.extend.fn(&quot;date&quot;, function () {
          * @param {Number} seconds
          */
         setSeconds: function (seconds) {
-            this._value.setSeconds(js.alg.number(seconds));
+            seconds = js.alg.number(seconds);
+            __processDateFraction(this._value, &quot;setSeconds&quot;, &quot;getSeconds&quot;, seconds);
             return this;
         },
         
@@ -652,7 +680,9 @@ jspyder.extend.fn(&quot;date&quot;, function () {
          * @param {Number} minutes
          */
         addMinutes: function (minutes) {
-            this._value.setMinutes(this._value.getMinutes() + js.alg.number(minutes));
+            var current = this._value.getMinutes();
+                minutes = js.alg.number(minutes);
+            __processDateFraction(this._value, &quot;setMinutes&quot;, &quot;getMinutes&quot;, current + minutes);
             return this;
         },
         
@@ -662,7 +692,8 @@ jspyder.extend.fn(&quot;date&quot;, function () {
          * @param {Number} minutes
          */
         setMinute: function (minutes) {
-            this._value.setMinutes(js.alg.number(minutes));
+            minutes = js.alg.number(minutes);
+            __processDateFraction(this._value, &quot;setMinutes&quot;, &quot;getMinutes&quot;, minutes);
             return this;
         },
         
@@ -690,7 +721,9 @@ jspyder.extend.fn(&quot;date&quot;, function () {
          * @param {Number} hours
          */
         addHours: function (hours) {
-            this._value.setHours(this._value.getHours() + js.alg.number(hours));
+            var current = this._value.getHours();
+                hours = js.alg.number(hours);
+            __processDateFraction(this._value, &quot;setHours&quot;, &quot;getHours&quot;, current + hours);
             return this;
         },
         
@@ -701,7 +734,8 @@ jspyder.extend.fn(&quot;date&quot;, function () {
          * @param {Number} hours
          */
         setHour: function (hours) {
-            this._value.setHours(js.alg.number(hours));
+            hours = js.alg.number(hours);
+            __processDateFraction(this._value, &quot;setHours&quot;, &quot;getHours&quot;, hours);
             return this;
         },
         
@@ -739,24 +773,29 @@ jspyder.extend.fn(&quot;date&quot;, function () {
             &quot;ss&quot;, &quot;s&quot;,
             &quot;xxx&quot;, &quot;xx&quot;, &quot;x&quot;
         ],
+
 <span id='global-property-'>        /**
 </span>         * @ignore
          */
         __reSearch = new RegExp(&quot;(\\[[^\\]]*\\]|&quot; + __reSearchStrings.join(&quot;|&quot;) + &quot;)&quot;, &quot;g&quot;),
+
 <span id='global-property-'>        /**
 </span>         * @ignore
          */
         __defaultFormat = &quot;ddd mmm d yyyy hh:mm:ss&quot;,
+
 <span id='global-property-'>        /**
 </span>         * @ignore
          */
         __defaultUtc = false,
+
 <span id='global-property-'>        /**
 </span>         * @ignore
          */
         __years = [
             { YY: &quot;\\d{2}&quot;, YYYY: &quot;\\d{4}&quot;, yy: &quot;\\d{2}&quot;, yyyy: &quot;\\d{4}&quot; }
         ],
+
 <span id='global-property-'>        /**
 </span>         * @ignore
          */
@@ -774,6 +813,7 @@ jspyder.extend.fn(&quot;date&quot;, function () {
             { m: &quot;11&quot;, mm: &quot;11&quot;, mmm: &quot;Nov&quot;, mmmm: &quot;November&quot;,  M: &quot;11&quot;, MM: &quot;11&quot;, MMM: &quot;NOV&quot;, MMMM: &quot;NOVEMBER&quot;  },
             { m: &quot;12&quot;, mm: &quot;12&quot;, mmm: &quot;Dec&quot;, mmmm: &quot;December&quot;,  M: &quot;12&quot;, MM: &quot;12&quot;, MMM: &quot;DEC&quot;, MMMM: &quot;DECEMBER&quot;  },
         ],
+
 <span id='global-property-'>        /**
 </span>         * @ignore
          */
@@ -810,6 +850,7 @@ jspyder.extend.fn(&quot;date&quot;, function () {
             { d: &quot;30&quot;, dd: &quot;30&quot;, dth: &quot;30th&quot;, ddth: &quot;30th&quot; }, 
             { d: &quot;31&quot;, dd: &quot;31&quot;, dth: &quot;31st&quot;, ddth: &quot;31st&quot; },
         ],
+
 <span id='global-property-'>        /**
 </span>         * @ignore
          */
@@ -822,6 +863,7 @@ jspyder.extend.fn(&quot;date&quot;, function () {
             { D: &quot;F&quot;, DD: &quot;Fr&quot;, DDD: &quot;FRI&quot;, DDDD: &quot;FRIDAY&quot;,    ddd: &quot;Fri&quot;, dddd: &quot;Friday&quot;    },
             { D: &quot;S&quot;, DD: &quot;Sa&quot;, DDD: &quot;SAT&quot;, DDDD: &quot;SATURDAY&quot;,  ddd: &quot;Sat&quot;, dddd: &quot;Saturday&quot;  },
         ],
+
 <span id='global-property-'>        /**
 </span>         * @ignore
          */
@@ -851,6 +893,7 @@ jspyder.extend.fn(&quot;date&quot;, function () {
             { h: &quot;10&quot;, hh: &quot;10&quot;, H: &quot;22&quot;, HH: &quot;22&quot;, AM: &quot;PM&quot;, am: &quot;pm&quot; },
             { h: &quot;11&quot;, hh: &quot;11&quot;, H: &quot;23&quot;, HH: &quot;23&quot;, AM: &quot;PM&quot;, am: &quot;pm&quot; },
         ],
+
 <span id='global-property-'>        /**
 </span>         * @ignore
          */
@@ -871,6 +914,7 @@ jspyder.extend.fn(&quot;date&quot;, function () {
             { n: &quot;52&quot;, nn: &quot;52&quot; }, { n: &quot;53&quot;, nn: &quot;53&quot; }, { n: &quot;54&quot;, nn: &quot;54&quot; }, { n: &quot;55&quot;, nn: &quot;55&quot; }, 
             { n: &quot;56&quot;, nn: &quot;56&quot; }, { n: &quot;57&quot;, nn: &quot;57&quot; }, { n: &quot;58&quot;, nn: &quot;58&quot; }, { n: &quot;59&quot;, nn: &quot;59&quot; }
         ],
+
 <span id='global-property-'>        /**
 </span>         * @ignore
          */
@@ -891,11 +935,12 @@ jspyder.extend.fn(&quot;date&quot;, function () {
             { s: &quot;52&quot;, ss: &quot;52&quot; }, { s: &quot;53&quot;, ss: &quot;53&quot; }, { s: &quot;54&quot;, ss: &quot;54&quot; }, { s: &quot;55&quot;, ss: &quot;55&quot; }, 
             { s: &quot;56&quot;, ss: &quot;56&quot; }, { s: &quot;57&quot;, ss: &quot;57&quot; }, { s: &quot;58&quot;, ss: &quot;58&quot; }, { s: &quot;59&quot;, ss: &quot;59&quot; }
         ],
+
 <span id='global-property-'>        /**
 </span>         * @ignore
          */
         __timeZones = { },
-        // collected definitions
+
 <span id='global-property-'>        /**
 </span>         * @ignore
          */
@@ -987,10 +1032,12 @@ jspyder.extend.fn(&quot;date&quot;, function () {
             lookup: rev
         };
     }
+
 <span id='global-method-__isDate'>    /** @ignore */
 </span>    function __isDate(v) {
-        return (v instanceof Date || Object.prototype.toString.call(v) === &#39;[object Date]&#39;);
+        return (v instanceof Date || Object.prototype.toString.call(v) === '[object Date]');
     }
+
 <span id='global-method-__isJsDate'>    /** @ignore */
 </span>    function __isJsDate(v) {
         return js_date.fn.isPrototypeOf(v);
@@ -1210,8 +1257,32 @@ jspyder.extend.fn(&quot;date&quot;, function () {
 </span>    function __getTimezoneOffset() {
         
     }
-    
-    
+
+<span id='global-method-__processDateFraction'>    /**
+</span>     * @ignore
+     * 
+     * Calculates the step between two dates.
+     */
+    function __processDateFraction(dateObj, setFn, getFn, step) {
+        var fraction = step - (step|0),
+            tempDate = null,
+            offset = 0,
+            time = 0;
+
+        dateObj[setFn](step);
+
+        if(fraction) {
+            step = step|0;
+            time = dateObj.getTime();
+            tempDate = new Date(time);
+            tempDate[setFn](tempDate[getFn]() + 1);
+            offset = (tempDate.getTime() - time) * fraction;
+            dateObj.setTime(time + offset);
+        }
+
+        return dateObj;
+    }
+
 <span id='jspyder-date-property-__timezones'>    /**
 </span>     * @private
      * 

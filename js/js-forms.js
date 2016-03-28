@@ -367,8 +367,7 @@ jspyder.extend.fn("form", function () {
                 fieldname = js.alg.string(config.name),
                 labeltext = js.alg.string(config.text),
                 uselabel = !js.alg.bool(config.nolabel, nolabel),
-                lbl = this.buildLabel(uselabel && fieldname, uselabel && labeltext, config.class, config.tooltip),
-                form = this;
+                lbl = this.buildLabel(uselabel && fieldname, uselabel && labeltext, config.class, config.tooltip);
                 
             return lbl.and(ctl);
         },
@@ -581,7 +580,7 @@ jspyder.extend.fn("form", function () {
                 $field.getValue(_export);
             }
                 
-            js.alg.use(this, fn, [valid, invalid]);
+            js.alg.use(this, fn, [values]);
             return this;
         },
         
@@ -1396,7 +1395,8 @@ jspyder.extend.fn("form", function () {
             }
             
             function input(event) {
-                var attrs = { "readonly": null };
+                var attrs = { "readonly": null },
+                    div = null;
                 js.dom(this).getAttrs(attrs);
                 if(!attrs["readonly"]) {
                     div = document.createElement("div");
@@ -2115,7 +2115,6 @@ jspyder.extend.fn("form", function () {
                 var config = data.config,
                     field = data.field,
                     strict = js.alg.bool(config.strict),
-                    values = data.config.values,
                     text = "",
                     attrs = {},
                     match = searchValue(data.config, value, false);

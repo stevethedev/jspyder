@@ -174,7 +174,7 @@
     function _bootstrapEnv(js) {
         var VERSION_OBJ = {
                 MAJOR_VERSION: 0,
-                MINOR_VERSION: 1,
+                MINOR_VERSION: 2,
                 PATCH_VERSION: 0 },
             VERSION_STR = VERSION_OBJ.MAJOR_VERSION + "." + VERSION_OBJ.MINOR_VERSION + "." + VERSION_OBJ.PATCH_VERSION,
             BROWSER_NAME = "",
@@ -549,7 +549,7 @@
              * Coerces a value to a date, or else returns a new date object.
              */
             "date": function(v, d) {
-                return ((input instanceof Date || Object.prototype.toString.call(input) === '[object Date]')
+                return ((v instanceof Date || Object.prototype.toString.call(v) === '[object Date]')
                     ? v
                     : d || new Date());
             },
@@ -695,8 +695,8 @@
              */
             "float": function (u) {
                 if (typeof window["Float32Array"] === "undefined") {
-                    js_alg["float"] = function(u) {
-                        var sign = 2 * (x > 0) - 1,
+                    js_alg["float"] = function(x) {
+                        var sign = (x > 0 ? 1 : -1),
                             exp = 0,
                             base = x * sign,
                             frac = 0;
@@ -1998,8 +1998,8 @@
              *      New text value to use on each of the wrapped element.
              */
             setText: function(text) {
-                text = js.alg.string(text);
-                fn = typeof document.documentElement["textContent"] === "undefined" ? "innerText" : "textContent";
+                var fn = typeof document.documentElement["textContent"] === "undefined" ? "innerText" : "textContent";
+                    text = js.alg.string(text);
                 this.each(function(element) {
                     element[fn] = text;
                 });

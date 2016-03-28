@@ -686,7 +686,7 @@ $jscomp.string.endsWith$install = function $$jscomp$string$endsWith$install$() {
       return this.name + this.version;
     }};
     Object.freeze($__browser_js_env$$);
-    $__browser_js_env$$ = {version:"0.1.0", versionNo:256, browser:$__browser_js_env$$};
+    $__browser_js_env$$ = {version:"0.2.0", versionNo:512, browser:$__browser_js_env$$};
     Object.freeze($__browser_js_env$$);
     $js$$.extend("env", $__browser_js_env$$);
   }
@@ -764,7 +764,7 @@ $jscomp.string.endsWith$install = function $$jscomp$string$endsWith$install$() {
     }, array:function $$js_alg$$$array$($a$$, $d$$) {
       return Array.isArray($a$$) ? $a$$ : $d$$ || [];
     }, date:function $$js_alg$$$date$($v$$, $d$$) {
-      return input instanceof Date || "[object Date]" === Object.prototype.toString.call(input) ? $v$$ : $d$$ || new Date;
+      return $v$$ instanceof Date || "[object Date]" === Object.prototype.toString.call($v$$) ? $v$$ : $d$$ || new Date;
     }, "byte":function $$js_alg$$$byte$($u$$) {
       $js_alg$$["byte"] = "undefined" === typeof Int8Array ? function($u$$) {
         $u$$ = $js$$.alg.number($u$$);
@@ -845,14 +845,13 @@ $jscomp.string.endsWith$install = function $$jscomp$string$endsWith$install$() {
       };
       return $js_alg$$.uint($u$$0$$);
     }, "float":function $$js_alg$$$float$($u$$0$$) {
-      $js_alg$$["float"] = "undefined" === typeof window.Float32Array ? function($sign_u$$) {
-        $sign_u$$ = 2 * (0 < x) - 1;
-        for (var $exp$$ = 0, $base$$ = x * $sign_u$$, $frac$$ = 0;2 <= $base$$ || 1 > $base$$;) {
+      $js_alg$$["float"] = "undefined" === typeof window.Float32Array ? function($x$$) {
+        for (var $sign$$ = 0 < $x$$ ? 1 : -1, $exp$$ = 0, $base$$ = $x$$ * $sign$$, $frac$$ = 0;2 <= $base$$ || 1 > $base$$;) {
           2 <= $base$$ && ($base$$ /= 2, $exp$$++), 1 > $base$$ && ($base$$ *= 2, $exp$$--);
         }
-        $frac$$ = x / Math.pow(2, $exp$$) - 1;
+        $frac$$ = $x$$ / Math.pow(2, $exp$$) - 1;
         $frac$$ = 1 + Math.round(8388608 * $frac$$) / 8388608;
-        return +($sign_u$$ * $frac$$ * Math.pow(2, $exp$$)).toPrecision(8);
+        return +($sign$$ * $frac$$ * Math.pow(2, $exp$$)).toPrecision(8);
       } : function($u$$) {
         var $buffer$$15_byteArray$$ = new ArrayBuffer(4), $buffer$$15_byteArray$$ = new Float32Array($buffer$$15_byteArray$$);
         $buffer$$15_byteArray$$[0] = $u$$;
@@ -1075,7 +1074,18 @@ $jscomp.string.endsWith$install = function $$jscomp$string$endsWith$install$() {
         this.each(function($el$$, $i$$, $_2$$, $attrs$$0$$) {
           $attrs$$0$$ = $i$$ ? $attrs$$0$$.others : $attrs$$0$$.first;
           $_each$$($attrs$$0$$, function($_$$, $a$$, $attrs$$) {
-            $attrs$$[$a$$] = $el$$.getAttribute($a$$);
+            switch(typeof $attrs$$[$a$$]) {
+              case "number":
+                $attrs$$[$a$$] = $js$$.alg.number($el$$.getAttribute($a$$), $_$$);
+                break;
+              case "string":
+                $attrs$$[$a$$] = $js$$.alg.string($el$$.getAttribute($a$$), $_$$);
+                break;
+              case "boolean":
+                $attrs$$[$a$$] = $js$$.alg.bool($el$$.getAttribute($a$$), $_$$);
+              default:
+                $attrs$$[$a$$] = $el$$.getAttribute($a$$);
+            }
           });
           "function" === typeof $fn$$ && $js_dom$$($el$$, $fn$$, [$attrs$$0$$]);
         }, {first:$attrs$$, others:$o$$});
@@ -1280,10 +1290,10 @@ $jscomp.string.endsWith$install = function $$jscomp$string$endsWith$install$() {
       });
       return $text$$;
     }, setText:function $$js_dom$$$fn$setText$($text$$) {
+      var $fn$$ = "undefined" === typeof $document$$.documentElement.textContent ? "innerText" : "textContent";
       $text$$ = $js$$.alg.string($text$$);
-      fn = "undefined" === typeof $document$$.documentElement.textContent ? "innerText" : "textContent";
       this.each(function($element$$) {
-        $element$$[fn] = $text$$;
+        $element$$[$fn$$] = $text$$;
       });
       return this;
     }, find:function $$js_dom$$$fn$find$($cssSelector$$) {
@@ -1798,8 +1808,8 @@ jspyder.extend.fn("date", function() {
     return new Date($d$$.y, $d$$.m, $d$$.d, $d$$.h + $d$$.a, $d$$.n, $d$$.s, $d$$.x);
   }
   function $__formatDate$$($date$$, $format$$, $useUTC$$) {
-    var $JSCompiler_object_inline_y_42$$ = $useUTC$$ ? $date$$.getUTCFullYear() : $date$$.getFullYear(), $JSCompiler_object_inline_m_43$$ = $useUTC$$ ? $date$$.getUTCMonth() : $date$$.getMonth(), $JSCompiler_object_inline_d_44$$ = $useUTC$$ ? $date$$.getUTCDate() : $date$$.getDate(), $JSCompiler_object_inline_h_45$$ = $useUTC$$ ? $date$$.getUTCHours() : $date$$.getHours(), $JSCompiler_object_inline_n_46$$ = $useUTC$$ ? $date$$.getUTCMinutes() : $date$$.getMinutes(), $JSCompiler_object_inline_s_47$$ = 
-    $useUTC$$ ? $date$$.getUTCSeconds() : $date$$.getSeconds(), $JSCompiler_object_inline_w_48$$ = $useUTC$$ ? $date$$.getUTCDay() : $date$$.getDay(), $JSCompiler_object_inline_x_49$$ = $useUTC$$ ? $date$$.getUTCMilliseconds() : $date$$.getMilliseconds(), $left$$ = "", $right$$ = $format$$;
+    var $JSCompiler_object_inline_y_53$$ = $useUTC$$ ? $date$$.getUTCFullYear() : $date$$.getFullYear(), $JSCompiler_object_inline_m_54$$ = $useUTC$$ ? $date$$.getUTCMonth() : $date$$.getMonth(), $JSCompiler_object_inline_d_55$$ = $useUTC$$ ? $date$$.getUTCDate() : $date$$.getDate(), $JSCompiler_object_inline_h_56$$ = $useUTC$$ ? $date$$.getUTCHours() : $date$$.getHours(), $JSCompiler_object_inline_n_57$$ = $useUTC$$ ? $date$$.getUTCMinutes() : $date$$.getMinutes(), $JSCompiler_object_inline_s_58$$ = 
+    $useUTC$$ ? $date$$.getUTCSeconds() : $date$$.getSeconds(), $JSCompiler_object_inline_w_59$$ = $useUTC$$ ? $date$$.getUTCDay() : $date$$.getDay(), $JSCompiler_object_inline_x_60$$ = $useUTC$$ ? $date$$.getUTCMilliseconds() : $date$$.getMilliseconds(), $left$$ = "", $right$$ = $format$$;
     $js$$.alg.arrEach($format$$.match($__reSearch$$), function($match$$) {
       var $collection$$ = $__formatCollection$$[$match$$] || /\[[^\\]*\]/g.test($match$$);
       if (!$collection$$) {
@@ -1812,12 +1822,12 @@ jspyder.extend.fn("date", function() {
         case "YY":
         ;
         case "yy":
-          $value$$ = $js$$.alg.string($JSCompiler_object_inline_y_42$$ % 100);
+          $value$$ = $js$$.alg.string($JSCompiler_object_inline_y_53$$ % 100);
           break;
         case "YYYY":
         ;
         case "yyyy":
-          $value$$ = $js$$.alg.string($JSCompiler_object_inline_y_42$$, "");
+          $value$$ = $js$$.alg.string($JSCompiler_object_inline_y_53$$, "");
           break;
         case "MMMM":
         ;
@@ -1834,7 +1844,7 @@ jspyder.extend.fn("date", function() {
         case "M":
         ;
         case "m":
-          $value$$ = $collection$$.lookup[$JSCompiler_object_inline_m_43$$];
+          $value$$ = $collection$$.lookup[$JSCompiler_object_inline_m_54$$];
           break;
         case "dth":
         ;
@@ -1843,7 +1853,7 @@ jspyder.extend.fn("date", function() {
         case "dd":
         ;
         case "d":
-          $value$$ = $collection$$.lookup[$JSCompiler_object_inline_d_44$$ - 1];
+          $value$$ = $collection$$.lookup[$JSCompiler_object_inline_d_55$$ - 1];
           break;
         case "DDDD":
         ;
@@ -1856,12 +1866,12 @@ jspyder.extend.fn("date", function() {
         case "DD":
         ;
         case "D":
-          $value$$ = $collection$$.lookup[$JSCompiler_object_inline_w_48$$];
+          $value$$ = $collection$$.lookup[$JSCompiler_object_inline_w_59$$];
           break;
         case "am":
         ;
         case "AM":
-          $value$$ = $collection$$.lookup[$JSCompiler_object_inline_h_45$$];
+          $value$$ = $collection$$.lookup[$JSCompiler_object_inline_h_56$$];
           break;
         case "HH":
         ;
@@ -1870,26 +1880,26 @@ jspyder.extend.fn("date", function() {
         case "hh":
         ;
         case "h":
-          $value$$ = $collection$$.lookup[$JSCompiler_object_inline_h_45$$];
+          $value$$ = $collection$$.lookup[$JSCompiler_object_inline_h_56$$];
           break;
         case "nn":
         ;
         case "n":
-          $value$$ = $collection$$.lookup[$JSCompiler_object_inline_n_46$$];
+          $value$$ = $collection$$.lookup[$JSCompiler_object_inline_n_57$$];
           break;
         case "ss":
         ;
         case "s":
-          $value$$ = $collection$$.lookup[$JSCompiler_object_inline_s_47$$];
+          $value$$ = $collection$$.lookup[$JSCompiler_object_inline_s_58$$];
           break;
         case "xxx":
-          $value$$ = ($js$$.alg.string($JSCompiler_object_inline_x_49$$) + "00").substr(0, 3);
+          $value$$ = ($js$$.alg.string($JSCompiler_object_inline_x_60$$) + "00").substr(0, 3);
           break;
         case "xx":
-          $value$$ = ($js$$.alg.string($JSCompiler_object_inline_x_49$$) + "0").substr(0, 2);
+          $value$$ = ($js$$.alg.string($JSCompiler_object_inline_x_60$$) + "0").substr(0, 2);
           break;
         case "x":
-          $value$$ = $js$$.alg.string($JSCompiler_object_inline_x_49$$).substr(0, 1);
+          $value$$ = $js$$.alg.string($JSCompiler_object_inline_x_60$$).substr(0, 1);
           break;
         default:
           $value$$ = $match$$.substring(1, $match$$.length - 1);
@@ -1897,6 +1907,12 @@ jspyder.extend.fn("date", function() {
       $left$$ += $js$$.alg.string($value$$, "");
     });
     return $left$$ + $right$$;
+  }
+  function $__processDateFraction$$($dateObj$$, $setFn$$, $getFn$$, $step$$) {
+    var $fraction$$ = $step$$ - ($step$$ | 0), $offset$$ = null, $time$$ = $offset$$ = 0;
+    $dateObj$$[$setFn$$]($step$$);
+    $fraction$$ && ($time$$ = $dateObj$$.getTime(), $offset$$ = new Date($time$$), $offset$$[$setFn$$]($offset$$[$getFn$$]() + 1), $offset$$ = ($offset$$.getTime() - $time$$) * $fraction$$, $dateObj$$.setTime($time$$ + $offset$$));
+    return $dateObj$$;
   }
   var $js$$ = this;
   $js_date$$.fn = $js_date$$.prototype = {_value:null, _format:"", _useUTC:!1, clone:function $$js_date$$$$clone$() {
@@ -1938,11 +1954,13 @@ jspyder.extend.fn("date", function() {
   }, isValid:function $$js_date$$$$isValid$() {
     return this._value && !isNaN(this._value.getYear());
   }, addDays:function $$js_date$$$$addDays$($days$$) {
-    this._value.setDate(this._value.getDate() + $js$$.alg.number($days$$));
+    var $current$$ = this._value.getDate();
+    $days$$ = $js$$.alg.number($days$$);
+    $__processDateFraction$$(this._value, "setDate", "getDate", $current$$ + $days$$);
     return this;
   }, setDay:function $$js_date$$$$setDay$($days$$) {
     $days$$ = $js$$.alg.number($days$$);
-    this._value.setDate($days$$);
+    $__processDateFraction$$(this._value, "setDate", "getDate", $days$$);
     return this;
   }, getDay:function $$js_date$$$$getDay$($fn$$) {
     $js$$.alg.use(this, $fn$$, [this.exportDay()]);
@@ -1987,10 +2005,13 @@ jspyder.extend.fn("date", function() {
     $js$$.alg.use(this, $fn$$, [this.exportWeekdayOffset()]);
     return this;
   }, addMonths:function $$js_date$$$$addMonths$($months$$) {
-    this._value.setMonth(this._value.getMonth() + $js$$.alg.number($months$$));
+    var $current$$ = this._value.getMonth();
+    $months$$ = $js$$.alg.number($months$$);
+    $__processDateFraction$$(this._value, "setMonth", "getMonth", $current$$ + $months$$);
     return this;
   }, setMonth:function $$js_date$$$$setMonth$($month$$) {
-    this._value.setMonth($js$$.alg.number($month$$) - 1);
+    $month$$ = $js$$.alg.number($month$$) - 1;
+    $__processDateFraction$$(this._value, "setMonth", "getMonth", $month$$);
     return this;
   }, exportMonth:function $$js_date$$$$exportMonth$() {
     return this._value.getMonth() + 1;
@@ -2013,10 +2034,13 @@ jspyder.extend.fn("date", function() {
     $js$$.alg.use(this, $fn$$, [this.exportMonthCount()]);
     return this;
   }, addYears:function $$js_date$$$$addYears$($years$$) {
-    this._value.setFullYear(this._value.getFullYear() + $js$$.alg.number($years$$));
+    var $current$$ = this._value.getFullYear();
+    $years$$ = $js$$.alg.number($years$$);
+    $__processDateFraction$$(this._value, "setFullYear", "getFullYear", $current$$ + $years$$);
     return this;
   }, setYear:function $$js_date$$$$setYear$($years$$) {
-    this._value.setFullYear($js$$.alg.number($years$$));
+    $years$$ = $js$$.alg.number($years$$);
+    $__processDateFraction$$(this._value, "setFullYear", "getFullYear", $years$$);
     return this;
   }, exportYear:function $$js_date$$$$exportYear$() {
     return this._value.getFullYear();
@@ -2024,10 +2048,13 @@ jspyder.extend.fn("date", function() {
     $js$$.alg.use(this, $fn$$, [this.exportYear()]);
     return this;
   }, addSeconds:function $$js_date$$$$addSeconds$($seconds$$) {
-    this._value.setSeconds(this._value.getSeconds() + $js$$.alg.number($seconds$$));
+    var $current$$ = this._value.getSeconds();
+    $seconds$$ = $js$$.alg.number($seconds$$);
+    $__processDateFraction$$(this._value, "setSeconds", "getSeconds", $current$$ + $seconds$$);
     return this;
   }, setSeconds:function $$js_date$$$$setSeconds$($seconds$$) {
-    this._value.setSeconds($js$$.alg.number($seconds$$));
+    $seconds$$ = $js$$.alg.number($seconds$$);
+    $__processDateFraction$$(this._value, "setSeconds", "getSeconds", $seconds$$);
     return this;
   }, exportSecond:function $$js_date$$$$exportSecond$() {
     return this._value.getSecond();
@@ -2035,20 +2062,26 @@ jspyder.extend.fn("date", function() {
     $js$$.alg.use(this, $fn$$, [this.exportSecond()]);
     return this;
   }, addMinutes:function $$js_date$$$$addMinutes$($minutes$$) {
-    this._value.setMinutes(this._value.getMinutes() + $js$$.alg.number($minutes$$));
+    var $current$$ = this._value.getMinutes();
+    $minutes$$ = $js$$.alg.number($minutes$$);
+    $__processDateFraction$$(this._value, "setMinutes", "getMinutes", $current$$ + $minutes$$);
     return this;
   }, setMinute:function $$js_date$$$$setMinute$($minutes$$) {
-    this._value.setMinutes($js$$.alg.number($minutes$$));
+    $minutes$$ = $js$$.alg.number($minutes$$);
+    $__processDateFraction$$(this._value, "setMinutes", "getMinutes", $minutes$$);
     return this;
   }, exportMinute:function $$js_date$$$$exportMinute$() {
     return this._value.getMinutes();
   }, getMinute:function $$js_date$$$$getMinute$($fn$$) {
     $js$$.alg.use(this, $fn$$, [this.exportMinute()]);
   }, addHours:function $$js_date$$$$addHours$($hours$$) {
-    this._value.setHours(this._value.getHours() + $js$$.alg.number($hours$$));
+    var $current$$ = this._value.getHours();
+    $hours$$ = $js$$.alg.number($hours$$);
+    $__processDateFraction$$(this._value, "setHours", "getHours", $current$$ + $hours$$);
     return this;
   }, setHour:function $$js_date$$$$setHour$($hours$$) {
-    this._value.setHours($js$$.alg.number($hours$$));
+    $hours$$ = $js$$.alg.number($hours$$);
+    $__processDateFraction$$(this._value, "setHours", "getHours", $hours$$);
     return this;
   }, exportHour:function $$js_date$$$$exportHour$() {
     return this._value.getHours();
@@ -2161,7 +2194,7 @@ jspyder.extend.fn("dialog", function() {
   }};
   return $js_dialog$$;
 });
-js.extend.fn("download", function() {
+jspyder.extend.fn("download", function() {
   function $download$$($def$$) {
     var $dl$$ = Object.create($download$$.fn);
     $def$$ = $def$$ || {};
@@ -2331,7 +2364,7 @@ jspyder.extend.fn("dtype", function() {
       typeof $v$$ === $_jstype$$ || $_typeError$$($_name$$, $v$$, $_jstype$$);
       $_baseSet$$($v$$);
     } : function($v$$) {
-      $_validateFn$$($v$$) || $_typeError$$($_name$$, $v$$, _jsType);
+      $_validateFn$$($v$$) || $_typeError$$($_name$$, $v$$, $_jstype$$);
       $_baseSet$$($v$$);
     }, $_constSet$$ = function $$_constSet$$$($v$$) {
       $_constError$$($_name$$, $_jstype$$);
@@ -2353,10 +2386,10 @@ jspyder.extend.fn("dtype", function() {
   var $js$$ = this, $js_alg$$ = $js$$.alg;
   $js_dtype$$.fn = {"byte":$js$$.alg.use($js_dtype$$, function bootstrap() {
     $js_alg$$.byte();
-    var $byte$$ = $js_alg$$["byte"];
+    var $int8$$ = $js_alg$$["byte"];
     return function attachInt8($name$$, $_interface$$2_value$$, $strict$$, $constant$$) {
       var $_obj$$ = this.obj;
-      $_interface$$2_value$$ = $_createInterface$$($name$$, "number", "byte", $byte$$, $_interface$$2_value$$, $constant$$, $strict$$);
+      $_interface$$2_value$$ = $_createInterface$$($name$$, "number", "byte", $int8$$, $_interface$$2_value$$, $constant$$, $strict$$);
       $_createBinding$$($_obj$$, $name$$, $_interface$$2_value$$);
       return this;
     };
@@ -2371,53 +2404,55 @@ jspyder.extend.fn("dtype", function() {
     };
   }), "short":$js$$.alg.use($js_dtype$$, function bootstrap() {
     $js_alg$$.short();
-    var $short$$ = $js_alg$$["short"];
+    var $int16$$ = $js_alg$$["short"];
     return function attachInt16($name$$, $_interface$$4_value$$, $strict$$, $constant$$) {
       var $_obj$$ = this.obj;
-      $_interface$$4_value$$ = $_createInterface$$($name$$, "number", "short", $short$$, $_interface$$4_value$$, $constant$$, $strict$$);
+      $_interface$$4_value$$ = $_createInterface$$($name$$, "number", "short", $int16$$, $_interface$$4_value$$, $constant$$, $strict$$);
       $_createBinding$$($_obj$$, $name$$, $_interface$$4_value$$);
       return this;
     };
   }), ushort:$js$$.alg.use($js_dtype$$, function bootstrap() {
     $js_alg$$.short();
+    var $ushort$$ = $js_alg$$.ushort;
     return function attachUInt16($name$$, $_interface$$5_value$$, $strict$$, $constant$$) {
       var $_obj$$ = this.obj;
-      $_interface$$5_value$$ = $_createInterface$$($name$$, "number", "unsigned short", ushort, $_interface$$5_value$$, $constant$$, $strict$$);
+      $_interface$$5_value$$ = $_createInterface$$($name$$, "number", "unsigned short", $ushort$$, $_interface$$5_value$$, $constant$$, $strict$$);
       $_createBinding$$($_obj$$, $name$$, $_interface$$5_value$$);
       return this;
     };
   }), "int":$js$$.alg.use($js_dtype$$, function bootstrap() {
     $js_alg$$.int();
-    var $int$$ = $js_alg$$["int"];
+    var $int32$$ = $js_alg$$["int"];
     return function attachInt32($name$$, $_interface$$6_value$$, $strict$$, $constant$$) {
       var $_obj$$ = this.obj;
-      $_interface$$6_value$$ = $_createInterface$$($name$$, "number", "integer", $int$$, $_interface$$6_value$$, $constant$$, $strict$$);
+      $_interface$$6_value$$ = $_createInterface$$($name$$, "number", "integer", $int32$$, $_interface$$6_value$$, $constant$$, $strict$$);
       $_createBinding$$($_obj$$, $name$$, $_interface$$6_value$$);
       return this;
     };
   }), uint:$js$$.alg.use($js_dtype$$, function bootstrap() {
     $js_alg$$.uint();
+    var $uint$$ = $js_alg$$.uint;
     return function attachUInt32($name$$, $_interface$$7_value$$, $strict$$, $constant$$) {
       var $_obj$$ = this.obj;
-      $_interface$$7_value$$ = $_createInterface$$($name$$, "number", "unsigned integer", uint, $_interface$$7_value$$, $constant$$, $strict$$);
+      $_interface$$7_value$$ = $_createInterface$$($name$$, "number", "unsigned integer", $uint$$, $_interface$$7_value$$, $constant$$, $strict$$);
       $_createBinding$$($_obj$$, $name$$, $_interface$$7_value$$);
       return this;
     };
   }), "float":$js$$.alg.use($js_dtype$$, function bootstrap() {
     $js_alg$$.float();
-    var $float$$ = $js_alg$$["float"];
+    var $floatFn$$ = $js_alg$$["float"];
     return function attachFloat($name$$, $_interface$$8_value$$, $strict$$, $constant$$) {
       var $_obj$$ = this.obj;
-      $_interface$$8_value$$ = $_createInterface$$($name$$, "number", "float", $float$$, $_interface$$8_value$$, $constant$$, $strict$$);
+      $_interface$$8_value$$ = $_createInterface$$($name$$, "number", "float", $floatFn$$, $_interface$$8_value$$, $constant$$, $strict$$);
       $_createBinding$$($_obj$$, $name$$, $_interface$$8_value$$);
       return this;
     };
   }), "double":$js$$.alg.use($js_dtype$$, function bootstrap() {
     $js_alg$$.double();
-    var $double$$ = $js_alg$$["double"];
+    var $doubleFn$$ = $js_alg$$["double"];
     return function attachDouble($name$$, $_interface$$9_value$$, $strict$$, $constant$$) {
       var $_obj$$ = this.obj;
-      $_interface$$9_value$$ = $_createInterface$$($name$$, "number", "double", $double$$, $_interface$$9_value$$, $constant$$, $strict$$);
+      $_interface$$9_value$$ = $_createInterface$$($name$$, "number", "double", $doubleFn$$, $_interface$$9_value$$, $constant$$, $strict$$);
       $_createBinding$$($_obj$$, $name$$, $_interface$$9_value$$);
       return this;
     };
@@ -2426,11 +2461,11 @@ jspyder.extend.fn("dtype", function() {
       $decimals$$ = $js_alg$$.int($decimals$$);
       $decimals$$ = Math.pow(10, $decimals$$);
       return function($value$$) {
-        return $int$$($value$$ * $decimals$$) / $decimals$$;
+        return $int32$$($value$$ * $decimals$$) / $decimals$$;
       };
     }
     $js_alg$$.int();
-    var $int$$ = $js_alg$$.int;
+    var $int32$$ = $js_alg$$.int;
     return function attachFixed($name$$, $_interface$$10_value$$, $_obj$$8_decimals$$, $strict$$, $constant$$) {
       var $_fixed$$ = $fixed$$($_obj$$8_decimals$$);
       $_obj$$8_decimals$$ = this.obj;
@@ -2519,7 +2554,7 @@ jspyder.extend.fn("dtype", function() {
       function $setEnumBasic$$($v$$) {
         $v$$ = $js$$.alg.number($v$$) | 0;
         var $val$$ = 0;
-        $js$$.alg.arrEach(bitValues, function($bit$$) {
+        $js$$.alg.arrEach($bitValues$$, function($bit$$) {
           ($v$$ & $bit$$) === $bit$$ && ($val$$ |= $bit$$);
           $v$$ < $bit$$ && this.stop();
         });
@@ -2527,9 +2562,8 @@ jspyder.extend.fn("dtype", function() {
       }
       var $_proxy$$ = {}, $_interface$$ = {valueOf:function() {
         return $value$$;
-      }};
+      }}, $bitValues$$ = [];
       $value$$ = $js$$.alg.number($value$$);
-      bitValues = [];
       $js$$.alg.each($values$$, function($bits$$, $key$$) {
         if ("valueOf" !== $key$$) {
           var $setStrict$$ = function $$setStrict$$$($v$$) {
@@ -2540,13 +2574,13 @@ jspyder.extend.fn("dtype", function() {
           }, $setConst$$ = function $$setConst$$$($v$$) {
             $_constError$$($name$$ + "." + $key$$, "number");
           };
-          bitValues.push($bits$$);
+          $bitValues$$.push($bits$$);
           $_proxy$$[$key$$] = {enumerable:!0, get:function $$_proxy$$$$key$$$get$() {
             return $js$$.alg.number($value$$ & $bits$$) | 0;
           }, set:$constant$$ ? $setConst$$ : $strict$$ ? $setStrict$$ : $setBasic$$};
         }
       });
-      $js$$.alg.sortArrayNum(bitValues, !0);
+      $js$$.alg.sortArrayNum($bitValues$$, !0);
       Object.defineProperties($_interface$$, $_proxy$$);
       return {enumerable:!0, get:function() {
         return $_interface$$;
@@ -2659,12 +2693,13 @@ jspyder.extend.fn("form", function() {
     }]) : $value$$ = $field$$6_name$$.exportValue());
     return $value$$;
   }, templates:{}, values:function $$js_form$$$fn$values$($fn$$) {
-    var $$field$$, $name$$, $_export$$ = function $$_export$$$($v$$) {
+    var $values$$ = {}, $$field$$, $name$$, $_export$$ = function $$_export$$$($v$$) {
+      $values$$[$name$$] = $$field$$;
     };
     for ($name$$ in this._fields) {
-      $$field$$ = this._fields[$name$$].field, $$field$$.getValue($_export$$);
+      $$field$$ = this._fields[$name$$].field, $values$$[$name$$] = null, $$field$$.getValue($_export$$);
     }
-    $js$$.alg.use(this, $fn$$, [valid, invalid]);
+    $js$$.alg.use(this, $fn$$, [$values$$]);
     return this;
   }, fieldTemplate:{type:"input", values:[]}, submit:function $$js_form$$$fn$submit$($onSuccess$$, $onFail$$) {
     $onSuccess$$ = "function" === typeof $onSuccess$$ ? $onSuccess$$ : this._success;
@@ -2977,22 +3012,23 @@ jspyder.extend.fn("form", function() {
       $v$$ = $js$$.alg.string($v$$, "");
       this.setValue($v$$);
     }
-    function $input$$($attrs$$14_css$$7_event$$) {
-      $attrs$$14_css$$7_event$$ = {readonly:null};
-      $js$$.dom(this).getAttrs($attrs$$14_css$$7_event$$);
-      if (!$attrs$$14_css$$7_event$$.readonly) {
-        div = document.createElement("div");
-        $attrs$$14_css$$7_event$$ = {"font-family":null, "font-size":null, "font-weight":null, "padding-left":null, "padding-right":null, "padding-bottom":null, "padding-top":null, "border-left":null, "border-right":null, "border-top":null, "border-bottom":null, "line-height":null, "word-wrap":null};
-        div.style.position = "fixed";
-        div.style.left = "-65535px";
-        div.style["white-space"] = "pre-wrap";
-        div.style["white-space"] = "-moz-pre-wrap";
-        div.style["white-space"] = "-pre-wrap";
-        div.style["white-space"] = "-o-pre-wrap";
-        div.style.width = div.style["min-width"] = div.style["max-width"] = this.clientWidth + "px";
-        document.body.appendChild(div);
-        var $textarea$$ = $js$$.dom(this).getCss($attrs$$14_css$$7_event$$);
-        $js$$.dom(div).setText(this.value).setCss($attrs$$14_css$$7_event$$).getPosition(function($pos$$) {
+    function $input$$($div$$1_event$$) {
+      var $attrs$$14_css$$ = {readonly:null};
+      $div$$1_event$$ = null;
+      $js$$.dom(this).getAttrs($attrs$$14_css$$);
+      if (!$attrs$$14_css$$.readonly) {
+        $div$$1_event$$ = document.createElement("div");
+        $attrs$$14_css$$ = {"font-family":null, "font-size":null, "font-weight":null, "padding-left":null, "padding-right":null, "padding-bottom":null, "padding-top":null, "border-left":null, "border-right":null, "border-top":null, "border-bottom":null, "line-height":null, "word-wrap":null};
+        $div$$1_event$$.style.position = "fixed";
+        $div$$1_event$$.style.left = "-65535px";
+        $div$$1_event$$.style["white-space"] = "pre-wrap";
+        $div$$1_event$$.style["white-space"] = "-moz-pre-wrap";
+        $div$$1_event$$.style["white-space"] = "-pre-wrap";
+        $div$$1_event$$.style["white-space"] = "-o-pre-wrap";
+        $div$$1_event$$.style.width = $div$$1_event$$.style["min-width"] = $div$$1_event$$.style["max-width"] = this.clientWidth + "px";
+        document.body.appendChild($div$$1_event$$);
+        var $textarea$$ = $js$$.dom(this).getCss($attrs$$14_css$$);
+        $js$$.dom($div$$1_event$$).setText(this.value).setCss($attrs$$14_css$$).getPosition(function($pos$$) {
           $textarea$$.setCss({height:$pos$$.height + 20 + "px"});
         }).remove();
       }
@@ -3365,7 +3401,7 @@ jspyder.extend.fn("form", function() {
   });
   return $js_form$$;
 });
-js.extend.fn("sp", function() {
+jspyder.extend.fn("sp", function() {
   function $sp$$() {
   }
   function $__successPush$$($listItems$$, $successFn$$, $sender$$, $args$$) {
@@ -3814,6 +3850,76 @@ js.extend.fn("sp", function() {
   }};
   return $sp$$;
 });
+jspyder.extend.fn("storage", function() {
+  function $__decode$$($encodedString$$) {
+    try {
+      return $json_parse$$($encodedString$$);
+    } catch ($e$$) {
+      return $encodedString$$ || null;
+    }
+  }
+  function $__storageAvailable$$($interfaceName$$) {
+    var $test$$ = "__jspyder_storage_test__" + (new Date).toString(), $storage$$ = null;
+    try {
+      $storage$$ = window[$interfaceName$$];
+      if (!$storage$$) {
+        return !1;
+      }
+      $storage$$.setItem($test$$, $test$$);
+      if ($storage$$.getItem($test$$) !== $test$$) {
+        return !1;
+      }
+      $storage$$.removeItem($test$$);
+      return !0;
+    } catch ($e$$) {
+      return !1;
+    }
+  }
+  function $__getInterface$$($name$$) {
+    var $storage$$ = $__storageAvailable$$($name$$) ? window[$name$$] : Object.create($emulatedStorageTemplate$$);
+    return {exportValue:function($key$$) {
+      return $__get$$($storage$$, $key$$);
+    }, getValue:function($key$$, $fn$$) {
+      $js$$.alg.use(this, $fn$$, [this.exportValue($key$$)]);
+      return this;
+    }, setValue:function($key$$0$$, $value$$0$$) {
+      var $key$$ = $key$$0$$, $value$$, $newVal$$ = $json_stringify$$($value$$0$$), $oldVal$$ = $__get$$($storage$$, $key$$), $key$$ = $prefix$$ + $toString$$($key$$);
+      $value$$ = $__decode$$($newVal$$);
+      $storage$$.setItem($key$$, $newVal$$);
+      $__onStorage$$($storage$$, $key$$, $oldVal$$, $value$$);
+      return this;
+    }, dropValue:function($key$$40_key$$) {
+      var $oldVal$$ = $__get$$($storage$$, $key$$40_key$$);
+      $key$$40_key$$ = $prefix$$ + $toString$$($key$$40_key$$);
+      $storage$$.removeItem($key$$40_key$$);
+      $__onStorage$$($storage$$, $key$$40_key$$, $oldVal$$, null);
+      return this;
+    }, listen:function($fn$$) {
+      window.addEventListener("storage", function($event$$) {
+        $event$$ && $event$$.storageArea && $event$$.storageArea === $storage$$ && $js$$.alg.use(this, $fn$$, arguments);
+      }, !1);
+    }};
+  }
+  function $__get$$($storage$$, $key$$) {
+    $key$$ = $prefix$$ + $toString$$($key$$);
+    var $value$$ = $storage$$.getItem($key$$);
+    return $__decode$$($value$$);
+  }
+  function $__onStorage$$($storage$$, $key$$, $oldVal$$, $newVal$$) {
+    var $evt$$ = window.document.createEvent("StorageEvent");
+    $evt$$.initStorageEvent("storage", !1, !1, $key$$, $oldVal$$, $newVal$$, $url$$, $storage$$);
+    window.dispatchEvent($evt$$);
+  }
+  var $js$$ = this, $json_stringify$$ = $js$$.alg.bindFn(window.JSON, window.JSON.stringify), $json_parse$$ = $js$$.alg.bindFn(window.JSON, window.JSON.parse), $emulatedStorageTemplate$$ = {data:{}, setItem:function($key$$, $value$$) {
+    this.data[$key$$] = $value$$;
+  }, getItem:function($key$$46_value$$) {
+    $key$$46_value$$ = this.data[$key$$46_value$$];
+    return "undefined" === typeof $key$$46_value$$ ? null : $key$$46_value$$;
+  }, removeItem:function($key$$) {
+    $js$$.data[$key$$] = null;
+  }}, $toString$$ = $js$$.alg.bindFn($js$$.alg, $js$$.alg.string), $location$$ = window.location, $url$$ = $location$$.toString(), $prefix$$ = "jspyder::" + $location$$.protocol + ":" + $location$$.hostname + "::" + $location$$.port + "::";
+  return {session:$__getInterface$$("sessionStorage"), persist:$__getInterface$$("localStorage")};
+});
 jspyder.extend.fn("template", function() {
   function $js_template$$($data$$) {
     $data$$ && "object" === typeof $data$$ || ($data$$ = {});
@@ -3829,24 +3935,24 @@ jspyder.extend.fn("template", function() {
     }}});
   }
   function $__parse$$($tmp$$, $data$$) {
-    for (var $ctx$$ = {data:$data$$, tmp:$tmp$$, lib:$_library$$}, $found$$2_name$$inline_36_tmp$$ = null, $str$$ = "", $ctx$$inline_26_index$$54_value$$ = 0, $args$$inline_28_length$$;$found$$2_name$$inline_36_tmp$$ = $reSymbol$$.exec($ctx$$.tmp);) {
-      $ctx$$inline_26_index$$54_value$$ = $found$$2_name$$inline_36_tmp$$.index;
-      $found$$2_name$$inline_36_tmp$$ = $found$$2_name$$inline_36_tmp$$[0];
-      $args$$inline_28_length$$ = $found$$2_name$$inline_36_tmp$$.length;
-      $str$$ += $ctx$$.tmp.substring(0, $ctx$$inline_26_index$$54_value$$);
-      $ctx$$.tmp = $ctx$$.tmp.substring($ctx$$inline_26_index$$54_value$$ + $args$$inline_28_length$$);
-      if ($reFunction$$.test($found$$2_name$$inline_36_tmp$$)) {
-        var $ctx$$inline_26_index$$54_value$$ = $ctx$$, $name$$inline_27_result$$ = void 0;
-        $args$$inline_28_length$$ = [];
-        for (var $arg$$inline_29_fn$$ = void 0, $len$$ = $name$$inline_27_result$$ = void 0, $cut$$ = void 0, $name$$inline_27_result$$ = $found$$2_name$$inline_36_tmp$$.match($reFuncName$$)[0].substring(1), $found$$2_name$$inline_36_tmp$$ = $found$$2_name$$inline_36_tmp$$.substring($found$$2_name$$inline_36_tmp$$.indexOf("(") + 1, $found$$2_name$$inline_36_tmp$$.lastIndexOf(")"));$arg$$inline_29_fn$$ = $reFuncArgs$$.exec($found$$2_name$$inline_36_tmp$$);) {
-          $cut$$ = $arg$$inline_29_fn$$[0].length, $len$$ = $arg$$inline_29_fn$$.length, $arg$$inline_29_fn$$ = $arg$$inline_29_fn$$[$len$$ - 1], $found$$2_name$$inline_36_tmp$$ = $found$$2_name$$inline_36_tmp$$.substring($cut$$), $arg$$inline_29_fn$$.search($reFunction$$) ? $arg$$inline_29_fn$$.search($reCommandLiteral$$) ? $arg$$inline_29_fn$$.search($reString$$) ? $arg$$inline_29_fn$$.search($reVariable$$) ? $arg$$inline_29_fn$$.search($reNumber$$) ? $args$$inline_28_length$$.push($__parse$$($arg$$inline_29_fn$$, 
-          $ctx$$inline_26_index$$54_value$$.data)) : $args$$inline_28_length$$.push(+$arg$$inline_29_fn$$) : $args$$inline_28_length$$.push($__parse$$($arg$$inline_29_fn$$, $ctx$$inline_26_index$$54_value$$.data)) : $args$$inline_28_length$$.push($arg$$inline_29_fn$$.substring(1, $arg$$inline_29_fn$$.length - 1)) : $args$$inline_28_length$$.push($__parse$$($arg$$inline_29_fn$$.substring(1, $arg$$inline_29_fn$$.length - 1), $ctx$$inline_26_index$$54_value$$.data)) : $args$$inline_28_length$$.push($__parse$$($arg$$inline_29_fn$$, 
-          $ctx$$inline_26_index$$54_value$$.data));
+    for (var $ctx$$ = {data:$data$$, tmp:$tmp$$, lib:$_library$$}, $found$$2_name$$inline_47_tmp$$ = null, $str$$ = "", $ctx$$inline_37_index$$54_value$$ = 0, $args$$inline_39_length$$;$found$$2_name$$inline_47_tmp$$ = $reSymbol$$.exec($ctx$$.tmp);) {
+      $ctx$$inline_37_index$$54_value$$ = $found$$2_name$$inline_47_tmp$$.index;
+      $found$$2_name$$inline_47_tmp$$ = $found$$2_name$$inline_47_tmp$$[0];
+      $args$$inline_39_length$$ = $found$$2_name$$inline_47_tmp$$.length;
+      $str$$ += $ctx$$.tmp.substring(0, $ctx$$inline_37_index$$54_value$$);
+      $ctx$$.tmp = $ctx$$.tmp.substring($ctx$$inline_37_index$$54_value$$ + $args$$inline_39_length$$);
+      if ($reFunction$$.test($found$$2_name$$inline_47_tmp$$)) {
+        var $ctx$$inline_37_index$$54_value$$ = $ctx$$, $name$$inline_38_result$$ = void 0;
+        $args$$inline_39_length$$ = [];
+        for (var $arg$$inline_40_fn$$ = void 0, $len$$ = $name$$inline_38_result$$ = void 0, $cut$$ = void 0, $name$$inline_38_result$$ = $found$$2_name$$inline_47_tmp$$.match($reFuncName$$)[0].substring(1), $found$$2_name$$inline_47_tmp$$ = $found$$2_name$$inline_47_tmp$$.substring($found$$2_name$$inline_47_tmp$$.indexOf("(") + 1, $found$$2_name$$inline_47_tmp$$.lastIndexOf(")"));$arg$$inline_40_fn$$ = $reFuncArgs$$.exec($found$$2_name$$inline_47_tmp$$);) {
+          $cut$$ = $arg$$inline_40_fn$$[0].length, $len$$ = $arg$$inline_40_fn$$.length, $arg$$inline_40_fn$$ = $arg$$inline_40_fn$$[$len$$ - 1], $found$$2_name$$inline_47_tmp$$ = $found$$2_name$$inline_47_tmp$$.substring($cut$$), $arg$$inline_40_fn$$.search($reFunction$$) ? $arg$$inline_40_fn$$.search($reCommandLiteral$$) ? $arg$$inline_40_fn$$.search($reString$$) ? $arg$$inline_40_fn$$.search($reVariable$$) ? $arg$$inline_40_fn$$.search($reNumber$$) ? $args$$inline_39_length$$.push($__parse$$($arg$$inline_40_fn$$, 
+          $ctx$$inline_37_index$$54_value$$.data)) : $args$$inline_39_length$$.push(+$arg$$inline_40_fn$$) : $args$$inline_39_length$$.push($__parse$$($arg$$inline_40_fn$$, $ctx$$inline_37_index$$54_value$$.data)) : $args$$inline_39_length$$.push($arg$$inline_40_fn$$.substring(1, $arg$$inline_40_fn$$.length - 1)) : $args$$inline_39_length$$.push($__parse$$($arg$$inline_40_fn$$.substring(1, $arg$$inline_40_fn$$.length - 1), $ctx$$inline_37_index$$54_value$$.data)) : $args$$inline_39_length$$.push($__parse$$($arg$$inline_40_fn$$, 
+          $ctx$$inline_37_index$$54_value$$.data));
         }
-        ($arg$$inline_29_fn$$ = $ctx$$inline_26_index$$54_value$$.lib.fetch($name$$inline_27_result$$)) ? ($name$$inline_27_result$$ = $arg$$inline_29_fn$$.apply($ctx$$inline_26_index$$54_value$$.data, $args$$inline_28_length$$), "undefined" !== typeof $name$$inline_27_result$$ && null !== $name$$inline_27_result$$ && ($found$$2_name$$inline_36_tmp$$ = $name$$inline_27_result$$)) : $found$$2_name$$inline_36_tmp$$ = "@" + $name$$inline_27_result$$ + "(" + $args$$inline_28_length$$.join(", ") + ")";
+        ($arg$$inline_40_fn$$ = $ctx$$inline_37_index$$54_value$$.lib.fetch($name$$inline_38_result$$)) ? ($name$$inline_38_result$$ = $arg$$inline_40_fn$$.apply($ctx$$inline_37_index$$54_value$$.data, $args$$inline_39_length$$), "undefined" !== typeof $name$$inline_38_result$$ && null !== $name$$inline_38_result$$ && ($found$$2_name$$inline_47_tmp$$ = $name$$inline_38_result$$)) : $found$$2_name$$inline_47_tmp$$ = "@" + $name$$inline_38_result$$ + "(" + $args$$inline_39_length$$.join(", ") + ")";
       }
-      $reVariable$$.test($found$$2_name$$inline_36_tmp$$) && ($ctx$$inline_26_index$$54_value$$ = $ctx$$.data[$found$$2_name$$inline_36_tmp$$.substring(2, $found$$2_name$$inline_36_tmp$$.length - 1)], $found$$2_name$$inline_36_tmp$$ = "undefined" === typeof $ctx$$inline_26_index$$54_value$$ ? $found$$2_name$$inline_36_tmp$$ : null !== $ctx$$inline_26_index$$54_value$$ ? $ctx$$inline_26_index$$54_value$$ : "");
-      $str$$ += $found$$2_name$$inline_36_tmp$$;
+      $reVariable$$.test($found$$2_name$$inline_47_tmp$$) && ($ctx$$inline_37_index$$54_value$$ = $ctx$$.data[$found$$2_name$$inline_47_tmp$$.substring(2, $found$$2_name$$inline_47_tmp$$.length - 1)], $found$$2_name$$inline_47_tmp$$ = "undefined" === typeof $ctx$$inline_37_index$$54_value$$ ? $found$$2_name$$inline_47_tmp$$ : null !== $ctx$$inline_37_index$$54_value$$ ? $ctx$$inline_37_index$$54_value$$ : "");
+      $str$$ += $found$$2_name$$inline_47_tmp$$;
     }
     return $str$$ += $ctx$$.tmp;
   }
@@ -3856,9 +3962,9 @@ jspyder.extend.fn("template", function() {
   }
   var $_templates$$ = $js$$.createRegistry(), $_library$$ = $js$$.createRegistry(), $__master_key$$ = (4294967295 * Math.random() | 0).toString(32), $reFuncArgs$$ = /\s*(`(?:[^`\\]|\\.)*`|"(?:[^"\\]|\\.)*"|\d+(?:\.\d+)?|\$\{\D[a-z0-9_]*\})(?:\s*,\s*(?!\)))?/i, $reString$$ = /"(?:[^"\\]|\\.)*"/i, $reCommandLiteral$$ = /`(?:[^`\\]|\\.)*`/i, $reNumber$$ = /\d+(?:\.\d+)?/, $reVariable$$ = /\$\{\D[a-z0-9_]*\}/i, $reFuncName$$ = /\@\D[a-z0-9_]*/i, $reFunction$$ = /\@\D[a-z0-9_]*\((?:\s*(`(?:[^`\\]|\\.)*`|"(?:[^"\\]|\\.)*"|\d+(?:\.\d+)?|\$\{\D[a-z0-9_]*\})(?:\s*,\s*(?!\)))?)*\)/i, 
   $reSymbol$$ = /(\@\D[a-z0-9_]*\((?:\s*(`(?:[^`\\]|\\.)*`|"(?:[^"\\]|\\.)*"|\d+(?:\.\d+)?|\$\{\D[a-z0-9_]*\})(?:\s*,\s*(?!\)))?)*\)|\$\{\D[a-z0-9_]*\})/i;
-  $js_template$$.fn = {compile:function $$js_template$$$fn$compile$($name$$122_template$$, $data$$, $fn$$) {
-    $name$$122_template$$ = $_templates$$.fetch($name$$122_template$$);
-    return this.compileExplicit($name$$122_template$$, $data$$, $fn$$);
+  $js_template$$.fn = {compile:function $$js_template$$$fn$compile$($name$$123_template$$, $data$$, $fn$$) {
+    $name$$123_template$$ = $_templates$$.fetch($name$$123_template$$);
+    return this.compileExplicit($name$$123_template$$, $data$$, $fn$$);
   }, compileExplicit:function $$js_template$$$fn$compileExplicit$($template$$4_tmp$$, $data$$, $fn$$) {
     "function" !== typeof $data$$ || $fn$$ || ($fn$$ = $data$$, $data$$ = null);
     "undefined" === typeof $template$$4_tmp$$ && ($template$$4_tmp$$ = "");
@@ -3898,9 +4004,9 @@ jspyder.extend.fn("template", function() {
     return $js_template$$.fn._storeTemplateXml_ajax.apply(this, arguments);
   }, _storeTemplateXml_parseXml:function parseXml($xmlText$$) {
     try {
+      var $doc$$ = null;
       if ("undefined" != typeof DOMParser) {
-        var $doc$$ = (new DOMParser).parseFromString($xmlText$$, "text/xml");
-        return $doc$$;
+        return $doc$$ = (new DOMParser).parseFromString($xmlText$$, "text/xml");
       }
       if ("undefined" != typeof ActiveXObject) {
         return $doc$$ = new ActiveXObject("Microsoft.XMLDOM"), $doc$$.loadXML($xmlText$$), $doc$$;
@@ -3962,7 +4068,10 @@ jspyder.extend.fn("template", function() {
   }, map_size:function($arrayName_data$$) {
     return ($arrayName_data$$ = this[$arrayName_data$$]) && $arrayName_data$$.length ? $arrayName_data$$.length : "undefined" === typeof $arrayName_data$$ ? 0 : 1;
   }, add:function($n$$, $a$$) {
-    return $js$$.alg.number($js$$.alg.number($n$$) + $js$$.alg.number($a$$));
+    for (var $num$$ = $js$$.alg.number, $sum$$ = $num$$($n$$), $i$$ = 1;$i$$ < arguments.length;$i$$++) {
+      $sum$$ += $num$$($a$$);
+    }
+    return $n$$;
   }, "var":function($name$$, $value$$) {
     if (1 === arguments.length) {
       return this[$name$$] || "";
@@ -3977,9 +4086,9 @@ jspyder.extend.fn("template", function() {
     return "";
   }, map_item:function($map$$, $id$$) {
     return ($map$$ = this[$map$$]) ? $map$$[$id$$] : $id$$;
-  }, js_registry:function($data$$118_key$$) {
-    $data$$118_key$$ = $js$$.registry.fetch($data$$118_key$$);
-    return null === $data$$118_key$$ || "undefined" === typeof $data$$118_key$$ ? "" : $data$$118_key$$;
+  }, js_registry:function($data$$119_key$$) {
+    $data$$119_key$$ = $js$$.registry.fetch($data$$119_key$$);
+    return null === $data$$119_key$$ || "undefined" === typeof $data$$119_key$$ ? "" : $data$$119_key$$;
   }, js_log:function($data$$) {
     console.log($data$$);
   }, concat:function($str$$) {

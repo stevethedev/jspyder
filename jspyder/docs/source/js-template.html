@@ -105,8 +105,8 @@ jspyder.extend.fn(&quot;template&quot;, function () {
         resFuncArgs = &quot;\\s*(&quot; + resCommandLiteral + &quot;|&quot; + resString + &quot;|&quot; + resNumber + &quot;|&quot; + resVariable + &quot;)&quot; + resFuncSep,
         resFunction = [resFuncName, &quot;\\((?:&quot;,
             resFuncArgs,
-            &quot;)*\\)&quot;].join(&#39;&#39;),
-        resSymbol = &#39;(&#39; + resFunction + &#39;|&#39; + resVariable + &#39;)&#39;,
+            &quot;)*\\)&quot;].join(''),
+        resSymbol = '(' + resFunction + '|' + resVariable + ')',
 
         // reIdentifier = new RegExp(resIdentifier, &quot;i&quot;),
         reFuncArgs = new RegExp(resFuncArgs, &quot;i&quot;),
@@ -364,15 +364,17 @@ jspyder.extend.fn(&quot;template&quot;, function () {
         },
         _storeTemplateXml_parseXml: function parseXml(xmlText){
             try{
-                var text = xmlText;
+                var text = xmlText,
+                    doc = null;
+                    
                 if (typeof DOMParser != &quot;undefined&quot;) { 
                     var parser=new DOMParser();
-                    var doc=parser.parseFromString(text,&quot;text/xml&quot;);
+                    doc=parser.parseFromString(text,&quot;text/xml&quot;);
                     return doc; 
                 }
                 else if (typeof ActiveXObject != &quot;undefined&quot;) { 
                     // Internet Explorer. 
-                    var doc = new ActiveXObject(&quot;Microsoft.XMLDOM&quot;);  // Create an empty document 
+                    doc = new ActiveXObject(&quot;Microsoft.XMLDOM&quot;);  // Create an empty document 
                     doc.loadXML(text);            // Parse text into it 
                     return doc;                   // Return it 
                 } 
@@ -441,7 +443,7 @@ jspyder.extend.fn(&quot;template&quot;, function () {
          * Registers a set of functions through js.template.register()
          * 
          * @param {Object} o
-         *      Registers o&#39;s keys as function names, and o&#39;s values as
+         *      Registers o's keys as function names, and o's values as
          *      the functions to execute when @key() is invoked within a
          *      template.
          */
@@ -452,17 +454,31 @@ jspyder.extend.fn(&quot;template&quot;, function () {
         }
     };
 
-    js_template.storeTemplate = js_template.fn.storeTempate;
-    js_template.storeTemplateXml = js_template.fn.storeTemplateXml;
-    js_template.getTemplate = js_template.fn.getTemplate;
-    js_template.compile = js_template.fn.compile;
-    js_template.compileExplicit = js_template.fn.compileExplicit;
-    js_template.register = js_template.fn.register;
-    js_template.registerSet = js_template.fn.registerSet;
+    js_template[&quot;storeTemplate&quot;]    = js_template[&quot;fn&quot;][&quot;storeTempate&quot;];
+    js_template[&quot;storeTemplateXml&quot;] = js_template[&quot;fn&quot;][&quot;storeTemplateXml&quot;];
+    js_template[&quot;getTemplate&quot;]      = js_template[&quot;fn&quot;][&quot;getTemplate&quot;];
+    js_template[&quot;compile&quot;]          = js_template[&quot;fn&quot;][&quot;compile&quot;];
+    js_template[&quot;compileExplicit&quot;]  = js_template[&quot;fn&quot;][&quot;compileExplicit&quot;];
+    js_template[&quot;register&quot;]         = js_template[&quot;fn&quot;][&quot;register&quot;];
+    js_template[&quot;registerSet&quot;]      = js_template[&quot;fn&quot;][&quot;registerSet&quot;];
     
+<span id='jspyder-template-property-commands'>    /**
+</span>     * @property commands
+     * @member jspyder.template
+     * 
+     * JS-Template Commands, which are available upon template-compilation
+     */
     js_template.registerSet({
-        // matches an array [frm] in data
-        // pushes results tp [push] in [template]
+
+<span id='jspyder-template-commands-method-each'>        /**
+</span>         * @method each
+         * @member jspyder.template.commands
+         * 
+         * &amp;#64;each(frm, push, template)&lt;br /&gt;
+         * Iterates through each element in the variable referenced by
+         * [frm].  It then compiles the template [template], and pushes
+         * the data into the declared variable [push].
+         */
         &quot;each&quot;: function (frm, push, template) {
             var data = this[frm] || {},
                 pushObj = Object.create(this),
@@ -477,8 +493,14 @@ jspyder.extend.fn(&quot;template&quot;, function () {
             return ret;
         },
         
-        // fetches the template by [name], compiles it, and inserts
-        // it into the calling template.
+<span id='jspyder-template-commands-method-insert_template'>        /**
+</span>         * @method insert_template
+         * @member jspyder.template.commands
+         * 
+         * &amp;#64;insert_template(name, [arg1, [arg2, [...]]])&lt;br /&gt;
+         * Wrapper for jspyder.template.compile(templateId), where
+         * templateId = [name].
+         */
         &quot;insert_template&quot;: function (name) {
             var tmp = &quot;&quot;;
             var o = Object.create(this);
@@ -492,17 +514,32 @@ jspyder.extend.fn(&quot;template&quot;, function () {
             js_template(o).compile(name, function (v) { tmp = v; });
             return tmp; 
         },
-        
+
+<span id='jspyder-template-commands-method-arguments'>        /**
+</span>         * @method arguments
+         * @member jspyder.template.commands
+         * 
+         * &amp;#64;arguments(n)&lt;br /&gt;
+         * Grabs the [n]th argument from the list from the calling
+         * function (e.g. &amp;#64;insert_template).  These values correspond
+         * to the values passed in, following the template name. 
+         */
         &quot;arguments&quot;: function (n) {
             n = js.alg.number(n);
             return (this.arguments ? this.arguments[n] || &quot;&quot; : &quot;&quot;);
         },
-        
-        // branching logic.  If [test] is true, then inserts [pass],
-        // else inserts [fail].
-        // TODO: Make this native support, so that it won&#39;t have
-        // to parse both paths ad infinitum before executing the
-        // function.
+
+<span id='jspyder-template-commands-method-iif'>        /**
+</span>         * @method iif
+         * @member jspyder.template.commands
+         * 
+         * &amp;#64;iif(test, pass, fail)&lt;br /&gt;
+         * branching logic.  If [test] is true, then inserts [pass],
+         * else inserts [fail].
+         * TODO: Make this native support, so that it won't have
+         * to parse both paths ad infinitum before executing the
+         * function.
+         */
         &quot;iif&quot;: function (test, pass, fail) {
             var $t = js_template(this);
             
@@ -517,8 +554,14 @@ jspyder.extend.fn(&quot;template&quot;, function () {
                 return $t.compileExplicit(fail).output();
             }
         },
-        
-        // gets the size of an array
+
+<span id='jspyder-template-commands-method-map_size'>        /**
+</span>         * @method map_size
+         * @member jspyder.template.commands
+         * 
+         * &amp;#64;map_size(arrayName)&lt;br /&gt;
+         * Gets the length of the variable name identified by [arrayName]
+         */
         &quot;map_size&quot;: function (arrayName) {
             var data = this[arrayName];
             
@@ -528,12 +571,30 @@ jspyder.extend.fn(&quot;template&quot;, function () {
                     ? 0
                     : 1); 
         },
-        
-        // adds two numbers together
+
+<span id='jspyder-template-commands-method-add'>        /**
+</span>         * @method add
+         * @member jspyder.template.commands
+         * 
+         * &amp;#64;add(n, a, [b, [c, [...]]])&lt;br /&gt;
+         * Calculates the sum of the numbers passed
+         */
         &quot;add&quot;: function (n, a) {
-            return js.alg.number(js.alg.number(n) + js.alg.number(a));
+            var num = js.alg.number;
+            var sum = num(n);
+            for(var i = 1; i &lt; arguments.length; i++) {
+                sum += num(a);
+            }
+            return n;
         },
-        
+
+<span id='jspyder-template-commands-method-var'>        /**
+</span>         * @method var
+         * @member jspyder.template.commands
+         * 
+         * &amp;#64;var(name, value)&lt;br /&gt;
+         * Defines a scoped variable within the template
+         */
         &quot;var&quot;: function (name, value) {
             if (arguments.length === 1) {
                 return this[name] || &quot;&quot;;
@@ -541,8 +602,15 @@ jspyder.extend.fn(&quot;template&quot;, function () {
             this[name] = value;
             return &quot;&quot;;
         },
-        
-        // @map(&quot;myMap&quot;, &quot;key&quot;, &quot;value&quot;, &quot;key&quot;, &quot;value&quot;, ...)
+
+<span id='jspyder-template-commands-method-map'>        /**
+</span>         * @method map
+         * @member jspyder.template.commands
+         * 
+         * &amp;#64;map(name, [key1, value1, [key2, value2, [...]]])&lt;br /&gt;
+         * Defines a map under variable [name], using key-value pairs
+         * as defined.
+         */
         &quot;map&quot;: function (name) {
             var map = {};
             
@@ -553,35 +621,78 @@ jspyder.extend.fn(&quot;template&quot;, function () {
             this[name] = map;
             return &quot;&quot;;
         },
-        
+
+<span id='jspyder-template-commands-method-map_item'>        /**
+</span>         * @method map_item
+         * @member jspyder.template.commands
+         * 
+         * &amp;#64;map_item(map, id)&lt;br /&gt;
+         * Gets the value from the map identified by [map], using
+         * [id] as a key
+         */
         &quot;map_item&quot;: function (map, id) {
             map = this[map];
             return (map ? map[id] : id);
         },
-        
-        
+
+<span id='jspyder-template-commands-method-js_registry'>        /**
+</span>         * @method js_registry
+         * @member jspyder.template.commands
+         * 
+         * &amp;#64;js_registry(key)&lt;br /&gt;
+         * Retrieves [key] from the JSpyder registry
+         */
         &quot;js_registry&quot;: function (key) {
             var data = js.registry.fetch(key);
             return (data === null || typeof data === &quot;undefined&quot;
                 ? &quot;&quot; : data);
         },
-        
+
+<span id='jspyder-template-commands-method-js_log'>        /**
+</span>         * @method js_log
+         * @member jspyder.template.commands
+         * 
+         * &amp;#64;js_log(data)&lt;br /&gt;
+         * Useful as a debugging tool, this outputs data to the console when
+         * a template is compiled.
+         */
         &quot;js_log&quot;: function (data) {
             console.log(data);
         },
-        
+
+<span id='jspyder-template-commands-method-concat'>        /**
+</span>         * @method concat
+         * @member jspyder.template.commands
+         * 
+         * &amp;#64;concat(str, [str2, [str3, [...]]])&lt;br /&gt;
+         * Merges all of the strings provided into a single string
+         */
         &quot;concat&quot;: function(str) {
             for(var i = 1; i &lt; arguments.length; i++) {
                 str += arguments[i];
             }
             return str;
         },
-        
+
+<span id='jspyder-template-commands-method-html'>        /**
+</span>         * @method html
+         * @member jspyder.template.commands
+         * 
+         * &amp;#64;html(str)&lt;br /&gt;
+         * Retrieves the HTML codes from [str] to convert it into an escaped-string
+         */
         &quot;html&quot;: function(str) {
             js.dom(&quot;&lt;div&gt;&quot; + str + &quot;&lt;/div&gt;&quot;).getText(function(v) { str = v; });
             return str;
         },
-        
+
+<span id='jspyder-template-commands-method-escape'>        /**
+</span>         * @method escape
+         * @member jspyder.template.commands
+         * 
+         * &amp;#64;escape(n, a, [b, [c, [...]]])&lt;br /&gt;
+         * Converts a string into HTML codes
+         */
         &quot;escape&quot;: function (str) {
             var ret = [];
             str = str.split(/\r?\n/);
@@ -590,11 +701,20 @@ jspyder.extend.fn(&quot;template&quot;, function () {
                 js.alg.iterate(0, str.length, function (i) {
                     t.push(&quot;&amp;#&quot;, str.charCodeAt(i), &quot;;&quot;);
                 });
-                ret.push(t.join(&#39;&#39;));
+                ret.push(t.join(''));
             });
-            return ret.join(&#39;&lt;br /&gt;&#39;);
+            return ret.join('&lt;br /&gt;');
         },
-        
+
+<span id='jspyder-template-commands-method-tag'>        /**
+</span>         * @method tag
+         * @member jspyder.template.commands
+         * 
+         * &amp;#64;tag(tag, props)&lt;br /&gt;
+         * Creates an HTML [tag], using [props] as the attributes.  This is
+         * useful within XML templates, which often mis-interpret the XML
+         * as HTML if a tag has no content.
+         */
         &quot;tag&quot;: function (tag, props) {
             tag = js.alg.string(tag, &quot;br&quot;);
             props = js.alg.string(props, &quot;&quot;);

@@ -110,7 +110,7 @@ jspyder.extend.fn("dtype", function () {
                     _baseSet(v);
                 }
                 : function(v) {
-                    _validateFn(v) || _typeError(_name, v, _jsType);
+                    _validateFn(v) || _typeError(_name, v, _jstype);
                     _baseSet(v);
                 }),
             _constSet = function(v) { _constError(_name, _jstype); },
@@ -191,11 +191,11 @@ jspyder.extend.fn("dtype", function () {
          */
         "byte": js.alg.use(js_dtype, function bootstrap() {
             js_alg.byte();
-            var byte = js_alg["byte"];
+            var int8 = js_alg["byte"];
             
             return function attachInt8(name, value, strict, constant) {
                 var _obj = this.obj,
-                    _interface = _createInterface(name, "number", "byte", byte, value, constant, strict);
+                    _interface = _createInterface(name, "number", "byte", int8, value, constant, strict);
 
                 _createBinding(_obj, name, _interface);
                 return this;
@@ -303,11 +303,11 @@ jspyder.extend.fn("dtype", function () {
          */
         "short": js.alg.use(js_dtype, function bootstrap() {
             js_alg.short();
-            var short = js_alg["short"];
+            var int16 = js_alg["short"];
 
             return function attachInt16(name, value, strict, constant) {
                 var _obj = this.obj,
-                    _interface = _createInterface(name, "number", "short", short, value, constant, strict);
+                    _interface = _createInterface(name, "number", "short", int16, value, constant, strict);
 
                 _createBinding(_obj, name, _interface);
                 return this;
@@ -359,7 +359,7 @@ jspyder.extend.fn("dtype", function () {
          */
         "ushort": js.alg.use(js_dtype, function bootstrap() {
             js_alg.short();
-            var short = js_alg["ushort"];
+            var ushort = js_alg["ushort"];
 
             return function attachUInt16(name, value, strict, constant) {
                 var _obj = this.obj,
@@ -415,11 +415,11 @@ jspyder.extend.fn("dtype", function () {
          */
         "int": js.alg.use(js_dtype, function bootstrap() {
             js_alg.int();
-            var int = js_alg["int"];
+            var int32 = js_alg["int"];
 
             return function attachInt32(name, value, strict, constant) {
                 var _obj = this.obj,
-                    _interface = _createInterface(name, "number", "integer", int, value, constant, strict);
+                    _interface = _createInterface(name, "number", "integer", int32, value, constant, strict);
 
                 _createBinding(_obj, name, _interface);
                 return this;
@@ -471,7 +471,7 @@ jspyder.extend.fn("dtype", function () {
          */
         "uint": js.alg.use(js_dtype, function bootstrap() {
             js_alg.uint();
-            var int = js_alg["uint"];
+            var uint = js_alg["uint"];
 
             return function attachUInt32(name, value, strict, constant) {
                 var _obj = this.obj,
@@ -525,11 +525,11 @@ jspyder.extend.fn("dtype", function () {
          */
         "float": js.alg.use(js_dtype, function bootstrap() {
             js_alg.float();
-            var float = js_alg["float"];
+            var floatFn = js_alg["float"];
 
             return function attachFloat(name, value, strict, constant) {
                 var _obj = this.obj,
-                    _interface = _createInterface(name, "number", "float", float, value, constant, strict);
+                    _interface = _createInterface(name, "number", "float", floatFn, value, constant, strict);
 
                 _createBinding(_obj, name, _interface);
                 return this;
@@ -580,11 +580,11 @@ jspyder.extend.fn("dtype", function () {
          */
         "double": js.alg.use(js_dtype, function bootstrap() {
             js_alg.double();
-            var double = js_alg["double"];
+            var doubleFn = js_alg["double"];
 
             return function attachDouble(name, value, strict, constant) {
                 var _obj = this.obj,
-                    _interface = _createInterface(name, "number", "double", double, value, constant, strict);
+                    _interface = _createInterface(name, "number", "double", doubleFn, value, constant, strict);
 
                 _createBinding(_obj, name, _interface);
                 return this;
@@ -641,12 +641,12 @@ jspyder.extend.fn("dtype", function () {
          */
         "fixed": js.alg.use(js_dtype, function bootstrap() {
             js_alg.int();
-            var int = js_alg.int;
+            var int32 = js_alg.int;
             function fixed(decimals) {
                 decimals = js_alg.int(decimals);
                 decimals = Math.pow(10, decimals);
                 return function(value) {
-                    return int(value * decimals) / decimals;
+                    return int32(value * decimals) / decimals;
                 };
             }
             
@@ -1041,9 +1041,9 @@ jspyder.extend.fn("dtype", function () {
                     var _proxy = {},
                         _interface = {
                             valueOf: function() { return value; }
-                        };
-                        value = js.alg.number(value),
+                        },
                         bitValues = [];
+                        value = js.alg.number(value);
                         
                     js.alg.each(values, function(bits, key) {
                         if(key !== "valueOf") {

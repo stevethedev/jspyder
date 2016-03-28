@@ -184,14 +184,14 @@
 </span>     * @private
      * @member jspyder
      *
-     * Bootstrap jspyder&#39;s environment variable collection.
+     * Bootstrap jspyder's environment variable collection.
      *
      * @param {Object} js Jspyder Object
      */
     function _bootstrapEnv(js) {
         var VERSION_OBJ = {
                 MAJOR_VERSION: 0,
-                MINOR_VERSION: 1,
+                MINOR_VERSION: 2,
                 PATCH_VERSION: 0 },
             VERSION_STR = VERSION_OBJ.MAJOR_VERSION + &quot;.&quot; + VERSION_OBJ.MINOR_VERSION + &quot;.&quot; + VERSION_OBJ.PATCH_VERSION,
             BROWSER_NAME = &quot;&quot;,
@@ -206,7 +206,7 @@
                 else if (!window.addEventListener) { BROWSER_VERSION = 8; }
                 else { BROWSER_VERSION = 7; }
             }
-            else if (typeof window.InstallTrigger !== &#39;undefined&#39;) {
+            else if (typeof window.InstallTrigger !== 'undefined') {
                 BROWSER_NAME = &quot;Firefox&quot;;
 
                 if (Int8Array &amp;&amp; Int8Array.prototype.sort) { BROWSER_VERSION = 7; }
@@ -216,7 +216,7 @@
                 else if (typeof window.Reflect !== &quot;undefined&quot;) { BROWSER_VERSION = 42; }
                 else { BROWSER_VERSION = 41; }
             }
-            else if (!!window.opera || navigator.userAgent.indexOf(&#39; OPR/&#39;) &gt;= 0) {
+            else if (!!window.opera || navigator.userAgent.indexOf(' OPR/') &gt;= 0) {
                 BROWSER_NAME = &quot;Opera&quot;;
                 BROWSER_VERSION = 1;
             }
@@ -225,7 +225,7 @@
                 BROWSER_VERSION = 45;
                 //45 - 51;
             }
-            else if (Object.prototype.toString.call(window.HTMLElement).indexOf(&#39;Constructor&#39;) &gt; 0) {
+            else if (Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') &gt; 0) {
                 BROWSER_NAME = &quot;Safari&quot;;
                 if (window.CSS.supports) { BROWSER_VERSION = 9; }
                 else if (!window.CSS.supports) { BROWSER_VERSION = 8; }
@@ -314,7 +314,7 @@
 </span>     * @private
      * @member jspyder
      *
-     * Bootstrap jspyder&#39;s algorithm collection.
+     * Bootstrap jspyder's algorithm collection.
      *
      * @param {Object} js Jspyder Object
      */
@@ -539,7 +539,7 @@
                     return s.toString();
                 }
                 else if (s !== null &amp;&amp; typeof s === &quot;object&quot; &amp;&amp; s.isPrototypeOf(RegExp)) {
-                    s = (&#39;&#39; + s).match(/^\/(.*)\/[a-z]*$/, &quot;$1&quot;);
+                    s = ('' + s).match(/^\/(.*)\/[a-z]*$/, &quot;$1&quot;);
                     return s;
                 }
                 else if (s || s === 0) {
@@ -566,7 +566,7 @@
 </span>             * Coerces a value to a date, or else returns a new date object.
              */
             &quot;date&quot;: function(v, d) {
-                return ((input instanceof Date || Object.prototype.toString.call(input) === &#39;[object Date]&#39;)
+                return ((v instanceof Date || Object.prototype.toString.call(v) === '[object Date]')
                     ? v
                     : d || new Date());
             },
@@ -712,8 +712,8 @@
              */
             &quot;float&quot;: function (u) {
                 if (typeof window[&quot;Float32Array&quot;] === &quot;undefined&quot;) {
-                    js_alg[&quot;float&quot;] = function(u) {
-                        var sign = 2 * (x &gt; 0) - 1,
+                    js_alg[&quot;float&quot;] = function(x) {
+                        var sign = (x &gt; 0 ? 1 : -1),
                             exp = 0,
                             base = x * sign,
                             frac = 0;
@@ -905,7 +905,7 @@
              * @return {Array} arrRef parameter
              */
             &quot;joinArray&quot;: function(arrRef, arrFrom /*, ... */) {
-                // limit pulled from Google&#39;s closure library:
+                // limit pulled from Google's closure library:
                 // https://github.com/google/closure-library/commit/da353e0265ea32583ea1db9e7520dce5cceb6f6a
                 var CHUNK_SIZE = 8192;
 
@@ -1196,7 +1196,7 @@
             if (!(js_dom.fn.isPrototypeOf(element))) {
 
                 if (typeof s === &quot;string&quot;) {
-                    if((s.match(/(^\\\&lt;|\&lt;)/g) || []).indexOf(&#39;&lt;&#39;) === -1) {
+                    if((s.match(/(^\\\&lt;|\&lt;)/g) || []).indexOf('&lt;') === -1) {
                         element = document.querySelectorAll(s);
                     }
                     else {
@@ -1249,7 +1249,7 @@
 
 <span id='jspyder-dom-method-__getDomClasses'>        /**
 </span>         * @private
-         * Gets the DOM object&#39;s classes as an array
+         * Gets the DOM object's classes as an array
          */
         function __getDomClasses(element) {
             return (__isElement(element)
@@ -1259,7 +1259,7 @@
 
 <span id='jspyder-dom-method-_setDomClass'>        /**
 </span>         * @private
-         * Sets the DOM object&#39;s class based on the enable flag
+         * Sets the DOM object's class based on the enable flag
          */
         function _setDomClass(element, cls, enable) {
             var clss = __getDomClasses(element),
@@ -1284,7 +1284,7 @@
 
 <span id='jspyder-dom-method-_getDomClass'>        /**
 </span>         * @private
-         * Sets the DOM object&#39;s class based on the enable flag
+         * Sets the DOM object's class based on the enable flag
          */
         function _getDomClass(element, cls) {
             return (__getDomClasses(element).indexOf(cls) !== -1);
@@ -1466,18 +1466,16 @@
                         ret = {
                             top: 0, left: 0, bottom: 0, right: 0, x: 0, y: 0, height: 0, width: 0
                         };
-                    while (el &amp;&amp; getComputedStyle(el).position === &quot;static&quot;) {
+                    while (el &amp;&amp; !/absolute|fixed|relative/i.test(getComputedStyle(el).position)) {
                         el = el.parentNode;
                     }
 
-                    if (el) {
-                        var me = self.getBoundingClientRect(),
-                            pr = el.getBoundingClientRect();
+                    var me = self.getBoundingClientRect(),
+                        pr = (el || document.body).getBoundingClientRect();
 
-                        js.each(ret, function (v, p, ret) {
-                            ret[p] = pr[p] - me[p];
-                        });
-                    }
+                    js.alg.each(ret, function (v, p, ret) {
+                        ret[p] = me[p] - pr[p];
+                    });
 
                     js_dom(el).use(fn, [ret]);
                     return;
@@ -1517,7 +1515,18 @@
                         attrs = (!i ? attrs.first : attrs.others);
                         // iterate each attribute
                         _each(attrs, function (_, a, attrs) {
-                            attrs[a] = el.getAttribute(a);
+                            switch (typeof attrs[a]) {
+                                case &quot;number&quot;:
+                                    attrs[a] = js.alg.number(el.getAttribute(a), _);
+                                    break;
+                                case &quot;string&quot;:
+                                    attrs[a] = js.alg.string(el.getAttribute(a), _);
+                                    break;
+                                case &quot;boolean&quot;:
+                                    attrs[a] = js.alg.bool(el.getAttribute(a), _);
+                                default:
+                                    attrs[a] = el.getAttribute(a);
+                            }
                         });
                         // callback
                         if (typeof fn === &quot;function&quot;) { js_dom(el, fn, [attrs]); }
@@ -1627,7 +1636,6 @@
              * @param {Function} fn
              */
             element: function (n, fn) {
-                var self = this;
                 this.at(n, function () {
                     var el = this._element[0];
                     if (el &amp;&amp; typeof fn === &quot;function&quot;) {
@@ -1661,7 +1669,7 @@
             },
 
 <span id='jspyder-dom-method-attachStart'>            /**
-</span>             * Inserts this set of nodes to the identified node&#39;s parent, immediately
+</span>             * Inserts this set of nodes to the identified node's parent, immediately
              * preceding that element.
              */
             attachStart: function (parent, fn) {
@@ -1669,14 +1677,14 @@
                 js_dom(parent).element(0, function (p) {
                     var doc = document.createDocumentFragment();
                     children.each(js_dom.fn._append, doc);
-                    this.parentNode &amp;&amp; this.parentNode.insertBefore(doc, p);
+                    this.parentNode &amp;&amp; this.parentNode.insertBefore(doc, p._element[0] || null);
                     p.use(fn, children);
                 });
                 return this;
             },
 
 <span id='jspyder-dom-method-attachEnd'>            /**
-</span>             * Inserst this set of nodes to the identified node&#39;s parent, immediately
+</span>             * Inserst this set of nodes to the identified node's parent, immediately
              * following that element.
              */
             attachEnd: function (parent, fn) {
@@ -1713,7 +1721,7 @@
             },
 
 <span id='jspyder-dom-method-appendBefore'>            /**
-</span>             * Attaches the element to the identified node&#39;s parent, immediately
+</span>             * Attaches the element to the identified node's parent, immediately
              * preceding the identified child.
              *
              * @param {Mixed} child
@@ -1729,7 +1737,7 @@
             },
 
 <span id='jspyder-dom-method-appendAfter'>            /**
-</span>             * Attaches the element to the identified node&#39;s parent, immediately
+</span>             * Attaches the element to the identified node's parent, immediately
              * following the identifed child.
              *
              * @param {Mixed} child
@@ -2007,8 +2015,8 @@
              *      New text value to use on each of the wrapped element.
              */
             setText: function(text) {
-                text = js.alg.string(text);
-                fn = typeof document.documentElement[&quot;textContent&quot;] === &quot;undefined&quot; ? &quot;innerText&quot; : &quot;textContent&quot;;
+                var fn = typeof document.documentElement[&quot;textContent&quot;] === &quot;undefined&quot; ? &quot;innerText&quot; : &quot;textContent&quot;;
+                    text = js.alg.string(text);
                 this.each(function(element) {
                     element[fn] = text;
                 });
@@ -2123,7 +2131,7 @@
                     name = names[n];
                     field = fields[name];
 
-                    this._template_insert(tDOM, &#39;${&#39; + name + &#39;}&#39;, field);
+                    this._template_insert(tDOM, '${' + name + '}', field);
                 }
                 return tDOM;
             },

@@ -491,8 +491,8 @@ jspyder.extend.fn("date", function () {
          * @param {Number} month
          */
         setMonth: function (month) {
-            months = js.alg.number(months) - 1;
-            __processDateFraction(this._value, "setMonth", "getMonth", months);
+            month = js.alg.number(month) - 1;
+            __processDateFraction(this._value, "setMonth", "getMonth", month);
             return this;
         },
         
@@ -1247,7 +1247,7 @@ jspyder.extend.fn("date", function () {
      * Calculates the step between two dates.
      */
     function __processDateFraction(dateObj, setFn, getFn, step) {
-        var fraction = step - (step|0);
+        var fraction = step - (step|0),
             tempDate = null,
             offset = 0,
             time = 0;

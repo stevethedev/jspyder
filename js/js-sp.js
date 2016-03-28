@@ -22,7 +22,7 @@
  * IN THE SOFTWARE.
  */
 
-js.extend.fn("sp", function () {
+jspyder.extend.fn("sp", function () {
     /** @ignore */
     var js = window.jspyder;
 

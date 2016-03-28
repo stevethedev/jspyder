@@ -15,7 +15,7 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js">/* ****************************************************************************
+  <pre class="prettyprint lang-js">/*
  * The MIT License (MIT)
  *
  * Copyright (c) 2015 Steven Jimenez
@@ -37,7 +37,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
- * ***************************************************************************/
+ */
 
 jspyder.extend.fn(&quot;dialog&quot;, function () {
     var js = this;
@@ -178,7 +178,7 @@ jspyder.extend.fn(&quot;dialog&quot;, function () {
                     &quot;&lt;/div&gt;&quot;,
                 &quot;&lt;/div&gt;&quot;,
             &quot;&lt;/div&gt;&quot;
-        ].join(&#39;&#39;),
+        ].join(''),
         
         _height: 237.2,
         _width: 498,
@@ -186,7 +186,7 @@ jspyder.extend.fn(&quot;dialog&quot;, function () {
         _buttonFactory: function (text) {
             var html = [
                 &quot;&lt;div&gt;&quot;, text, &quot;&lt;/div&gt;&quot;
-            ].join(&#39;&#39;);
+            ].join('');
             return js.dom(html);
         },
         
