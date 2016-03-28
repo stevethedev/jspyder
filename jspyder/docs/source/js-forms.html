@@ -106,9 +106,7 @@ jspyder.extend.fn(&quot;form&quot;, function () {
             }
         }
 
-        if (typeof fn === &quot;function&quot;) {
-            fn.apply(this);
-        }
+        js.alg.use(this, fn);
 
         return form;
     }
@@ -600,7 +598,7 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                 $field.getValue(_export);
             }
                 
-            fn.apply(this, [values]);
+            js.alg.use(this, fn, [valid, invalid]);
             return this;
         },
         
@@ -700,7 +698,7 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                 return;
             });
             
-            fn.apply(this, [valid, invalid]);
+            js.alg.use(this, fn, [valid, invalid]);
             
             return this;
         },
@@ -736,10 +734,7 @@ jspyder.extend.fn(&quot;form&quot;, function () {
             }
             
             // cycle through fields
-            
-            if(typeof fn === &quot;function&quot;) {
-                fn.apply(dom, [this, dom, data]);
-            }
+            js.alg.use(dom, fn, [this, dom, data]);
             
             return this; 
         },
@@ -858,7 +853,7 @@ jspyder.extend.fn(&quot;form&quot;, function () {
             });
             
             dom.template(fields || {});
-            (typeof fn === &quot;function&quot;) &amp;&amp; fn.apply(this, [dom]);
+            js.alg.use(this, fn, [dom]);
                 
             return dom;
         }
@@ -993,7 +988,7 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                     this.months = &quot;&quot;;
                 
                     js.alg.arrEach(
-                        this.date.getMonthList(&quot;mmm&quot;), 
+                        this.date.exportMonthList(&quot;mmm&quot;), 
                         this.monthlistBuilder, 
                         this);
                         
@@ -1012,8 +1007,8 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                     return;
                 },
                 monthlistBuilder: function (month, monthnum, months, data) {
-                    var sameYear = data.today.getYear() === data.date.getYear(),
-                        sameMonth = (monthnum + 1) === data.today.getMonth(); 
+                    var sameYear = data.today.exportYear() === data.date.exportYear(),
+                        sameMonth = (monthnum + 1) === data.today.exportMonth(); 
                         
                     data.months += [
                         &quot;&lt;div class=\&quot;month &quot;, (( sameYear &amp;&amp; sameMonth ) ? &quot;today&quot; : &quot;&quot;), &quot;\&quot;&quot;,
@@ -1027,15 +1022,15 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                 monthClick: function () {
                     var calStruct = this;
                     calStruct.today = js.date();
-                    var weekdays = calStruct.date.getWeekdayList(&quot;DD&quot;),
-                        daylist = calStruct.date.getDayList(&quot;d&quot;),
+                    var weekdays = calStruct.date.exportWeekdayList(&quot;DD&quot;),
+                        daylist = calStruct.date.exportDayList(&quot;d&quot;),
                         i = 0,
                         data = { 
                             html: &quot;&quot;, 
                             wlen: weekdays.length,
-                            offset: calStruct.date.getWeekdayOffset(),
+                            offset: calStruct.date.exportWeekdayOffset(),
                             calStruct: calStruct,
-                            today: (calStruct.today.getMonth() === calStruct.date.getMonth()) &amp;&amp; (js.date().getDay()) };
+                            today: (calStruct.today.exportMonth() === calStruct.date.exportMonth()) &amp;&amp; (js.date().exportDay()) };
                     
                     js.alg.arrEach(weekdays, calStruct.buildWeekdays, data);
                         
@@ -1052,11 +1047,13 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                         js.dom(this).getValue(function(v) {
                             calStruct.date.setDay(v);
                             calStruct.setTitle(true);
+                            js.dom(calStruct.input).trigger(&quot;change&quot;);
                         });
                         calStruct.enableClose();
                     });
                     calStruct.setTitle();
                     calStruct.preventClose();
+                    js.dom(calStruct.input).trigger(&quot;change&quot;);
                     return;
                 },
                 buildWeekdays: function (weekday, daynum, daylist, data) {
@@ -1069,9 +1066,9 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                     return;
                 },
                 buildNumberedDays: function (day, daynum, daylist, data) {
-                    var sameYear = data.calStruct.today.getYear() === data.calStruct.date.getYear(),
-                        sameMonth = data.calStruct.today.getMonth() === data.calStruct.date.getMonth(),
-                        sameDate = data.calStruct.today.getDay() === (daynum + 1);
+                    var sameYear = data.calStruct.today.exportYear() === data.calStruct.date.exportYear(),
+                        sameMonth = data.calStruct.today.exportMonth() === data.calStruct.date.exportMonth(),
+                        sameDate = data.calStruct.today.exportDay() === (daynum + 1);
                             
                     data.html += [
                         &quot;&lt;div class=\&quot;date &quot;, (sameYear &amp;&amp; sameMonth &amp;&amp; sameDate ? &quot;today&quot;:&quot;&quot;) ,&quot;\&quot; value=\&quot;&quot;, (daynum + 1), &quot;\&quot; &quot;,
@@ -2074,7 +2071,7 @@ jspyder.extend.fn(&quot;form&quot;, function () {
 
                             found
                                 .setHtml(data.match.join(&quot;&quot;))
-                                .attachAfter(this)
+                                .attachEnd(this)
                                 .setCss(css)
                                 .find(&quot;.search-item&quot;).on(&quot;mousedown&quot;, searchClick);
                         }

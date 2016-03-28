@@ -89,9 +89,7 @@ jspyder.extend.fn("form", function () {
             }
         }
 
-        if (typeof fn === "function") {
-            fn.apply(this);
-        }
+        js.alg.use(this, fn);
 
         return form;
     }
@@ -583,7 +581,7 @@ jspyder.extend.fn("form", function () {
                 $field.getValue(_export);
             }
                 
-            fn.apply(this, [values]);
+            js.alg.use(this, fn, [valid, invalid]);
             return this;
         },
         
@@ -683,7 +681,7 @@ jspyder.extend.fn("form", function () {
                 return;
             });
             
-            fn.apply(this, [valid, invalid]);
+            js.alg.use(this, fn, [valid, invalid]);
             
             return this;
         },
@@ -719,10 +717,7 @@ jspyder.extend.fn("form", function () {
             }
             
             // cycle through fields
-            
-            if(typeof fn === "function") {
-                fn.apply(dom, [this, dom, data]);
-            }
+            js.alg.use(dom, fn, [this, dom, data]);
             
             return this; 
         },
@@ -841,7 +836,7 @@ jspyder.extend.fn("form", function () {
             });
             
             dom.template(fields || {});
-            (typeof fn === "function") && fn.apply(this, [dom]);
+            js.alg.use(this, fn, [dom]);
                 
             return dom;
         }
@@ -976,7 +971,7 @@ jspyder.extend.fn("form", function () {
                     this.months = "";
                 
                     js.alg.arrEach(
-                        this.date.getMonthList("mmm"), 
+                        this.date.exportMonthList("mmm"), 
                         this.monthlistBuilder, 
                         this);
                         
@@ -995,8 +990,8 @@ jspyder.extend.fn("form", function () {
                     return;
                 },
                 monthlistBuilder: function (month, monthnum, months, data) {
-                    var sameYear = data.today.getYear() === data.date.getYear(),
-                        sameMonth = (monthnum + 1) === data.today.getMonth(); 
+                    var sameYear = data.today.exportYear() === data.date.exportYear(),
+                        sameMonth = (monthnum + 1) === data.today.exportMonth(); 
                         
                     data.months += [
                         "<div class=\"month ", (( sameYear && sameMonth ) ? "today" : ""), "\"",
@@ -1010,15 +1005,15 @@ jspyder.extend.fn("form", function () {
                 monthClick: function () {
                     var calStruct = this;
                     calStruct.today = js.date();
-                    var weekdays = calStruct.date.getWeekdayList("DD"),
-                        daylist = calStruct.date.getDayList("d"),
+                    var weekdays = calStruct.date.exportWeekdayList("DD"),
+                        daylist = calStruct.date.exportDayList("d"),
                         i = 0,
                         data = { 
                             html: "", 
                             wlen: weekdays.length,
-                            offset: calStruct.date.getWeekdayOffset(),
+                            offset: calStruct.date.exportWeekdayOffset(),
                             calStruct: calStruct,
-                            today: (calStruct.today.getMonth() === calStruct.date.getMonth()) && (js.date().getDay()) };
+                            today: (calStruct.today.exportMonth() === calStruct.date.exportMonth()) && (js.date().exportDay()) };
                     
                     js.alg.arrEach(weekdays, calStruct.buildWeekdays, data);
                         
@@ -1035,11 +1030,13 @@ jspyder.extend.fn("form", function () {
                         js.dom(this).getValue(function(v) {
                             calStruct.date.setDay(v);
                             calStruct.setTitle(true);
+                            js.dom(calStruct.input).trigger("change");
                         });
                         calStruct.enableClose();
                     });
                     calStruct.setTitle();
                     calStruct.preventClose();
+                    js.dom(calStruct.input).trigger("change");
                     return;
                 },
                 buildWeekdays: function (weekday, daynum, daylist, data) {
@@ -1052,9 +1049,9 @@ jspyder.extend.fn("form", function () {
                     return;
                 },
                 buildNumberedDays: function (day, daynum, daylist, data) {
-                    var sameYear = data.calStruct.today.getYear() === data.calStruct.date.getYear(),
-                        sameMonth = data.calStruct.today.getMonth() === data.calStruct.date.getMonth(),
-                        sameDate = data.calStruct.today.getDay() === (daynum + 1);
+                    var sameYear = data.calStruct.today.exportYear() === data.calStruct.date.exportYear(),
+                        sameMonth = data.calStruct.today.exportMonth() === data.calStruct.date.exportMonth(),
+                        sameDate = data.calStruct.today.exportDay() === (daynum + 1);
                             
                     data.html += [
                         "<div class=\"date ", (sameYear && sameMonth && sameDate ? "today":"") ,"\" value=\"", (daynum + 1), "\" ",
@@ -2057,7 +2054,7 @@ jspyder.extend.fn("form", function () {
 
                             found
                                 .setHtml(data.match.join(""))
-                                .attachAfter(this)
+                                .attachEnd(this)
                                 .setCss(css)
                                 .find(".search-item").on("mousedown", searchClick);
                         }
