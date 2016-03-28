@@ -1137,12 +1137,12 @@ $jscomp.string.endsWith$install = function $$jscomp$string$endsWith$install$() {
         $p$$.use($fn$$, $children$$);
       });
       return this;
-    }, attachStart:function $$js_dom$$$fn$attachStart$($parent$$, $fn$$) {
+    }, attachStart:function $$js_dom$$$fn$attachStart$($parent$$0$$, $fn$$) {
       var $children$$ = this;
-      $js_dom$$($parent$$).element(0, function($p$$) {
-        var $doc$$ = $document$$.createDocumentFragment();
+      $js_dom$$($parent$$0$$).element(0, function($p$$) {
+        var $doc$$ = $document$$.createDocumentFragment(), $parent$$ = this.parentNode;
         $children$$.each($js_dom$$.fn._append, $doc$$);
-        this.parentNode && this.parentNode.insertBefore($doc$$, $p$$._element[0] || null);
+        $parent$$ && $parent$$.insertBefore($doc$$, $p$$._element[0] || null);
         $p$$.use($fn$$, $children$$);
       });
       return this;

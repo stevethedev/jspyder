@@ -1658,9 +1658,10 @@
             attachStart: function (parent, fn) {
                 var children = this;
                 js_dom(parent).element(0, function (p) {
-                    var doc = document.createDocumentFragment();
+                    var doc = document.createDocumentFragment(),
+                        parent = this.parentNode;
                     children.each(js_dom.fn._append, doc);
-                    this.parentNode && this.parentNode.insertBefore(doc, p._element[0] || null);
+                    parent && parent.insertBefore(doc, p._element[0] || null);
                     p.use(fn, children);
                 });
                 return this;
