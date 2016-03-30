@@ -1142,7 +1142,7 @@ $jscomp.string.endsWith$install = function $$jscomp$string$endsWith$install$() {
       $js_dom$$($parent$$0$$).element(0, function($p$$) {
         var $doc$$ = $document$$.createDocumentFragment(), $parent$$ = this.parentNode, $el$$ = $p$$._element[0];
         $children$$.each($js_dom$$.fn._append, $doc$$);
-        $parent$$ && $parent$$.insertBefore($doc$$, $el$$ && $el$$ !== this ? $el$$ : $parent$$.children[0]);
+        $parent$$ && $parent$$.insertBefore($doc$$, $el$$ && $el$$ !== $children$$._element[0] ? $el$$ : $parent$$.children[0]);
         $p$$.use($fn$$, $children$$);
       });
       return this;
@@ -3640,7 +3640,7 @@ jspyder.extend.fn("sp", function() {
     return this;
   }, pull:function $$sp$$$list$fn$pull$($success$$, $failure$$) {
     var $ctx$$ = $sp$$.exportContext(this._url), $list$$7_listItems$$ = $ctx$$.get_web().get_lists().getByTitle(this._name), $caml$$ = new window.SP.CamlQuery, $successFn$$ = "function" === typeof $success$$ ? $success$$ : this._success, $failureFn$$ = "function" === typeof $failure$$ ? $failure$$ : this._failure;
-    $caml$$.set_viewXml(this.caml);
+    $caml$$.set_viewXml(this._caml);
     $list$$7_listItems$$ = $list$$7_listItems$$.getItems($caml$$);
     $ctx$$.load($list$$7_listItems$$);
     $ctx$$.executeQueryAsync($js$$.alg.bindFn(this, $__successParse$$, [$list$$7_listItems$$, $successFn$$]), $js$$.alg.bindFn(this, $__failureParse$$, [$list$$7_listItems$$, $failureFn$$]));

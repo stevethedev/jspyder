@@ -1662,7 +1662,7 @@
                         parent = this.parentNode,
                         el = p._element[0];
                     children.each(js_dom.fn._append, doc);
-                    parent && parent.insertBefore(doc, (el && el !== this) ? el : parent.children[0]);
+                    parent && parent.insertBefore(doc, (el && el !== children._element[0]) ? el : parent.children[0]);
                     p.use(fn, children);
                 });
                 return this;
