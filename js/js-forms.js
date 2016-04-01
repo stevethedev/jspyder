@@ -2275,19 +2275,24 @@ jspyder.extend.fn("form", function () {
                 
                 $input.filter("input")
                     .on("blur", function (event) {
-                        var $input = js.dom(this).setAttrs({ "data-focus": null });
-                        form.setFieldValue(cfg.name, $input.exportValue());
+                        var attrs = { "readonly": null };
+                        js.dom(this).getAttrs(attrs);
+
+                        if(!attrs["readonly"]) {
+                            var $input = js.dom(this).setAttrs({ "data-focus": null });
+                            form.setFieldValue(cfg.name, $input.exportValue());
+                        }
                         return;
                     })
                     .on("focus", function (event) {
                         var attrs = { "readonly": null };
                         js.dom(this).getAttrs(attrs);
-                        
+
                         if(!attrs["readonly"]) {
                             var $input = js.dom(this).setAttrs({ "data-focus": true });
                             form.setFieldValue(cfg.name, $input.exportValue());
                         }
-                        
+
                         return;
                     });
                     
