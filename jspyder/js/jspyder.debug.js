@@ -3374,13 +3374,14 @@ jspyder.extend.fn("form", function() {
       var $$input_cfg2$$ = $js$$.alg.mergeObj({}, $cfg$$, $__override$$, {"class":$js$$.alg.string($cfg$$.class, "") + " data-number"}), $$input_cfg2$$ = this.buildControl($$input_cfg2$$, !0), $form$$ = this;
       $cfg$$.setValue = $setValue$$;
       $cfg$$.exportValue = $exportValue$$;
-      $$input_cfg2$$.filter("input").on("blur", function($$input$$1_event$$) {
-        $$input$$1_event$$ = $js$$.dom(this).setAttrs({"data-focus":null});
-        $form$$.setFieldValue($cfg$$.name, $$input$$1_event$$.exportValue());
-      }).on("focus", function($$input$$2_attrs$$38_event$$) {
-        $$input$$2_attrs$$38_event$$ = {readonly:null};
-        $js$$.dom(this).getAttrs($$input$$2_attrs$$38_event$$);
-        $$input$$2_attrs$$38_event$$.readonly || ($$input$$2_attrs$$38_event$$ = $js$$.dom(this).setAttrs({"data-focus":!0}), $form$$.setFieldValue($cfg$$.name, $$input$$2_attrs$$38_event$$.exportValue()));
+      $$input_cfg2$$.filter("input").on("blur", function($$input$$1_attrs$$38_event$$) {
+        $$input$$1_attrs$$38_event$$ = {readonly:null};
+        $js$$.dom(this).getAttrs($$input$$1_attrs$$38_event$$);
+        $$input$$1_attrs$$38_event$$.readonly || ($$input$$1_attrs$$38_event$$ = $js$$.dom(this).setAttrs({"data-focus":null}), $form$$.setFieldValue($cfg$$.name, $$input$$1_attrs$$38_event$$.exportValue()));
+      }).on("focus", function($$input$$2_attrs$$39_event$$) {
+        $$input$$2_attrs$$39_event$$ = {readonly:null};
+        $js$$.dom(this).getAttrs($$input$$2_attrs$$39_event$$);
+        $$input$$2_attrs$$39_event$$.readonly || ($$input$$2_attrs$$39_event$$ = $js$$.dom(this).setAttrs({"data-focus":!0}), $form$$.setFieldValue($cfg$$.name, $$input$$2_attrs$$39_event$$.exportValue()));
       });
       return $$input_cfg2$$;
     };
