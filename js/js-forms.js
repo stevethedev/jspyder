@@ -2025,12 +2025,14 @@ jspyder.extend.fn("form", function () {
                             if(!match) {
                                 this.value = "";
                                 js.dom(this).setAttrs({ "data-value": "" });
-                            }
-                            
+                            }                            
                             else {
                                 this.value = match.text;
                                 js.dom(this).setAttrs({ "data-value": match.value });
                             }
+                        }
+                        else {
+                            js.dom(this).setAttrs({ "data-value": this.value });
                         }
                         fns.hide();
                         return;

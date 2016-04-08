@@ -3285,7 +3285,7 @@ jspyder.extend.fn("form", function() {
       }).on("blur", function($attrs$$33_event$$32_match$$) {
         $attrs$$33_event$$32_match$$ = {readonly:null};
         $js$$.dom(this).getAttrs($attrs$$33_event$$32_match$$);
-        $attrs$$33_event$$32_match$$.readonly || ("" === this.value ? $js$$.dom(this).setAttrs({"data-value":""}) : $config$$.strict && (($attrs$$33_event$$32_match$$ = $searchValue$$($config$$, this.value, !0)) ? (this.value = $attrs$$33_event$$32_match$$.text, $js$$.dom(this).setAttrs({"data-value":$attrs$$33_event$$32_match$$.value})) : (this.value = "", $js$$.dom(this).setAttrs({"data-value":""}))), $fns$$.hide());
+        $attrs$$33_event$$32_match$$.readonly || ("" === this.value ? $js$$.dom(this).setAttrs({"data-value":""}) : $config$$.strict ? ($attrs$$33_event$$32_match$$ = $searchValue$$($config$$, this.value, !0)) ? (this.value = $attrs$$33_event$$32_match$$.text, $js$$.dom(this).setAttrs({"data-value":$attrs$$33_event$$32_match$$.value})) : (this.value = "", $js$$.dom(this).setAttrs({"data-value":""})) : $js$$.dom(this).setAttrs({"data-value":this.value}), $fns$$.hide());
       });
       var $fns$$ = {show:function search($css$$8_value$$) {
         var $values$$ = $config$$.values || [], $minlen$$ = $js$$.alg.number($config$$.minlen, 3), $data$$ = {match:[], regexp:new RegExp($js$$.alg.escapeString($css$$8_value$$), "i"), depth:$js$$.alg.number($config$$.length, 5)};
