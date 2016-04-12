@@ -4121,4 +4121,43 @@ jspyder.extend.fn("template", function() {
   }});
   return $js$$.template = $js_template$$;
 });
+jspyder.extend.fn("tutorial", function() {
+  function $js_tutorial$$() {
+    var $h$$ = Object.create($js_tutorial$$.fn, {_window:{value:$js$$.dom('<div class="js-tutorial-viewport"></div>')}, _message:{value:$js$$.dom('<div class="js-tutorial-message"></div>')}, _obscure:{value:$js$$.dom('<div class="js-tutorial-obscure"></div>')}, _then:{value:[]}}), $lastFn$$ = null;
+    $h$$._next = function $$h$$$_next$($event$$) {
+      $lastFn$$ && "function" === typeof $lastFn$$.callback && $lastFn$$.callback.call($h$$, $h$$._target);
+      $lastFn$$ = $h$$._then.pop();
+      "function" === typeof $lastFn$$ ? $lastFn$$.call($h$$) : $h$$.end();
+    };
+    $h$$._targetLeft = function $$h$$$_targetLeft$() {
+      return this._target.getBoundingClientRect().left + "px";
+    };
+    $h$$._window.on("click", $h$$._next);
+    return $h$$;
+  }
+  var $js$$ = this;
+  $js_tutorial$$.fn = {_window:null, _target:null, _message:null, _then:null, _running:!1, start:function $$js_tutorial$$$fn$start$() {
+    this._obscure.attach(window.document.body);
+    this._window.attach(window.document.body);
+    this._message.attach(window.document.body);
+    return this;
+  }, step:function $$js_tutorial$$$fn$step$($selector$$, $message$$, $callback$$) {
+    var $fn$$ = function $$fn$$$() {
+      this._target = window.document.querySelector($selector$$);
+      var $css$$9_rect$$ = this._target.getBoundingClientRect(), $css$$9_rect$$ = {top:$css$$9_rect$$.top + "px", left:this._targetLeft(), height:$css$$9_rect$$.height + "px", width:$css$$9_rect$$.width + "px"};
+      this._window.setCss($css$$9_rect$$);
+      this._message.setHtml($message$$);
+    };
+    $fn$$.callback = $callback$$;
+    this._then.unshift($fn$$);
+    this._running || (this._running = !0, this._next());
+    return this;
+  }, end:function $$js_tutorial$$$fn$end$() {
+    this._window.remove();
+    this._message.remove();
+    this._obscure.remove();
+    return this;
+  }};
+  return $js_tutorial$$;
+});
 

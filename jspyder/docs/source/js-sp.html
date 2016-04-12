@@ -402,7 +402,7 @@ jspyder.extend.fn(&quot;sp&quot;, function () {
                     ? failure
                     : this._failure);
 
-            caml.set_viewXml(this.caml);
+            caml.set_viewXml(this[&quot;_caml&quot;]);
             var listItems = list.getItems(caml);
 
             ctx.load(listItems);

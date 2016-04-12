@@ -1733,6 +1733,38 @@ html {
   cursor: -moz-grabbing;
   cursor: -webkit-grabbing; }
 
+.js-tutorial-viewport {
+  position: absolute;
+  box-sizing: content-box;
+  z-index: 9999999;
+  box-shadow: 0 0 0 6249.9375em rgba(0, 0, 0, 0.8);
+  border: 0.1875em solid gold;
+  border-radius: 0.1875em;
+  margin-left: -0.1875em;
+  margin-top: -0.1875em; }
+
+.js-tutorial-message {
+  position: fixed;
+  bottom: .8em;
+  right: .8em;
+  max-width: 37.5em;
+  background-color: #FFFFFF;
+  padding: .5em 1em;
+  border-radius: 0.1875em;
+  border: 0.1875em solid gold;
+  box-shadow: 0 0 0.1875em #000000 inset;
+  z-index: 99999999; }
+
+.js-tutorial-obscure {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999998;
+  background-color: #000000;
+  opacity: 0.01; }
+
 /** FORM ELEMENTS ************************************************************/
 label {
   display: block; }

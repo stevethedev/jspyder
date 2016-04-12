@@ -2042,12 +2042,14 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                             if(!match) {
                                 this.value = &quot;&quot;;
                                 js.dom(this).setAttrs({ &quot;data-value&quot;: &quot;&quot; });
-                            }
-                            
+                            }                            
                             else {
                                 this.value = match.text;
                                 js.dom(this).setAttrs({ &quot;data-value&quot;: match.value });
                             }
+                        }
+                        else {
+                            js.dom(this).setAttrs({ &quot;data-value&quot;: this.value });
                         }
                         fns.hide();
                         return;
@@ -2292,19 +2294,24 @@ jspyder.extend.fn(&quot;form&quot;, function () {
                 
                 $input.filter(&quot;input&quot;)
                     .on(&quot;blur&quot;, function (event) {
-                        var $input = js.dom(this).setAttrs({ &quot;data-focus&quot;: null });
-                        form.setFieldValue(cfg.name, $input.exportValue());
+                        var attrs = { &quot;readonly&quot;: null };
+                        js.dom(this).getAttrs(attrs);
+
+                        if(!attrs[&quot;readonly&quot;]) {
+                            var $input = js.dom(this).setAttrs({ &quot;data-focus&quot;: null });
+                            form.setFieldValue(cfg.name, $input.exportValue());
+                        }
                         return;
                     })
                     .on(&quot;focus&quot;, function (event) {
                         var attrs = { &quot;readonly&quot;: null };
                         js.dom(this).getAttrs(attrs);
-                        
+
                         if(!attrs[&quot;readonly&quot;]) {
                             var $input = js.dom(this).setAttrs({ &quot;data-focus&quot;: true });
                             form.setFieldValue(cfg.name, $input.exportValue());
                         }
-                        
+
                         return;
                     });
                     

@@ -22,9 +22,15 @@
  * IN THE SOFTWARE.
  *****************************************************************************/
 
+
+@function px2em($px) {
+    @return ($px / 16) * 1em;
+}
+
 @import "colors.scss";
 @import "sizing.scss";
 @import "cursors.scss";
+@import "tutorial.scss";
 
 $color-primary: $color-indigo-700;
 $color-secondary: $color-grey-700;

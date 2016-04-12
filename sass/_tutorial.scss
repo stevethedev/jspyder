@@ -18,6 +18,9 @@
     max-width: px2em(600);
     background-color: $color-white;
     padding: .5em 1em;
+    border-radius: px2em(3);
+    border: px2em(3) solid gold;
+    box-shadow: 0 0 px2em(3) $color-black inset;
     z-index: 99999999;
 }
 
