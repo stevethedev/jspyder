@@ -1,0 +1,33 @@
+// pairs with JS-Tutorial module
+
+.js-tutorial-viewport {
+    position: absolute;
+    box-sizing: content-box;
+    z-index: 9999999;
+    box-shadow: 0 0 0 px2em(99999) rgba($color-black, 0.8);
+    border: px2em(3) solid gold;
+    border-radius: px2em(3);
+    margin-left: px2em(-3);
+    margin-top: px2em(-3);
+}
+
+.js-tutorial-message {
+    position: fixed;
+    bottom: .8em;
+    right: .8em;
+    max-width: px2em(600);
+    background-color: $color-white;
+    padding: .5em 1em;
+    z-index: 99999999;
+}
+
+.js-tutorial-obscure {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999998;
+    background-color: $color-black;
+    opacity: 0.01;
+}
