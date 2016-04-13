@@ -1754,6 +1754,11 @@ html {
   border: 0.1875em solid gold;
   box-shadow: 0 0 0.1875em #000000 inset;
   z-index: 99999999; }
+  .js-tutorial-message .js-tutorial-cancel {
+    position: absolute;
+    top: -0.1875em;
+    right: -0.1875em;
+    color: #b71c1c; }
 
 .js-tutorial-obscure {
   position: fixed;

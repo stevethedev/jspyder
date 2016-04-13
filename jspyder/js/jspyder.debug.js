@@ -4123,16 +4123,14 @@ jspyder.extend.fn("template", function() {
 });
 jspyder.extend.fn("tutorial", function() {
   function $js_tutorial$$() {
-    var $h$$ = Object.create($js_tutorial$$.fn, {_window:{value:$js$$.dom('<div class="js-tutorial-viewport"></div>')}, _message:{value:$js$$.dom('<div class="js-tutorial-message"></div>')}, _obscure:{value:$js$$.dom('<div class="js-tutorial-obscure"></div>')}, _then:{value:[]}}), $lastFn$$ = null;
+    var $h$$ = Object.create($js_tutorial$$.fn, {_window:{value:$js$$.dom('<div class="js-tutorial-viewport"><i class="js-tutorial-cancel cancel"></i></div>')}, _message:{value:$js$$.dom('<div class="js-tutorial-message"></div>')}, _obscure:{value:$js$$.dom('<div class="js-tutorial-obscure"></div>')}, _then:{value:[]}}), $lastFn$$ = null;
     $h$$._next = function $$h$$$_next$($event$$) {
       $lastFn$$ && "function" === typeof $lastFn$$.callback && $lastFn$$.callback.call($h$$, $h$$._target);
       $lastFn$$ = $h$$._then.pop();
       "function" === typeof $lastFn$$ ? $lastFn$$.call($h$$) : $h$$.end();
     };
-    $h$$._targetLeft = function $$h$$$_targetLeft$() {
-      return this._target.getBoundingClientRect().left + "px";
-    };
     $h$$._window.on("click", $h$$._next);
+    $h$$._window.find(".js-tutorial-cancel").on("click", $js$$.alg.bindFn($h$$, $h$$.end));
     return $h$$;
   }
   var $js$$ = this;
@@ -4141,15 +4139,16 @@ jspyder.extend.fn("tutorial", function() {
     this._window.attach(window.document.body);
     this._message.attach(window.document.body);
     return this;
-  }, step:function $$js_tutorial$$$fn$step$($selector$$, $message$$, $callback$$) {
-    var $fn$$ = function $$fn$$$() {
+  }, step:function $$js_tutorial$$$fn$step$($config$$, $atEnd$$) {
+    $config$$ = $config$$ || {};
+    var $selector$$ = $config$$.selector, $message$$ = $config$$.message, $fn$$ = function $$fn$$$() {
       this._target = window.document.querySelector($selector$$);
-      var $css$$9_rect$$ = this._target.getBoundingClientRect(), $css$$9_rect$$ = {top:$css$$9_rect$$.top + "px", left:this._targetLeft(), height:$css$$9_rect$$.height + "px", width:$css$$9_rect$$.width + "px"};
-      this._window.setCss($css$$9_rect$$);
+      var $rect$$ = this._target.getBoundingClientRect();
+      this._window.setCss({top:$rect$$.top + "px", left:$rect$$.left + "px", height:$rect$$.height + "px", width:$rect$$.width + "px"});
       this._message.setHtml($message$$);
     };
-    $fn$$.callback = $callback$$;
-    this._then.unshift($fn$$);
+    $fn$$.callback = $config$$.callback;
+    this._then["boolean" !== typeof $atEnd$$ || $atEnd$$ ? "unshift" : "push"]($fn$$);
     this._running || (this._running = !0, this._next());
     return this;
   }, end:function $$js_tutorial$$$fn$end$() {
