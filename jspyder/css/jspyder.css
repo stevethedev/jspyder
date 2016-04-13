@@ -1756,8 +1756,8 @@ html {
   z-index: 99999999; }
   .js-tutorial-message .js-tutorial-cancel {
     position: absolute;
-    top: -0.1875em;
-    right: -0.1875em;
+    top: -0.5em;
+    right: -0.5em;
     color: #b71c1c; }
     .js-tutorial-message .js-tutorial-cancel:before {
       content: "\e061";
