@@ -32,9 +32,11 @@ jspyder.extend.fn("tutorial", function() {
      */
     function js_tutorial() {
         var h = Object.create(js_tutorial["fn"], {
-            "_window" : { "value": js.dom("<div class=\"js-tutorial-viewport\"><i class=\"js-tutorial-cancel cancel\"></i></div>") },
+            "_window" : { "value": js.dom("<div class=\"js-tutorial-viewport\"></div>") },
             "_message": { "value": js.dom("<div class=\"js-tutorial-message\"></div>")  },
             "_obscure": { "value": js.dom("<div class=\"js-tutorial-obscure\"></div>")  },
+            "_messageText": { "value": js.dom("<div class=\"js-tutorial-message-internal\"></div>") },
+            "_closeButton": { "value": js.dom("<i class=\"js-tutorial-cancel cancel\"></i>") },
             "_then"   : { "value": []                                                   }
         });
         
@@ -55,7 +57,10 @@ jspyder.extend.fn("tutorial", function() {
         };
         
         h["_window"].on("click", h["_next"]);
-        h["_window"].find(".js-tutorial-cancel").on("click", js.alg.bindFn(h, h["end"]));
+        h["_closeButton"].on("click", js.alg.bindFn(h, h["end"]));
+        h["_message"]
+            .append(h["_closeButton"])
+            .append(h["_messageText"]);
         
         return h;
     }
@@ -83,6 +88,7 @@ jspyder.extend.fn("tutorial", function() {
             this["_obscure"].attach(window["document"]["body"]);
             this["_window"].attach(window["document"]["body"]);
             this["_message"].attach(window["document"]["body"]);
+            this["_closebutton"].attach(this["_message"]);
             return this;
         },
         
@@ -116,7 +122,7 @@ jspyder.extend.fn("tutorial", function() {
                     };
                     
                 this["_window"].setCss(css);
-                this["_message"].setHtml(message);
+                this["_messageText"].setHtml(message);
             }
             fn["callback"] = callback;
             

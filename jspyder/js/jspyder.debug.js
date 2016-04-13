@@ -4123,14 +4123,15 @@ jspyder.extend.fn("template", function() {
 });
 jspyder.extend.fn("tutorial", function() {
   function $js_tutorial$$() {
-    var $h$$ = Object.create($js_tutorial$$.fn, {_window:{value:$js$$.dom('<div class="js-tutorial-viewport"><i class="js-tutorial-cancel cancel"></i></div>')}, _message:{value:$js$$.dom('<div class="js-tutorial-message"></div>')}, _obscure:{value:$js$$.dom('<div class="js-tutorial-obscure"></div>')}, _then:{value:[]}}), $lastFn$$ = null;
+    var $h$$ = Object.create($js_tutorial$$.fn, {_window:{value:$js$$.dom('<div class="js-tutorial-viewport"></div>')}, _message:{value:$js$$.dom('<div class="js-tutorial-message"></div>')}, _obscure:{value:$js$$.dom('<div class="js-tutorial-obscure"></div>')}, _messageText:{value:$js$$.dom('<div class="js-tutorial-message-internal"></div>')}, _closeButton:{value:$js$$.dom('<i class="js-tutorial-cancel cancel"></i>')}, _then:{value:[]}}), $lastFn$$ = null;
     $h$$._next = function $$h$$$_next$($event$$) {
       $lastFn$$ && "function" === typeof $lastFn$$.callback && $lastFn$$.callback.call($h$$, $h$$._target);
       $lastFn$$ = $h$$._then.pop();
       "function" === typeof $lastFn$$ ? $lastFn$$.call($h$$) : $h$$.end();
     };
     $h$$._window.on("click", $h$$._next);
-    $h$$._window.find(".js-tutorial-cancel").on("click", $js$$.alg.bindFn($h$$, $h$$.end));
+    $h$$._closeButton.on("click", $js$$.alg.bindFn($h$$, $h$$.end));
+    $h$$._message.append($h$$._closeButton).append($h$$._messageText);
     return $h$$;
   }
   var $js$$ = this;
@@ -4138,6 +4139,7 @@ jspyder.extend.fn("tutorial", function() {
     this._obscure.attach(window.document.body);
     this._window.attach(window.document.body);
     this._message.attach(window.document.body);
+    this._closebutton.attach(this._message);
     return this;
   }, step:function $$js_tutorial$$$fn$step$($config$$, $atEnd$$) {
     $config$$ = $config$$ || {};
@@ -4145,7 +4147,7 @@ jspyder.extend.fn("tutorial", function() {
       this._target = window.document.querySelector($selector$$);
       var $rect$$ = this._target.getBoundingClientRect();
       this._window.setCss({top:$rect$$.top + "px", left:$rect$$.left + "px", height:$rect$$.height + "px", width:$rect$$.width + "px"});
-      this._message.setHtml($message$$);
+      this._messageText.setHtml($message$$);
     };
     $fn$$.callback = $config$$.callback;
     this._then["boolean" !== typeof $atEnd$$ || $atEnd$$ ? "unshift" : "push"]($fn$$);

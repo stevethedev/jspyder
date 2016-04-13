@@ -1759,6 +1759,12 @@ html {
     top: -0.1875em;
     right: -0.1875em;
     color: #b71c1c; }
+    .js-tutorial-message .js-tutorial-cancel:before {
+      content: "\e061";
+      width: 0;
+      height: 0;
+      color: #FFF;
+      margin-right: -1em; }
 
 .js-tutorial-obscure {
   position: fixed;

@@ -28,6 +28,14 @@
         top: px2em(-3);
         right: px2em(-3);
         color: $color-red-900;
+        
+        &:before {
+            content: "\e061";
+            width:0;
+            height:0;
+            color:#FFF;
+            margin-right:-1em;
+        }
     }
 }
 
