@@ -4139,7 +4139,7 @@ jspyder.extend.fn("tutorial", function() {
     this._obscure.attach(window.document.body);
     this._window.attach(window.document.body);
     this._message.attach(window.document.body);
-    this._closebutton.attach(this._message);
+    this._closeButton.attach(this._message);
     return this;
   }, step:function $$js_tutorial$$$fn$step$($config$$, $atEnd$$) {
     $config$$ = $config$$ || {};
