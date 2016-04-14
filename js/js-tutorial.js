@@ -77,6 +77,8 @@ jspyder.extend.fn("tutorial", function() {
         "_message": null,
         "_then": null,
         "_running": false,
+        "_searchUntil": 1000,
+        "_stepClass": "",
         
         /**
          * @method start
@@ -102,6 +104,9 @@ jspyder.extend.fn("tutorial", function() {
          * @param {String}    config.selector        CSS selector to attach to
          * @param {String}    config.message         Message to display for this help text
          * @param {Function}  [config.callback]      Function to execute after this step ends
+         * @param {String}    [config.class]         Class to apply to the message box when this step is activated
+         * @param {Number}    [config.searchUntil]   The number of milliseconds the tutorial should search for a selector before skipping a step
+         * @param {Number}    [config.onfail]        The function to execute if the selector cannot be found (defaults to skipping the step)
          * @param {boolean}   [atEnd]                TRUE to insert step at the end of the queue, FALSE to insert as next step
          */
         "step": function(config, atEnd) {
@@ -109,20 +114,64 @@ jspyder.extend.fn("tutorial", function() {
             config = config || {};
             var selector = config["selector"],
                 message = config["message"],
-                callback = config["callback"];
+                callback = config["callback"],
+                onfail = config["onfail"] || function() { this._next(); },
+                searchUntil = config["searchUntil"] || this["_searchUntil"],
+                cls = config["class"] || "";
                 
             var fn = function() {
-                this["_target"] = window["document"].querySelector(selector);
-                var rect = this["_target"].getBoundingClientRect(),
-                    css = {
-                        "top":    rect["top"]    + "px",
-                        "left":   rect["left"]   + "px",
-                        "height": rect["height"] + "px",
-                        "width":  rect["width"]  + "px"
-                    };
+                var start = 0,
+                    duration = 0,
+                    stepClass = {};
                     
-                this["_window"].setCss(css);
-                this["_messageText"].setHtml(message);
+                if(this["_stepClass"] && this["_stepClass"] !== cls) {
+                    stepClass[this["_stepClass"]] = false;
+                }
+                if(cls) {
+                    this["_stepClass"] = cls;
+                    stepClass[cls] = true;
+                }
+                    
+                var loop = js.alg.bindFn(this, function() {
+                    this["_target"] = window["document"].querySelector(selector);
+                        
+                    if(!this["_target"]) {
+                        start = start || (new Date()).getTime();
+                        duration = (new Date()).getTime() - start;
+                        
+                        if(duration >= searchUntil) {
+                            js.log.warn("JS-Tutorial could not find selector: " + selector);
+                            this.use(onfail);
+                        }
+                        else {
+                            setTimeout(loop, 120);
+                        }
+                    }
+                    else {                        
+                        this["_message"].setClasses({ "alt-position": false });
+                        var tRect = this["_target"].getBoundingClientRect(),
+                            mRect = this["_message"].exportElement(0).getBoundingClientRect(),
+                            css = {
+                                "top":    tRect["top"]    + "px",
+                                "left":   tRect["left"]   + "px",
+                                "height": tRect["height"] + "px",
+                                "width":  tRect["width"]  + "px"
+                            };
+                            
+                        var altPosition = 
+                            ( ( tRect["left"]   > mRect["left"]  ) && 
+                              ( tRect["right"]  < mRect["right"] ) && 
+                              ( tRect["top"]    > mRect["top"]   ) && 
+                              ( mRect["bottom"] > mRect["top"]   ) );
+                                
+                        this["_window"].setCss(css);
+                        this["_messageText"].setHtml(message);
+                        this["_message"].setClasses(stepClass);
+                        this["_message"].setClasses({ "alt-position": altPosition });
+                    }
+                });
+                
+                loop();
             }
             fn["callback"] = callback;
             
@@ -146,6 +195,28 @@ jspyder.extend.fn("tutorial", function() {
             this["_window"].remove();
             this["_message"].remove();
             this["_obscure"].remove();
+            return this;
+        },
+        
+        /**
+         * @method use
+         * @member jspyder.tutorial
+         * 
+         * Executes a function as if it were a member of this object.
+         */
+        "use": function(fn, args) {
+            return js.alg.use(this, fn, args);
+        },
+        
+        /**
+         * @method searchMs
+         * @member jspyder.tutorial
+         * 
+         * Sets the number of milliseconds that the object should search for a selector.
+         * Note that this only affects steps created after this is configured.
+         */
+        "searchMs": function(ms) {
+            this["_searchUntil"] = js.alg.number("undefined" === typeof ms ? js_tutorial["fn"]["_searchUntil"] : ms);
             return this;
         }
     };

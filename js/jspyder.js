@@ -1627,6 +1627,17 @@
                 });
                 return this;
             },
+            
+            /**
+             * Exports element number [n] from the list.
+             * 
+             * @param {Number} n    Index of the element to grab.
+             */
+            exportElement: function(n) {
+                var element = null;
+                this.element(n, function() { element = this; });
+                return element;
+            },
 
             /**
              * Attaches the elements from the jsDom to the first element

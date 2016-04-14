@@ -1128,6 +1128,12 @@ $jscomp.string.endsWith$install = function $$jscomp$string$endsWith$install$() {
         $el$$ && "function" === typeof $fn$$ && $fn$$.apply($el$$, [this]);
       });
       return this;
+    }, exportElement:function $$js_dom$$$fn$exportElement$($n$$) {
+      var $element$$ = null;
+      this.element($n$$, function() {
+        $element$$ = this;
+      });
+      return $element$$;
     }, attach:function $$js_dom$$$fn$attach$($parent$$, $fn$$) {
       var $children$$ = this;
       $js_dom$$($parent$$).element(0, function($p$$) {
@@ -4135,7 +4141,7 @@ jspyder.extend.fn("tutorial", function() {
     return $h$$;
   }
   var $js$$ = this;
-  $js_tutorial$$.fn = {_window:null, _target:null, _message:null, _then:null, _running:!1, start:function $$js_tutorial$$$fn$start$() {
+  $js_tutorial$$.fn = {_window:null, _target:null, _message:null, _then:null, _running:!1, _searchUntil:1E3, _stepClass:"", start:function $$js_tutorial$$$fn$start$() {
     this._obscure.attach(window.document.body);
     this._window.attach(window.document.body);
     this._message.attach(window.document.body);
@@ -4143,11 +4149,25 @@ jspyder.extend.fn("tutorial", function() {
     return this;
   }, step:function $$js_tutorial$$$fn$step$($config$$, $atEnd$$) {
     $config$$ = $config$$ || {};
-    var $selector$$ = $config$$.selector, $message$$ = $config$$.message, $fn$$ = function $$fn$$$() {
-      this._target = window.document.querySelector($selector$$);
-      var $rect$$ = this._target.getBoundingClientRect();
-      this._window.setCss({top:$rect$$.top + "px", left:$rect$$.left + "px", height:$rect$$.height + "px", width:$rect$$.width + "px"});
-      this._messageText.setHtml($message$$);
+    var $selector$$ = $config$$.selector, $message$$ = $config$$.message, $onfail$$ = $config$$.onfail || function() {
+      this._next();
+    }, $searchUntil$$ = $config$$.searchUntil || this._searchUntil, $cls$$ = $config$$["class"] || "", $fn$$ = function $$fn$$$() {
+      var $start$$ = 0, $duration$$ = 0, $stepClass$$ = {};
+      this._stepClass && this._stepClass !== $cls$$ && ($stepClass$$[this._stepClass] = !1);
+      $cls$$ && (this._stepClass = $cls$$, $stepClass$$[$cls$$] = !0);
+      var $loop$$ = $js$$.alg.bindFn(this, function() {
+        if (this._target = window.document.querySelector($selector$$)) {
+          this._message.setClasses({"alt-position":!1});
+          var $tRect$$ = this._target.getBoundingClientRect(), $altPosition_mRect$$ = this._message.exportElement(0).getBoundingClientRect(), $altPosition_mRect$$ = $tRect$$.left > $altPosition_mRect$$.left && $tRect$$.right < $altPosition_mRect$$.right && $tRect$$.top > $altPosition_mRect$$.top && $altPosition_mRect$$.bottom > $altPosition_mRect$$.top;
+          this._window.setCss({top:$tRect$$.top + "px", left:$tRect$$.left + "px", height:$tRect$$.height + "px", width:$tRect$$.width + "px"});
+          this._messageText.setHtml($message$$);
+          this._message.setClasses($stepClass$$);
+          this._message.setClasses({"alt-position":$altPosition_mRect$$});
+        } else {
+          $start$$ = $start$$ || (new Date).getTime(), $duration$$ = (new Date).getTime() - $start$$, $duration$$ >= $searchUntil$$ ? ($js$$.log.warn("JS-Tutorial could not find selector: " + $selector$$), this.use($onfail$$)) : setTimeout($loop$$, 120);
+        }
+      });
+      $loop$$();
     };
     $fn$$.callback = $config$$.callback;
     this._then["boolean" !== typeof $atEnd$$ || $atEnd$$ ? "unshift" : "push"]($fn$$);
@@ -4157,6 +4177,11 @@ jspyder.extend.fn("tutorial", function() {
     this._window.remove();
     this._message.remove();
     this._obscure.remove();
+    return this;
+  }, use:function $$js_tutorial$$$fn$use$($fn$$, $args$$) {
+    return $js$$.alg.use(this, $fn$$, $args$$);
+  }, searchMs:function $$js_tutorial$$$fn$searchMs$($ms$$) {
+    this._searchUntil = $js$$.alg.number("undefined" === typeof $ms$$ ? $js_tutorial$$.fn._searchUntil : $ms$$);
     return this;
   }};
   return $js_tutorial$$;

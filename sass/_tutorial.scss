@@ -3,7 +3,7 @@
 .js-tutorial-viewport {
     position: absolute;
     box-sizing: content-box;
-    z-index: 9999999;
+    z-index: 2147483647;
     box-shadow: 0 0 0 px2em(99999) rgba($color-black, 0.8);
     border: px2em(3) solid gold;
     border-radius: px2em(3);
@@ -21,7 +21,14 @@
     border-radius: px2em(3);
     border: px2em(3) solid gold;
     box-shadow: 0 0 px2em(3) $color-black inset;
-    z-index: 99999999;
+    z-index: 2147483647;
+    
+    &.alt-position {
+        top: .8em;
+        left: .8em;
+        right: unset;
+        bottom: unset;
+    }
     
     .js-tutorial-cancel {
         position: absolute;
@@ -45,7 +52,7 @@
     bottom: 0;
     left: 0;
     right: 0;
-    z-index: 9999998;
+    z-index: 2147483646;
     background-color: $color-black;
     opacity: 0.01;
 }
