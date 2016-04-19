@@ -771,11 +771,11 @@ jspyder.extend.fn("sp", function () {
         switch(colData.type) {
             case "bitflag":
             case "number" :
-                value = js.alg.number(value);
+                value = js.alg.number(value, js.alg.number(colData["default"]));
                 break;
             case "string" :
             case "text" :
-                value = js.alg.string(value);
+                value = js.alg.string(value, js.alg.string(colData["default"]));
                 break;
             default:
                 break;
