@@ -508,7 +508,7 @@
              */
             "number": function (n, d) {
                 var _n = +n;
-                return ((_n == n || _n === _n) ? _n : d || 0);
+                return ((("" !== n || "undefined" !== typeof d) && _n == n && _n === _n) ? _n : d || 0);
             },
 
             /**
