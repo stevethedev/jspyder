@@ -2298,6 +2298,7 @@
             }
             return this;
         }
+        
         /**
          * @method register
          * @member jspyder.lib
@@ -2313,6 +2314,7 @@
 
             return this;
         };
+        
         /**
          * @method registerSet
          * @member jspyder.lib
@@ -2328,6 +2330,19 @@
                 });
             }
             return this;
+        };
+        
+        /**
+         * @method execute
+         * @member jspyder.lib
+         * 
+         * Executes the designated function and returns the result of the call
+         * instead of the JSpyder object.
+         */
+        js_lib.execute = function(name, args) {
+            var result;
+            js_lib(name, args, function(r) { result = r; });
+            return result;
         };
 
         js.extend("lib", js_lib);
