@@ -2315,12 +2315,12 @@
                         classes[dragSelector] = null;
                         
                         var el = js.dom(event["target"]);
-                        el.exportClasses(classes);
+                        var cls = el.exportClasses(classes);
                         function moveup() { el = this; }
                         
-                        while(el.count && !classes[dragSelector]) {
+                        while(el.count && !cls[dragSelector]) {
                             el.parents(moveup);
-                            el.exportClasses(classes);
+                            cls = el.exportClasses(classes);
                         }
                         
                         if(!classes["placeholder"]) {
