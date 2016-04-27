@@ -1397,24 +1397,26 @@ $jscomp.string.endsWith$install = function $$jscomp$string$endsWith$install$() {
       return this;
     }, setDraggable:function $$js_dom$$$fn$setDraggable$($dragSelector$$) {
       this.find($dragSelector$$).setClasses({"js-draggable":!0}).on("mousedown", function __mousedown($event$$) {
-        $js$$.dom($event$$.target).exportClasses({"js-drag-handle":null})["js-drag-handle"] && ($__dragging$$ = $js$$.dom(this), $__dragging$$.setClasses({active:!0, "js-draggable-placeholder":!0}), $__dragging$$.parents(function($p$$) {
+        !$__dragging$$ && $js$$.dom($event$$.target).exportClasses({"js-drag-handle":null})["js-drag-handle"] && ($__dragging$$ = $js$$.dom(this), $__dragging$$.setClasses({active:!0, "js-draggable-placeholder":!0}), $__dragging$$.parents(function($p$$) {
           $__dragTargets$$.push($p$$.parentElement);
-        }));
+        }), $__lastY$$ = $event$$.clientY);
       });
       var $__dragging$$ = null, $__dragTargets$$ = [], $__lastY$$ = 0;
       $js$$.dom.doc.on("mouseup", function __mouseup($event$$) {
         $__dragging$$ && ($__dragging$$.setClasses({active:!1, "js-draggable-placeholder":!1}), $__dragging$$ = null, $__dragTargets$$.length = 0);
-      }).on("mousemove", function __drag($classes$$6_event$$) {
+      }).on("mousemove", function __drag($event$$) {
         if ($__dragging$$) {
-          var $y$$ = $classes$$6_event$$.clientY, $movingUp$$ = $__lastY$$ > $y$$;
+          var $moveup$$ = function $$moveup$$$() {
+            $el$$ = this;
+          }, $classes$$ = {}, $y$$ = $event$$.clientY, $movingUp$$ = $__lastY$$ > $y$$;
           $__lastY$$ = $y$$;
-          var $el$$ = $js$$.dom($classes$$6_event$$.target);
-          for ($classes$$6_event$$ = $el$$.exportClasses({"iq-column-selector-row":null, placeholder:null});$el$$.count && !$classes$$6_event$$["iq-column-selector-row"];) {
-            $el$$.parents(function() {
-              $el$$ = this;
-            }), $classes$$6_event$$ = $el$$.exportClasses({"iq-column-selector-row":null, placeholder:null});
+          $classes$$.placeholder = null;
+          $classes$$[$dragSelector$$] = null;
+          var $el$$ = $js$$.dom($event$$.target);
+          for ($el$$.exportClasses($classes$$);$el$$.count && !$classes$$[$dragSelector$$];) {
+            $el$$.parents($moveup$$), $el$$.exportClasses($classes$$);
           }
-          $classes$$6_event$$.placeholder || $el$$.parents(function($p$$) {
+          $classes$$.placeholder || $el$$.parents(function($p$$) {
             if (-1 !== $__dragTargets$$.indexOf($p$$.parentElement)) {
               $__dragging$$[$movingUp$$ ? "attachStart" : "attachEnd"]($el$$);
             }

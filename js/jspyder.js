@@ -2279,18 +2279,22 @@
                 js.dom.doc
                     .on("mouseup", __mouseup)
                     .on("mousemove", __drag);
-                    
+                   
+                // mousedown
                 function __mousedown(event) {
-                    var classes = js.dom(event["target"])
-                                    .exportClasses({ "js-drag-handle": null });
-                    
-                    if(classes["js-drag-handle"]) {
-                        __dragging = js.dom(this);
-                        __dragging.setClasses({ "active": true, "js-draggable-placeholder": true });
-                        __dragging.parents(function(p) { __dragTargets.push(p.parentElement); });
+                    if(!__dragging) {
+                        var classes = js.dom(event["target"]).exportClasses({ "js-drag-handle": null });
+                        
+                        if(classes["js-drag-handle"]) {
+                            __dragging = js.dom(this);
+                            __dragging.setClasses({ "active": true, "js-draggable-placeholder": true });
+                            __dragging.parents(function(p) { __dragTargets.push(p.parentElement); });
+                            __lastY = event["clientY"];
+                        }
                     }
                 }
 
+                // mouseup
                 function __mouseup(event) {
                     if(__dragging) {
                         __dragging.setClasses({ "active": false, "js-draggable-placeholder": false });
@@ -2299,18 +2303,24 @@
                     }
                 }
 
+                // drag
                 function __drag(event) {
                     if(__dragging) {
-                        var y = event["clientY"],
+                        var classes = {},
+                            y = event["clientY"],
                             movingUp = __lastY > y;
                             __lastY = y;
                         
-                        var el = js.dom(event["target"]),
-                            classes = el.exportClasses({ "iq-column-selector-row": null, "placeholder": null });
-                            
-                        while(el.count && !classes["iq-column-selector-row"]) {
-                            el.parents(function() { el = this; });
-                            classes = el.exportClasses({ "iq-column-selector-row": null, "placeholder": null });
+                        classes["placeholder"] = null;
+                        classes[dragSelector] = null;
+                        
+                        var el = js.dom(event["target"]);
+                        el.exportClasses(classes);
+                        function moveup() { el = this; }
+                        
+                        while(el.count && !classes[dragSelector]) {
+                            el.parents(moveup);
+                            el.exportClasses(classes);
                         }
                         
                         if(!classes["placeholder"]) {
