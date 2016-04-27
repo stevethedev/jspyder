@@ -2306,24 +2306,19 @@
                 // drag
                 function __drag(event) {
                     if(__dragging) {
-                        var classes = {},
-                            y = event["clientY"],
+                        var y = event["clientY"],
                             movingUp = __lastY > y;
                             __lastY = y;
                         
-                        classes["placeholder"] = null;
-                        classes[dragSelector] = null;
-                        
-                        var el = js.dom(event["target"]);
-                        var cls = el.exportClasses(classes);
-                        function moveup() { el = this; }
-                        
-                        while(el.count && !cls[dragSelector]) {
-                            el.parents(moveup);
-                            cls = el.exportClasses(classes);
+                        var el = js.dom(event["target"]),
+                            classes = el.exportClasses({ "js-draggable": null, "js-draggable-placeholder": null });
+                            
+                        while(el.count && !classes["js-draggable"]) {
+                            el.parents(function() { el = this; });
+                            classes = el.exportClasses({ "js-draggable": null, "js-draggable-placeholder": null });
                         }
                         
-                        if(!classes["placeholder"]) {
+                        if(!classes["js-draggable-placeholder"]) {
                             el.parents(function (p) {
                                 if(__dragTargets.indexOf(p.parentElement) !== -1) {
                                     __dragging[movingUp ? "attachStart" : "attachEnd"](el);

@@ -1404,19 +1404,17 @@ $jscomp.string.endsWith$install = function $$jscomp$string$endsWith$install$() {
       var $__dragging$$ = null, $__dragTargets$$ = [], $__lastY$$ = 0;
       $js$$.dom.doc.on("mouseup", function __mouseup($event$$) {
         $__dragging$$ && ($__dragging$$.setClasses({active:!1, "js-draggable-placeholder":!1}), $__dragging$$ = null, $__dragTargets$$.length = 0);
-      }).on("mousemove", function __drag($cls$$2_event$$) {
+      }).on("mousemove", function __drag($classes$$6_event$$) {
         if ($__dragging$$) {
-          var $moveup$$ = function $$moveup$$$() {
-            $el$$ = this;
-          }, $classes$$ = {}, $y$$ = $cls$$2_event$$.clientY, $movingUp$$ = $__lastY$$ > $y$$;
+          var $y$$ = $classes$$6_event$$.clientY, $movingUp$$ = $__lastY$$ > $y$$;
           $__lastY$$ = $y$$;
-          $classes$$.placeholder = null;
-          $classes$$[$dragSelector$$] = null;
-          var $el$$ = $js$$.dom($cls$$2_event$$.target);
-          for ($cls$$2_event$$ = $el$$.exportClasses($classes$$);$el$$.count && !$cls$$2_event$$[$dragSelector$$];) {
-            $el$$.parents($moveup$$), $cls$$2_event$$ = $el$$.exportClasses($classes$$);
+          var $el$$ = $js$$.dom($classes$$6_event$$.target);
+          for ($classes$$6_event$$ = $el$$.exportClasses({"js-draggable":null, "js-draggable-placeholder":null});$el$$.count && !$classes$$6_event$$["js-draggable"];) {
+            $el$$.parents(function() {
+              $el$$ = this;
+            }), $classes$$6_event$$ = $el$$.exportClasses({"js-draggable":null, "js-draggable-placeholder":null});
           }
-          $classes$$.placeholder || $el$$.parents(function($p$$) {
+          $classes$$6_event$$["js-draggable-placeholder"] || $el$$.parents(function($p$$) {
             if (-1 !== $__dragTargets$$.indexOf($p$$.parentElement)) {
               $__dragging$$[$movingUp$$ ? "attachStart" : "attachEnd"]($el$$);
             }
