@@ -1395,6 +1395,33 @@ $jscomp.string.endsWith$install = function $$jscomp$string$endsWith$install$() {
         });
       });
       return this;
+    }, setDraggable:function $$js_dom$$$fn$setDraggable$($dragSelector$$) {
+      this.find($dragSelector$$).setClasses({"js-draggable":!0}).on("mousedown", function __mousedown($event$$) {
+        $js$$.dom($event$$.target).exportClasses({"js-drag-handle":null})["js-drag-handle"] && ($__dragging$$ = $js$$.dom(this), $__dragging$$.setClasses({active:!0, "js-draggable-placeholder":!0}), $__dragging$$.parents(function($p$$) {
+          $__dragTargets$$.push($p$$.parentElement);
+        }));
+      });
+      var $__dragging$$ = null, $__dragTargets$$ = [], $__lastY$$ = 0;
+      $js$$.dom.doc.on("mouseup", function __mouseup($event$$) {
+        $__dragging$$ && ($__dragging$$.setClasses({active:!1, "js-draggable-placeholder":!1}), $__dragging$$ = null, $__dragTargets$$.length = 0);
+      }).on("mousemove", function __drag($classes$$6_event$$) {
+        if ($__dragging$$) {
+          var $y$$ = $classes$$6_event$$.clientY, $movingUp$$ = $__lastY$$ > $y$$;
+          $__lastY$$ = $y$$;
+          var $el$$ = $js$$.dom($classes$$6_event$$.target);
+          for ($classes$$6_event$$ = $el$$.exportClasses({"iq-column-selector-row":null, placeholder:null});$el$$.count && !$classes$$6_event$$["iq-column-selector-row"];) {
+            $el$$.parents(function() {
+              $el$$ = this;
+            }), $classes$$6_event$$ = $el$$.exportClasses({"iq-column-selector-row":null, placeholder:null});
+          }
+          $classes$$6_event$$.placeholder || $el$$.parents(function($p$$) {
+            if (-1 !== $__dragTargets$$.indexOf($p$$.parentElement)) {
+              $__dragging$$[$movingUp$$ ? "attachStart" : "attachEnd"]($el$$);
+            }
+          });
+        }
+      });
+      return this;
     }};
     $js_dom$$.doc = $js_dom$$($document$$.documentElement);
     $js$$ && Object.defineProperty($js$$, "dom", {value:$js_dom$$});
@@ -2302,8 +2329,8 @@ jspyder.extend.fn("download", function() {
     };
     return $__decode$$($text$$0$$);
   }, $__encode$$ = function $$__encode$$$($data$$, $name$$) {
-    var $p$$5_size$$ = $data$$.split(/[:;,]/), $type$$ = $p$$5_size$$[1], $binary$$ = ("base64" === $p$$5_size$$[2] ? atob : decodeURIComponent)($p$$5_size$$.pop()), $p$$5_size$$ = $binary$$.length, $arr$$ = new Uint8Array($p$$5_size$$);
-    $js$$.alg.iterate(0, $p$$5_size$$, function($i$$) {
+    var $p$$7_size$$ = $data$$.split(/[:;,]/), $type$$ = $p$$7_size$$[1], $binary$$ = ("base64" === $p$$7_size$$[2] ? atob : decodeURIComponent)($p$$7_size$$.pop()), $p$$7_size$$ = $binary$$.length, $arr$$ = new Uint8Array($p$$7_size$$);
+    $js$$.alg.iterate(0, $p$$7_size$$, function($i$$) {
       $arr$$[$i$$] = $binary$$.charCodeAt($i$$);
     });
     return new $Blob$$([$arr$$], {type:$type$$});
@@ -3121,12 +3148,12 @@ jspyder.extend.fn("form", function() {
       for ($i$$ = 0;$i$$ < $options$$.length;$i$$++) {
         $$option$$1_option$$ = $js$$.alg.mergeObj({name:$cfgname$$, readonly:$cfg$$.readonly}, $options$$[$i$$]), $$option$$1_option$$.class = $cfgclass$$ + $js$$.alg.string($options$$[$i$$].class), $$option$$1_option$$ = $js$$.dom("<div></div>").append($checkbox$$($$option$$1_option$$)), $$checkbox$$.and($$option$$1_option$$);
       }
-      $$checkbox$$.find("input").on("change", function($event$$27_self$$) {
+      $$checkbox$$.find("input").on("change", function($event$$30_self$$) {
         var $checked$$ = this.checked;
-        $event$$27_self$$ = $js$$.dom(this);
+        $event$$30_self$$ = $js$$.dom(this);
         var $attrs$$ = {readonly:null};
-        $event$$27_self$$.getAttrs($attrs$$);
-        $attrs$$.readonly ? this.checked = !$checked$$ : $event$$27_self$$.getValue(function($v$$) {
+        $event$$30_self$$.getAttrs($attrs$$);
+        $attrs$$.readonly ? this.checked = !$checked$$ : $event$$30_self$$.getValue(function($v$$) {
           $cfg$$["data-values"]["val-" + $js$$.alg.string($v$$)] = $checked$$;
         });
       });
@@ -3295,10 +3322,10 @@ jspyder.extend.fn("form", function() {
               $found$$.find(".search-item.selected").trigger("mousedown");
           }
         }
-      }).on("blur", function($attrs$$33_event$$32_match$$) {
-        $attrs$$33_event$$32_match$$ = {readonly:null};
-        $js$$.dom(this).getAttrs($attrs$$33_event$$32_match$$);
-        $attrs$$33_event$$32_match$$.readonly || ("" === this.value ? $js$$.dom(this).setAttrs({"data-value":""}) : $config$$.strict ? ($attrs$$33_event$$32_match$$ = $searchValue$$($config$$, this.value, !0)) ? (this.value = $attrs$$33_event$$32_match$$.text, $js$$.dom(this).setAttrs({"data-value":$attrs$$33_event$$32_match$$.value})) : (this.value = "", $js$$.dom(this).setAttrs({"data-value":""})) : $js$$.dom(this).setAttrs({"data-value":this.value}), $fns$$.hide());
+      }).on("blur", function($attrs$$33_event$$35_match$$) {
+        $attrs$$33_event$$35_match$$ = {readonly:null};
+        $js$$.dom(this).getAttrs($attrs$$33_event$$35_match$$);
+        $attrs$$33_event$$35_match$$.readonly || ("" === this.value ? $js$$.dom(this).setAttrs({"data-value":""}) : $config$$.strict ? ($attrs$$33_event$$35_match$$ = $searchValue$$($config$$, this.value, !0)) ? (this.value = $attrs$$33_event$$35_match$$.text, $js$$.dom(this).setAttrs({"data-value":$attrs$$33_event$$35_match$$.value})) : (this.value = "", $js$$.dom(this).setAttrs({"data-value":""})) : $js$$.dom(this).setAttrs({"data-value":this.value}), $fns$$.hide());
       });
       var $fns$$ = {show:function search($css$$8_value$$) {
         var $values$$ = $config$$.values || [], $minlen$$ = $js$$.alg.number($config$$.minlen, 3), $data$$ = {match:[], regexp:new RegExp($js$$.alg.escapeString($css$$8_value$$), "i"), depth:$js$$.alg.number($config$$.length, 5)};
@@ -3608,7 +3635,9 @@ jspyder.extend.fn("sp", function() {
   }, _caml:"<View><Query><Where><Geq><FieldRef Name='ID' /><Value Type='Number'>1</Value></Geq></Where></Query><RowLimit>10000</RowLimit></View>", _columns:{}, _rows:[], _dirtyRows:[], get length() {
     return this._rows.length;
   }, addColumn:function $$sp$$$list$fn$addColumn$($name$$, $data$$) {
-    var $column$$ = Object.create($sp$$.column.fn, {list:{value:this}, name:{value:$name$$}});
+    var $column$$ = Object.create($sp$$.column.fn, {list:{value:this}, name:{value:$name$$}, column:{get:function() {
+      return $column$$;
+    }}});
     $js$$.alg.mergeObj($column$$, $data$$);
     "undefined" === typeof $data$$["default"] && "number" === $column$$.type && ($column$$["default"] = 0);
     this._columns[$name$$] = $column$$;
@@ -3701,7 +3730,7 @@ jspyder.extend.fn("sp", function() {
     $data$$102_values$$.row.ID.value = $data$$102_values$$.rowID;
     this._dirtyRows.push($data$$102_values$$.row);
     return this;
-  }, _createRowEach:function $$sp$$$list$fn$_createRowEach$($colData$$, $colName$$4_value$$, $column$$, $cell$$1_data$$) {
+  }, _createRowEach:function $$sp$$$list$fn$_createRowEach$($colData$$, $colName$$4_value$$, $columns$$, $cell$$1_data$$) {
     var $row$$ = $cell$$1_data$$.row;
     $colName$$4_value$$ = $cell$$1_data$$.values[$colData$$.name];
     $cell$$1_data$$ = Object.create($colData$$, {rowID:{value:$cell$$1_data$$.rowID}, dirty:{get:function() {
@@ -3773,10 +3802,10 @@ jspyder.extend.fn("sp", function() {
     $columns$$[$key$$] = $column$$.value || $column$$.default;
   }, _sumRows:function $$sp$$$query$fn$_sumRows$($row$$, $_$$, $rows$$, $columns$$) {
     $js$$.alg.each($columns$$, $sp$$.query.fn._sumColumns, $row$$);
-  }, _sumColumns:function $$sp$$$query$fn$_sumColumns$($sumValue$$, $colName$$, $out$$, $column$$4_row$$) {
-    if ($column$$4_row$$ = $column$$4_row$$[$colName$$]) {
-      var $rowValue$$ = $column$$4_row$$ && $column$$4_row$$.value;
-      switch($column$$4_row$$.type) {
+  }, _sumColumns:function $$sp$$$query$fn$_sumColumns$($sumValue$$, $colName$$, $out$$, $column$$3_row$$) {
+    if ($column$$3_row$$ = $column$$3_row$$[$colName$$]) {
+      var $rowValue$$ = $column$$3_row$$ && $column$$3_row$$.value;
+      switch($column$$3_row$$.type) {
         case "number":
           $out$$[$colName$$] = $js$$.alg.number($rowValue$$) + $js$$.alg.number($sumValue$$);
           break;
@@ -3992,6 +4021,8 @@ jspyder.extend.fn("template", function() {
     return this;
   }, output:function $$js_template$$$fn$output$() {
     return this._compiled;
+  }, outputDom:function $$js_template$$$fn$outputDom$($fn$$) {
+    return $js$$.dom(this._compiled, $fn$$);
   }, storeTemplate:function $$js_template$$$fn$storeTemplate$($name$$, $template$$) {
     $template$$ = $js$$.alg.string($template$$, "");
     $template$$ = $template$$.replace(/\<\!\-\-[^\<]+\-\-\>/g, "").replace(/\<([^\s\>]+)([^\>]+)\/\>/i, "<$1 $2></$1>");

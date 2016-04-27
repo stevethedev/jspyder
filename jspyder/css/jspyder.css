@@ -2256,4 +2256,24 @@ a {
   /* non-prefixed version, currently
      not supported by any browser */ }
 
+.js-draggable {
+  border: 0.0625em solid transparent;
+  padding: 0.0625em 0.25em; }
+  .js-draggable .js-drag-handle {
+    cursor: pointer;
+    /* fallback if grab cursor is unsupported */
+    cursor: grab;
+    cursor: -moz-grab;
+    cursor: -webkit-grab; }
+  .js-draggable.active, .js-draggable.active .js-drag-handle {
+    cursor: ns-resize;
+    cursor: grabbing;
+    cursor: -moz-grabbing;
+    cursor: -webkit-grabbing; }
+  .js-draggable.active .js-drag-handle {
+    color: #311b92; }
+  .js-draggable.js-draggable-placeholder {
+    border: 0.0625em dashed rgba(49, 27, 146, 0.8);
+    background-color: rgba(103, 58, 183, 0.4); }
+
 /*# sourceMappingURL=jspyder.css.map */

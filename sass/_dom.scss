@@ -1,0 +1,27 @@
+.js-draggable {
+    border: $px solid transparent;
+    padding: $px (4 * $px);
+    
+    .js-drag-handle {
+        cursor: pointer; /* fallback if grab cursor is unsupported */
+        cursor: grab;
+        cursor: -moz-grab;
+        cursor: -webkit-grab;
+    }
+    
+    &.active, &.active .js-drag-handle {
+        cursor: ns-resize;
+        cursor: grabbing;
+        cursor: -moz-grabbing;
+        cursor: -webkit-grabbing;
+    }
+    
+    &.active .js-drag-handle {
+        color: $color-deep-purple-900;
+    }
+    
+    &.js-draggable-placeholder {
+        border: $px dashed rgba($color-deep-purple-900, .8);
+        background-color: rgba($color-deep-purple-500, .4);
+    }
+}
