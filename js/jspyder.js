@@ -1563,6 +1563,39 @@
                 }
                 return this;
             },
+            
+            /**
+             * Exports a single attribute value.
+             */
+            exportAttr: function(attr) {
+                attr = js.alg.string(attr);
+                var o = {};
+                    o[attr] = null;
+                    
+                return this.exportAttrs(o)[attr];
+            },
+            
+            /**
+             * Gets a single attribute value.
+             */
+            getAttr: function(attr, fn) {
+                attr = js.alg.string(attr);
+                var o = {};
+                    o[attr] = null;
+                    
+                return this.getAttrs(o);
+            },
+            
+            /**
+             * Sets a single attribute value.
+             */
+            setAttr: function(attr, value, fn) {
+                attr = js.alg.string(attr);
+                var o = {};
+                    o[attr] = value;
+                    
+                return this.setAttrs(o, fn);
+            },
 
             /**
              * Gets the parent(s) of the elements in the node, and runs the
@@ -2046,7 +2079,7 @@
             },
 
             /**
-             * searchs through the wrapped objects, and excludes any elements
+             * searches through the wrapped objects, and excludes any elements
              * which do not meet the identified CSS selector.
              */
             filter: function (cssSelector) {
@@ -2055,6 +2088,23 @@
 
                 this.each(function (element) {
                     if (js_dom.fn._matches(element, cssSelector)) {
+                        _found.push(element);
+                    }
+                });
+
+                return $found;
+            },
+
+            /**
+             * searches through the wrapped objects, and excludes any elements
+             * which meet the identified CSS selector.
+             */
+            exclude: function (cssSelector) {
+                var $found = js_dom(),
+                    _found = $found._element;
+
+                this.each(function (element) {
+                    if (!js_dom.fn._matches(element, cssSelector)) {
                         _found.push(element);
                     }
                 });
@@ -2269,6 +2319,7 @@
              */
             setDraggable: function (dragSelector) {
                 this.find(dragSelector)
+                        .exclude(".js-draggable")
                         .setClasses({ "js-draggable": true })
                         .on("mousedown", __mousedown);
 

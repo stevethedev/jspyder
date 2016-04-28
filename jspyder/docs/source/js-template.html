@@ -275,7 +275,23 @@ jspyder.extend.fn(&quot;template&quot;, function () {
             return this;
         },
         
+<span id='jspyder-template-method-output'>        /**
+</span>         * @member jspyder.template
+         * 
+         * @return The last compiled template, as a string.
+         */
         output: function () { return this._compiled; },
+        
+<span id='jspyder-template-method-outputDom'>        /**
+</span>         * @member jspyder.template
+         * 
+         * @param {Function} [fn]
+         *      If provided, then this function will be executed upon DOM node
+         *      creation.
+         * 
+         * @return The last compiled template, as a DOM element.
+         */
+        outputDom: function (fn) { return js.dom(this._compiled, fn); },
         
 <span id='jspyder-template-method-storeTemplate'>        /**
 </span>         * @member jspyder.template

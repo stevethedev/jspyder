@@ -1107,6 +1107,21 @@ $jscomp.string.endsWith$install = function $$jscomp$string$endsWith$install$() {
         }, {first:$attrs$$1$$, others:$o$$});
       }
       return this;
+    }, exportAttr:function $$js_dom$$$fn$exportAttr$($attr$$) {
+      $attr$$ = $js$$.alg.string($attr$$);
+      var $o$$ = {};
+      $o$$[$attr$$] = null;
+      return this.exportAttrs($o$$)[$attr$$];
+    }, getAttr:function $$js_dom$$$fn$getAttr$($attr$$, $fn$$) {
+      $attr$$ = $js$$.alg.string($attr$$);
+      var $o$$ = {};
+      $o$$[$attr$$] = null;
+      return this.getAttrs($o$$);
+    }, setAttr:function $$js_dom$$$fn$setAttr$($attr$$, $value$$, $fn$$) {
+      $attr$$ = $js$$.alg.string($attr$$);
+      var $o$$ = {};
+      $o$$[$attr$$] = $value$$;
+      return this.setAttrs($o$$, $fn$$);
     }, parents:function $$js_dom$$$fn$parents$($fn$$) {
       this.each(function($element$$, $i$$, $elements$$) {
         $js_dom$$($element$$.parentNode, $fn$$, [$element$$]);
@@ -1314,6 +1329,12 @@ $jscomp.string.endsWith$install = function $$jscomp$string$endsWith$install$() {
         $js_dom$$.fn._matches($element$$, $cssSelector$$) && $_found$$.push($element$$);
       });
       return $$found$$;
+    }, exclude:function $$js_dom$$$fn$exclude$($cssSelector$$) {
+      var $$found$$ = $js_dom$$(), $_found$$ = $$found$$._element;
+      this.each(function($element$$) {
+        $js_dom$$.fn._matches($element$$, $cssSelector$$) || $_found$$.push($element$$);
+      });
+      return $$found$$;
     }, _matches:function $$js_dom$$$fn$_matches$($element$$0$$, $selector$$0$$) {
       var $fn$$ = "";
       $element$$0$$.matches ? $fn$$ = "matches" : $element$$0$$.matchesSelector ? $fn$$ = "matchesSelector" : $element$$0$$.msMatchesSelector ? $fn$$ = "msMatchesSelector" : $element$$0$$.mozMatchesSelector ? $fn$$ = "mozMatchesSelector" : $element$$0$$.webkitMatchesSelector ? $fn$$ = "webkitMatchesSelector" : $element$$0$$.oMatchesSelector ? $fn$$ = "oMatchesSelector" : $js_dom$$.fn._matches = function $$js_dom$$$fn$_matches$($element$$, $selector$$) {
@@ -1396,7 +1417,7 @@ $jscomp.string.endsWith$install = function $$jscomp$string$endsWith$install$() {
       });
       return this;
     }, setDraggable:function $$js_dom$$$fn$setDraggable$($dragSelector$$) {
-      this.find($dragSelector$$).setClasses({"js-draggable":!0}).on("mousedown", function __mousedown($event$$) {
+      this.find($dragSelector$$).exclude(".js-draggable").setClasses({"js-draggable":!0}).on("mousedown", function __mousedown($event$$) {
         !$__dragging$$ && $js$$.dom($event$$.target).exportClasses({"js-drag-handle":null})["js-drag-handle"] && ($__dragging$$ = $js$$.dom(this), $__dragging$$.setClasses({active:!0, "js-draggable-placeholder":!0}), $__dragging$$.parents(function($p$$) {
           $__dragTargets$$.push($p$$.parentElement);
         }), $__lastY$$ = $event$$.clientY);

@@ -198,7 +198,8 @@ jspyder.extend.fn(&quot;sp&quot;, function () {
         addColumn: function(name, data) {
             var column = Object.create(sp.column.fn, {
                 list: { value: this },
-                name: { value: name }
+                name: { value: name },
+                column: { get: function() { return column; } }
             });
 
             js.alg.mergeObj(column, data);
@@ -568,7 +569,7 @@ jspyder.extend.fn(&quot;sp&quot;, function () {
         },
 
 <span id='jspyder-sp-list-method-_createRowEach'>        /** @private */
-</span>        _createRowEach: function (colData, colName, column, data) {
+</span>        _createRowEach: function (colData, colName, columns, data) {
             var row = data.row,
                 value = data.values[colData.name],
                 cell = Object.create(colData, {
