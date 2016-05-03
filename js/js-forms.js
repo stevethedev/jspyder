@@ -89,7 +89,7 @@ jspyder.extend.fn("form", function () {
             }
         }
 
-        js.alg.use(this, fn);
+        js.alg.use(form, fn);
 
         return form;
     }

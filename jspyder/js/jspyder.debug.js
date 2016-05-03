@@ -2668,7 +2668,7 @@ jspyder.extend.fn("form", function() {
   function $js_form$$($config$$, $fn$$) {
     var $form$$ = Object.create($js_form$$.fn, {_dom:{value:$js$$.dom("<form></form>")}, _template:{value:{}}});
     $config$$ && ($config$$.success && ($form$$._success = $config$$.success), $config$$.failure && ($form$$._failure = $config$$.failure), $config$$.reset && ($form$$._reset = $config$$.reset), $config$$.fields && $form$$.addFields($config$$.fields));
-    $js$$.alg.use(this, $fn$$);
+    $js$$.alg.use($form$$, $fn$$);
     return $form$$;
   }
   var $js$$ = this;
