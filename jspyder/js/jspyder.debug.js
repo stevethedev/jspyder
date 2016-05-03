@@ -3549,6 +3549,8 @@ jspyder.extend.fn("sp", function() {
           ($orDrop$$ = $orDrop$$ && 0 !== ($value$$ & $or$$)) || this.stop();
         }), $drop$$ = $orDrop$$) : $drop$$ = 0 !== ($value$$ & $filter$$.not)), $drop$$ || "undefined" === typeof $filter$$.test || ($filter$$.test instanceof RegExp ? $drop$$ = !$filter$$.test.test($value$$) : $filter$$.test && "object" === typeof $filter$$.test && ($js$$.alg.each($filter$$.test, function($or$$) {
           ($orDrop$$ = $orDrop$$ && !$or$$.test($value$$)) || this.stop();
+        }), $drop$$ = $orDrop$$)), $drop$$ || "undefined" === typeof $filter$$.notest || ($filter$$.notest instanceof RegExp ? $drop$$ = $filter$$.notest.test($value$$) : $filter$$.notest && "object" === typeof $filter$$.notest && ($js$$.alg.each($filter$$.notest, function($or$$) {
+          ($orDrop$$ = $orDrop$$ && $or$$.test($value$$)) || this.stop();
         }), $drop$$ = $orDrop$$)));
       }
       (!$data$$ && $drop$$ || $data$$ && !$drop$$) && this.drop();

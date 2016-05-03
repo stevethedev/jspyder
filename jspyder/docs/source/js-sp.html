@@ -873,6 +873,7 @@ jspyder.extend.fn(&quot;sp&quot;, function () {
          *       - neq:  &quot;Field value != this.neq&quot;       (3 != 4)
          *       - snq:  &quot;Field value !== this.snq&quot;      (3 !== &quot;3&quot;)
          *       - test: &quot;Field value matches this.test&quot; (/^3/.test(3000))
+         *       - notest: &quot;Field value doesn't match this.test&quot;
          */
         filter: function(filterData) {
             if(filterData) {
@@ -1240,6 +1241,20 @@ jspyder.extend.fn(&quot;sp&quot;, function () {
                 else if(filter.test &amp;&amp; typeof filter.test === &quot;object&quot;) {
                     js.alg.each(filter.test, function(or) {
                         orDrop = orDrop &amp;&amp; !(or.test(value));
+                        orDrop || this.stop();
+                    });
+                    drop = orDrop;
+                }
+            }
+
+            if(!drop &amp;&amp; (typeof filter.notest !== &quot;undefined&quot;)) {
+                // prevent invalid regexp values from breaking our query
+                if(filter.notest instanceof RegExp) {
+                    drop = (filter.notest.test(value));
+                }
+                else if(filter.notest &amp;&amp; typeof filter.notest === &quot;object&quot;) {
+                    js.alg.each(filter.notest, function(or) {
+                        orDrop = orDrop &amp;&amp; (or.test(value));
                         orDrop || this.stop();
                     });
                     drop = orDrop;
