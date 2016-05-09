@@ -1122,6 +1122,20 @@
                     max = (max < arg ? arg : max);
                 });
                 return max;
+            },
+            
+            /**
+             * Returns the first matching property of the object, provided.
+             * This is especially useful for dealing with objects that have
+             * different implementations in different browsers.
+             */
+            "property": function(object /*, ... */) {
+                for(var i = 1; i < arguments.length; ++i) {
+                    if(typeof object[arguments[i]] !== "undefined") {
+                        return object[arguments[i]];
+                    }
+                }
+                return;
             }
         };
 
@@ -2382,7 +2396,47 @@
                 }
                 
                 return this;
-            }
+            },
+            
+            /**
+             * Inlines all of the CSS styles to the node and all of its 
+             * children. 
+             */
+            inlineStyles: (function() {
+                'use strict';
+                
+                function inlineStyles() {
+                    'use strict';
+                    return this.each(eachNode);
+                }
+                
+                function eachNode(node) {
+                    'use strict';
+                    js.alg.arrEach(global["document"]["styleSheets"], eachStyleSheet, node);
+                    js.alg.arrEach(node["children"], eachNode);
+                }
+                
+                function eachStyleSheet(style, index, styles, node) {
+                    'use strict';
+                    var rules = js.alg.property(style, "rules", "cssRules");
+                    js.alg.arrEach(rules, eachRule, node);
+                }
+                
+                function eachRule(rule, index, rules, node) {
+                    'use strict';
+                    if(js.alg.use(node, node["matches"], [rule["selectorText"]])) {
+                        try {
+                            var currentStyle = node.getAttribute("style");
+                            node.setAttribute("style", rule.cssText.match(/{(.*)}$/)[1] + ";" + currentStyle);
+                        } 
+                        catch(e) {
+                            js.log.err(e); 
+                        }
+                    }
+                }
+
+                return inlineStyles;
+            })()
         };
 
         js_dom.doc = js_dom(document.documentElement);

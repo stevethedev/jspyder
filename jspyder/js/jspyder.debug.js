@@ -971,6 +971,12 @@ $jscomp.string.endsWith$install = function $$jscomp$string$endsWith$install$() {
         $max$$ = $max$$ < $arg$$ ? $arg$$ : $max$$;
       });
       return $max$$;
+    }, property:function $$js_alg$$$property$($object$$) {
+      for (var $i$$ = 1;$i$$ < arguments.length;++$i$$) {
+        if ("undefined" !== typeof $object$$[arguments[$i$$]]) {
+          return $object$$[arguments[$i$$]];
+        }
+      }
     }};
     $js$$ && Object.defineProperty($js$$, "alg", {value:$js_alg$$});
     return $js_alg$$;
@@ -990,11 +996,11 @@ $jscomp.string.endsWith$install = function $$jscomp$string$endsWith$install$() {
     function $__getDomClasses$$($element$$) {
       return $__isElement$$($element$$) ? $element$$.className.replace(/(^\s+)|(\s(?=\s))|(\s+$)/g, "").split(" ") : [];
     }
-    function $_parseHtml$$($i$$19_s$$) {
+    function $_parseHtml$$($i$$20_s$$) {
       var $div$$ = $document$$.createElement("div"), $arr$$ = [];
-      $div$$.innerHTML = $i$$19_s$$;
-      for ($i$$19_s$$ = 0;$i$$19_s$$ < $div$$.children.length;$i$$19_s$$++) {
-        $arr$$.push($div$$.children[$i$$19_s$$]);
+      $div$$.innerHTML = $i$$20_s$$;
+      for ($i$$20_s$$ = 0;$i$$20_s$$ < $div$$.children.length;$i$$20_s$$++) {
+        $arr$$.push($div$$.children[$i$$20_s$$]);
       }
       return $arr$$;
     }
@@ -1443,7 +1449,29 @@ $jscomp.string.endsWith$install = function $$jscomp$string$endsWith$install$() {
         }
       });
       return this;
-    }};
+    }, inlineStyles:function() {
+      function $eachNode$$($node$$) {
+        $js$$.alg.arrEach($global$$0$$.document.styleSheets, $eachStyleSheet$$, $node$$);
+        $js$$.alg.arrEach($node$$.children, $eachNode$$);
+      }
+      function $eachStyleSheet$$($rules_style$$, $index$$, $styles$$, $node$$) {
+        $rules_style$$ = $js$$.alg.property($rules_style$$, "rules", "cssRules");
+        $js$$.alg.arrEach($rules_style$$, $eachRule$$, $node$$);
+      }
+      function $eachRule$$($rule$$, $index$$, $rules$$, $node$$) {
+        if ($js$$.alg.use($node$$, $node$$.matches, [$rule$$.selectorText])) {
+          try {
+            var $currentStyle$$ = $node$$.getAttribute("style");
+            $node$$.setAttribute("style", $rule$$.cssText.match(/{(.*)}$/)[1] + ";" + $currentStyle$$);
+          } catch ($e$$) {
+            $js$$.log.err($e$$);
+          }
+        }
+      }
+      return function inlineStyles() {
+        return this.each($eachNode$$);
+      };
+    }()};
     $js_dom$$.doc = $js_dom$$($document$$.documentElement);
     $js$$ && Object.defineProperty($js$$, "dom", {value:$js_dom$$});
     return $js_dom$$;
@@ -3357,16 +3385,16 @@ jspyder.extend.fn("form", function() {
       }};
       return $fns$$;
     }
-    function $__searchLoop$$($text$$23_valObj$$, $i$$44_value$$, $values$$, $data$$) {
-      $i$$44_value$$ = $js$$.alg.string($text$$23_valObj$$.value);
-      $text$$23_valObj$$ = $js$$.alg.string($text$$23_valObj$$.text, $i$$44_value$$);
-      $data$$.regexp.test($text$$23_valObj$$) && $data$$.match.push('<li class="search-item" data-value="' + $i$$44_value$$ + '" title="' + $text$$23_valObj$$ + '">' + $text$$23_valObj$$ + "</li>");
+    function $__searchLoop$$($text$$23_valObj$$, $i$$45_value$$, $values$$, $data$$) {
+      $i$$45_value$$ = $js$$.alg.string($text$$23_valObj$$.value);
+      $text$$23_valObj$$ = $js$$.alg.string($text$$23_valObj$$.text, $i$$45_value$$);
+      $data$$.regexp.test($text$$23_valObj$$) && $data$$.match.push('<li class="search-item" data-value="' + $i$$45_value$$ + '" title="' + $text$$23_valObj$$ + '">' + $text$$23_valObj$$ + "</li>");
       $data$$.match.length >= $data$$.depth && this.stop();
     }
-    function $__searchValue$$($text$$24_valObj$$, $i$$45_value$$, $values$$, $data$$) {
-      $i$$45_value$$ = $js$$.alg.string($text$$24_valObj$$.value);
-      $text$$24_valObj$$ = $js$$.alg.string($text$$24_valObj$$.text, $i$$45_value$$);
-      $data$$.find.test($data$$.searchText ? $text$$24_valObj$$ : $i$$45_value$$) && ($data$$.match = {value:$i$$45_value$$, text:$text$$24_valObj$$}, this.stop());
+    function $__searchValue$$($text$$24_valObj$$, $i$$46_value$$, $values$$, $data$$) {
+      $i$$46_value$$ = $js$$.alg.string($text$$24_valObj$$.value);
+      $text$$24_valObj$$ = $js$$.alg.string($text$$24_valObj$$.text, $i$$46_value$$);
+      $data$$.find.test($data$$.searchText ? $text$$24_valObj$$ : $i$$46_value$$) && ($data$$.match = {value:$i$$46_value$$, text:$text$$24_valObj$$}, this.stop());
     }
     function $searchValue$$($config$$, $data$$86_value$$, $searchText$$) {
       $data$$86_value$$ = {match:null, find:new RegExp("^" + $data$$86_value$$ + "$"), searchText:$searchText$$};
@@ -3727,10 +3755,10 @@ jspyder.extend.fn("sp", function() {
     this.eachDirtyRow(this._pushLoopDirtyRows, $data$$98_list$$);
     $ctx$$.executeQueryAsync($js$$.alg.bindFn(this, $__successPush$$, [$data$$98_list$$.items, $success$$]), $js$$.alg.bindFn(this, $__failurePush$$, [$data$$98_list$$.items, $failure$$]));
     return this;
-  }, _pushLoopDirtyRows:function $$sp$$$list$fn$_pushLoopDirtyRows$($row$$, $i$$49_rowID$$, $itemInfo_listItem_rows$$, $data$$) {
-    $i$$49_rowID$$ = $row$$.ID.value;
+  }, _pushLoopDirtyRows:function $$sp$$$list$fn$_pushLoopDirtyRows$($row$$, $i$$50_rowID$$, $itemInfo_listItem_rows$$, $data$$) {
+    $i$$50_rowID$$ = $row$$.ID.value;
     $itemInfo_listItem_rows$$ = $itemInfo_listItem_rows$$ = null;
-    0 > $i$$49_rowID$$ ? ($itemInfo_listItem_rows$$ = new window.SP.ListItemCreationInformation, $itemInfo_listItem_rows$$ = $data$$.list.addItem($itemInfo_listItem_rows$$), $data$$.newrow = !0) : ($itemInfo_listItem_rows$$ = $data$$.list.getItemById($i$$49_rowID$$), $data$$.newrow = !1);
+    0 > $i$$50_rowID$$ ? ($itemInfo_listItem_rows$$ = new window.SP.ListItemCreationInformation, $itemInfo_listItem_rows$$ = $data$$.list.addItem($itemInfo_listItem_rows$$), $data$$.newrow = !0) : ($itemInfo_listItem_rows$$ = $data$$.list.getItemById($i$$50_rowID$$), $data$$.newrow = !1);
     $data$$.listItem = $itemInfo_listItem_rows$$;
     $js$$.alg.each($row$$, $data$$.self._pushLoopDirtyRowColumns, $data$$);
     $data$$.items.push($itemInfo_listItem_rows$$);
@@ -4001,23 +4029,23 @@ jspyder.extend.fn("template", function() {
     }}});
   }
   function $__parse$$($tmp$$, $data$$) {
-    for (var $ctx$$ = {data:$data$$, tmp:$tmp$$, lib:$_library$$}, $found$$2_name$$inline_47_tmp$$ = null, $str$$ = "", $ctx$$inline_37_index$$54_value$$ = 0, $args$$inline_39_length$$;$found$$2_name$$inline_47_tmp$$ = $reSymbol$$.exec($ctx$$.tmp);) {
-      $ctx$$inline_37_index$$54_value$$ = $found$$2_name$$inline_47_tmp$$.index;
+    for (var $ctx$$ = {data:$data$$, tmp:$tmp$$, lib:$_library$$}, $found$$2_name$$inline_47_tmp$$ = null, $str$$ = "", $ctx$$inline_37_index$$56_value$$ = 0, $args$$inline_39_length$$;$found$$2_name$$inline_47_tmp$$ = $reSymbol$$.exec($ctx$$.tmp);) {
+      $ctx$$inline_37_index$$56_value$$ = $found$$2_name$$inline_47_tmp$$.index;
       $found$$2_name$$inline_47_tmp$$ = $found$$2_name$$inline_47_tmp$$[0];
       $args$$inline_39_length$$ = $found$$2_name$$inline_47_tmp$$.length;
-      $str$$ += $ctx$$.tmp.substring(0, $ctx$$inline_37_index$$54_value$$);
-      $ctx$$.tmp = $ctx$$.tmp.substring($ctx$$inline_37_index$$54_value$$ + $args$$inline_39_length$$);
+      $str$$ += $ctx$$.tmp.substring(0, $ctx$$inline_37_index$$56_value$$);
+      $ctx$$.tmp = $ctx$$.tmp.substring($ctx$$inline_37_index$$56_value$$ + $args$$inline_39_length$$);
       if ($reFunction$$.test($found$$2_name$$inline_47_tmp$$)) {
-        var $ctx$$inline_37_index$$54_value$$ = $ctx$$, $name$$inline_38_result$$ = void 0;
+        var $ctx$$inline_37_index$$56_value$$ = $ctx$$, $name$$inline_38_result$$ = void 0;
         $args$$inline_39_length$$ = [];
         for (var $arg$$inline_40_fn$$ = void 0, $len$$ = $name$$inline_38_result$$ = void 0, $cut$$ = void 0, $name$$inline_38_result$$ = $found$$2_name$$inline_47_tmp$$.match($reFuncName$$)[0].substring(1), $found$$2_name$$inline_47_tmp$$ = $found$$2_name$$inline_47_tmp$$.substring($found$$2_name$$inline_47_tmp$$.indexOf("(") + 1, $found$$2_name$$inline_47_tmp$$.lastIndexOf(")"));$arg$$inline_40_fn$$ = $reFuncArgs$$.exec($found$$2_name$$inline_47_tmp$$);) {
           $cut$$ = $arg$$inline_40_fn$$[0].length, $len$$ = $arg$$inline_40_fn$$.length, $arg$$inline_40_fn$$ = $arg$$inline_40_fn$$[$len$$ - 1], $found$$2_name$$inline_47_tmp$$ = $found$$2_name$$inline_47_tmp$$.substring($cut$$), $arg$$inline_40_fn$$.search($reFunction$$) ? $arg$$inline_40_fn$$.search($reCommandLiteral$$) ? $arg$$inline_40_fn$$.search($reString$$) ? $arg$$inline_40_fn$$.search($reVariable$$) ? $arg$$inline_40_fn$$.search($reNumber$$) ? $args$$inline_39_length$$.push($__parse$$($arg$$inline_40_fn$$, 
-          $ctx$$inline_37_index$$54_value$$.data)) : $args$$inline_39_length$$.push(+$arg$$inline_40_fn$$) : $args$$inline_39_length$$.push($__parse$$($arg$$inline_40_fn$$, $ctx$$inline_37_index$$54_value$$.data)) : $args$$inline_39_length$$.push($arg$$inline_40_fn$$.substring(1, $arg$$inline_40_fn$$.length - 1)) : $args$$inline_39_length$$.push($__parse$$($arg$$inline_40_fn$$.substring(1, $arg$$inline_40_fn$$.length - 1), $ctx$$inline_37_index$$54_value$$.data)) : $args$$inline_39_length$$.push($__parse$$($arg$$inline_40_fn$$, 
-          $ctx$$inline_37_index$$54_value$$.data));
+          $ctx$$inline_37_index$$56_value$$.data)) : $args$$inline_39_length$$.push(+$arg$$inline_40_fn$$) : $args$$inline_39_length$$.push($__parse$$($arg$$inline_40_fn$$, $ctx$$inline_37_index$$56_value$$.data)) : $args$$inline_39_length$$.push($arg$$inline_40_fn$$.substring(1, $arg$$inline_40_fn$$.length - 1)) : $args$$inline_39_length$$.push($__parse$$($arg$$inline_40_fn$$.substring(1, $arg$$inline_40_fn$$.length - 1), $ctx$$inline_37_index$$56_value$$.data)) : $args$$inline_39_length$$.push($__parse$$($arg$$inline_40_fn$$, 
+          $ctx$$inline_37_index$$56_value$$.data));
         }
-        ($arg$$inline_40_fn$$ = $ctx$$inline_37_index$$54_value$$.lib.fetch($name$$inline_38_result$$)) ? ($name$$inline_38_result$$ = $arg$$inline_40_fn$$.apply($ctx$$inline_37_index$$54_value$$.data, $args$$inline_39_length$$), "undefined" !== typeof $name$$inline_38_result$$ && null !== $name$$inline_38_result$$ && ($found$$2_name$$inline_47_tmp$$ = $name$$inline_38_result$$)) : $found$$2_name$$inline_47_tmp$$ = "@" + $name$$inline_38_result$$ + "(" + $args$$inline_39_length$$.join(", ") + ")";
+        ($arg$$inline_40_fn$$ = $ctx$$inline_37_index$$56_value$$.lib.fetch($name$$inline_38_result$$)) ? ($name$$inline_38_result$$ = $arg$$inline_40_fn$$.apply($ctx$$inline_37_index$$56_value$$.data, $args$$inline_39_length$$), "undefined" !== typeof $name$$inline_38_result$$ && null !== $name$$inline_38_result$$ && ($found$$2_name$$inline_47_tmp$$ = $name$$inline_38_result$$)) : $found$$2_name$$inline_47_tmp$$ = "@" + $name$$inline_38_result$$ + "(" + $args$$inline_39_length$$.join(", ") + ")";
       }
-      $reVariable$$.test($found$$2_name$$inline_47_tmp$$) && ($ctx$$inline_37_index$$54_value$$ = $ctx$$.data[$found$$2_name$$inline_47_tmp$$.substring(2, $found$$2_name$$inline_47_tmp$$.length - 1)], $found$$2_name$$inline_47_tmp$$ = "undefined" === typeof $ctx$$inline_37_index$$54_value$$ ? $found$$2_name$$inline_47_tmp$$ : null !== $ctx$$inline_37_index$$54_value$$ ? $ctx$$inline_37_index$$54_value$$ : "");
+      $reVariable$$.test($found$$2_name$$inline_47_tmp$$) && ($ctx$$inline_37_index$$56_value$$ = $ctx$$.data[$found$$2_name$$inline_47_tmp$$.substring(2, $found$$2_name$$inline_47_tmp$$.length - 1)], $found$$2_name$$inline_47_tmp$$ = "undefined" === typeof $ctx$$inline_37_index$$56_value$$ ? $found$$2_name$$inline_47_tmp$$ : null !== $ctx$$inline_37_index$$56_value$$ ? $ctx$$inline_37_index$$56_value$$ : "");
       $str$$ += $found$$2_name$$inline_47_tmp$$;
     }
     return $str$$ += $ctx$$.tmp;

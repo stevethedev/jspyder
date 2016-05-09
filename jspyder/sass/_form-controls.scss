@@ -43,7 +43,7 @@ label {
         
         .button-text {
             color: $color-grey-900;
-            vertical-align: middle;
+            // vertical-align: middle;
             text-align: left;
             
             &[data-buttontext=""]:after {

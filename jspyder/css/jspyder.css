@@ -25557,7 +25557,6 @@ label {
       border-bottom-right-radius: 0.2em; }
   .js-control.js-control-button .button-text {
     color: #212121;
-    vertical-align: middle;
     text-align: left; }
     .js-control.js-control-button .button-text[data-buttontext=""]:after {
       margin-left: 0; }
