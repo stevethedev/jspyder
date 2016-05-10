@@ -25565,7 +25565,7 @@ label {
       display: inline;
       margin-left: .5em; }
   .js-control.js-control-button > i {
-    margin: -.15em; }
+    margin: -.3em -.15em -.15em -.15em; }
     .js-control.js-control-button > i[class=""] {
       display: none; }
       .js-control.js-control-button > i[class=""] + .button-text:after {
