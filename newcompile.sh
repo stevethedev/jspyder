@@ -1,0 +1,1 @@
+java -jar ./closure-compiler/compiler.jar --language_out=ES5 --js ./src/*.js --js_module_root src --js_output_file bin/jspyder.js
