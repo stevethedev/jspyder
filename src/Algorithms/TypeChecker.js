@@ -2,36 +2,51 @@ export class TypeChecker {
     /**
      * Coerces any value to a boolean
      *
-     * @param {Mixed} value
+     * @param {?} value
      * 
      *      Value to convert to a boolean.
      * 
-     * @param {Boolean} [defaultValue=false]
+     * @param {?} defaultValue
      * 
      *      Value to use if [value] is undefined.
      */
-    static Boolean(value, defaultValue) {
+    static Boolean(value, defaultValue = false) {
         switch(typeof value) {
             
             case "boolean":
                 return value;
                 
             case "undefined":
-                return defaultValue || false;
+                return defaultValue;
                 
             case "string":
-                return /true/i.test(b);
+                if(/^true$/i.test(value)) {
+                    return true;
+                }
+                else if(/^false$/i.test(value)) {
+                    return false;
+                }
+                else {
+                    return defaultValue;
+                }
+                
+            case "number":
+                return value !== 0;
         }
-        return value ? true : false;
+        return value ? true : defaultValue;
     }
     
-    static Number(value, defaultValue) {
+    /**
+     * @param {?} value
+     * @param {?} defaultValue
+     */
+    static Number(value, defaultValue = 0) {
         var num = +value;
-        if(num == value || num === num) {
+        if(num == value && num === num) {
             return num;
         }
         else {
-            return defaultValue || 0;
+            return defaultValue;
         }
     }
 }

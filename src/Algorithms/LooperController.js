@@ -1,12 +1,20 @@
 import {JSObject} from "JSObject";
+import {TypeChecker} from "Algorithms/TypeChecker";
 
 /**
  * Loop Controller Classes
+ * 
+ * @class LoopController
  */
-
 export class LoopController extends JSObject {
-    constructor() {
+    /**
+     * @param {Object} source
+     */
+    constructor(source = []) {
         this._break = false;
+        this._index = 0;
+        this._source = source;
+        Object.defineProperty(this, "_source", { "value": this._source });
     }
     
     stop() {
@@ -32,27 +40,28 @@ export class LoopController extends JSObject {
 }
 
 export class ObjectLoopController extends LoopController {
-    constructor() {
-        super();
-    }
 }
 
+/**
+ * @class ArrayLoopController
+ * @extends LoopController
+ */
 export class ArrayLoopController extends LoopController {
-    constructor(array) {
-        Object.define(this, {
-            _array: { value: array }
-        });
-
-        super();
+    constructor(...args) {
+        super(...args);
     }
     
     set index(index) {
         this._index = TypeChecker.Number(index);
     }
     
-    drop(dropCount) {
+    get index() {
+        return this._index;
+    }
+    
+    drop(dropCount = 1) {
         dropCount = TypeChecker.Number(dropCount, 1);
-        this._array.splice(this.index--, dropCount);
+        this._source.splice(this.index--, dropCount);
         return this;
     }
 }

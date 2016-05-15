@@ -1,11 +1,13 @@
 import {TypeChecker} from "Algorithms/TypeChecker";
-import {FunctionChecker} from "Algorithms/FunctionChecker";
+import {Functions} from "Algorithms/Functions";
 import {LoopController, ObjectLoopController, ArrayLoopController} from "Algorithms/LooperController";
 
 export class Looper {
     /**
      * Iterates through a provided object and executes fn() on each
      * step.  Uses a controller to manage the loop.
+     * 
+     * Profile: O(n)
      *
      * @param {Object} object
      *      An object or array to iterate through.  If the element is
@@ -26,39 +28,44 @@ export class Looper {
      *
      *      If the Function returns a value, then that value will be
      *      inserted in the array at that position.
-     *
-     * @param {Mixed} data
-     *      A data source to pass as the fourth value in [fn]
-     *
-     * @return {Object} JSpyder
      */
-    static ObjectEach(object, loopFunction, data) {
+    static ObjectEach(object, loopFunction, ...data) {
         // drop everything if we can't iterate
         if(object && typeof object === "object") {
             // create the loop controller
-            var controller = new ObjectLoopController();
+            var controller = new ObjectLoopController(object);
             
-            for(var key in object) {
+            for(let key in object) {
                 if(controller.breaking) {
                     break;
                 }
                 
-                FunctionChecker.Use(controller, loopFunction, [object[key], key, object, data]);
+                controller.index = key;
+                Functions.Use(controller, loopFunction, [object[key], key, object, ...data]);
             }
         }
     }
     
-    static ArrayEach(array, loopFunction, data) {
+    /**
+     * Profile: O(n)
+     */
+    static ArrayEach(array, loopFunction, ...data) {
+        console.log("ArrayEach");
         // drop everything if we can't iterate
         if(array && typeof array === "object") {
+            console.log("Array Passes Check");
             // create the loop controller
-            var controller = new ArrayLoopController();
+            var controller = new ArrayLoopController(array);
+            console.log(controller);
+            console.log(`controller.index = ${controller.index} to ${array.length};`);
             for(controller.index = 0; controller.index < array.length; ++controller.index) {
                 if(controller.breaking) {
+                    console.log("breaking");
                     break;
                 }
                 
-                FunctionChecker.Use(controller, loopFunction, [object[controller.index], key, object, data]);
+                console.log("Loop index: " + controller.index);
+                Functions.Use(controller, loopFunction, [array[controller.index], controller.index, array, ...data]);
             }
         }
     }
@@ -68,20 +75,22 @@ export class Looper {
      * using [data] as the fourth parameter to [data].  Other than not
      * iterating numerically rather than traversing an array, this
      * function operates exactly like js.alg.arrEach and js.alg.each
+     * 
+     * Profile: O(n)
      */
-    static Iterate(start, end, iterator, data) {
+    static Iterate(start, end, iterator, ...data) {
         start = TypeChecker.Number(start);
         end = TypeChecker.Number(end);
         
-        var controller = new LoopController();
+        var controller = new LoopController(null);
         var step = (end < start ? -1 : 1);
         
-        for(var i = start; i !== end; i += step) {
+        for(let i = start; i !== end; i += step) {
             if(controller.breaking) {
                 break;
             }
 
-            FunctionChecker.Use(controller, iterator, [i, data]);
+            Functions.Use(controller, iterator, [i, ...data]);
         }
     }
 }

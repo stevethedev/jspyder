@@ -620,6 +620,93 @@ $jscomp.string.endsWith = function $$jscomp$string$endsWith$($searchString$$, $o
 $jscomp.string.endsWith$install = function $$jscomp$string$endsWith$install$() {
   String.prototype.endsWith || (String.prototype.endsWith = $jscomp.string.endsWith);
 };
+var module$Assert = {};
+function Assert$$module$Assert($test$$, $failMessage$$) {
+  if (!$test$$) {
+    throw Error(void 0 === $failMessage$$ ? "Assertion Failed!" : $failMessage$$);
+  }
+  return $test$$;
+}
+Assert$$module$Assert.NotNull = function $Assert$$module$Assert$NotNull$($object$$, $failMessage$$) {
+  return Assert$$module$Assert(null !== $object$$, void 0 === $failMessage$$ ? "Assert.NotNull Failed: " + $object$$ : $failMessage$$);
+};
+Assert$$module$Assert.Equal = function $Assert$$module$Assert$Equal$($expected$$, $actual$$, $failMessage$$) {
+  return Assert$$module$Assert($expected$$ === $actual$$, void 0 === $failMessage$$ ? "Assert.Equal Failed: Expected " + $expected$$ + ", Received " + $actual$$ : $failMessage$$);
+};
+Assert$$module$Assert.NotEqual = function $Assert$$module$Assert$NotEqual$($notExpected$$, $actual$$, $failMessage$$) {
+  return Assert$$module$Assert($notExpected$$ !== $actual$$, void 0 === $failMessage$$ ? "Assert.NotEqual Failed: Received " + $actual$$ : $failMessage$$);
+};
+Assert$$module$Assert.Type = function $Assert$$module$Assert$Type$($expectedType$$, $object$$, $failMessage$$) {
+  return Assert$$module$Assert.Equal($expectedType$$, typeof $object$$, void 0 === $failMessage$$ ? "Assert.Type Failed: Expected " + $expectedType$$ + ", received " + typeof $object$$ : $failMessage$$);
+};
+module$Assert.Assert = Assert$$module$Assert;
+var module$TestObject = {}, Test$$module$TestObject = function $Test$$module$TestObject$($name$$, $fn$$) {
+  this.name = $name$$;
+  this.fn = $fn$$;
+}, outputFunction$$module$TestObject = function $outputFunction$$module$TestObject$($message$$) {
+}, TestObject$$module$TestObject = function $TestObject$$module$TestObject$() {
+  this.tests = [];
+};
+TestObject$$module$TestObject.setLogger = function $TestObject$$module$TestObject$setLogger$($logFunction$$) {
+  outputFunction$$module$TestObject = $logFunction$$;
+};
+TestObject$$module$TestObject.prototype.addTest = function $TestObject$$module$TestObject$$addTest$($name$$, $testFunction$$) {
+  this.tests.push(new Test$$module$TestObject($name$$, $testFunction$$));
+};
+TestObject$$module$TestObject.prototype.log = function $TestObject$$module$TestObject$$log$($message$$) {
+  console.log($message$$);
+  outputFunction$$module$TestObject($message$$);
+};
+TestObject$$module$TestObject.prototype.startTests = function $TestObject$$module$TestObject$$startTests$() {
+  for (var $status_test$$ = function $$status_test$$$() {
+  }, $count$$ = 0;$status_test$$ = this.tests.pop();) {
+    var $message$$ = "Starting Test: " + $status_test$$.name;
+    console.log($message$$);
+    outputFunction$$module$TestObject($message$$);
+    var $message$$ = 0, $hadError$$ = null;
+    try {
+      $message$$ = $status_test$$.fn.apply(this), "undefined" === typeof $message$$ && ($message$$ = 1);
+    } catch ($e$$) {
+      console.log($e$$), $hadError$$ = $e$$;
+    }
+    $status_test$$ = " ... " + ($message$$ ? "Passed" : "Failed") + " " + ($hadError$$ ? "\r\n\r\n" + $hadError$$ + "\r\n\r\n" : "") + "\r\n";
+    console.log($status_test$$);
+    outputFunction$$module$TestObject($status_test$$);
+    $count$$ += $message$$;
+  }
+  return $count$$;
+};
+module$TestObject.TestObject = TestObject$$module$TestObject;
+var module$Algorithms$Arrays = {}, Arrays$$module$Algorithms$Arrays = function $Arrays$$module$Algorithms$Arrays$() {
+};
+Arrays$$module$Algorithms$Arrays.Slice = function $Arrays$$module$Algorithms$Arrays$Slice$($array$$, $sliceArgs$$) {
+  for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$ = 1;$$jscomp$restIndex$$ < arguments.length;++$$jscomp$restIndex$$) {
+    $$jscomp$restParams$$[$$jscomp$restIndex$$ - 1] = arguments[$$jscomp$restIndex$$];
+  }
+  try {
+    $array$$ = window.Array.prototype.slice.apply($array$$ || [], $$jscomp$restParams$$);
+  } catch ($error$$) {
+    $array$$ = [];
+  }
+  return $array$$;
+};
+module$Algorithms$Arrays.Arrays = Arrays$$module$Algorithms$Arrays;
+var module$Algorithms$TestArrays = {}, TestArrays$$module$Algorithms$TestArrays = function $TestArrays$$module$Algorithms$TestArrays$() {
+  TestObject$$module$TestObject.call(this);
+  this.addTest("JSAlgorithms/Prototypes/TestArrays", this.testSlice);
+  return this.startTests();
+};
+$jscomp.inherits(TestArrays$$module$Algorithms$TestArrays, TestObject$$module$TestObject);
+TestArrays$$module$Algorithms$TestArrays.setLogger = TestObject$$module$TestObject.setLogger;
+TestArrays$$module$Algorithms$TestArrays.prototype.testSlice = function $TestArrays$$module$Algorithms$TestArrays$$testSlice$() {
+  var $array$$ = [0, 1, 2, 3, 4];
+  module$Assert.Assert.Equal($array$$.length, Arrays$$module$Algorithms$Arrays.Slice($array$$).length);
+  module$Assert.Assert.Equal($array$$.slice(1, 2).length, Arrays$$module$Algorithms$Arrays.Slice($array$$, 1, 2).length);
+  module$Assert.Assert.Equal($array$$.slice(1, 2)[0], Arrays$$module$Algorithms$Arrays.Slice($array$$, 1, 2)[0]);
+  module$Assert.Assert.Equal(0, Arrays$$module$Algorithms$Arrays.Slice(null).length);
+  return 1;
+};
+module$Algorithms$TestArrays.TestArrays = TestArrays$$module$Algorithms$TestArrays;
 var module$Object$Interface = {}, HasInterface$$module$Object$Interface = function $HasInterface$$module$Object$Interface$() {
 };
 HasInterface$$module$Object$Interface.prototype.GetInterface = function $HasInterface$$module$Object$Interface$$GetInterface$() {
@@ -712,20 +799,6 @@ Object.defineProperties(Browser$$module$Environment$Browser, {version:{configura
   return BROWSER_NAME$$module$Environment$Browser;
 }}});
 module$Environment$Browser.Browser = Browser$$module$Environment$Browser;
-var module$Algorithms$Arrays = {}, Arrays$$module$Algorithms$Arrays = function $Arrays$$module$Algorithms$Arrays$() {
-};
-Arrays$$module$Algorithms$Arrays.Slice = function $Arrays$$module$Algorithms$Arrays$Slice$($array$$, $sliceArgs$$) {
-  for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$ = 1;$$jscomp$restIndex$$ < arguments.length;++$$jscomp$restIndex$$) {
-    $$jscomp$restParams$$[$$jscomp$restIndex$$ - 1] = arguments[$$jscomp$restIndex$$];
-  }
-  try {
-    $array$$ = window.Array.prototype.slice.apply($array$$ || [], $$jscomp$restParams$$);
-  } catch ($error$$) {
-    $array$$ = [];
-  }
-  return $array$$;
-};
-module$Algorithms$Arrays.Arrays = Arrays$$module$Algorithms$Arrays;
 var module$Algorithms$Functions = {}, Functions$$module$Algorithms$Functions = function $Functions$$module$Algorithms$Functions$() {
 };
 Functions$$module$Algorithms$Functions.IsFunction = function $Functions$$module$Algorithms$Functions$IsFunction$($checkFunction$$) {
@@ -738,20 +811,16 @@ Functions$$module$Algorithms$Functions.Use = function $Functions$$module$Algorit
   }
 };
 Functions$$module$Algorithms$Functions.Run = function $Functions$$module$Algorithms$Functions$Run$($runFunction$$, $args$$) {
-  for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$ = 1;$$jscomp$restIndex$$ < arguments.length;++$$jscomp$restIndex$$) {
-    $$jscomp$restParams$$[$$jscomp$restIndex$$ - 1] = arguments[$$jscomp$restIndex$$];
-  }
   if (Functions$$module$Algorithms$Functions.IsFunction($runFunction$$)) {
-    return $runFunction$$.apply(null, [].concat($jscomp.arrayFromIterable($$jscomp$restParams$$)));
+    return $runFunction$$.apply(null, [].concat($jscomp.arrayFromIterable($args$$)));
   }
 };
 Functions$$module$Algorithms$Functions.Bind = function $Functions$$module$Algorithms$Functions$Bind$($context$$, $useFunction$$, $args$$) {
   $args$$ = void 0 === $args$$ ? [] : $args$$;
   $args$$ = Arrays$$module$Algorithms$Arrays.Slice($args$$);
   return function() {
-    if (Functions$$module$Algorithms$Functions.IsFunction($useFunction$$)) {
-      return $args$$ = $args$$.concat(Arrays$$module$Algorithms$Arrays.Slice(arguments)), $useFunction$$.apply($context$$, $args$$);
-    }
+    $args$$ = $args$$.concat(Arrays$$module$Algorithms$Arrays.Slice(arguments));
+    return Functions$$module$Algorithms$Functions.Use($context$$, $useFunction$$, $args$$);
   };
 };
 module$Algorithms$Functions.Functions = Functions$$module$Algorithms$Functions;
@@ -773,16 +842,16 @@ JSObject$$module$JSObject.prototype.use = function $JSObject$$module$JSObject$$u
   return this;
 };
 JSObject$$module$JSObject.Mix = function $JSObject$$module$JSObject$Mix$($Class$$, $Subs$$) {
-  for (var $$jscomp$iter$0_$jscomp$restParams$$ = [], $$jscomp$key$sub_$jscomp$restIndex$$6_proto$$ = 1;$$jscomp$key$sub_$jscomp$restIndex$$6_proto$$ < arguments.length;++$$jscomp$key$sub_$jscomp$restIndex$$6_proto$$) {
-    $$jscomp$iter$0_$jscomp$restParams$$[$$jscomp$key$sub_$jscomp$restIndex$$6_proto$$ - 1] = arguments[$$jscomp$key$sub_$jscomp$restIndex$$6_proto$$];
+  for (var $$jscomp$iter$0_$jscomp$restParams$$ = [], $$jscomp$key$sub_$jscomp$restIndex$$5_proto$$ = 1;$$jscomp$key$sub_$jscomp$restIndex$$5_proto$$ < arguments.length;++$$jscomp$key$sub_$jscomp$restIndex$$5_proto$$) {
+    $$jscomp$iter$0_$jscomp$restParams$$[$$jscomp$key$sub_$jscomp$restIndex$$5_proto$$ - 1] = arguments[$$jscomp$key$sub_$jscomp$restIndex$$5_proto$$];
   }
   $Class$$ = $Class$$.prototype;
   $$jscomp$iter$0_$jscomp$restParams$$ = $jscomp.makeIterator($$jscomp$iter$0_$jscomp$restParams$$);
-  for ($$jscomp$key$sub_$jscomp$restIndex$$6_proto$$ = $$jscomp$iter$0_$jscomp$restParams$$.next();!$$jscomp$key$sub_$jscomp$restIndex$$6_proto$$.done;$$jscomp$key$sub_$jscomp$restIndex$$6_proto$$ = $$jscomp$iter$0_$jscomp$restParams$$.next()) {
-    for (var $$jscomp$key$sub_$jscomp$restIndex$$6_proto$$ = $$jscomp$key$sub_$jscomp$restIndex$$6_proto$$.value.prototype, $props$$ = Object.getOwnPropertyNames($$jscomp$key$sub_$jscomp$restIndex$$6_proto$$), $i$$ = 0;$i$$ < $props$$.length;++$i$$) {
+  for ($$jscomp$key$sub_$jscomp$restIndex$$5_proto$$ = $$jscomp$iter$0_$jscomp$restParams$$.next();!$$jscomp$key$sub_$jscomp$restIndex$$5_proto$$.done;$$jscomp$key$sub_$jscomp$restIndex$$5_proto$$ = $$jscomp$iter$0_$jscomp$restParams$$.next()) {
+    for (var $$jscomp$key$sub_$jscomp$restIndex$$5_proto$$ = $$jscomp$key$sub_$jscomp$restIndex$$5_proto$$.value.prototype, $props$$ = Object.getOwnPropertyNames($$jscomp$key$sub_$jscomp$restIndex$$5_proto$$), $i$$ = 0;$i$$ < $props$$.length;++$i$$) {
       var $prop$$ = $props$$[$i$$];
       if ("constructor" !== $prop$$) {
-        var $descriptor$$ = Object.getOwnPropertyDescriptor($$jscomp$key$sub_$jscomp$restIndex$$6_proto$$, $prop$$);
+        var $descriptor$$ = Object.getOwnPropertyDescriptor($$jscomp$key$sub_$jscomp$restIndex$$5_proto$$, $prop$$);
         Object.defineProperty($Class$$, $prop$$, $descriptor$$ || {});
       }
     }
@@ -860,18 +929,23 @@ TypeChecker$$module$Algorithms$TypeChecker.Boolean = function $TypeChecker$$modu
     case "undefined":
       return $defaultValue$$;
     case "string":
-      return /true/i.test($value$$);
+      return /^true$/i.test($value$$) ? !0 : /^false$/i.test($value$$) ? !1 : $defaultValue$$;
+    case "number":
+      return 0 !== $value$$;
   }
-  return $value$$ ? !0 : !1;
+  return $value$$ ? !0 : $defaultValue$$;
 };
 TypeChecker$$module$Algorithms$TypeChecker.Number = function $TypeChecker$$module$Algorithms$TypeChecker$Number$($value$$, $defaultValue$$) {
   var $num$$ = +$value$$;
-  return $num$$ == $value$$ || $num$$ === $num$$ ? $num$$ : (void 0 === $defaultValue$$ ? 0 : $defaultValue$$) || 0;
+  return $num$$ == $value$$ && $num$$ === $num$$ ? $num$$ : void 0 === $defaultValue$$ ? 0 : $defaultValue$$;
 };
 module$Algorithms$TypeChecker.TypeChecker = TypeChecker$$module$Algorithms$TypeChecker;
-var module$Algorithms$LooperController = {}, LoopController$$module$Algorithms$LooperController = function $LoopController$$module$Algorithms$LooperController$() {
+var module$Algorithms$LooperController = {}, LoopController$$module$Algorithms$LooperController = function $LoopController$$module$Algorithms$LooperController$($source$$) {
+  $source$$ = void 0 === $source$$ ? [] : $source$$;
   this._break = !1;
   this._index = 0;
+  this._source = $source$$;
+  Object.defineProperty(this, "_source", {value:this._source});
 };
 $jscomp.inherits(LoopController$$module$Algorithms$LooperController, JSObject$$module$JSObject);
 LoopController$$module$Algorithms$LooperController.Mix = JSObject$$module$JSObject.Mix;
@@ -890,28 +964,30 @@ Object.defineProperties(LoopController$$module$Algorithms$LooperController.proto
 }, set:function($index$$) {
   this._index = $index$$;
 }}});
-var ObjectLoopController$$module$Algorithms$LooperController = function $ObjectLoopController$$module$Algorithms$LooperController$() {
-  LoopController$$module$Algorithms$LooperController.call(this);
+var ObjectLoopController$$module$Algorithms$LooperController = function $ObjectLoopController$$module$Algorithms$LooperController$($var_args$$) {
+  LoopController$$module$Algorithms$LooperController.apply(this, arguments);
 };
 $jscomp.inherits(ObjectLoopController$$module$Algorithms$LooperController, LoopController$$module$Algorithms$LooperController);
 ObjectLoopController$$module$Algorithms$LooperController.Mix = LoopController$$module$Algorithms$LooperController.Mix;
 ObjectLoopController$$module$Algorithms$LooperController.inPrototypeChain = LoopController$$module$Algorithms$LooperController.inPrototypeChain;
-var ArrayLoopController$$module$Algorithms$LooperController = function $ArrayLoopController$$module$Algorithms$LooperController$($array$$) {
-  this._array = $array$$;
-  this._index = 0;
-  Object.defineProperty(this, "_array", {value:this._array});
-  LoopController$$module$Algorithms$LooperController.call(this);
+var ArrayLoopController$$module$Algorithms$LooperController = function $ArrayLoopController$$module$Algorithms$LooperController$($args$$) {
+  for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$ = 0;$$jscomp$restIndex$$ < arguments.length;++$$jscomp$restIndex$$) {
+    $$jscomp$restParams$$[$$jscomp$restIndex$$ - 0] = arguments[$$jscomp$restIndex$$];
+  }
+  LoopController$$module$Algorithms$LooperController.call.apply(LoopController$$module$Algorithms$LooperController, [].concat([this], $jscomp.arrayFromIterable($$jscomp$restParams$$)));
 };
 $jscomp.inherits(ArrayLoopController$$module$Algorithms$LooperController, LoopController$$module$Algorithms$LooperController);
 ArrayLoopController$$module$Algorithms$LooperController.Mix = LoopController$$module$Algorithms$LooperController.Mix;
 ArrayLoopController$$module$Algorithms$LooperController.inPrototypeChain = LoopController$$module$Algorithms$LooperController.inPrototypeChain;
 ArrayLoopController$$module$Algorithms$LooperController.prototype.drop = function $ArrayLoopController$$module$Algorithms$LooperController$$drop$($dropCount$$) {
   $dropCount$$ = TypeChecker$$module$Algorithms$TypeChecker.Number(void 0 === $dropCount$$ ? 1 : $dropCount$$, 1);
-  this._array.splice(this.index--, $dropCount$$);
+  this._source.splice(this.index--, $dropCount$$);
   return this;
 };
 Object.defineProperties(ArrayLoopController$$module$Algorithms$LooperController.prototype, {index:{configurable:!0, enumerable:!0, set:function($index$$) {
   this._index = TypeChecker$$module$Algorithms$TypeChecker.Number($index$$);
+}, get:function() {
+  return this._index;
 }}});
 module$Algorithms$LooperController.LoopController = LoopController$$module$Algorithms$LooperController;
 module$Algorithms$LooperController.ObjectLoopController = ObjectLoopController$$module$Algorithms$LooperController;
@@ -923,11 +999,12 @@ Looper$$module$Algorithms$Looper.ObjectEach = function $Looper$$module$Algorithm
     $$jscomp$restParams$$[$$jscomp$restIndex$$ - 2] = arguments[$$jscomp$restIndex$$];
   }
   if ($object$$ && "object" === typeof $object$$) {
-    var $$jscomp$restIndex$$ = new ObjectLoopController$$module$Algorithms$LooperController, $key$$;
+    var $$jscomp$restIndex$$ = new ObjectLoopController$$module$Algorithms$LooperController($object$$), $key$$;
     for ($key$$ in $object$$) {
       if ($$jscomp$restIndex$$.breaking) {
         break;
       }
+      $$jscomp$restIndex$$.index = $key$$;
       Functions$$module$Algorithms$Functions.Use($$jscomp$restIndex$$, $loopFunction$$, [].concat([$object$$[$key$$], $key$$, $object$$], $jscomp.arrayFromIterable($$jscomp$restParams$$)));
     }
   }
@@ -936,8 +1013,14 @@ Looper$$module$Algorithms$Looper.ArrayEach = function $Looper$$module$Algorithms
   for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$14_controller$$ = 2;$$jscomp$restIndex$$14_controller$$ < arguments.length;++$$jscomp$restIndex$$14_controller$$) {
     $$jscomp$restParams$$[$$jscomp$restIndex$$14_controller$$ - 2] = arguments[$$jscomp$restIndex$$14_controller$$];
   }
+  console.log("ArrayEach");
   if ($array$$ && "object" === typeof $array$$) {
-    for ($$jscomp$restIndex$$14_controller$$ = new ArrayLoopController$$module$Algorithms$LooperController($array$$), $$jscomp$restIndex$$14_controller$$.index = 0;$$jscomp$restIndex$$14_controller$$.index < $array$$.length && !$$jscomp$restIndex$$14_controller$$.breaking;++$$jscomp$restIndex$$14_controller$$.index) {
+    for (console.log("Array Passes Check"), $$jscomp$restIndex$$14_controller$$ = new ArrayLoopController$$module$Algorithms$LooperController($array$$), console.log($$jscomp$restIndex$$14_controller$$), console.log("controller.index = " + $$jscomp$restIndex$$14_controller$$.index + " to " + $array$$.length + ";"), $$jscomp$restIndex$$14_controller$$.index = 0;$$jscomp$restIndex$$14_controller$$.index < $array$$.length;++$$jscomp$restIndex$$14_controller$$.index) {
+      if ($$jscomp$restIndex$$14_controller$$.breaking) {
+        console.log("breaking");
+        break;
+      }
+      console.log("Loop index: " + $$jscomp$restIndex$$14_controller$$.index);
       Functions$$module$Algorithms$Functions.Use($$jscomp$restIndex$$14_controller$$, $loopFunction$$, [].concat([$array$$[$$jscomp$restIndex$$14_controller$$.index], $$jscomp$restIndex$$14_controller$$.index, $array$$], $jscomp.arrayFromIterable($$jscomp$restParams$$)));
     }
   }
@@ -948,7 +1031,7 @@ Looper$$module$Algorithms$Looper.Iterate = function $Looper$$module$Algorithms$L
   }
   $start$$ = TypeChecker$$module$Algorithms$TypeChecker.Number($start$$);
   $end$$ = TypeChecker$$module$Algorithms$TypeChecker.Number($end$$);
-  for (var $$jscomp$restIndex$$15_controller$$ = new LoopController$$module$Algorithms$LooperController, $step$$ = $end$$ < $start$$ ? -1 : 1, $i$$ = $start$$;$i$$ !== $end$$ && !$$jscomp$restIndex$$15_controller$$.breaking;$i$$ += $step$$) {
+  for (var $$jscomp$restIndex$$15_controller$$ = new LoopController$$module$Algorithms$LooperController(null), $step$$ = $end$$ < $start$$ ? -1 : 1, $i$$ = $start$$;$i$$ !== $end$$ && !$$jscomp$restIndex$$15_controller$$.breaking;$i$$ += $step$$) {
     Functions$$module$Algorithms$Functions.Use($$jscomp$restIndex$$15_controller$$, $iterator$$, [].concat([$i$$], $jscomp.arrayFromIterable($$jscomp$restParams$$)));
   }
 };
@@ -1210,4 +1293,197 @@ Object.defineProperties(JSCore$$module$JSCore.prototype, {alg:{configurable:!0, 
 }}});
 window.JSpyder || (window.JSpyder = JSCore$$module$JSCore);
 module$JSCore.JSCore = JSCore$$module$JSCore;
+var module$Algorithms$TestTypeChecker = {}, TestTypeChecker$$module$Algorithms$TestTypeChecker = function $TestTypeChecker$$module$Algorithms$TestTypeChecker$() {
+  TestObject$$module$TestObject.call(this);
+  this.addTest("Algorithms/TypeChecker/Boolean", this.testBoolean);
+  this.addTest("Algorithms/TypeChecker/Number", this.testNumber);
+  this.startTests();
+};
+$jscomp.inherits(TestTypeChecker$$module$Algorithms$TestTypeChecker, TestObject$$module$TestObject);
+TestTypeChecker$$module$Algorithms$TestTypeChecker.setLogger = TestObject$$module$TestObject.setLogger;
+TestTypeChecker$$module$Algorithms$TestTypeChecker.prototype.testBoolean = function $TestTypeChecker$$module$Algorithms$TestTypeChecker$$testBoolean$() {
+  module$Assert.Assert.Equal(!1, TypeChecker$$module$Algorithms$TypeChecker.Boolean(null), "false:null");
+  module$Assert.Assert.Equal(!1, TypeChecker$$module$Algorithms$TypeChecker.Boolean(!1), "false:false");
+  module$Assert.Assert.Equal(!0, TypeChecker$$module$Algorithms$TypeChecker.Boolean(!0), "true:true");
+  module$Assert.Assert.Equal(!0, TypeChecker$$module$Algorithms$TypeChecker.Boolean("true"), "true:'true'");
+  module$Assert.Assert.Equal(!0, TypeChecker$$module$Algorithms$TypeChecker.Boolean("TRUE"), "true:'TRUE'");
+  module$Assert.Assert.Equal(!1, TypeChecker$$module$Algorithms$TypeChecker.Boolean("false"), "false:'false'");
+  module$Assert.Assert.Equal(!1, TypeChecker$$module$Algorithms$TypeChecker.Boolean("FALSE"), "false:'FALSE'");
+  module$Assert.Assert.Equal(!1, TypeChecker$$module$Algorithms$TypeChecker.Boolean("failed"));
+  module$Assert.Assert.Equal(!0, TypeChecker$$module$Algorithms$TypeChecker.Boolean("failed", !0), "true:'failed':true");
+  module$Assert.Assert.Equal("banana", TypeChecker$$module$Algorithms$TypeChecker.Boolean("failed", "banana"), "'banana':'failed':'banana");
+};
+TestTypeChecker$$module$Algorithms$TestTypeChecker.prototype.testNumber = function $TestTypeChecker$$module$Algorithms$TestTypeChecker$$testNumber$() {
+  module$Assert.Assert.Equal(1, TypeChecker$$module$Algorithms$TypeChecker.Number(1), "1:1");
+  module$Assert.Assert.Equal(1, TypeChecker$$module$Algorithms$TypeChecker.Number("1"), "1:'1'");
+  module$Assert.Assert.Equal(0, TypeChecker$$module$Algorithms$TypeChecker.Number(null), "0:null");
+  module$Assert.Assert.Equal(1, TypeChecker$$module$Algorithms$TypeChecker.Number("1", 2), "1:'1':2");
+  module$Assert.Assert.Equal(2, TypeChecker$$module$Algorithms$TypeChecker.Number(null, 2), "2:null:2");
+  module$Assert.Assert.Equal(2, TypeChecker$$module$Algorithms$TypeChecker.Number(NaN, 2), "2:NaN:2");
+  module$Assert.Assert.Equal("banana", TypeChecker$$module$Algorithms$TypeChecker.Number(null, "banana"), "'banana':null:'banana'");
+  module$Assert.Assert.Equal(1, TypeChecker$$module$Algorithms$TypeChecker.Number(!0), "Boolean True");
+  module$Assert.Assert.Equal(0, TypeChecker$$module$Algorithms$TypeChecker.Number(!1), "Boolean False");
+};
+module$Algorithms$TestTypeChecker.TestTypeChecker = TestTypeChecker$$module$Algorithms$TestTypeChecker;
+var module$Algorithms$TestLooper = {}, TestLooper$$module$Algorithms$TestLooper = function $TestLooper$$module$Algorithms$TestLooper$() {
+  TestObject$$module$TestObject.call(this);
+  this.addTest("Algorithms/Looper/ObjectEach", this.testObjectEach);
+  this.addTest("Algorithms/Looper/ArrayEach", this.testArrayEach);
+  this.addTest("Algorithms/Looper/Iterate", this.testIterate);
+  this.startTests();
+};
+$jscomp.inherits(TestLooper$$module$Algorithms$TestLooper, TestObject$$module$TestObject);
+TestLooper$$module$Algorithms$TestLooper.setLogger = TestObject$$module$TestObject.setLogger;
+TestLooper$$module$Algorithms$TestLooper.prototype.testObjectEach = function $TestLooper$$module$Algorithms$TestLooper$$testObjectEach$() {
+  var $object$$ = "012345".split("");
+  Looper$$module$Algorithms$Looper.ObjectEach($object$$, function($value$$, $key$$, $obj$$) {
+    module$Assert.Assert.Equal($object$$, $obj$$);
+    module$Assert.Assert.Equal($obj$$[$key$$], $value$$);
+    module$Assert.Assert.Equal($object$$[$key$$], $value$$);
+  });
+};
+TestLooper$$module$Algorithms$TestLooper.prototype.testArrayEach = function $TestLooper$$module$Algorithms$TestLooper$$testArrayEach$() {
+  var $array$$ = [0, 1, 2, 3, 4, 5], $i$$ = 0;
+  Looper$$module$Algorithms$Looper.ArrayEach($array$$, function($value$$, $index$$, $arr$$) {
+    module$Assert.Assert.Equal($array$$, $arr$$);
+    module$Assert.Assert.Equal($value$$, $arr$$[$index$$]);
+    module$Assert.Assert.Equal($array$$[$i$$], $arr$$[$index$$]);
+    module$Assert.Assert.Equal($value$$, $index$$);
+    $i$$ += 1;
+  });
+  module$Assert.Assert.Equal($array$$.length, $i$$);
+  $i$$ = 0;
+  Looper$$module$Algorithms$Looper.ArrayEach($array$$, function($value$$, $index$$) {
+    this.drop();
+    $i$$ = $index$$;
+  });
+  module$Assert.Assert.Equal(0, $array$$.length);
+  module$Assert.Assert.Equal(0, $i$$);
+  return !0;
+};
+TestLooper$$module$Algorithms$TestLooper.prototype.testIterate = function $TestLooper$$module$Algorithms$TestLooper$$testIterate$() {
+  var $i$$ = 0;
+  Looper$$module$Algorithms$Looper.Iterate(0, 5, function($index$$, $d1$$, $d2$$) {
+    module$Assert.Assert.Equal($i$$++, $index$$);
+  }, {}, {});
+  module$Assert.Assert.Equal(5, $i$$);
+  $i$$ = 5;
+  Looper$$module$Algorithms$Looper.Iterate(5, 0, function($index$$) {
+    module$Assert.Assert.Equal($i$$--, $index$$);
+  });
+  module$Assert.Assert.Equal(0, $i$$);
+  return !0;
+};
+module$Algorithms$TestLooper.TestLooper = TestLooper$$module$Algorithms$TestLooper;
+var module$Algorithms$TestFunctions = {}, TestFunctions$$module$Algorithms$TestFunctions = function $TestFunctions$$module$Algorithms$TestFunctions$() {
+  TestObject$$module$TestObject.call(this);
+  this.addTest("Algorithms/Functions/IsFunction", this.testIsFunction);
+  this.addTest("Algorithms/Functions/Use", this.testUse);
+  this.addTest("Algorithms/Functions/Run", this.testRun);
+  this.addTest("Algorithms/Functions/Bind", this.testBind);
+  this.startTests();
+};
+$jscomp.inherits(TestFunctions$$module$Algorithms$TestFunctions, TestObject$$module$TestObject);
+TestFunctions$$module$Algorithms$TestFunctions.setLogger = TestObject$$module$TestObject.setLogger;
+TestFunctions$$module$Algorithms$TestFunctions.prototype.testIsFunction = function $TestFunctions$$module$Algorithms$TestFunctions$$testIsFunction$() {
+  module$Assert.Assert(Functions$$module$Algorithms$Functions.IsFunction(function() {
+  }));
+  module$Assert.Assert(!Functions$$module$Algorithms$Functions.IsFunction(null));
+};
+TestFunctions$$module$Algorithms$TestFunctions.prototype.testUse = function $TestFunctions$$module$Algorithms$TestFunctions$$testUse$() {
+  var $context$$ = {}, $args$$ = [1, 2, 3], $retval$$ = {};
+  module$Assert.Assert.Equal($retval$$, Functions$$module$Algorithms$Functions.Use($context$$, function fn() {
+    module$Assert.Assert.Equal($context$$, this);
+    module$Assert.Assert.Equal($args$$.length, arguments.length);
+    for (var $i$$ = 0;$i$$ < arguments.length;++$i$$) {
+      module$Assert.Assert.Equal($args$$[$i$$], arguments[$i$$]);
+    }
+    return $retval$$;
+  }, $args$$));
+};
+TestFunctions$$module$Algorithms$TestFunctions.prototype.testRun = function $TestFunctions$$module$Algorithms$TestFunctions$$testRun$() {
+  var $args$$ = [1, 2, 3], $retval$$ = {};
+  module$Assert.Assert.Equal($retval$$, Functions$$module$Algorithms$Functions.Run(function fn() {
+    module$Assert.Assert.Equal($args$$.length, arguments.length);
+    for (var $i$$ = 0;$i$$ < arguments.length;++$i$$) {
+      module$Assert.Assert.Equal($args$$[$i$$], arguments[$i$$]);
+    }
+    return $retval$$;
+  }, $args$$));
+};
+TestFunctions$$module$Algorithms$TestFunctions.prototype.testBind = function $TestFunctions$$module$Algorithms$TestFunctions$$testBind$() {
+  var $args1$$ = [1, 2, 3], $args2$$ = [4, 5, 6], $retval$$ = {}, $context$$ = {}, $boundFn$$ = Functions$$module$Algorithms$Functions.Bind($context$$, function fn() {
+    module$Assert.Assert.Equal($context$$, this, "Bind Context Failed");
+    module$Assert.Assert.Equal($args1$$.length + $args2$$.length, arguments.length);
+    var $i$$, $j$$;
+    for ($i$$ = 0;$i$$ < $args1$$.length;++$i$$) {
+      module$Assert.Assert.Equal($args1$$[$i$$], arguments[$i$$]);
+    }
+    for ($j$$ = 0;$j$$ < $args2$$.length;++$j$$) {
+      module$Assert.Assert.Equal($args2$$[$j$$], arguments[$i$$ + $j$$]);
+    }
+    return $retval$$;
+  }, $args1$$);
+  module$Assert.Assert.Type("function", $boundFn$$);
+  module$Assert.Assert.Equal($retval$$, $boundFn$$.apply(null, [].concat($jscomp.arrayFromIterable($args2$$))), "Bind Return Value Failed");
+};
+module$Algorithms$TestFunctions.TestFunctions = TestFunctions$$module$Algorithms$TestFunctions;
+var module$Algorithms$TestJSAlgorithms = {}, TestJSAlgorithms$$module$Algorithms$TestJSAlgorithms = function $TestJSAlgorithms$$module$Algorithms$TestJSAlgorithms$($jspyder$$) {
+  this.jspyder = $jspyder$$;
+  TestObject$$module$TestObject.call(this);
+  this.addTest("Algorithms", this.testAlgorithms);
+  this.addTest("Algorithms/JSAlgorithms.arrEach", this.testArrEach);
+  this.addTest("Algorithms/JSAlgorithms.each", this.testEach);
+  this.startTests();
+};
+$jscomp.inherits(TestJSAlgorithms$$module$Algorithms$TestJSAlgorithms, TestObject$$module$TestObject);
+TestJSAlgorithms$$module$Algorithms$TestJSAlgorithms.setLogger = TestObject$$module$TestObject.setLogger;
+TestJSAlgorithms$$module$Algorithms$TestJSAlgorithms.prototype.testAlgorithms = function $TestJSAlgorithms$$module$Algorithms$TestJSAlgorithms$$testAlgorithms$() {
+  new TestArrays$$module$Algorithms$TestArrays;
+  new TestLooper$$module$Algorithms$TestLooper;
+  new TestFunctions$$module$Algorithms$TestFunctions;
+  new TestTypeChecker$$module$Algorithms$TestTypeChecker;
+};
+TestJSAlgorithms$$module$Algorithms$TestJSAlgorithms.prototype.testArrEach = function $TestJSAlgorithms$$module$Algorithms$TestJSAlgorithms$$testArrEach$() {
+  var $array$$ = [0, 1, 2, 3, 4], $i$$ = 0, $context1$$ = {}, $context2$$ = {};
+  this.jspyder.alg.arrEach($array$$, function($value$$, $index$$, $arr$$, $ctx1$$, $ctx2$$) {
+    module$Assert.Assert.Equal($array$$, $arr$$);
+    module$Assert.Assert.Equal($i$$, $index$$);
+    module$Assert.Assert.Equal($array$$[$i$$], $value$$);
+    module$Assert.Assert.Equal($context1$$, $ctx1$$);
+    module$Assert.Assert.Equal($context2$$, $ctx2$$);
+    3 === $index$$ ? this.stop() : ++$i$$;
+  }, $context1$$, $context2$$);
+  module$Assert.Assert.Equal(3, $i$$);
+};
+TestJSAlgorithms$$module$Algorithms$TestJSAlgorithms.prototype.testEach = function $TestJSAlgorithms$$module$Algorithms$TestJSAlgorithms$$testEach$() {
+};
+module$Algorithms$TestJSAlgorithms.TestJSAlgorithms = TestJSAlgorithms$$module$Algorithms$TestJSAlgorithms;
+var JSpyder$$module$TestJSCore = window.JSpyder, TestJSCore$$module$TestJSCore = function $TestJSCore$$module$TestJSCore$($jspyderName$$) {
+  $jspyderName$$ = void 0 === $jspyderName$$ ? "jspyder" : $jspyderName$$;
+  TestObject$$module$TestObject.call(this);
+  this.jspyderName = $jspyderName$$;
+  this.jspyder = JSpyder$$module$TestJSCore.Bootstrap(this.jspyderName, this);
+  module$Assert.Assert(JSpyder$$module$TestJSCore.inPrototypeChain(this.jspyder), "Failed Prototype Chain test");
+  this.addTest("JSpyder Constructor and Bootstrap", this.testConstructor);
+  this.startTests();
+  new TestJSAlgorithms$$module$Algorithms$TestJSAlgorithms(this.jspyder);
+};
+$jscomp.inherits(TestJSCore$$module$TestJSCore, TestObject$$module$TestObject);
+TestJSCore$$module$TestJSCore.setLogger = TestObject$$module$TestObject.setLogger;
+TestJSCore$$module$TestJSCore.prototype.testConstructor = function $TestJSCore$$module$TestJSCore$$testConstructor$() {
+  module$Assert.Assert(this.jspyder, "Expected this." + this.jspyderName + " to be defined");
+  module$Assert.Assert(this.jspyder.alg, "JSpyder Algorithms Module Detached");
+  module$Assert.Assert(this.jspyder.env, "JSpyder Environment Module Detached");
+  module$Assert.Assert(this.jspyder.log, "JSpyder Logger Module Detached");
+  module$Assert.Assert(this.jspyder.dom, "JSpyder DOM Module Detached");
+  return !0;
+};
+var div$$module$TestJSCore = document.createElement("div");
+document.body.appendChild(div$$module$TestJSCore);
+TestObject$$module$TestObject.setLogger(function($message$$) {
+  div$$module$TestJSCore.innerText += $message$$;
+});
+window.Tests = new TestJSCore$$module$TestJSCore;
+window.Tests.startTests();
 
