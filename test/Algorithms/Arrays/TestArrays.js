@@ -8,7 +8,11 @@ export class TestArrays extends TestObject {
         super();
 
         this.addTest("Algorithms/Arrays/Slice", this.testSlice);
-        
+        this.addTest("Algorithms/Arrays/SortArrayNumbers", this.testSortArrayNumbers);
+        this.addTest("Algorithms/Arrays/SortArrayObjects", this.testSortArrayObjects);
+        this.addTest("Algorithms/Arrays/WidePush", this.testWidePush);
+        this.addTest("Algorithms/Arrays/ToArray", this.testToArray);
+
         return this.startTests();
     }
 
@@ -23,10 +27,26 @@ export class TestArrays extends TestObject {
 
         // Ensure that params return the same values
         Assert.Equal(array.slice(1, 2)[0], Arrays.Slice(array, 1, 2)[0]);
-        
+
         // Ensure that weird objects return return a void array
         Assert.Equal(0, Arrays.Slice(null).length);
-        
+
         return 1;
+    }
+
+    testSortArrayNumbers() {
+        Assert.Fail();
+    }
+
+    testSortArrayObjects() {
+        Assert.Fail();
+    }
+
+    testWidePush() {
+        Assert.Fail();
+    }
+
+    testToArray() {
+        Assert.Fail();
     }
 }

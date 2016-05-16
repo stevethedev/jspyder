@@ -17,14 +17,19 @@ export class JSCore extends JSObject {
     constructor() {
         // Create the base JSpyder Registry
         this.extend("registry", new JSRegistry().GetInterface());
-        
-        // bootstrap lib
+
+        /**
+         * @lends JSCore.lib
+         */
         this.extend("lib", new JSLibrary(this).GetInterface());
+
+        /**
+         * @lends JSCore.alg
+         */
         this.extend("alg", new JSAlgorithms(this));
-        // TODO: bootstrap DOM
         // TODO: loadScript
     }
-    
+
     /**
      * @method
      * @param {string} alias
@@ -34,22 +39,22 @@ export class JSCore extends JSObject {
         var jspyder = global[alias] = new JSCore();
         return jspyder;
     }
-    
+
     /**
      * @method
      */
     get alg() { return JSAlgorithms; }
-    
+
     /**
      * @method
      */
     get env() { return JSEnvironment; }
-    
+
     /**
      * @method
      */
     get log() { return JS_LOGGER_INTERFACE; }
-    
+
     /**
      * @method
      */

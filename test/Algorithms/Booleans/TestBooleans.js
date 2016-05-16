@@ -6,13 +6,13 @@ import {Assert} from "Assert";
 export class TestBooleans extends TestObject {
     constructor() {
         super();
-        
-        this.addTest("Algorithms/Booleans/ToBoolean", this.testBoolean);
-        
+
+        this.addTest("Algorithms/Booleans/ToBoolean", this.testToBoolean);
+
         this.startTests();
     }
-    
-    testBoolean() {
+
+    testToBoolean() {
         Assert.Equal(false, Booleans.ToBoolean(null), "false:null");
         Assert.Equal(false, Booleans.ToBoolean(false), "false:false");
         Assert.Equal(true, Booleans.ToBoolean(true), "true:true");

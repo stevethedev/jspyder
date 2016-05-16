@@ -13,18 +13,6 @@ const ARRAY = window["Array"];
  */
 export class Arrays {
     /**
-     * Profile: O(1)
-     */
-    static ToArray(value, defaultValue) {
-        if(ARRAY.isArray(value)) {
-            return value;
-        }
-        else {
-            return defaultValue;
-        }
-    }
-
-    /**
      * Profile: O(n)
      */
     static Slice(array = [], ...sliceArgs) {
@@ -37,30 +25,39 @@ export class Arrays {
 
         return array;
     }
-    
+
     /**
-     * Profile: O(m*n)
+     * Profile: (browser-dependent)
      */
-    static WidePush(intoArray, fromArray) {
-        for(let i = 0, end = fromArray.length; i < end; i += MAX_CHUNK_SIZE) {
-            let chunkEnd = window.Math.min(i + MAX_CHUNK_SIZE, end);
-            let chunk = Arrays.Slice(fromArray, i, chunkEnd);
-            ARRAY_PUSH.apply(intoArray, chunk);
-        }
+    static SortArrayNumbers(array, ascending) {
+        array = Arrays.ToArray(array);
+        array.sort(function(left, right) {
+            left = Numbers.ToNumber(left);
+            right = Numbers.ToNumber(right);
+
+            if(ascending) {
+                return left - right;
+            }
+            else {
+                return right - left;
+            }
+        });
+
+        return array;
     }
-    
+
     /**
-     * Profile: 
+     * Profile: (browser-dependent)
      */
     static SortArrayObjects(array, ascending, ...fields) {
         array = Arrays.ToArray(array);
-        
+
         array.sort(Arrays.GetBestSortArrayObjectFunction(
                 ascending, fields));
-            
+
         return array;
     }
-    
+
     /**
      * @return {function(Object,Object):(number|boolean)}
      */
@@ -72,10 +69,10 @@ export class Arrays {
                         left = left[fields[i]];
                         right = right[fields[i]];
                     }
-                    
+
                     return (ascending ? left >= right : left <= right);
                 };
-            
+
             // Internet Explorer needs numerical values
             case BROWSER_IE:
             case BROWSER_EDGE:
@@ -85,10 +82,10 @@ export class Arrays {
                         left = left[fields[i]];
                         right = right[fields[i]];
                     }
-                    
+
                     var a = (ascending ? left : right);
                     var b = (ascending ? right : left);
-                    
+
                     if(a > b) {
                         return 1;
                     }
@@ -101,21 +98,27 @@ export class Arrays {
                 };
         }
     }
-    
-    SortArrayNumbers(array, ascending) {
-        array = Arrays.ToArray(array);
-        array.sort(function(left, right) {
-            left = Numbers.ToNumber(left);
-            right = Numbers.ToNumber(right);
-            
-            if(ascending) {
-                return left - right;
-            }
-            else {
-                return right - left;
-            }
-        });
-        
-        return array;
+
+    /**
+     * Profile: O(m*n)
+     */
+    static WidePush(intoArray, fromArray) {
+        for(let i = 0, end = fromArray.length; i < end; i += MAX_CHUNK_SIZE) {
+            let chunkEnd = window.Math.min(i + MAX_CHUNK_SIZE, end);
+            let chunk = Arrays.Slice(fromArray, i, chunkEnd);
+            ARRAY_PUSH.apply(intoArray, chunk);
+        }
+    }
+
+    /**
+     * Profile: O(1)
+     */
+    static ToArray(value, defaultValue) {
+        if(ARRAY.isArray(value)) {
+            return value;
+        }
+        else {
+            return defaultValue;
+        }
     }
 }
