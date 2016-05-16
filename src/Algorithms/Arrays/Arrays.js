@@ -55,7 +55,7 @@ export class Arrays {
     static SortArrayObjects(array, ascending, ...fields) {
         array = Arrays.ToArray(array);
         
-        array.sort(Arrays.SortArrayObjectsInternal(
+        array.sort(Arrays.GetBestSortArrayObjectFunction(
                 ascending, fields));
             
         return array;
@@ -64,7 +64,7 @@ export class Arrays {
     /**
      * @return {function(Object,Object):(number|boolean)}
      */
-    static SortArrayObjectsInternal(ascending, fields) {
+    static GetBestSortArrayObjectFunction(ascending, fields) {
         switch(Browser.name) {
             case BROWSER_FIREFOX: // Firefox can use a shortcut function
                 return function(left, right) {

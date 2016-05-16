@@ -3,11 +3,9 @@ import {Functions} from "Algorithms/Functions/Functions";
 
 export class DOMCss {
     static setCssOn(element, cssObject) {
-        return Looper.ObjectEach(cssObject, DOMCss._setCssOnInternal, element);
-    }
-    
-    static _setCssOnInternal(value, property, cssObject, element) {
-        element["style"][property] = value;
+        return Looper.ObjectEach(cssObject,(value, property, cssObject) => {
+            element["style"][property] = value;
+        });
     }
     
     static setCssOnLoop(element, index, elementList, cssObject) {
@@ -19,16 +17,11 @@ export class DOMCss {
         var computedStyle = window.getComputedStyle(element);
         var elementStyle = element["style"];
         
-        Looper.ObjectEach(cssObject, 
-            DOMCss["_getCssFromInternal"], 
-            computedStyle, 
-            elementStyle);
-            
+        Looper.ObjectEach(cssObject, (value, property, cssObject) => {
+                cssObject[property] = elementStyle[property] || computedStyle[property];
+            });
+                    
         return cssObject;
-    }
-    
-    static _getCssFromInternal(value, property, cssObject, computedStyle, elementStyle) {
-        cssObject[property] = elementStyle[property] || computedStyle[property];
     }
     
     static getCssFromLoop(element, index, elementList, JSDom, cssObject, callbackFunction) {

@@ -83,11 +83,7 @@ export class JSLibrary extends JSObject {
     
     RegisterSet(object) {
         if(object && "object" === typeof object) {
-            Looper.ObjectEach(object, JSLibrary.RegisterSetInternal, this); 
+            Looper.ObjectEach(object, (fnValue, fnName) => { this.Register(fnName, fnValue); }); 
         }
-    }
-    
-    static RegisterSetInternal(fnValue, fnName, object, self) {
-        self.Register(fnName, fnValue);
     }
 }

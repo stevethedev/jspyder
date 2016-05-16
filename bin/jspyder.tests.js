@@ -796,10 +796,10 @@ Arrays$$module$Algorithms$Arrays$Arrays.SortArrayObjects = function $Arrays$$mod
     $$jscomp$restParams$$[$$jscomp$restIndex$$ - 2] = arguments[$$jscomp$restIndex$$];
   }
   $array$$ = Arrays$$module$Algorithms$Arrays$Arrays.ToArray($array$$);
-  $array$$.sort(Arrays$$module$Algorithms$Arrays$Arrays.SortArrayObjectsInternal($ascending$$, $$jscomp$restParams$$));
+  $array$$.sort(Arrays$$module$Algorithms$Arrays$Arrays.GetBestSortArrayObjectFunction($ascending$$, $$jscomp$restParams$$));
   return $array$$;
 };
-Arrays$$module$Algorithms$Arrays$Arrays.SortArrayObjectsInternal = function $Arrays$$module$Algorithms$Arrays$Arrays$SortArrayObjectsInternal$($ascending$$, $fields$$) {
+Arrays$$module$Algorithms$Arrays$Arrays.GetBestSortArrayObjectFunction = function $Arrays$$module$Algorithms$Arrays$Arrays$GetBestSortArrayObjectFunction$($ascending$$, $fields$$) {
   switch(Browser$$module$Environment$Browser.name) {
     case module$Environment$BrowserData.BROWSER_FIREFOX:
       return function($left$$, $right$$) {
@@ -1384,21 +1384,19 @@ module$Algorithms$TestJSAlgorithms.TestJSAlgorithms = TestJSAlgorithms$$module$A
 var module$Dom$DOMCss = {}, DOMCss$$module$Dom$DOMCss = function $DOMCss$$module$Dom$DOMCss$() {
 };
 DOMCss$$module$Dom$DOMCss.setCssOn = function $DOMCss$$module$Dom$DOMCss$setCssOn$($element$$, $cssObject$$) {
-  return Looper$$module$Algorithms$Looper$Looper.ObjectEach($cssObject$$, DOMCss$$module$Dom$DOMCss._setCssOnInternal, $element$$);
-};
-DOMCss$$module$Dom$DOMCss._setCssOnInternal = function $DOMCss$$module$Dom$DOMCss$_setCssOnInternal$($value$$, $property$$, $cssObject$$, $element$$) {
-  $element$$.style[$property$$] = $value$$;
+  return Looper$$module$Algorithms$Looper$Looper.ObjectEach($cssObject$$, function($value$$, $property$$, $cssObject$$) {
+    $element$$.style[$property$$] = $value$$;
+  });
 };
 DOMCss$$module$Dom$DOMCss.setCssOnLoop = function $DOMCss$$module$Dom$DOMCss$setCssOnLoop$($element$$, $index$$, $elementList$$, $cssObject$$) {
   return DOMCss$$module$Dom$DOMCss.setCssOn($element$$, $cssObject$$);
 };
-DOMCss$$module$Dom$DOMCss.getCssFrom = function $DOMCss$$module$Dom$DOMCss$getCssFrom$($element$$, $cssObject$$) {
-  var $computedStyle$$ = window.getComputedStyle($element$$);
-  Looper$$module$Algorithms$Looper$Looper.ObjectEach($cssObject$$, DOMCss$$module$Dom$DOMCss._getCssFromInternal, $computedStyle$$, $element$$.style);
-  return $cssObject$$;
-};
-DOMCss$$module$Dom$DOMCss._getCssFromInternal = function $DOMCss$$module$Dom$DOMCss$_getCssFromInternal$($value$$, $property$$, $cssObject$$, $computedStyle$$, $elementStyle$$) {
-  $cssObject$$[$property$$] = $elementStyle$$[$property$$] || $computedStyle$$[$property$$];
+DOMCss$$module$Dom$DOMCss.getCssFrom = function $DOMCss$$module$Dom$DOMCss$getCssFrom$($element$$, $cssObject$$0$$) {
+  var $computedStyle$$ = window.getComputedStyle($element$$), $elementStyle$$ = $element$$.style;
+  Looper$$module$Algorithms$Looper$Looper.ObjectEach($cssObject$$0$$, function($value$$, $property$$, $cssObject$$) {
+    $cssObject$$[$property$$] = $elementStyle$$[$property$$] || $computedStyle$$[$property$$];
+  });
+  return $cssObject$$0$$;
 };
 DOMCss$$module$Dom$DOMCss.getCssFromLoop = function $DOMCss$$module$Dom$DOMCss$getCssFromLoop$($element$$, $index$$, $elementList$$, $JSDom$$, $cssObject$$, $callbackFunction$$) {
   0 < $index$$ && ($cssObject$$ = Object.create($cssObject$$));
@@ -1735,10 +1733,10 @@ JSLibrary$$module$Library$JSLibrary.prototype.Register = function $JSLibrary$$mo
   "string" === typeof $functionName$$ && ("function" !== typeof $functionValue$$ && null !== $functionValue$$ || this._registry.stash($functionName$$, $functionValue$$));
 };
 JSLibrary$$module$Library$JSLibrary.prototype.RegisterSet = function $JSLibrary$$module$Library$JSLibrary$$RegisterSet$($object$$) {
-  $object$$ && "object" === typeof $object$$ && Looper$$module$Algorithms$Looper$Looper.ObjectEach($object$$, JSLibrary$$module$Library$JSLibrary.RegisterSetInternal, this);
-};
-JSLibrary$$module$Library$JSLibrary.RegisterSetInternal = function $JSLibrary$$module$Library$JSLibrary$RegisterSetInternal$($fnValue$$, $fnName$$, $object$$, $self$$) {
-  $self$$.Register($fnName$$, $fnValue$$);
+  var $$jscomp$this$$ = this;
+  $object$$ && "object" === typeof $object$$ && Looper$$module$Algorithms$Looper$Looper.ObjectEach($object$$, function($fnValue$$, $fnName$$) {
+    $$jscomp$this$$.Register($fnName$$, $fnValue$$);
+  });
 };
 module$Library$JSLibrary.JSLibrary = JSLibrary$$module$Library$JSLibrary;
 var module$Library$TestJSLibrary = {}, TestJSLibrary$$module$Library$TestJSLibrary = function $TestJSLibrary$$module$Library$TestJSLibrary$($jspyder$$) {
