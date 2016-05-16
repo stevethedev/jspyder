@@ -4,6 +4,8 @@ import {Assert} from "Assert";
 import {JSCore} from "JSCore";
 
 import {TestJSAlgorithms} from "Algorithms/TestJSAlgorithms";
+import {TestJSDom} from "Dom/TestJSDom";
+import {TestJSLibrary} from "Library/TestJSLibrary";
 
 var JSpyder = window["JSpyder"];
 class TestJSCore extends TestObject {
@@ -18,6 +20,8 @@ class TestJSCore extends TestObject {
         this.startTests();
         
         new TestJSAlgorithms(this.jspyder);
+        new TestJSDom(this.jspyder);
+        new TestJSLibrary(this.jspyder);
     }
     
     testConstructor() {
@@ -31,11 +35,20 @@ class TestJSCore extends TestObject {
     }
 }
 
-var div = document.createElement("div");
+var div = document.createElement("pre");
 document.body.appendChild(div);
 TestObject.setLogger(function(message) {
     var d = new Date();
-    div.innerText += message;
+    
+    message = message.replace(/\.{3} (Passed|Failed)/, function(msg, found) {
+        var replace = (found === "Passed" 
+            ? "<font color='darkgreen'>PASSED</font>" 
+            : "<font color='darkred'>FAILED</font>")
+            
+        return msg.split(found).join(replace);
+    })
+    
+    div.innerHTML += message;
 });
 
 window["Tests"] = new TestJSCore();

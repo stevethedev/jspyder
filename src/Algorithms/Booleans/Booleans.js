@@ -1,4 +1,4 @@
-export class TypeChecker {
+export class Booleans {
     /**
      * Coerces any value to a boolean
      *
@@ -10,7 +10,7 @@ export class TypeChecker {
      * 
      *      Value to use if [value] is undefined.
      */
-    static Boolean(value, defaultValue = false) {
+    static ToBoolean(value, defaultValue = false) {
         switch(typeof value) {
             
             case "boolean":
@@ -34,19 +34,5 @@ export class TypeChecker {
                 return value !== 0;
         }
         return value ? true : defaultValue;
-    }
-    
-    /**
-     * @param {?} value
-     * @param {?} defaultValue
-     */
-    static Number(value, defaultValue = 0) {
-        var num = +value;
-        if(num == value && num === num) {
-            return num;
-        }
-        else {
-            return defaultValue;
-        }
     }
 }

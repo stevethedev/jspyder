@@ -1,7 +1,7 @@
 import {JSObject} from "JSObject";
 
-import {Arrays} from "Algorithms/Arrays";
-import {Functions} from "Algorithms/Functions";
+import {Arrays} from "Algorithms/Arrays/Arrays";
+import {Functions} from "Algorithms/Functions/Functions";
 import {HasInterface} from "Object/Interface";
 
 import {LoggerDefs} from "Logger/LoggerDefs";

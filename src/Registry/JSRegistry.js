@@ -1,6 +1,6 @@
 import {JSObject} from "JSObject";
 
-import {Functions} from "Algorithms/Functions";
+import {Functions} from "Algorithms/Functions/Functions";
 
 import {HasInterface} from "Object/Interface";
 

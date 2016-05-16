@@ -1,5 +1,5 @@
 import {JSObject} from "JSObject";
-import {TypeChecker} from "Algorithms/TypeChecker";
+import {Numbers} from "Algorithms/Numbers/Numbers";
 
 /**
  * Loop Controller Classes
@@ -52,7 +52,7 @@ export class ArrayLoopController extends LoopController {
     }
     
     set index(index) {
-        this._index = TypeChecker.Number(index);
+        this._index = Numbers.ToNumber(index);
     }
     
     get index() {
@@ -60,7 +60,7 @@ export class ArrayLoopController extends LoopController {
     }
     
     drop(dropCount = 1) {
-        dropCount = TypeChecker.Number(dropCount, 1);
+        dropCount = Numbers.ToNumber(dropCount, 1);
         this._source.splice(this.index--, dropCount);
         return this;
     }

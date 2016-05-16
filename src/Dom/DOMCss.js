@@ -1,5 +1,5 @@
-import {Looper} from "Algorithms/Looper";
-import {Functions} from "Algorithms/Functions";
+import {Looper} from "Algorithms/Looper/Looper";
+import {Functions} from "Algorithms/Functions/Functions";
 
 export class DOMCss {
     static setCssOn(element, cssObject) {

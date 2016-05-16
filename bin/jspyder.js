@@ -620,11 +620,6 @@ $jscomp.string.endsWith = function $$jscomp$string$endsWith$($searchString$$, $o
 $jscomp.string.endsWith$install = function $$jscomp$string$endsWith$install$() {
   String.prototype.endsWith || (String.prototype.endsWith = $jscomp.string.endsWith);
 };
-var module$Object$Interface = {}, HasInterface$$module$Object$Interface = function $HasInterface$$module$Object$Interface$() {
-};
-HasInterface$$module$Object$Interface.prototype.GetInterface = function $HasInterface$$module$Object$Interface$$GetInterface$() {
-};
-module$Object$Interface.HasInterface = HasInterface$$module$Object$Interface;
 var module$Environment$BrowserData = {}, BROWSER_IE$$module$Environment$BrowserData = "IE", BROWSER_EDGE$$module$Environment$BrowserData = "Edge", BROWSER_FIREFOX$$module$Environment$BrowserData = "Firefox", BROWSER_OPERA$$module$Environment$BrowserData = "Opera", BROWSER_OPERA_MINI$$module$Environment$BrowserData = "Opera Mini", BROWSER_SAFARI$$module$Environment$BrowserData = "Safari", BROWSER_SAFARI_IOS$$module$Environment$BrowserData = "iOS Safari", BROWSER_CHROME$$module$Environment$BrowserData = 
 "Chrome", BROWSER_CHROME_ANDROID$$module$Environment$BrowserData = "Chrome for Android", BROWSER_ANDROID$$module$Environment$BrowserData = "Android BrowserData", BROWSER_UNKNOWN$$module$Environment$BrowserData = "Unknown BrowserData", BrowserData$$module$Environment$BrowserData = function $BrowserData$$module$Environment$BrowserData$() {
 };
@@ -712,49 +707,184 @@ Object.defineProperties(Browser$$module$Environment$Browser, {version:{configura
   return BROWSER_NAME$$module$Environment$Browser;
 }}});
 module$Environment$Browser.Browser = Browser$$module$Environment$Browser;
-var module$Algorithms$Arrays = {}, Arrays$$module$Algorithms$Arrays = function $Arrays$$module$Algorithms$Arrays$() {
+var module$Algorithms$Numbers$Numbers = {}, Numbers$$module$Algorithms$Numbers$Numbers = function $Numbers$$module$Algorithms$Numbers$Numbers$() {
 };
-Arrays$$module$Algorithms$Arrays.Slice = function $Arrays$$module$Algorithms$Arrays$Slice$($array$$, $sliceArgs$$) {
+Numbers$$module$Algorithms$Numbers$Numbers.ToNumber = function $Numbers$$module$Algorithms$Numbers$Numbers$ToNumber$($value$$, $defaultValue$$) {
+  var $num$$ = +$value$$;
+  return $num$$ == $value$$ && $num$$ === $num$$ ? $num$$ : void 0 === $defaultValue$$ ? 0 : $defaultValue$$;
+};
+Numbers$$module$Algorithms$Numbers$Numbers.Magnitude = function $Numbers$$module$Algorithms$Numbers$Numbers$Magnitude$($num$$, $base$$) {
+  $num$$ = Numbers$$module$Algorithms$Numbers$Numbers.ToNumber($num$$) | 0;
+  var $pow_width$$ = ((0 > $num$$ ? -$num$$ : $num$$) | 0).toString($base$$).length - 1 || 1, $pow_width$$ = Math.pow($base$$, $pow_width$$);
+  return 0 > $num$$ ? Math.floor($num$$ / $pow_width$$) * $pow_width$$ : Math.ceil($num$$ / $pow_width$$) * $pow_width$$;
+};
+module$Algorithms$Numbers$Numbers.Numbers = Numbers$$module$Algorithms$Numbers$Numbers;
+var module$Algorithms$Arrays$Arrays = {}, MAX_CHUNK_SIZE$$module$Algorithms$Arrays$Arrays = 8192, ARRAY_PROTOTYPE$$module$Algorithms$Arrays$Arrays = window.Array.prototype, ARRAY_SLICE$$module$Algorithms$Arrays$Arrays = ARRAY_PROTOTYPE$$module$Algorithms$Arrays$Arrays.slice, ARRAY_PUSH$$module$Algorithms$Arrays$Arrays = ARRAY_PROTOTYPE$$module$Algorithms$Arrays$Arrays.push, ARRAY$$module$Algorithms$Arrays$Arrays = window.Array, Arrays$$module$Algorithms$Arrays$Arrays = function $Arrays$$module$Algorithms$Arrays$Arrays$() {
+};
+Arrays$$module$Algorithms$Arrays$Arrays.ToArray = function $Arrays$$module$Algorithms$Arrays$Arrays$ToArray$($value$$, $defaultValue$$) {
+  return ARRAY$$module$Algorithms$Arrays$Arrays.isArray($value$$) ? $value$$ : $defaultValue$$;
+};
+Arrays$$module$Algorithms$Arrays$Arrays.Slice = function $Arrays$$module$Algorithms$Arrays$Arrays$Slice$($array$$, $sliceArgs$$) {
   for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$ = 1;$$jscomp$restIndex$$ < arguments.length;++$$jscomp$restIndex$$) {
     $$jscomp$restParams$$[$$jscomp$restIndex$$ - 1] = arguments[$$jscomp$restIndex$$];
   }
+  $array$$ = void 0 === $array$$ ? [] : $array$$;
   try {
-    $array$$ = window.Array.prototype.slice.apply($array$$ || [], $$jscomp$restParams$$);
+    $array$$ = ARRAY_SLICE$$module$Algorithms$Arrays$Arrays.apply($array$$, $$jscomp$restParams$$);
   } catch ($error$$) {
     $array$$ = [];
   }
   return $array$$;
 };
-module$Algorithms$Arrays.Arrays = Arrays$$module$Algorithms$Arrays;
-var module$Algorithms$Functions = {}, Functions$$module$Algorithms$Functions = function $Functions$$module$Algorithms$Functions$() {
+Arrays$$module$Algorithms$Arrays$Arrays.WidePush = function $Arrays$$module$Algorithms$Arrays$Arrays$WidePush$($intoArray$$, $fromArray$$) {
+  for (var $i$$ = 0, $end$$ = $fromArray$$.length;$i$$ < $end$$;$i$$ += MAX_CHUNK_SIZE$$module$Algorithms$Arrays$Arrays) {
+    var $chunk$$ = window.Math.min($i$$ + MAX_CHUNK_SIZE$$module$Algorithms$Arrays$Arrays, $end$$), $chunk$$ = Arrays$$module$Algorithms$Arrays$Arrays.Slice($fromArray$$, $i$$, $chunk$$);
+    ARRAY_PUSH$$module$Algorithms$Arrays$Arrays.apply($intoArray$$, $chunk$$);
+  }
 };
-Functions$$module$Algorithms$Functions.IsFunction = function $Functions$$module$Algorithms$Functions$IsFunction$($checkFunction$$) {
+Arrays$$module$Algorithms$Arrays$Arrays.SortArrayObjects = function $Arrays$$module$Algorithms$Arrays$Arrays$SortArrayObjects$($array$$, $ascending$$, $fields$$) {
+  for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$ = 2;$$jscomp$restIndex$$ < arguments.length;++$$jscomp$restIndex$$) {
+    $$jscomp$restParams$$[$$jscomp$restIndex$$ - 2] = arguments[$$jscomp$restIndex$$];
+  }
+  $array$$ = Arrays$$module$Algorithms$Arrays$Arrays.ToArray($array$$);
+  $array$$.sort(Arrays$$module$Algorithms$Arrays$Arrays.SortArrayObjectsInternal($ascending$$, $$jscomp$restParams$$));
+  return $array$$;
+};
+Arrays$$module$Algorithms$Arrays$Arrays.SortArrayObjectsInternal = function $Arrays$$module$Algorithms$Arrays$Arrays$SortArrayObjectsInternal$($ascending$$, $fields$$) {
+  switch(Browser$$module$Environment$Browser.name) {
+    case module$Environment$BrowserData.BROWSER_FIREFOX:
+      return function($left$$, $right$$) {
+        for (var $i$$ = 0;$left$$ && $right$$ && $i$$ < $fields$$.length;++$i$$) {
+          $left$$ = $left$$[$fields$$[$i$$]], $right$$ = $right$$[$fields$$[$i$$]];
+        }
+        return $ascending$$ ? $left$$ >= $right$$ : $left$$ <= $right$$;
+      };
+    default:
+      return function($left$$, $right$$) {
+        for (var $a$$1_i$$ = 0;$left$$ && $right$$ && $a$$1_i$$ < $fields$$.length;++$a$$1_i$$) {
+          $left$$ = $left$$[$fields$$[$a$$1_i$$]], $right$$ = $right$$[$fields$$[$a$$1_i$$]];
+        }
+        var $a$$1_i$$ = $ascending$$ ? $left$$ : $right$$, $b$$ = $ascending$$ ? $right$$ : $left$$;
+        return $a$$1_i$$ > $b$$ ? 1 : $a$$1_i$$ < $b$$ ? -1 : 0;
+      };
+  }
+};
+Arrays$$module$Algorithms$Arrays$Arrays.prototype.SortArrayNumbers = function $Arrays$$module$Algorithms$Arrays$Arrays$$SortArrayNumbers$($array$$, $ascending$$) {
+  $array$$ = Arrays$$module$Algorithms$Arrays$Arrays.ToArray($array$$);
+  $array$$.sort(function($left$$, $right$$) {
+    $left$$ = Numbers$$module$Algorithms$Numbers$Numbers.ToNumber($left$$);
+    $right$$ = Numbers$$module$Algorithms$Numbers$Numbers.ToNumber($right$$);
+    return $ascending$$ ? $left$$ - $right$$ : $right$$ - $left$$;
+  });
+  return $array$$;
+};
+module$Algorithms$Arrays$Arrays.Arrays = Arrays$$module$Algorithms$Arrays$Arrays;
+var module$Algorithms$Arrays$ArraysInterface = {}, ArraysInterface$$module$Algorithms$Arrays$ArraysInterface = function $ArraysInterface$$module$Algorithms$Arrays$ArraysInterface$() {
+};
+ArraysInterface$$module$Algorithms$Arrays$ArraysInterface.prototype.array = function $ArraysInterface$$module$Algorithms$Arrays$ArraysInterface$$array$($value$$, $defaultValue$$) {
+  $defaultValue$$ = void 0 === $defaultValue$$ ? [] : $defaultValue$$;
+  return Arrays$$module$Algorithms$Arrays$Arrays.ToArray($value$$, $defaultValue$$);
+};
+ArraysInterface$$module$Algorithms$Arrays$ArraysInterface.prototype.sliceArray = function $ArraysInterface$$module$Algorithms$Arrays$ArraysInterface$$sliceArray$($array$$, $index$$) {
+  $array$$ = void 0 === $array$$ ? [] : $array$$;
+  return Arrays$$module$Algorithms$Arrays$Arrays.SliceArray($array$$, void 0 === $index$$ ? 0 : $index$$);
+};
+ArraysInterface$$module$Algorithms$Arrays$ArraysInterface.prototype.joinArray = function $ArraysInterface$$module$Algorithms$Arrays$ArraysInterface$$joinArray$($arrayRef$$, $arraysFrom$$) {
+  for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$6_i$$ = 1;$$jscomp$restIndex$$6_i$$ < arguments.length;++$$jscomp$restIndex$$6_i$$) {
+    $$jscomp$restParams$$[$$jscomp$restIndex$$6_i$$ - 1] = arguments[$$jscomp$restIndex$$6_i$$];
+  }
+  for ($$jscomp$restIndex$$6_i$$ = 0;$$jscomp$restIndex$$6_i$$ < $$jscomp$restParams$$.length;++$$jscomp$restIndex$$6_i$$) {
+    Arrays$$module$Algorithms$Arrays$Arrays.WidePush($arrayRef$$, $$jscomp$restParams$$[$$jscomp$restIndex$$6_i$$]);
+  }
+  return $arrayRef$$;
+};
+ArraysInterface$$module$Algorithms$Arrays$ArraysInterface.prototype.sortArrayObj = function $ArraysInterface$$module$Algorithms$Arrays$ArraysInterface$$sortArrayObj$($array$$, $ascending$$, $fields$$) {
+  for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$ = 2;$$jscomp$restIndex$$ < arguments.length;++$$jscomp$restIndex$$) {
+    $$jscomp$restParams$$[$$jscomp$restIndex$$ - 2] = arguments[$$jscomp$restIndex$$];
+  }
+  return Arrays$$module$Algorithms$Arrays$Arrays.SortArrayObjects.apply(Arrays$$module$Algorithms$Arrays$Arrays, [].concat([$array$$, void 0 === $ascending$$ ? !0 : $ascending$$], $jscomp.arrayFromIterable($$jscomp$restParams$$)));
+};
+ArraysInterface$$module$Algorithms$Arrays$ArraysInterface.prototype.sortArrayNum = function $ArraysInterface$$module$Algorithms$Arrays$ArraysInterface$$sortArrayNum$($array$$, $ascending$$) {
+  return Arrays$$module$Algorithms$Arrays$Arrays.SortArrayNumbers($array$$, void 0 === $ascending$$ ? !0 : $ascending$$);
+};
+module$Algorithms$Arrays$ArraysInterface.ArraysInterface = ArraysInterface$$module$Algorithms$Arrays$ArraysInterface;
+var module$Algorithms$Booleans$Booleans = {}, Booleans$$module$Algorithms$Booleans$Booleans = function $Booleans$$module$Algorithms$Booleans$Booleans$() {
+};
+Booleans$$module$Algorithms$Booleans$Booleans.ToBoolean = function $Booleans$$module$Algorithms$Booleans$Booleans$ToBoolean$($value$$, $defaultValue$$) {
+  $defaultValue$$ = void 0 === $defaultValue$$ ? !1 : $defaultValue$$;
+  switch(typeof $value$$) {
+    case "boolean":
+      return $value$$;
+    case "undefined":
+      return $defaultValue$$;
+    case "string":
+      return /^true$/i.test($value$$) ? !0 : /^false$/i.test($value$$) ? !1 : $defaultValue$$;
+    case "number":
+      return 0 !== $value$$;
+  }
+  return $value$$ ? !0 : $defaultValue$$;
+};
+module$Algorithms$Booleans$Booleans.Booleans = Booleans$$module$Algorithms$Booleans$Booleans;
+var module$Algorithms$Booleans$BooleansInterface = {}, BooleansInterface$$module$Algorithms$Booleans$BooleansInterface = function $BooleansInterface$$module$Algorithms$Booleans$BooleansInterface$() {
+};
+BooleansInterface$$module$Algorithms$Booleans$BooleansInterface.prototype.bool = function $BooleansInterface$$module$Algorithms$Booleans$BooleansInterface$$bool$($value$$, $defaultValue$$) {
+};
+module$Algorithms$Booleans$BooleansInterface.BooleansInterface = BooleansInterface$$module$Algorithms$Booleans$BooleansInterface;
+var module$Algorithms$Dates$Dates = {}, Dates$$module$Algorithms$Dates$Dates = function $Dates$$module$Algorithms$Dates$Dates$() {
+};
+module$Algorithms$Dates$Dates.Dates = Dates$$module$Algorithms$Dates$Dates;
+var module$Algorithms$Dates$DatesInterface = {}, DatesInterface$$module$Algorithms$Dates$DatesInterface = function $DatesInterface$$module$Algorithms$Dates$DatesInterface$() {
+};
+DatesInterface$$module$Algorithms$Dates$DatesInterface.prototype.date = function $DatesInterface$$module$Algorithms$Dates$DatesInterface$$date$($value$$, $defaultValue$$) {
+};
+module$Algorithms$Dates$DatesInterface.DatesInterface = DatesInterface$$module$Algorithms$Dates$DatesInterface;
+var module$Algorithms$Functions$Functions = {}, Functions$$module$Algorithms$Functions$Functions = function $Functions$$module$Algorithms$Functions$Functions$() {
+};
+Functions$$module$Algorithms$Functions$Functions.IsFunction = function $Functions$$module$Algorithms$Functions$Functions$IsFunction$($checkFunction$$) {
   return "function" === typeof $checkFunction$$;
 };
-Functions$$module$Algorithms$Functions.Use = function $Functions$$module$Algorithms$Functions$Use$($context$$, $useFunction$$, $args$$) {
+Functions$$module$Algorithms$Functions$Functions.Use = function $Functions$$module$Algorithms$Functions$Functions$Use$($context$$, $useFunction$$, $args$$) {
   $context$$ = $context$$ || null;
-  if (Functions$$module$Algorithms$Functions.IsFunction($useFunction$$)) {
+  if (Functions$$module$Algorithms$Functions$Functions.IsFunction($useFunction$$)) {
     return $useFunction$$.apply($context$$, $args$$);
   }
 };
-Functions$$module$Algorithms$Functions.Run = function $Functions$$module$Algorithms$Functions$Run$($runFunction$$, $args$$) {
-  for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$ = 1;$$jscomp$restIndex$$ < arguments.length;++$$jscomp$restIndex$$) {
-    $$jscomp$restParams$$[$$jscomp$restIndex$$ - 1] = arguments[$$jscomp$restIndex$$];
-  }
-  if (Functions$$module$Algorithms$Functions.IsFunction($runFunction$$)) {
-    return $runFunction$$.apply(null, [].concat($jscomp.arrayFromIterable($$jscomp$restParams$$)));
+Functions$$module$Algorithms$Functions$Functions.Run = function $Functions$$module$Algorithms$Functions$Functions$Run$($runFunction$$, $args$$) {
+  if (Functions$$module$Algorithms$Functions$Functions.IsFunction($runFunction$$)) {
+    return $runFunction$$.apply(null, [].concat($jscomp.arrayFromIterable($args$$)));
   }
 };
-Functions$$module$Algorithms$Functions.Bind = function $Functions$$module$Algorithms$Functions$Bind$($context$$, $useFunction$$, $args$$) {
+Functions$$module$Algorithms$Functions$Functions.Bind = function $Functions$$module$Algorithms$Functions$Functions$Bind$($context$$, $useFunction$$, $args$$) {
   $args$$ = void 0 === $args$$ ? [] : $args$$;
-  $args$$ = Arrays$$module$Algorithms$Arrays.Slice($args$$);
+  $args$$ = Arrays$$module$Algorithms$Arrays$Arrays.Slice($args$$);
   return function() {
-    if (Functions$$module$Algorithms$Functions.IsFunction($useFunction$$)) {
-      return $args$$ = $args$$.concat(Arrays$$module$Algorithms$Arrays.Slice(arguments)), $useFunction$$.apply($context$$, $args$$);
-    }
+    $args$$ = $args$$.concat(Arrays$$module$Algorithms$Arrays$Arrays.Slice(arguments));
+    return Functions$$module$Algorithms$Functions$Functions.Use($context$$, $useFunction$$, $args$$);
   };
 };
-module$Algorithms$Functions.Functions = Functions$$module$Algorithms$Functions;
+module$Algorithms$Functions$Functions.Functions = Functions$$module$Algorithms$Functions$Functions;
+var module$Algorithms$Functions$FunctionsInterface = {}, FunctionsInterface$$module$Algorithms$Functions$FunctionsInterface = function $FunctionsInterface$$module$Algorithms$Functions$FunctionsInterface$() {
+};
+FunctionsInterface$$module$Algorithms$Functions$FunctionsInterface.prototype.use = function $FunctionsInterface$$module$Algorithms$Functions$FunctionsInterface$$use$($context$$, $functionReference$$, $argsArray$$) {
+};
+FunctionsInterface$$module$Algorithms$Functions$FunctionsInterface.prototype.run = function $FunctionsInterface$$module$Algorithms$Functions$FunctionsInterface$$run$($functionReference$$, $argsArray$$) {
+};
+FunctionsInterface$$module$Algorithms$Functions$FunctionsInterface.prototype.bindFn = function $FunctionsInterface$$module$Algorithms$Functions$FunctionsInterface$$bindFn$($context$$, $functionReference$$, $argsArray$$) {
+};
+module$Algorithms$Functions$FunctionsInterface.FunctionsInterface = FunctionsInterface$$module$Algorithms$Functions$FunctionsInterface;
+var module$Algorithms$Objects$ObjectsInterface = {}, Objects$$module$Algorithms$Objects$ObjectsInterface = function $Objects$$module$Algorithms$Objects$ObjectsInterface$() {
+};
+Objects$$module$Algorithms$Objects$ObjectsInterface.prototype.object = function $Objects$$module$Algorithms$Objects$ObjectsInterface$$object$($value$$, $defaultValue$$) {
+};
+Objects$$module$Algorithms$Objects$ObjectsInterface.prototype.mergeObj = function $Objects$$module$Algorithms$Objects$ObjectsInterface$$mergeObj$($base$$, $subs$$) {
+};
+Objects$$module$Algorithms$Objects$ObjectsInterface.prototype.cloneObj = function $Objects$$module$Algorithms$Objects$ObjectsInterface$$cloneObj$($object$$) {
+};
+Objects$$module$Algorithms$Objects$ObjectsInterface.prototype.deepCloneObj = function $Objects$$module$Algorithms$Objects$ObjectsInterface$$deepCloneObj$($object$$) {
+};
+Objects$$module$Algorithms$Objects$ObjectsInterface.prototype.property = function $Objects$$module$Algorithms$Objects$ObjectsInterface$$property$($object$$, $levels$$) {
+};
+module$Algorithms$Objects$ObjectsInterface.Objects = Objects$$module$Algorithms$Objects$ObjectsInterface;
 var module$JSObject = {}, JSObject$$module$JSObject = function $JSObject$$module$JSObject$() {
 };
 JSObject$$module$JSObject.inPrototypeChain = function $JSObject$$module$JSObject$inPrototypeChain$($object$$) {
@@ -765,34 +895,265 @@ JSObject$$module$JSObject.prototype.extend = function $JSObject$$module$JSObject
   return this;
 };
 JSObject$$module$JSObject.prototype.extendFn = function $JSObject$$module$JSObject$$extendFn$($name$$, $property$$, $args$$) {
-  $property$$ = Functions$$module$Algorithms$Functions.Use(this, $property$$, $args$$);
+  $property$$ = Functions$$module$Algorithms$Functions$Functions.Use(this, $property$$, $args$$);
   return this.extend($name$$, $property$$);
 };
 JSObject$$module$JSObject.prototype.use = function $JSObject$$module$JSObject$$use$($functionDefinition$$, $args$$) {
-  Functions$$module$Algorithms$Functions.Use(this, $functionDefinition$$, $args$$);
+  $args$$ = void 0 === $args$$ ? [] : $args$$;
+  Functions$$module$Algorithms$Functions$Functions.Use(this, $functionDefinition$$, $args$$);
   return this;
 };
-JSObject$$module$JSObject.Mix = function $JSObject$$module$JSObject$Mix$($Class$$, $Subs$$) {
-  for (var $$jscomp$iter$0_$jscomp$restParams$$ = [], $$jscomp$key$sub_$jscomp$restIndex$$6_proto$$ = 1;$$jscomp$key$sub_$jscomp$restIndex$$6_proto$$ < arguments.length;++$$jscomp$key$sub_$jscomp$restIndex$$6_proto$$) {
-    $$jscomp$iter$0_$jscomp$restParams$$[$$jscomp$key$sub_$jscomp$restIndex$$6_proto$$ - 1] = arguments[$$jscomp$key$sub_$jscomp$restIndex$$6_proto$$];
+JSObject$$module$JSObject.Mix = function $JSObject$$module$JSObject$Mix$($Subs$$) {
+  for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$8_i$$ = 0;$$jscomp$restIndex$$8_i$$ < arguments.length;++$$jscomp$restIndex$$8_i$$) {
+    $$jscomp$restParams$$[$$jscomp$restIndex$$8_i$$ - 0] = arguments[$$jscomp$restIndex$$8_i$$];
   }
-  $Class$$ = $Class$$.prototype;
-  $$jscomp$iter$0_$jscomp$restParams$$ = $jscomp.makeIterator($$jscomp$iter$0_$jscomp$restParams$$);
-  for ($$jscomp$key$sub_$jscomp$restIndex$$6_proto$$ = $$jscomp$iter$0_$jscomp$restParams$$.next();!$$jscomp$key$sub_$jscomp$restIndex$$6_proto$$.done;$$jscomp$key$sub_$jscomp$restIndex$$6_proto$$ = $$jscomp$iter$0_$jscomp$restParams$$.next()) {
-    for (var $$jscomp$key$sub_$jscomp$restIndex$$6_proto$$ = $$jscomp$key$sub_$jscomp$restIndex$$6_proto$$.value.prototype, $props$$ = Object.getOwnPropertyNames($$jscomp$key$sub_$jscomp$restIndex$$6_proto$$), $i$$ = 0;$i$$ < $props$$.length;++$i$$) {
-      var $prop$$ = $props$$[$i$$];
-      if ("constructor" !== $prop$$) {
-        var $descriptor$$ = Object.getOwnPropertyDescriptor($$jscomp$key$sub_$jscomp$restIndex$$6_proto$$, $prop$$);
-        Object.defineProperty($Class$$, $prop$$, $descriptor$$ || {});
-      }
+  for ($$jscomp$restIndex$$8_i$$ = 0;$$jscomp$restIndex$$8_i$$ < $$jscomp$restParams$$.length;++$$jscomp$restIndex$$8_i$$) {
+    for (var $sub$$ = $$jscomp$restParams$$[$$jscomp$restIndex$$8_i$$], $properties$$ = Object.getOwnPropertyNames($sub$$.prototype), $j$$ = 0;$j$$ < $properties$$.length;++$j$$) {
+      var $property$$ = $properties$$[$j$$];
+      "constructor" !== $property$$ && Object.defineProperty(this.prototype, $property$$, Object.getOwnPropertyDescriptor($sub$$.prototype, $property$$));
     }
   }
-  return $Class$$;
+  return this;
 };
 Object.defineProperties(JSObject$$module$JSObject.prototype, {prototype:{configurable:!0, enumerable:!0, get:function() {
   return this.constructor.prototype;
 }}});
 module$JSObject.JSObject = JSObject$$module$JSObject;
+var module$Algorithms$KeyCodes$KeyCodesInterface = {}, KeyCodesInterface$$module$Algorithms$KeyCodes$KeyCodesInterface = function $KeyCodesInterface$$module$Algorithms$KeyCodes$KeyCodesInterface$() {
+};
+Object.defineProperties(KeyCodesInterface$$module$Algorithms$KeyCodes$KeyCodesInterface.prototype, {keycodes:{configurable:!0, enumerable:!0, get:function() {
+}}});
+module$Algorithms$KeyCodes$KeyCodesInterface.KeyCodesInterface = KeyCodesInterface$$module$Algorithms$KeyCodes$KeyCodesInterface;
+var module$Algorithms$Looper$LooperController = {}, LoopController$$module$Algorithms$Looper$LooperController = function $LoopController$$module$Algorithms$Looper$LooperController$($source$$) {
+  $source$$ = void 0 === $source$$ ? [] : $source$$;
+  this._break = !1;
+  this._index = 0;
+  this._source = $source$$;
+  Object.defineProperty(this, "_source", {value:this._source});
+};
+$jscomp.inherits(LoopController$$module$Algorithms$Looper$LooperController, JSObject$$module$JSObject);
+LoopController$$module$Algorithms$Looper$LooperController.Mix = JSObject$$module$JSObject.Mix;
+LoopController$$module$Algorithms$Looper$LooperController.inPrototypeChain = JSObject$$module$JSObject.inPrototypeChain;
+LoopController$$module$Algorithms$Looper$LooperController.prototype.stop = function $LoopController$$module$Algorithms$Looper$LooperController$$stop$() {
+  this._break = !0;
+  return this;
+};
+LoopController$$module$Algorithms$Looper$LooperController.prototype.drop = function $LoopController$$module$Algorithms$Looper$LooperController$$drop$($dropCount$$) {
+  return this;
+};
+Object.defineProperties(LoopController$$module$Algorithms$Looper$LooperController.prototype, {breaking:{configurable:!0, enumerable:!0, get:function() {
+  return !0 === this._break;
+}}, index:{configurable:!0, enumerable:!0, get:function() {
+  return this._index;
+}, set:function($index$$) {
+  this._index = $index$$;
+}}});
+var ObjectLoopController$$module$Algorithms$Looper$LooperController = function $ObjectLoopController$$module$Algorithms$Looper$LooperController$($var_args$$) {
+  LoopController$$module$Algorithms$Looper$LooperController.apply(this, arguments);
+};
+$jscomp.inherits(ObjectLoopController$$module$Algorithms$Looper$LooperController, LoopController$$module$Algorithms$Looper$LooperController);
+ObjectLoopController$$module$Algorithms$Looper$LooperController.Mix = LoopController$$module$Algorithms$Looper$LooperController.Mix;
+ObjectLoopController$$module$Algorithms$Looper$LooperController.inPrototypeChain = LoopController$$module$Algorithms$Looper$LooperController.inPrototypeChain;
+var ArrayLoopController$$module$Algorithms$Looper$LooperController = function $ArrayLoopController$$module$Algorithms$Looper$LooperController$($args$$) {
+  for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$ = 0;$$jscomp$restIndex$$ < arguments.length;++$$jscomp$restIndex$$) {
+    $$jscomp$restParams$$[$$jscomp$restIndex$$ - 0] = arguments[$$jscomp$restIndex$$];
+  }
+  LoopController$$module$Algorithms$Looper$LooperController.call.apply(LoopController$$module$Algorithms$Looper$LooperController, [].concat([this], $jscomp.arrayFromIterable($$jscomp$restParams$$)));
+};
+$jscomp.inherits(ArrayLoopController$$module$Algorithms$Looper$LooperController, LoopController$$module$Algorithms$Looper$LooperController);
+ArrayLoopController$$module$Algorithms$Looper$LooperController.Mix = LoopController$$module$Algorithms$Looper$LooperController.Mix;
+ArrayLoopController$$module$Algorithms$Looper$LooperController.inPrototypeChain = LoopController$$module$Algorithms$Looper$LooperController.inPrototypeChain;
+ArrayLoopController$$module$Algorithms$Looper$LooperController.prototype.drop = function $ArrayLoopController$$module$Algorithms$Looper$LooperController$$drop$($dropCount$$) {
+  $dropCount$$ = Numbers$$module$Algorithms$Numbers$Numbers.ToNumber(void 0 === $dropCount$$ ? 1 : $dropCount$$, 1);
+  this._source.splice(this.index--, $dropCount$$);
+  return this;
+};
+Object.defineProperties(ArrayLoopController$$module$Algorithms$Looper$LooperController.prototype, {index:{configurable:!0, enumerable:!0, set:function($index$$) {
+  this._index = Numbers$$module$Algorithms$Numbers$Numbers.ToNumber($index$$);
+}, get:function() {
+  return this._index;
+}}});
+module$Algorithms$Looper$LooperController.LoopController = LoopController$$module$Algorithms$Looper$LooperController;
+module$Algorithms$Looper$LooperController.ObjectLoopController = ObjectLoopController$$module$Algorithms$Looper$LooperController;
+module$Algorithms$Looper$LooperController.ArrayLoopController = ArrayLoopController$$module$Algorithms$Looper$LooperController;
+var module$Algorithms$Looper$Looper = {}, Looper$$module$Algorithms$Looper$Looper = function $Looper$$module$Algorithms$Looper$Looper$() {
+};
+Looper$$module$Algorithms$Looper$Looper.ObjectEach = function $Looper$$module$Algorithms$Looper$Looper$ObjectEach$($object$$, $loopFunction$$, $data$$) {
+  for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$ = 2;$$jscomp$restIndex$$ < arguments.length;++$$jscomp$restIndex$$) {
+    $$jscomp$restParams$$[$$jscomp$restIndex$$ - 2] = arguments[$$jscomp$restIndex$$];
+  }
+  if ($object$$ && "object" === typeof $object$$) {
+    var $$jscomp$restIndex$$ = new ObjectLoopController$$module$Algorithms$Looper$LooperController($object$$), $key$$;
+    for ($key$$ in $object$$) {
+      if ($$jscomp$restIndex$$.breaking) {
+        break;
+      }
+      $$jscomp$restIndex$$.index = $key$$;
+      Functions$$module$Algorithms$Functions$Functions.Use($$jscomp$restIndex$$, $loopFunction$$, [].concat([$object$$[$key$$], $key$$, $object$$], $jscomp.arrayFromIterable($$jscomp$restParams$$)));
+    }
+  }
+};
+Looper$$module$Algorithms$Looper$Looper.ArrayEach = function $Looper$$module$Algorithms$Looper$Looper$ArrayEach$($array$$, $loopFunction$$, $data$$) {
+  for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$11_controller$$ = 2;$$jscomp$restIndex$$11_controller$$ < arguments.length;++$$jscomp$restIndex$$11_controller$$) {
+    $$jscomp$restParams$$[$$jscomp$restIndex$$11_controller$$ - 2] = arguments[$$jscomp$restIndex$$11_controller$$];
+  }
+  if ($array$$ && "object" === typeof $array$$) {
+    for ($$jscomp$restIndex$$11_controller$$ = new ArrayLoopController$$module$Algorithms$Looper$LooperController($array$$), $$jscomp$restIndex$$11_controller$$.index = 0;$$jscomp$restIndex$$11_controller$$.index < $array$$.length && !$$jscomp$restIndex$$11_controller$$.breaking;++$$jscomp$restIndex$$11_controller$$.index) {
+      Functions$$module$Algorithms$Functions$Functions.Use($$jscomp$restIndex$$11_controller$$, $loopFunction$$, [].concat([$array$$[$$jscomp$restIndex$$11_controller$$.index], $$jscomp$restIndex$$11_controller$$.index, $array$$], $jscomp.arrayFromIterable($$jscomp$restParams$$)));
+    }
+  }
+};
+Looper$$module$Algorithms$Looper$Looper.Iterate = function $Looper$$module$Algorithms$Looper$Looper$Iterate$($start$$, $end$$, $iterator$$, $data$$) {
+  for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$12_controller$$ = 3;$$jscomp$restIndex$$12_controller$$ < arguments.length;++$$jscomp$restIndex$$12_controller$$) {
+    $$jscomp$restParams$$[$$jscomp$restIndex$$12_controller$$ - 3] = arguments[$$jscomp$restIndex$$12_controller$$];
+  }
+  $start$$ = Numbers$$module$Algorithms$Numbers$Numbers.ToNumber($start$$);
+  $end$$ = Numbers$$module$Algorithms$Numbers$Numbers.ToNumber($end$$);
+  for (var $$jscomp$restIndex$$12_controller$$ = new LoopController$$module$Algorithms$Looper$LooperController(null), $step$$ = $end$$ < $start$$ ? -1 : 1, $i$$ = $start$$;$i$$ !== $end$$ && !$$jscomp$restIndex$$12_controller$$.breaking;$i$$ += $step$$) {
+    Functions$$module$Algorithms$Functions$Functions.Use($$jscomp$restIndex$$12_controller$$, $iterator$$, [].concat([$i$$], $jscomp.arrayFromIterable($$jscomp$restParams$$)));
+  }
+};
+module$Algorithms$Looper$Looper.Looper = Looper$$module$Algorithms$Looper$Looper;
+var module$Algorithms$Numbers$NumbersInterface = {}, NumbersInterface$$module$Algorithms$Numbers$NumbersInterface = function $NumbersInterface$$module$Algorithms$Numbers$NumbersInterface$() {
+};
+NumbersInterface$$module$Algorithms$Numbers$NumbersInterface.prototype.magnitude = function $NumbersInterface$$module$Algorithms$Numbers$NumbersInterface$$magnitude$($num$$, $base$$) {
+};
+NumbersInterface$$module$Algorithms$Numbers$NumbersInterface.prototype.number = function $NumbersInterface$$module$Algorithms$Numbers$NumbersInterface$$number$($value$$, $defaultValue$$) {
+};
+NumbersInterface$$module$Algorithms$Numbers$NumbersInterface.prototype.min = function $NumbersInterface$$module$Algorithms$Numbers$NumbersInterface$$min$($numbers$$) {
+};
+NumbersInterface$$module$Algorithms$Numbers$NumbersInterface.prototype.max = function $NumbersInterface$$module$Algorithms$Numbers$NumbersInterface$$max$($numbers$$) {
+};
+NumbersInterface$$module$Algorithms$Numbers$NumbersInterface.prototype.byte = function $NumbersInterface$$module$Algorithms$Numbers$NumbersInterface$$byte$($value$$) {
+};
+NumbersInterface$$module$Algorithms$Numbers$NumbersInterface.prototype.ubyte = function $NumbersInterface$$module$Algorithms$Numbers$NumbersInterface$$ubyte$($value$$) {
+};
+NumbersInterface$$module$Algorithms$Numbers$NumbersInterface.prototype.short = function $NumbersInterface$$module$Algorithms$Numbers$NumbersInterface$$short$($value$$) {
+};
+NumbersInterface$$module$Algorithms$Numbers$NumbersInterface.prototype.ushort = function $NumbersInterface$$module$Algorithms$Numbers$NumbersInterface$$ushort$($value$$) {
+};
+NumbersInterface$$module$Algorithms$Numbers$NumbersInterface.prototype.int = function $NumbersInterface$$module$Algorithms$Numbers$NumbersInterface$$int$($value$$) {
+};
+NumbersInterface$$module$Algorithms$Numbers$NumbersInterface.prototype.uint = function $NumbersInterface$$module$Algorithms$Numbers$NumbersInterface$$uint$($value$$) {
+};
+NumbersInterface$$module$Algorithms$Numbers$NumbersInterface.prototype.float = function $NumbersInterface$$module$Algorithms$Numbers$NumbersInterface$$float$($value$$) {
+};
+NumbersInterface$$module$Algorithms$Numbers$NumbersInterface.prototype.double = function $NumbersInterface$$module$Algorithms$Numbers$NumbersInterface$$double$($value$$) {
+};
+NumbersInterface$$module$Algorithms$Numbers$NumbersInterface.prototype.makeEnum = function $NumbersInterface$$module$Algorithms$Numbers$NumbersInterface$$makeEnum$($value$$) {
+};
+NumbersInterface$$module$Algorithms$Numbers$NumbersInterface.prototype.rad2deg = function $NumbersInterface$$module$Algorithms$Numbers$NumbersInterface$$rad2deg$($number$$, $defaultValue$$) {
+};
+NumbersInterface$$module$Algorithms$Numbers$NumbersInterface.prototype.deg2rad = function $NumbersInterface$$module$Algorithms$Numbers$NumbersInterface$$deg2rad$($number$$, $defaultValue$$) {
+};
+module$Algorithms$Numbers$NumbersInterface.NumbersInterface = NumbersInterface$$module$Algorithms$Numbers$NumbersInterface;
+var module$Algorithms$Strings$StringsInterface = {}, StringsInterface$$module$Algorithms$Strings$StringsInterface = function $StringsInterface$$module$Algorithms$Strings$StringsInterface$() {
+};
+StringsInterface$$module$Algorithms$Strings$StringsInterface.prototype.string = function $StringsInterface$$module$Algorithms$Strings$StringsInterface$$string$($value$$, $defaultValue$$) {
+};
+StringsInterface$$module$Algorithms$Strings$StringsInterface.prototype.escapeString = function $StringsInterface$$module$Algorithms$Strings$StringsInterface$$escapeString$($stringToEscape$$) {
+};
+module$Algorithms$Strings$StringsInterface.StringsInterface = StringsInterface$$module$Algorithms$Strings$StringsInterface;
+var module$Algorithms$Strings$Strings = {}, CONST_REGEXP_UNSAFE_CHARACTERS$$module$Algorithms$Strings$Strings = /[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, CONST_STRING_UNSAFE_REPLACEMENT$$module$Algorithms$Strings$Strings = "\\$&", CONST_REGEXP_TO_STRING_MATCH$$module$Algorithms$Strings$Strings = /^\/(.*)\/[a-z]*$/, Strings$$module$Algorithms$Strings$Strings = function $Strings$$module$Algorithms$Strings$Strings$() {
+};
+Strings$$module$Algorithms$Strings$Strings.ToString = function $Strings$$module$Algorithms$Strings$Strings$ToString$($value$$, $defaultValue$$) {
+  return "string" === typeof $value$$ ? $value$$ : $value$$ && "function" === typeof $value$$.toString ? $value$$.toString() : null !== $value$$ && "object" === typeof $value$$ && $value$$.isPrototypeOf(RegExp) ? ("" + $value$$).match(CONST_REGEXP_TO_STRING_MATCH$$module$Algorithms$Strings$Strings, "$1") : $value$$ || 0 === $value$$ ? "" + $value$$ : $defaultValue$$ || $value$$;
+};
+Strings$$module$Algorithms$Strings$Strings.EscapeString = function $Strings$$module$Algorithms$Strings$Strings$EscapeString$($stringToEscape$$) {
+  return Strings$$module$Algorithms$Strings$Strings.ToString($stringToEscape$$).replace(CONST_REGEXP_UNSAFE_CHARACTERS$$module$Algorithms$Strings$Strings, CONST_STRING_UNSAFE_REPLACEMENT$$module$Algorithms$Strings$Strings);
+};
+module$Algorithms$Strings$Strings.Strings = Strings$$module$Algorithms$Strings$Strings;
+var module$Algorithms$Objects$Objects = {}, Objects$$module$Algorithms$Objects$Objects = function $Objects$$module$Algorithms$Objects$Objects$() {
+};
+module$Algorithms$Objects$Objects.Objects = Objects$$module$Algorithms$Objects$Objects;
+var module$Algorithms$Looper$LooperInterface = {}, LooperInterface$$module$Algorithms$Looper$LooperInterface = function $LooperInterface$$module$Algorithms$Looper$LooperInterface$() {
+};
+LooperInterface$$module$Algorithms$Looper$LooperInterface.prototype.each = function $LooperInterface$$module$Algorithms$Looper$LooperInterface$$each$($object$$, $loopFunction$$, $data$$) {
+  for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$ = 2;$$jscomp$restIndex$$ < arguments.length;++$$jscomp$restIndex$$) {
+    $$jscomp$restParams$$[$$jscomp$restIndex$$ - 2] = arguments[$$jscomp$restIndex$$];
+  }
+  Looper$$module$Algorithms$Looper$Looper.ObjectEach.apply(Looper$$module$Algorithms$Looper$Looper, [].concat([$object$$, $loopFunction$$], $jscomp.arrayFromIterable($$jscomp$restParams$$)));
+  return this;
+};
+LooperInterface$$module$Algorithms$Looper$LooperInterface.prototype.arrEach = function $LooperInterface$$module$Algorithms$Looper$LooperInterface$$arrEach$($array$$, $loopFunction$$, $data$$) {
+  for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$ = 2;$$jscomp$restIndex$$ < arguments.length;++$$jscomp$restIndex$$) {
+    $$jscomp$restParams$$[$$jscomp$restIndex$$ - 2] = arguments[$$jscomp$restIndex$$];
+  }
+  Looper$$module$Algorithms$Looper$Looper.ArrayEach.apply(Looper$$module$Algorithms$Looper$Looper, [].concat([$array$$, $loopFunction$$], $jscomp.arrayFromIterable($$jscomp$restParams$$)));
+  return this;
+};
+LooperInterface$$module$Algorithms$Looper$LooperInterface.prototype.iterate = function $LooperInterface$$module$Algorithms$Looper$LooperInterface$$iterate$($start$$, $end$$, $iterator$$, $data$$) {
+  for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$ = 3;$$jscomp$restIndex$$ < arguments.length;++$$jscomp$restIndex$$) {
+    $$jscomp$restParams$$[$$jscomp$restIndex$$ - 3] = arguments[$$jscomp$restIndex$$];
+  }
+  Looper$$module$Algorithms$Looper$Looper.Iterate.apply(Looper$$module$Algorithms$Looper$Looper, [].concat([$start$$, $end$$, $iterator$$], $jscomp.arrayFromIterable($$jscomp$restParams$$)));
+  return this;
+};
+module$Algorithms$Looper$LooperInterface.LooperInterface = LooperInterface$$module$Algorithms$Looper$LooperInterface;
+var module$Algorithms$KeyCodes$KeyCodes = {}, KeyCodes$$module$Algorithms$KeyCodes$KeyCodes = {KC_Backspace:8, KC_Tab:9, KC_Enter:13, KC_Shift:16, KC_Ctrl:17, KC_Alt:18, KC_Pause:19, KC_Break:19, KC_CapsLock:20, KC_Escape:27, KC_Space:32, KC_PageUp:33, KC_PageDown:34, KC_End:35, KC_Home:36, KC_LeftArrow:37, KC_UpArrow:38, KC_RightArrow:39, KC_DownArrow:40, KC_Insert:45, KC_Delete:46, KC_0:48, KC_1:49, KC_2:50, KC_3:51, KC_4:52, KC_5:53, KC_6:54, KC_7:55, KC_8:56, KC_9:57, KC_A:65, KC_B:66, KC_C:67, 
+KC_D:68, KC_E:69, KC_F:70, KC_G:71, KC_H:72, KC_I:73, KC_J:74, KC_K:75, KC_L:76, KC_M:77, KC_N:78, KC_O:79, KC_P:80, KC_Q:81, KC_R:82, KC_S:83, KC_T:84, KC_U:85, KC_V:86, KC_W:87, KC_X:88, KC_Y:89, KC_Z:90, KC_LWin:91, KC_RWin:92, KC_Select:93, KC_Num0:96, KC_Num1:97, KC_Num2:98, KC_Num3:99, KC_Num4:100, KC_Num5:101, KC_Num6:102, KC_Num7:103, KC_Num8:104, KC_Num9:105, KC_NumAsterisk:106, KC_NumPlus:107, KC_NumMinus:109, KC_NumPeriod:110, KC_NumSlash:111, KC_F1:112, KC_F2:113, KC_F3:114, KC_F4:115, 
+KC_F5:116, KC_F6:117, KC_F7:118, KC_F8:119, KC_F9:120, KC_F10:121, KC_F11:122, KC_F12:123, KC_NumLock:144, KC_ScrollLock:145, KC_SemiColon:186, KC_Equal:187, KC_Comma:188, KC_Dash:189, KC_Period:190, KC_FSlash:191, KC_BSlash:220, KC_Grave:192, KC_LBracket:219, KC_RBracket:221, KC_Apos:222};
+module$Algorithms$KeyCodes$KeyCodes.KeyCodes = KeyCodes$$module$Algorithms$KeyCodes$KeyCodes;
+var module$Algorithms$JSAlgorithms = {}, JSAlgorithms$$module$Algorithms$JSAlgorithms = function $JSAlgorithms$$module$Algorithms$JSAlgorithms$($var_args$$) {
+  JSObject$$module$JSObject.apply(this, arguments);
+};
+$jscomp.inherits(JSAlgorithms$$module$Algorithms$JSAlgorithms, JSObject$$module$JSObject);
+JSAlgorithms$$module$Algorithms$JSAlgorithms.Mix = JSObject$$module$JSObject.Mix;
+JSAlgorithms$$module$Algorithms$JSAlgorithms.inPrototypeChain = JSObject$$module$JSObject.inPrototypeChain;
+JSAlgorithms$$module$Algorithms$JSAlgorithms.prototype.use = function $JSAlgorithms$$module$Algorithms$JSAlgorithms$$use$($context$$, $functionReference$$, $argsArray$$) {
+  $argsArray$$ = void 0 === $argsArray$$ ? [] : $argsArray$$;
+  return Functions$$module$Algorithms$Functions$Functions.Use($context$$, $functionReference$$, $argsArray$$);
+};
+JSAlgorithms$$module$Algorithms$JSAlgorithms.prototype.run = function $JSAlgorithms$$module$Algorithms$JSAlgorithms$$run$($functionReference$$, $argsArray$$) {
+  $argsArray$$ = void 0 === $argsArray$$ ? [] : $argsArray$$;
+  return Functions$$module$Algorithms$Functions$Functions.Run($functionReference$$, $argsArray$$);
+};
+JSAlgorithms$$module$Algorithms$JSAlgorithms.prototype.bindFn = function $JSAlgorithms$$module$Algorithms$JSAlgorithms$$bindFn$($context$$, $functionReference$$, $args$$) {
+  $args$$ = void 0 === $args$$ ? [] : $args$$;
+  return Functions$$module$Algorithms$Functions$Functions.Bind($context$$, $functionReference$$, $args$$);
+};
+JSAlgorithms$$module$Algorithms$JSAlgorithms.prototype.magnitude = function $JSAlgorithms$$module$Algorithms$JSAlgorithms$$magnitude$($num$$, $base$$) {
+  return Numbers$$module$Algorithms$Numbers$Numbers.Magnitude($num$$, void 0 === $base$$ ? 10 : $base$$);
+};
+JSAlgorithms$$module$Algorithms$JSAlgorithms.Mix(LooperInterface$$module$Algorithms$Looper$LooperInterface);
+module$Algorithms$JSAlgorithms.JSAlgorithms = JSAlgorithms$$module$Algorithms$JSAlgorithms;
+var module$Dom$DOMCss = {}, DOMCss$$module$Dom$DOMCss = function $DOMCss$$module$Dom$DOMCss$() {
+};
+DOMCss$$module$Dom$DOMCss.setCssOn = function $DOMCss$$module$Dom$DOMCss$setCssOn$($element$$, $cssObject$$) {
+  return Looper$$module$Algorithms$Looper$Looper.ObjectEach($cssObject$$, DOMCss$$module$Dom$DOMCss._setCssOnInternal, $element$$);
+};
+DOMCss$$module$Dom$DOMCss._setCssOnInternal = function $DOMCss$$module$Dom$DOMCss$_setCssOnInternal$($value$$, $property$$, $cssObject$$, $element$$) {
+  $element$$.style[$property$$] = $value$$;
+};
+DOMCss$$module$Dom$DOMCss.setCssOnLoop = function $DOMCss$$module$Dom$DOMCss$setCssOnLoop$($element$$, $index$$, $elementList$$, $cssObject$$) {
+  return DOMCss$$module$Dom$DOMCss.setCssOn($element$$, $cssObject$$);
+};
+DOMCss$$module$Dom$DOMCss.getCssFrom = function $DOMCss$$module$Dom$DOMCss$getCssFrom$($element$$, $cssObject$$) {
+  var $computedStyle$$ = window.getComputedStyle($element$$);
+  Looper$$module$Algorithms$Looper$Looper.ObjectEach($cssObject$$, DOMCss$$module$Dom$DOMCss._getCssFromInternal, $computedStyle$$, $element$$.style);
+  return $cssObject$$;
+};
+DOMCss$$module$Dom$DOMCss._getCssFromInternal = function $DOMCss$$module$Dom$DOMCss$_getCssFromInternal$($value$$, $property$$, $cssObject$$, $computedStyle$$, $elementStyle$$) {
+  $cssObject$$[$property$$] = $elementStyle$$[$property$$] || $computedStyle$$[$property$$];
+};
+DOMCss$$module$Dom$DOMCss.getCssFromLoop = function $DOMCss$$module$Dom$DOMCss$getCssFromLoop$($element$$, $index$$, $elementList$$, $JSDom$$, $cssObject$$, $callbackFunction$$) {
+  0 < $index$$ && ($cssObject$$ = Object.create($cssObject$$));
+  DOMCss$$module$Dom$DOMCss.getCssFrom($element$$, $cssObject$$);
+  new $JSDom$$($element$$, $callbackFunction$$, [$cssObject$$]);
+};
+module$Dom$DOMCss.DOMCss = DOMCss$$module$Dom$DOMCss;
+var module$Object$Interface = {}, HasInterface$$module$Object$Interface = function $HasInterface$$module$Object$Interface$() {
+};
+HasInterface$$module$Object$Interface.prototype.GetInterface = function $HasInterface$$module$Object$Interface$$GetInterface$() {
+};
+module$Object$Interface.HasInterface = HasInterface$$module$Object$Interface;
+var module$Registry$RegistryInterface = {}, RegistryInterface$$module$Registry$RegistryInterface = function $RegistryInterface$$module$Registry$RegistryInterface$() {
+};
+RegistryInterface$$module$Registry$RegistryInterface.prototype.fetch = function $RegistryInterface$$module$Registry$RegistryInterface$$fetch$($key$$, $callback$$) {
+};
+RegistryInterface$$module$Registry$RegistryInterface.prototype.stash = function $RegistryInterface$$module$Registry$RegistryInterface$$stash$($key$$, $value$$) {
+};
+module$Registry$RegistryInterface.RegistryInterface = RegistryInterface$$module$Registry$RegistryInterface;
 var module$Error$JSError = {}, JSError$$module$Error$JSError = function $JSError$$module$Error$JSError$($message$$, $fileName_prefix$$, $lineNumber$$) {
   $message$$ = void 0 === $message$$ ? "" : $message$$;
   module$Environment$BrowserData.BROWSER_FIREFOX === Browser$$module$Environment$Browser.name ? Error.call(this, $message$$, $fileName_prefix$$, $lineNumber$$) : ($fileName_prefix$$ && ($fileName_prefix$$ = "" + $fileName_prefix$$, $lineNumber$$ && ($fileName_prefix$$ += ":" + $lineNumber$$), $message$$ = "[" + $fileName_prefix$$ + "] " + $message$$), Error.call(this, $message$$));
@@ -800,6 +1161,134 @@ var module$Error$JSError = {}, JSError$$module$Error$JSError = function $JSError
 $jscomp.inherits(JSError$$module$Error$JSError, Error);
 JSError$$module$Error$JSError.captureStackTrace = Error.captureStackTrace;
 module$Error$JSError.JSError = JSError$$module$Error$JSError;
+var module$Registry$RegistryInterfaceDefs = {}, ERROR_REGISTRY_INTERFACE$$module$Registry$RegistryInterfaceDefs = "Attempted to use abstract class RegistryInterface", RegistryInterfaceDefs$$module$Registry$RegistryInterfaceDefs = function $RegistryInterfaceDefs$$module$Registry$RegistryInterfaceDefs$($var_args$$) {
+  JSObject$$module$JSObject.apply(this, arguments);
+};
+$jscomp.inherits(RegistryInterfaceDefs$$module$Registry$RegistryInterfaceDefs, JSObject$$module$JSObject);
+RegistryInterfaceDefs$$module$Registry$RegistryInterfaceDefs.Mix = JSObject$$module$JSObject.Mix;
+RegistryInterfaceDefs$$module$Registry$RegistryInterfaceDefs.inPrototypeChain = JSObject$$module$JSObject.inPrototypeChain;
+RegistryInterfaceDefs$$module$Registry$RegistryInterfaceDefs.prototype.fetch = function $RegistryInterfaceDefs$$module$Registry$RegistryInterfaceDefs$$fetch$($key$$, $callback$$) {
+  throw new JSError$$module$Error$JSError(ERROR_REGISTRY_INTERFACE$$module$Registry$RegistryInterfaceDefs);
+};
+RegistryInterfaceDefs$$module$Registry$RegistryInterfaceDefs.prototype.stash = function $RegistryInterfaceDefs$$module$Registry$RegistryInterfaceDefs$$stash$($key$$, $value$$) {
+  throw new JSError$$module$Error$JSError(ERROR_REGISTRY_INTERFACE$$module$Registry$RegistryInterfaceDefs);
+};
+module$Registry$RegistryInterfaceDefs.RegistryInterfaceDefs = RegistryInterfaceDefs$$module$Registry$RegistryInterfaceDefs;
+var module$Registry$JSRegistry = {}, JSRegistry$$module$Registry$JSRegistry = function $JSRegistry$$module$Registry$JSRegistry$($cache$$) {
+  this._cache = $cache$$ = void 0 === $cache$$ ? {} : $cache$$;
+};
+$jscomp.inherits(JSRegistry$$module$Registry$JSRegistry, JSObject$$module$JSObject);
+JSRegistry$$module$Registry$JSRegistry.Mix = JSObject$$module$JSObject.Mix;
+JSRegistry$$module$Registry$JSRegistry.inPrototypeChain = JSObject$$module$JSObject.inPrototypeChain;
+JSRegistry$$module$Registry$JSRegistry.prototype.GetInterface = function $JSRegistry$$module$Registry$JSRegistry$$GetInterface$() {
+  var $registry$$ = this, $JSRegistryInterface$$ = function $$JSRegistryInterface$$$() {
+  };
+  $jscomp.inherits($JSRegistryInterface$$, RegistryInterfaceDefs$$module$Registry$RegistryInterfaceDefs);
+  $JSRegistryInterface$$.Mix = RegistryInterfaceDefs$$module$Registry$RegistryInterfaceDefs.Mix;
+  $JSRegistryInterface$$.inPrototypeChain = RegistryInterfaceDefs$$module$Registry$RegistryInterfaceDefs.inPrototypeChain;
+  $JSRegistryInterface$$.prototype.fetch = function $$JSRegistryInterface$$$$fetch$($key$$, $callback$$) {
+    return $registry$$.Fetch($key$$, void 0 === $callback$$ ? null : $callback$$);
+  };
+  $JSRegistryInterface$$.prototype.stash = function $$JSRegistryInterface$$$$stash$($key$$, $value$$) {
+    return $registry$$.Stash($key$$, void 0 === $value$$ ? null : $value$$);
+  };
+  return new $JSRegistryInterface$$;
+};
+JSRegistry$$module$Registry$JSRegistry.prototype.Fetch = function $JSRegistry$$module$Registry$JSRegistry$$Fetch$($key$$, $callback$$) {
+  var $value$$ = {key:$key$$, value:this._cache[$key$$]};
+  Functions$$module$Algorithms$Functions$Functions.Run($callback$$, $value$$);
+  return $value$$.value;
+};
+JSRegistry$$module$Registry$JSRegistry.prototype.Stash = function $JSRegistry$$module$Registry$JSRegistry$$Stash$($key$$, $value$$) {
+  return this._cache[$key$$] = $value$$;
+};
+module$Registry$JSRegistry.JSRegistry = JSRegistry$$module$Registry$JSRegistry;
+var module$Dom$DOMElement = {}, REGEX_DOM_TAG$$module$Dom$DOMElement = /^(\s|\n)*(\\\<|\<)/, HTML_ELEMENT_EXISTS$$module$Dom$DOMElement = "object" === typeof window.HTMLElement, DOMElement$$module$Dom$DOMElement = function $DOMElement$$module$Dom$DOMElement$() {
+};
+DOMElement$$module$Dom$DOMElement.toElement = function $DOMElement$$module$Dom$DOMElement$toElement$($source$$) {
+  return DOMElement$$module$Dom$DOMElement.isElement($source$$) ? [$source$$] : "string" === typeof $source$$ ? DOMElement$$module$Dom$DOMElement.isDomString($source$$) ? DOMElement$$module$Dom$DOMElement.parseHtmlAsNodes($source$$) : DOMElement$$module$Dom$DOMElement.querySelectorAll($source$$) : Arrays$$module$Algorithms$Arrays$Arrays.Slice($source$$);
+};
+DOMElement$$module$Dom$DOMElement.isElement = function $DOMElement$$module$Dom$DOMElement$isElement$($element$$) {
+  return $element$$ && (HTML_ELEMENT_EXISTS$$module$Dom$DOMElement && $element$$ instanceof window.HTMLElement || "object" === typeof $element$$ && 1 === $element$$.nodeType && "string" === typeof $element$$.nodeName) ? !0 : !1;
+};
+DOMElement$$module$Dom$DOMElement.isDomString = function $DOMElement$$module$Dom$DOMElement$isDomString$($match_source$$) {
+  if ("string" !== typeof $match_source$$) {
+    return !1;
+  }
+  $match_source$$ = $match_source$$.match(REGEX_DOM_TAG$$module$Dom$DOMElement);
+  return null !== $match_source$$ && -1 < $match_source$$.indexOf("<");
+};
+DOMElement$$module$Dom$DOMElement.parseHtmlAsNodes = function $DOMElement$$module$Dom$DOMElement$parseHtmlAsNodes$($source$$) {
+  var $div$$ = window.document.createElement("div");
+  $div$$.innerHTML = $source$$;
+  return Arrays$$module$Algorithms$Arrays$Arrays.Slice($div$$.children, 0);
+};
+DOMElement$$module$Dom$DOMElement.querySelectorAll = function $DOMElement$$module$Dom$DOMElement$querySelectorAll$($selector$$, $parent$$) {
+  $parent$$ = void 0 === $parent$$ ? window.document : $parent$$;
+  try {
+    return Arrays$$module$Algorithms$Arrays$Arrays.Slice($parent$$.querySelectorAll($selector$$));
+  } catch ($e$$) {
+    return [];
+  }
+};
+DOMElement$$module$Dom$DOMElement.attachRegistry = function $DOMElement$$module$Dom$DOMElement$attachRegistry$($element$$) {
+  $element$$.__jsRegistry || ($element$$.__jsRegistry = (new JSRegistry$$module$Registry$JSRegistry).GetInterface());
+};
+module$Dom$DOMElement.DOMElement = DOMElement$$module$Dom$DOMElement;
+var module$Dom$JSDom = {}, JSDom$$module$Dom$JSDom = function $JSDom$$module$Dom$JSDom$($element$$, $callbackFunction$$, $argumentArray$$) {
+  $callbackFunction$$ = void 0 === $callbackFunction$$ ? null : $callbackFunction$$;
+  $argumentArray$$ = void 0 === $argumentArray$$ ? [] : $argumentArray$$;
+  JSDom$$module$Dom$JSDom.inPrototypeChain($element$$) || ($element$$ = DOMElement$$module$Dom$DOMElement.toElement($element$$));
+  this._element = $element$$;
+  this.extend("_element", this._element);
+  this.each(DOMElement$$module$Dom$DOMElement.attachRegistry);
+  this.use($callbackFunction$$, $argumentArray$$);
+};
+$jscomp.inherits(JSDom$$module$Dom$JSDom, JSObject$$module$JSObject);
+JSDom$$module$Dom$JSDom.Mix = JSObject$$module$JSObject.Mix;
+JSDom$$module$Dom$JSDom.inPrototypeChain = JSObject$$module$JSObject.inPrototypeChain;
+JSDom$$module$Dom$JSDom.prototype.each = function $JSDom$$module$Dom$JSDom$$each$($iteratorFunction$$, $args$$) {
+  for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$ = 1;$$jscomp$restIndex$$ < arguments.length;++$$jscomp$restIndex$$) {
+    $$jscomp$restParams$$[$$jscomp$restIndex$$ - 1] = arguments[$$jscomp$restIndex$$];
+  }
+  Looper$$module$Algorithms$Looper$Looper.ArrayEach.apply(Looper$$module$Algorithms$Looper$Looper, [].concat([this._element, $iteratorFunction$$], $jscomp.arrayFromIterable($$jscomp$restParams$$)));
+  return this;
+};
+JSDom$$module$Dom$JSDom.prototype.setCss = function $JSDom$$module$Dom$JSDom$$setCss$($cssObject$$, $callbackFunction$$) {
+  $cssObject$$ = void 0 === $cssObject$$ ? {} : $cssObject$$;
+  this.each(DOMCss$$module$Dom$DOMCss.setCssOnLoop, $cssObject$$);
+  this.use($callbackFunction$$, [$cssObject$$]);
+  return this;
+};
+JSDom$$module$Dom$JSDom.prototype.getCss = function $JSDom$$module$Dom$JSDom$$getCss$($cssObject$$, $callbackFunction$$) {
+  $cssObject$$ = void 0 === $cssObject$$ ? {} : $cssObject$$;
+  this.each(DOMCss$$module$Dom$DOMCss.getCssFromLoop, JSDom$$module$Dom$JSDom, $cssObject$$, $callbackFunction$$);
+  return this;
+};
+Object.defineProperties(JSDom$$module$Dom$JSDom.prototype, {count:{configurable:!0, enumerable:!0, get:function() {
+  return this._element.length;
+}}});
+module$Dom$JSDom.JSDom = JSDom$$module$Dom$JSDom;
+var module$Version = {}, VERSION_OBJECT$$module$Version = {MAJOR_VERSION:0, MINOR_VERSION:2, PATCH_VERSION:0}, DEBUG$$module$Version = !0;
+module$Version.VERSION_OBJECT = VERSION_OBJECT$$module$Version;
+module$Version.DEBUG = DEBUG$$module$Version;
+var module$Environment$JSEnvironment = {}, VERSION_STRING$$module$Environment$JSEnvironment = module$Version.VERSION_OBJECT.MAJOR_VERSION + "." + module$Version.VERSION_OBJECT.MINOR_VERSION + "." + module$Version.VERSION_OBJECT.PATCH_VERSION, VERSION_NUMBER$$module$Environment$JSEnvironment = (module$Version.VERSION_OBJECT.MAJOR_VERSION << 16) + (module$Version.VERSION_OBJECT.MINOR_VERSION << 8) + module$Version.VERSION_OBJECT.PATCH_VERSION, JSEnvironment$$module$Environment$JSEnvironment = function $JSEnvironment$$module$Environment$JSEnvironment$($var_args$$) {
+  JSObject$$module$JSObject.apply(this, arguments);
+};
+$jscomp.inherits(JSEnvironment$$module$Environment$JSEnvironment, JSObject$$module$JSObject);
+JSEnvironment$$module$Environment$JSEnvironment.Mix = JSObject$$module$JSObject.Mix;
+JSEnvironment$$module$Environment$JSEnvironment.inPrototypeChain = JSObject$$module$JSObject.inPrototypeChain;
+JSEnvironment$$module$Environment$JSEnvironment.toString = function $JSEnvironment$$module$Environment$JSEnvironment$toString$() {
+  return "JSpyder " + this.version + " on " + this.browser;
+};
+Object.defineProperties(JSEnvironment$$module$Environment$JSEnvironment, {version:{configurable:!0, enumerable:!0, get:function() {
+  return VERSION_STRING$$module$Environment$JSEnvironment;
+}}, versionNo:{configurable:!0, enumerable:!0, get:function() {
+  return VERSION_NUMBER$$module$Environment$JSEnvironment;
+}}, browser:{configurable:!0, enumerable:!0, get:function() {
+  return Browser$$module$Environment$Browser;
+}}});
+module$Environment$JSEnvironment.JSEnvironment = JSEnvironment$$module$Environment$JSEnvironment;
 var module$Logger$LoggerDefs = {}, ERROR_REGISTRY_INTERFACE$$module$Logger$LoggerDefs = "Attempted to use abstract class RegistryInterface", LoggerDefs$$module$Logger$LoggerDefs = function $LoggerDefs$$module$Logger$LoggerDefs$($var_args$$) {
   Function.apply(this, arguments);
 };
@@ -850,294 +1339,32 @@ JSLogger$$module$Logger$JSLogger.Err = function $JSLogger$$module$Logger$JSLogge
   return console && (console.warn ? console.error.apply(console, [].concat($jscomp.arrayFromIterable($$jscomp$restParams$$))) : JSLogger$$module$Logger$JSLogger.Warn.apply(JSLogger$$module$Logger$JSLogger, [].concat($jscomp.arrayFromIterable($$jscomp$restParams$$))));
 };
 module$Logger$JSLogger.JSLogger = JSLogger$$module$Logger$JSLogger;
-var module$Algorithms$TypeChecker = {}, TypeChecker$$module$Algorithms$TypeChecker = function $TypeChecker$$module$Algorithms$TypeChecker$() {
+var module$Library$LibraryInterfaceDefs = {}, ABSTRACT_ERROR$$module$Library$LibraryInterfaceDefs = "LibraryInterfaceDefs is an abstract function!", FILENAME$$module$Library$LibraryInterfaceDefs = "JSpyder/Library/LibraryInterfaceDefs", LibraryInterfaceDefs$$module$Library$LibraryInterfaceDefs = function $LibraryInterfaceDefs$$module$Library$LibraryInterfaceDefs$($var_args$$) {
+  Function.apply(this, arguments);
 };
-TypeChecker$$module$Algorithms$TypeChecker.Boolean = function $TypeChecker$$module$Algorithms$TypeChecker$Boolean$($value$$, $defaultValue$$) {
-  $defaultValue$$ = void 0 === $defaultValue$$ ? !1 : $defaultValue$$;
-  switch(typeof $value$$) {
-    case "boolean":
-      return $value$$;
-    case "undefined":
-      return $defaultValue$$;
-    case "string":
-      return /true/i.test($value$$);
-  }
-  return $value$$ ? !0 : !1;
+$jscomp.inherits(LibraryInterfaceDefs$$module$Library$LibraryInterfaceDefs, Function);
+LibraryInterfaceDefs$$module$Library$LibraryInterfaceDefs.register = function $LibraryInterfaceDefs$$module$Library$LibraryInterfaceDefs$register$($args$$) {
 };
-TypeChecker$$module$Algorithms$TypeChecker.Number = function $TypeChecker$$module$Algorithms$TypeChecker$Number$($value$$, $defaultValue$$) {
-  var $num$$ = +$value$$;
-  return $num$$ == $value$$ || $num$$ === $num$$ ? $num$$ : (void 0 === $defaultValue$$ ? 0 : $defaultValue$$) || 0;
+LibraryInterfaceDefs$$module$Library$LibraryInterfaceDefs.registerSet = function $LibraryInterfaceDefs$$module$Library$LibraryInterfaceDefs$registerSet$($args$$) {
 };
-module$Algorithms$TypeChecker.TypeChecker = TypeChecker$$module$Algorithms$TypeChecker;
-var module$Algorithms$LooperController = {}, LoopController$$module$Algorithms$LooperController = function $LoopController$$module$Algorithms$LooperController$() {
-  this._break = !1;
-  this._index = 0;
+LibraryInterfaceDefs$$module$Library$LibraryInterfaceDefs.execute = function $LibraryInterfaceDefs$$module$Library$LibraryInterfaceDefs$execute$($args$$) {
 };
-$jscomp.inherits(LoopController$$module$Algorithms$LooperController, JSObject$$module$JSObject);
-LoopController$$module$Algorithms$LooperController.Mix = JSObject$$module$JSObject.Mix;
-LoopController$$module$Algorithms$LooperController.inPrototypeChain = JSObject$$module$JSObject.inPrototypeChain;
-LoopController$$module$Algorithms$LooperController.prototype.stop = function $LoopController$$module$Algorithms$LooperController$$stop$() {
-  this._break = !0;
-  return this;
-};
-LoopController$$module$Algorithms$LooperController.prototype.drop = function $LoopController$$module$Algorithms$LooperController$$drop$($dropCount$$) {
-  return this;
-};
-Object.defineProperties(LoopController$$module$Algorithms$LooperController.prototype, {breaking:{configurable:!0, enumerable:!0, get:function() {
-  return !0 === this._break;
-}}, index:{configurable:!0, enumerable:!0, get:function() {
-  return this._index;
-}, set:function($index$$) {
-  this._index = $index$$;
-}}});
-var ObjectLoopController$$module$Algorithms$LooperController = function $ObjectLoopController$$module$Algorithms$LooperController$() {
-  LoopController$$module$Algorithms$LooperController.call(this);
-};
-$jscomp.inherits(ObjectLoopController$$module$Algorithms$LooperController, LoopController$$module$Algorithms$LooperController);
-ObjectLoopController$$module$Algorithms$LooperController.Mix = LoopController$$module$Algorithms$LooperController.Mix;
-ObjectLoopController$$module$Algorithms$LooperController.inPrototypeChain = LoopController$$module$Algorithms$LooperController.inPrototypeChain;
-var ArrayLoopController$$module$Algorithms$LooperController = function $ArrayLoopController$$module$Algorithms$LooperController$($array$$) {
-  this._array = $array$$;
-  this._index = 0;
-  Object.defineProperty(this, "_array", {value:this._array});
-  LoopController$$module$Algorithms$LooperController.call(this);
-};
-$jscomp.inherits(ArrayLoopController$$module$Algorithms$LooperController, LoopController$$module$Algorithms$LooperController);
-ArrayLoopController$$module$Algorithms$LooperController.Mix = LoopController$$module$Algorithms$LooperController.Mix;
-ArrayLoopController$$module$Algorithms$LooperController.inPrototypeChain = LoopController$$module$Algorithms$LooperController.inPrototypeChain;
-ArrayLoopController$$module$Algorithms$LooperController.prototype.drop = function $ArrayLoopController$$module$Algorithms$LooperController$$drop$($dropCount$$) {
-  $dropCount$$ = TypeChecker$$module$Algorithms$TypeChecker.Number(void 0 === $dropCount$$ ? 1 : $dropCount$$, 1);
-  this._array.splice(this.index--, $dropCount$$);
-  return this;
-};
-Object.defineProperties(ArrayLoopController$$module$Algorithms$LooperController.prototype, {index:{configurable:!0, enumerable:!0, set:function($index$$) {
-  this._index = TypeChecker$$module$Algorithms$TypeChecker.Number($index$$);
-}}});
-module$Algorithms$LooperController.LoopController = LoopController$$module$Algorithms$LooperController;
-module$Algorithms$LooperController.ObjectLoopController = ObjectLoopController$$module$Algorithms$LooperController;
-module$Algorithms$LooperController.ArrayLoopController = ArrayLoopController$$module$Algorithms$LooperController;
-var module$Algorithms$Looper = {}, Looper$$module$Algorithms$Looper = function $Looper$$module$Algorithms$Looper$() {
-};
-Looper$$module$Algorithms$Looper.ObjectEach = function $Looper$$module$Algorithms$Looper$ObjectEach$($object$$, $loopFunction$$, $data$$) {
-  for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$ = 2;$$jscomp$restIndex$$ < arguments.length;++$$jscomp$restIndex$$) {
-    $$jscomp$restParams$$[$$jscomp$restIndex$$ - 2] = arguments[$$jscomp$restIndex$$];
-  }
-  if ($object$$ && "object" === typeof $object$$) {
-    var $$jscomp$restIndex$$ = new ObjectLoopController$$module$Algorithms$LooperController, $key$$;
-    for ($key$$ in $object$$) {
-      if ($$jscomp$restIndex$$.breaking) {
-        break;
-      }
-      Functions$$module$Algorithms$Functions.Use($$jscomp$restIndex$$, $loopFunction$$, [].concat([$object$$[$key$$], $key$$, $object$$], $jscomp.arrayFromIterable($$jscomp$restParams$$)));
-    }
-  }
-};
-Looper$$module$Algorithms$Looper.ArrayEach = function $Looper$$module$Algorithms$Looper$ArrayEach$($array$$, $loopFunction$$, $data$$) {
-  for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$14_controller$$ = 2;$$jscomp$restIndex$$14_controller$$ < arguments.length;++$$jscomp$restIndex$$14_controller$$) {
-    $$jscomp$restParams$$[$$jscomp$restIndex$$14_controller$$ - 2] = arguments[$$jscomp$restIndex$$14_controller$$];
-  }
-  if ($array$$ && "object" === typeof $array$$) {
-    for ($$jscomp$restIndex$$14_controller$$ = new ArrayLoopController$$module$Algorithms$LooperController($array$$), $$jscomp$restIndex$$14_controller$$.index = 0;$$jscomp$restIndex$$14_controller$$.index < $array$$.length && !$$jscomp$restIndex$$14_controller$$.breaking;++$$jscomp$restIndex$$14_controller$$.index) {
-      Functions$$module$Algorithms$Functions.Use($$jscomp$restIndex$$14_controller$$, $loopFunction$$, [].concat([$array$$[$$jscomp$restIndex$$14_controller$$.index], $$jscomp$restIndex$$14_controller$$.index, $array$$], $jscomp.arrayFromIterable($$jscomp$restParams$$)));
-    }
-  }
-};
-Looper$$module$Algorithms$Looper.Iterate = function $Looper$$module$Algorithms$Looper$Iterate$($start$$, $end$$, $iterator$$, $data$$) {
-  for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$15_controller$$ = 3;$$jscomp$restIndex$$15_controller$$ < arguments.length;++$$jscomp$restIndex$$15_controller$$) {
-    $$jscomp$restParams$$[$$jscomp$restIndex$$15_controller$$ - 3] = arguments[$$jscomp$restIndex$$15_controller$$];
-  }
-  $start$$ = TypeChecker$$module$Algorithms$TypeChecker.Number($start$$);
-  $end$$ = TypeChecker$$module$Algorithms$TypeChecker.Number($end$$);
-  for (var $$jscomp$restIndex$$15_controller$$ = new LoopController$$module$Algorithms$LooperController, $step$$ = $end$$ < $start$$ ? -1 : 1, $i$$ = $start$$;$i$$ !== $end$$ && !$$jscomp$restIndex$$15_controller$$.breaking;$i$$ += $step$$) {
-    Functions$$module$Algorithms$Functions.Use($$jscomp$restIndex$$15_controller$$, $iterator$$, [].concat([$i$$], $jscomp.arrayFromIterable($$jscomp$restParams$$)));
-  }
-};
-module$Algorithms$Looper.Looper = Looper$$module$Algorithms$Looper;
-var module$Algorithms$JSAlgorithms = {}, JSAlgorithms$$module$Algorithms$JSAlgorithms = function $JSAlgorithms$$module$Algorithms$JSAlgorithms$($var_args$$) {
-  JSObject$$module$JSObject.apply(this, arguments);
-};
-$jscomp.inherits(JSAlgorithms$$module$Algorithms$JSAlgorithms, JSObject$$module$JSObject);
-JSAlgorithms$$module$Algorithms$JSAlgorithms.Mix = JSObject$$module$JSObject.Mix;
-JSAlgorithms$$module$Algorithms$JSAlgorithms.inPrototypeChain = JSObject$$module$JSObject.inPrototypeChain;
-JSAlgorithms$$module$Algorithms$JSAlgorithms.each = function $JSAlgorithms$$module$Algorithms$JSAlgorithms$each$($object$$, $loopFunction$$, $data$$) {
-  for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$ = 2;$$jscomp$restIndex$$ < arguments.length;++$$jscomp$restIndex$$) {
-    $$jscomp$restParams$$[$$jscomp$restIndex$$ - 2] = arguments[$$jscomp$restIndex$$];
-  }
-  Looper$$module$Algorithms$Looper.ObjectEach.apply(Looper$$module$Algorithms$Looper, [].concat([$object$$, $loopFunction$$], $jscomp.arrayFromIterable($$jscomp$restParams$$)));
-  return this;
-};
-JSAlgorithms$$module$Algorithms$JSAlgorithms.arrEach = function $JSAlgorithms$$module$Algorithms$JSAlgorithms$arrEach$($array$$, $loopFunction$$, $data$$) {
-  for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$ = 2;$$jscomp$restIndex$$ < arguments.length;++$$jscomp$restIndex$$) {
-    $$jscomp$restParams$$[$$jscomp$restIndex$$ - 2] = arguments[$$jscomp$restIndex$$];
-  }
-  Looper$$module$Algorithms$Looper.ArrayEach.apply(Looper$$module$Algorithms$Looper, [].concat([$array$$, $loopFunction$$], $jscomp.arrayFromIterable($$jscomp$restParams$$)));
-  return this;
-};
-module$Algorithms$JSAlgorithms.JSAlgorithms = JSAlgorithms$$module$Algorithms$JSAlgorithms;
-var module$Registry$RegistryInterface = {}, RegistryInterface$$module$Registry$RegistryInterface = function $RegistryInterface$$module$Registry$RegistryInterface$() {
-};
-RegistryInterface$$module$Registry$RegistryInterface.prototype.fetch = function $RegistryInterface$$module$Registry$RegistryInterface$$fetch$($key$$, $callback$$) {
-};
-RegistryInterface$$module$Registry$RegistryInterface.prototype.stash = function $RegistryInterface$$module$Registry$RegistryInterface$$stash$($key$$, $value$$) {
-};
-module$Registry$RegistryInterface.RegistryInterface = RegistryInterface$$module$Registry$RegistryInterface;
-var module$Registry$RegistryInterfaceDefs = {}, ERROR_REGISTRY_INTERFACE$$module$Registry$RegistryInterfaceDefs = "Attempted to use abstract class RegistryInterface", RegistryInterfaceDefs$$module$Registry$RegistryInterfaceDefs = function $RegistryInterfaceDefs$$module$Registry$RegistryInterfaceDefs$($var_args$$) {
-  JSObject$$module$JSObject.apply(this, arguments);
-};
-$jscomp.inherits(RegistryInterfaceDefs$$module$Registry$RegistryInterfaceDefs, JSObject$$module$JSObject);
-RegistryInterfaceDefs$$module$Registry$RegistryInterfaceDefs.Mix = JSObject$$module$JSObject.Mix;
-RegistryInterfaceDefs$$module$Registry$RegistryInterfaceDefs.inPrototypeChain = JSObject$$module$JSObject.inPrototypeChain;
-RegistryInterfaceDefs$$module$Registry$RegistryInterfaceDefs.prototype.fetch = function $RegistryInterfaceDefs$$module$Registry$RegistryInterfaceDefs$$fetch$($key$$, $callback$$) {
-  throw new JSError$$module$Error$JSError(ERROR_REGISTRY_INTERFACE$$module$Registry$RegistryInterfaceDefs);
-};
-RegistryInterfaceDefs$$module$Registry$RegistryInterfaceDefs.prototype.stash = function $RegistryInterfaceDefs$$module$Registry$RegistryInterfaceDefs$$stash$($key$$, $value$$) {
-  throw new JSError$$module$Error$JSError(ERROR_REGISTRY_INTERFACE$$module$Registry$RegistryInterfaceDefs);
-};
-module$Registry$RegistryInterfaceDefs.RegistryInterfaceDefs = RegistryInterfaceDefs$$module$Registry$RegistryInterfaceDefs;
-var module$Registry$JSRegistry = {}, JSRegistry$$module$Registry$JSRegistry = function $JSRegistry$$module$Registry$JSRegistry$($cache$$) {
-  this._cache = $cache$$ = void 0 === $cache$$ ? {} : $cache$$;
-};
-$jscomp.inherits(JSRegistry$$module$Registry$JSRegistry, JSObject$$module$JSObject);
-JSRegistry$$module$Registry$JSRegistry.Mix = JSObject$$module$JSObject.Mix;
-JSRegistry$$module$Registry$JSRegistry.inPrototypeChain = JSObject$$module$JSObject.inPrototypeChain;
-JSRegistry$$module$Registry$JSRegistry.prototype.GetInterface = function $JSRegistry$$module$Registry$JSRegistry$$GetInterface$() {
-  var $registry$$ = this, $JSRegistryInterface$$ = function $$JSRegistryInterface$$$() {
-  };
-  $jscomp.inherits($JSRegistryInterface$$, RegistryInterfaceDefs$$module$Registry$RegistryInterfaceDefs);
-  $JSRegistryInterface$$.Mix = RegistryInterfaceDefs$$module$Registry$RegistryInterfaceDefs.Mix;
-  $JSRegistryInterface$$.inPrototypeChain = RegistryInterfaceDefs$$module$Registry$RegistryInterfaceDefs.inPrototypeChain;
-  $JSRegistryInterface$$.prototype.fetch = function $$JSRegistryInterface$$$$fetch$($key$$, $callback$$) {
-    return $registry$$.Fetch($key$$, void 0 === $callback$$ ? null : $callback$$);
-  };
-  $JSRegistryInterface$$.prototype.stash = function $$JSRegistryInterface$$$$stash$($key$$, $value$$) {
-    return $registry$$.Stash($key$$, void 0 === $value$$ ? null : $value$$);
-  };
-  return new $JSRegistryInterface$$;
-};
-JSRegistry$$module$Registry$JSRegistry.prototype.Fetch = function $JSRegistry$$module$Registry$JSRegistry$$Fetch$($key$$, $callback$$) {
-  var $value$$ = {key:$key$$, value:this._cache[$key$$]};
-  Functions$$module$Algorithms$Functions.Run($callback$$, $value$$);
-  return $value$$.value;
-};
-JSRegistry$$module$Registry$JSRegistry.prototype.Stash = function $JSRegistry$$module$Registry$JSRegistry$$Stash$($key$$, $value$$) {
-  return this._cache[$key$$] = $value$$;
-};
-module$Registry$JSRegistry.JSRegistry = JSRegistry$$module$Registry$JSRegistry;
-var module$Dom$DOMElement = {}, REGEX_DOM_TAG$$module$Dom$DOMElement = /(^\\\<|\<)/g, HTML_ELEMENT_EXISTS$$module$Dom$DOMElement = "object" === typeof window.HTMLElement, DOMElement$$module$Dom$DOMElement = function $DOMElement$$module$Dom$DOMElement$() {
-};
-DOMElement$$module$Dom$DOMElement.toElement = function $DOMElement$$module$Dom$DOMElement$toElement$($source$$) {
-  return DOMElement$$module$Dom$DOMElement.isElement($source$$) ? [$source$$] : "string" === typeof $source$$ ? DOMElement$$module$Dom$DOMElement.isDomString($source$$) ? DOMElement$$module$Dom$DOMElement.parseHtmlAsNodes($source$$) : DOMElement$$module$Dom$DOMElement.querySelectorAll($source$$) : Arrays$$module$Algorithms$Arrays.Slice($source$$);
-};
-DOMElement$$module$Dom$DOMElement.isElement = function $DOMElement$$module$Dom$DOMElement$isElement$($element$$) {
-  return $element$$ && (HTML_ELEMENT_EXISTS$$module$Dom$DOMElement && $element$$ instanceof window.HTMLElement || "object" === typeof $element$$ && 1 === $element$$.nodeType && "string" === typeof $element$$.nodeName) ? !0 : !1;
-};
-DOMElement$$module$Dom$DOMElement.isDomString = function $DOMElement$$module$Dom$DOMElement$isDomString$($match_source$$) {
-  if ("string" !== typeof $match_source$$) {
-    return !1;
-  }
-  $match_source$$ = $match_source$$.match(REGEX_DOM_TAG$$module$Dom$DOMElement);
-  return null !== $match_source$$ && -1 < $match_source$$.indexOf("<");
-};
-DOMElement$$module$Dom$DOMElement.parseHtmlAsNodes = function $DOMElement$$module$Dom$DOMElement$parseHtmlAsNodes$($source$$) {
-  var $div$$ = window.document.createElement("div");
-  $div$$.innerHTML = $source$$;
-  return Arrays$$module$Algorithms$Arrays.Slice($div$$.children, 0);
-};
-DOMElement$$module$Dom$DOMElement.querySelectorAll = function $DOMElement$$module$Dom$DOMElement$querySelectorAll$($selector$$, $parent$$) {
-  $parent$$ = void 0 === $parent$$ ? window.document : $parent$$;
-  return Arrays$$module$Algorithms$Arrays.Slice($parent$$.querySelectorAll($selector$$));
-};
-DOMElement$$module$Dom$DOMElement.attachRegistry = function $DOMElement$$module$Dom$DOMElement$attachRegistry$($element$$) {
-  $element$$.__jsRegistry || ($element$$.__jsRegistry = (new JSRegistry$$module$Registry$JSRegistry).GetInterface());
-};
-module$Dom$DOMElement.DOMElement = DOMElement$$module$Dom$DOMElement;
-var module$Dom$DOMCss = {}, DOMCss$$module$Dom$DOMCss = function $DOMCss$$module$Dom$DOMCss$() {
-};
-DOMCss$$module$Dom$DOMCss.setCssOn = function $DOMCss$$module$Dom$DOMCss$setCssOn$($element$$, $cssObject$$) {
-  return Looper$$module$Algorithms$Looper.ObjectEach($cssObject$$, DOMCss$$module$Dom$DOMCss._setCssOnInternal, $element$$);
-};
-DOMCss$$module$Dom$DOMCss._setCssOnInternal = function $DOMCss$$module$Dom$DOMCss$_setCssOnInternal$($value$$, $property$$, $cssObject$$, $element$$) {
-  $element$$.style[$property$$] = $value$$;
-};
-DOMCss$$module$Dom$DOMCss.setCssOnLoop = function $DOMCss$$module$Dom$DOMCss$setCssOnLoop$($element$$, $index$$, $elementList$$, $cssObject$$) {
-  return DOMCss$$module$Dom$DOMCss.setCssOn($element$$, $cssObject$$);
-};
-DOMCss$$module$Dom$DOMCss.getCssFrom = function $DOMCss$$module$Dom$DOMCss$getCssFrom$($element$$, $cssObject$$) {
-  var $computedStyle$$ = window.getComputedStyle($element$$);
-  Looper$$module$Algorithms$Looper.ObjectEach($cssObject$$, DOMCss$$module$Dom$DOMCss._getCssFromInternal, $computedStyle$$, $element$$.style);
-  return $cssObject$$;
-};
-DOMCss$$module$Dom$DOMCss._getCssFromInternal = function $DOMCss$$module$Dom$DOMCss$_getCssFromInternal$($value$$, $property$$, $cssObject$$, $computedStyle$$, $elementStyle$$) {
-  $cssObject$$[$property$$] = $elementStyle$$[$property$$] || $computedStyle$$[$property$$];
-};
-DOMCss$$module$Dom$DOMCss.getCssFromLoop = function $DOMCss$$module$Dom$DOMCss$getCssFromLoop$($element$$, $index$$, $elementList$$, $JSDom$$, $cssObject$$, $callbackFunction$$) {
-  0 < $index$$ && ($cssObject$$ = Object.create($cssObject$$));
-  DOMCss$$module$Dom$DOMCss.getCssFrom($element$$, $cssObject$$);
-  new $JSDom$$($element$$, $callbackFunction$$, [$cssObject$$]);
-};
-module$Dom$DOMCss.DOMCss = DOMCss$$module$Dom$DOMCss;
-var module$Dom$JSDom = {}, JSDom$$module$Dom$JSDom = function $JSDom$$module$Dom$JSDom$($element$$, $callbackFunction$$, $argumentArray$$) {
-  JSDom$$module$Dom$JSDom.inPrototypeChain($element$$) || ($element$$ = DOMElement$$module$Dom$DOMElement.toElement($element$$));
-  this._element = $element$$;
-  this.extend("_element", this._element);
-  this.each(DOMElement$$module$Dom$DOMElement.attachRegistry);
-};
-$jscomp.inherits(JSDom$$module$Dom$JSDom, JSObject$$module$JSObject);
-JSDom$$module$Dom$JSDom.Mix = JSObject$$module$JSObject.Mix;
-JSDom$$module$Dom$JSDom.inPrototypeChain = JSObject$$module$JSObject.inPrototypeChain;
-JSDom$$module$Dom$JSDom.prototype.each = function $JSDom$$module$Dom$JSDom$$each$($iteratorFunction$$, $args$$) {
-  for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$ = 1;$$jscomp$restIndex$$ < arguments.length;++$$jscomp$restIndex$$) {
-    $$jscomp$restParams$$[$$jscomp$restIndex$$ - 1] = arguments[$$jscomp$restIndex$$];
-  }
-  Looper$$module$Algorithms$Looper.ArrayEach.apply(Looper$$module$Algorithms$Looper, [].concat([this._element, $iteratorFunction$$], $jscomp.arrayFromIterable($$jscomp$restParams$$)));
-  return this;
-};
-JSDom$$module$Dom$JSDom.prototype.setCss = function $JSDom$$module$Dom$JSDom$$setCss$($cssObject$$, $callbackFunction$$) {
-  $cssObject$$ = void 0 === $cssObject$$ ? {} : $cssObject$$;
-  this.each(DOMCss$$module$Dom$DOMCss.setCssOnLoop, $cssObject$$);
-  this.use($callbackFunction$$, $cssObject$$);
-  return this;
-};
-JSDom$$module$Dom$JSDom.prototype.getCss = function $JSDom$$module$Dom$JSDom$$getCss$($cssObject$$, $callbackFunction$$) {
-  $cssObject$$ = void 0 === $cssObject$$ ? {} : $cssObject$$;
-  this.each(DOMCss$$module$Dom$DOMCss.getCssFromLoop, JSDom$$module$Dom$JSDom, $cssObject$$, $callbackFunction$$);
-  return this;
-};
-Object.defineProperties(JSDom$$module$Dom$JSDom.prototype, {count:{configurable:!0, enumerable:!0, get:function() {
-  return this._element.length;
-}}});
-module$Dom$JSDom.JSDom = JSDom$$module$Dom$JSDom;
-var module$Version = {}, VERSION_OBJECT$$module$Version = {MAJOR_VERSION:0, MINOR_VERSION:2, PATCH_VERSION:0}, DEBUG$$module$Version = !0;
-module$Version.VERSION_OBJECT = VERSION_OBJECT$$module$Version;
-module$Version.DEBUG = DEBUG$$module$Version;
-var module$Environment$JSEnvironment = {}, VERSION_STRING$$module$Environment$JSEnvironment = module$Version.VERSION_OBJECT.MAJOR_VERSION + "." + module$Version.VERSION_OBJECT.MINOR_VERSION + "." + module$Version.VERSION_OBJECT.PATCH_VERSION, VERSION_NUMBER$$module$Environment$JSEnvironment = (module$Version.VERSION_OBJECT.MAJOR_VERSION << 16) + (module$Version.VERSION_OBJECT.MINOR_VERSION << 8) + module$Version.VERSION_OBJECT.PATCH_VERSION, JSEnvironment$$module$Environment$JSEnvironment = function $JSEnvironment$$module$Environment$JSEnvironment$($var_args$$) {
-  JSObject$$module$JSObject.apply(this, arguments);
-};
-$jscomp.inherits(JSEnvironment$$module$Environment$JSEnvironment, JSObject$$module$JSObject);
-JSEnvironment$$module$Environment$JSEnvironment.Mix = JSObject$$module$JSObject.Mix;
-JSEnvironment$$module$Environment$JSEnvironment.inPrototypeChain = JSObject$$module$JSObject.inPrototypeChain;
-JSEnvironment$$module$Environment$JSEnvironment.toString = function $JSEnvironment$$module$Environment$JSEnvironment$toString$() {
-  return "JSpyder " + this.version + " on " + this.browser;
-};
-Object.defineProperties(JSEnvironment$$module$Environment$JSEnvironment, {version:{configurable:!0, enumerable:!0, get:function() {
-  return VERSION_STRING$$module$Environment$JSEnvironment;
-}}, versionNo:{configurable:!0, enumerable:!0, get:function() {
-  return VERSION_NUMBER$$module$Environment$JSEnvironment;
-}}, browser:{configurable:!0, enumerable:!0, get:function() {
-  return Browser$$module$Environment$Browser;
-}}});
-module$Environment$JSEnvironment.JSEnvironment = JSEnvironment$$module$Environment$JSEnvironment;
+module$Library$LibraryInterfaceDefs.LibraryInterfaceDefs = LibraryInterfaceDefs$$module$Library$LibraryInterfaceDefs;
 var module$Library$JSLibrary = {}, JSLibrary$$module$Library$JSLibrary = function $JSLibrary$$module$Library$JSLibrary$($context$$) {
+  $context$$ = void 0 === $context$$ ? {} : $context$$;
   this._registry = (new JSRegistry$$module$Registry$JSRegistry).GetInterface();
   this._context = $context$$;
 };
+$jscomp.inherits(JSLibrary$$module$Library$JSLibrary, JSObject$$module$JSObject);
+JSLibrary$$module$Library$JSLibrary.Mix = JSObject$$module$JSObject.Mix;
+JSLibrary$$module$Library$JSLibrary.inPrototypeChain = JSObject$$module$JSObject.inPrototypeChain;
 JSLibrary$$module$Library$JSLibrary.prototype.GetInterface = function $JSLibrary$$module$Library$JSLibrary$$GetInterface$() {
   function $JSLibraryInterface$$($args$$) {
     for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$ = 0;$$jscomp$restIndex$$ < arguments.length;++$$jscomp$restIndex$$) {
       $$jscomp$restParams$$[$$jscomp$restIndex$$ - 0] = arguments[$$jscomp$restIndex$$];
     }
     $jsLibrary$$.Execute.apply($jsLibrary$$, [].concat($jscomp.arrayFromIterable($$jscomp$restParams$$)));
-    return this;
+    return $JSLibraryInterface$$;
   }
   var $jsLibrary$$ = this;
   $JSLibraryInterface$$.register = function $$JSLibraryInterface$$$register$($args$$) {
@@ -1145,14 +1372,14 @@ JSLibrary$$module$Library$JSLibrary.prototype.GetInterface = function $JSLibrary
       $$jscomp$restParams$$[$$jscomp$restIndex$$ - 0] = arguments[$$jscomp$restIndex$$];
     }
     $jsLibrary$$.Register.apply($jsLibrary$$, [].concat($jscomp.arrayFromIterable($$jscomp$restParams$$)));
-    return this;
+    return $JSLibraryInterface$$;
   };
   $JSLibraryInterface$$.registerSet = function $$JSLibraryInterface$$$registerSet$($args$$) {
     for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$ = 0;$$jscomp$restIndex$$ < arguments.length;++$$jscomp$restIndex$$) {
       $$jscomp$restParams$$[$$jscomp$restIndex$$ - 0] = arguments[$$jscomp$restIndex$$];
     }
     $jsLibrary$$.RegisterSet.apply($jsLibrary$$, [].concat($jscomp.arrayFromIterable($$jscomp$restParams$$)));
-    return this;
+    return $JSLibraryInterface$$;
   };
   $JSLibraryInterface$$.execute = function $$JSLibraryInterface$$$execute$($args$$) {
     for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$ = 0;$$jscomp$restIndex$$ < arguments.length;++$$jscomp$restIndex$$) {
@@ -1166,11 +1393,11 @@ JSLibrary$$module$Library$JSLibrary.prototype.Execute = function $JSLibrary$$mod
   $argumentArray$$ = void 0 === $argumentArray$$ ? [] : $argumentArray$$;
   $callbackFunction$$ = void 0 === $callbackFunction$$ ? null : $callbackFunction$$;
   $callbackArguments$$ = void 0 === $callbackArguments$$ ? [] : $callbackArguments$$;
-  $argumentArray$$ = Arrays$$module$Algorithms$Arrays.Slice($argumentArray$$);
-  $callbackArguments$$ = Arrays$$module$Algorithms$Arrays.Slice($callbackArguments$$);
+  $argumentArray$$ = Arrays$$module$Algorithms$Arrays$Arrays.Slice($argumentArray$$);
+  $callbackArguments$$ = Arrays$$module$Algorithms$Arrays$Arrays.Slice($callbackArguments$$);
   $functionName_lookupFunction$$ = this._registry.fetch($functionName_lookupFunction$$);
-  var $returnValue$$ = null, $returnValue$$ = Functions$$module$Algorithms$Functions.Use(this._context, $functionName_lookupFunction$$, $argumentArray$$);
-  Functions$$module$Algorithms$Functions.Use(this._context, $callbackFunction$$, [].concat([$returnValue$$], $jscomp.arrayFromIterable($callbackArguments$$)));
+  var $returnValue$$ = null, $returnValue$$ = Functions$$module$Algorithms$Functions$Functions.Use(this._context, $functionName_lookupFunction$$, $argumentArray$$);
+  Functions$$module$Algorithms$Functions$Functions.Use(this._context, $callbackFunction$$, [].concat([$returnValue$$], $jscomp.arrayFromIterable($callbackArguments$$)));
   return $returnValue$$;
 };
 JSLibrary$$module$Library$JSLibrary.prototype.Register = function $JSLibrary$$module$Library$JSLibrary$$Register$($functionName$$, $functionValue$$) {
@@ -1178,15 +1405,16 @@ JSLibrary$$module$Library$JSLibrary.prototype.Register = function $JSLibrary$$mo
   "string" === typeof $functionName$$ && ("function" !== typeof $functionValue$$ && null !== $functionValue$$ || this._registry.stash($functionName$$, $functionValue$$));
 };
 JSLibrary$$module$Library$JSLibrary.prototype.RegisterSet = function $JSLibrary$$module$Library$JSLibrary$$RegisterSet$($object$$) {
-  $object$$ && "object" === typeof $object$$ && Looper$$module$Algorithms$Looper.ObjectEach($object$$, JSLibrary$$module$Library$JSLibrary.RegisterSetInternal, this, this._context);
+  $object$$ && "object" === typeof $object$$ && Looper$$module$Algorithms$Looper$Looper.ObjectEach($object$$, JSLibrary$$module$Library$JSLibrary.RegisterSetInternal, this);
 };
-JSLibrary$$module$Library$JSLibrary.RegisterSetInternal = function $JSLibrary$$module$Library$JSLibrary$RegisterSetInternal$($fnValue$$, $fnName$$, $object$$, $self$$, $context$$) {
-  $self$$.Register($context$$, $fnName$$, $fnValue$$);
+JSLibrary$$module$Library$JSLibrary.RegisterSetInternal = function $JSLibrary$$module$Library$JSLibrary$RegisterSetInternal$($fnValue$$, $fnName$$, $object$$, $self$$) {
+  $self$$.Register($fnName$$, $fnValue$$);
 };
 module$Library$JSLibrary.JSLibrary = JSLibrary$$module$Library$JSLibrary;
 var module$JSCore = {}, JS_LOGGER_INTERFACE$$module$JSCore = (new JSLogger$$module$Logger$JSLogger).GetInterface(), JSCore$$module$JSCore = function $JSCore$$module$JSCore$() {
   this.extend("registry", (new JSRegistry$$module$Registry$JSRegistry).GetInterface());
   this.extend("lib", (new JSLibrary$$module$Library$JSLibrary(this)).GetInterface());
+  this.extend("alg", new JSAlgorithms$$module$Algorithms$JSAlgorithms(this));
 };
 $jscomp.inherits(JSCore$$module$JSCore, JSObject$$module$JSObject);
 JSCore$$module$JSCore.Mix = JSObject$$module$JSObject.Mix;

@@ -1,7 +1,7 @@
 import {TestObject} from "TestObject";
 import {Assert} from "Assert";
 
-import {Functions} from "Algorithms/Functions";
+import {Functions} from "Algorithms/Functions/Functions";
 
 export class TestFunctions extends TestObject {
     constructor() {

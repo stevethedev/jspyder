@@ -1,17 +1,19 @@
 import {JSObject} from "JSObject";
 import {JSRegistry} from "Registry/JSRegistry";
 
-import {Functions} from "Algorithms/Functions";
-import {Looper} from "Algorithms/Looper";
-import {Arrays} from "Algorithms/Arrays";
+import {Functions} from "Algorithms/Functions/Functions";
+import {Looper} from "Algorithms/Looper/Looper";
+import {Arrays} from "Algorithms/Arrays/Arrays";
 import {HasInterface} from "Object/Interface";
+
+import {LibraryInterfaceDefs} from "Library/LibraryInterfaceDefs";
 
 /**
  * @class JSLibrary
  * @implements HasInterface
  */
-export class JSLibrary {
-    constructor(context) {
+export class JSLibrary extends JSObject {
+    constructor(context = {}) {
         var registry = new JSRegistry();
         
         this._registry = registry.GetInterface();
@@ -19,8 +21,7 @@ export class JSLibrary {
     }
     
     /**
-     * @inheritDoc
-     * @return {Function}
+     * @method {LibraryInterfaceDefs}
      */
     GetInterface() {
         var jsLibrary = this;
@@ -30,20 +31,20 @@ export class JSLibrary {
          */
         function JSLibraryInterface(...args) {
             jsLibrary.Execute(...args);
-            return this;
+            return JSLibraryInterface;
         }
         
-        JSLibraryInterface["register"] = function(...args) {
+        JSLibraryInterface.register = function(...args) {
             jsLibrary.Register(...args);
-            return this;
+            return JSLibraryInterface;
         }
         
-        JSLibraryInterface["registerSet"] = function(...args) {
+        JSLibraryInterface.registerSet = function(...args) {
             jsLibrary.RegisterSet(...args);
-            return this;
+            return JSLibraryInterface;
         }
         
-        JSLibraryInterface["execute"] = function(...args) {
+        JSLibraryInterface.execute = function(...args) {
             return jsLibrary.Execute(...args);
         }
         
@@ -64,7 +65,7 @@ export class JSLibrary {
     }
     
     /** 
-     * @param {String} functionName
+     * @param {string} functionName
      * 
      *      Name of the function to stash in the library object
      * 
@@ -82,12 +83,11 @@ export class JSLibrary {
     
     RegisterSet(object) {
         if(object && "object" === typeof object) {
-            
-            Looper.ObjectEach(object, JSLibrary.RegisterSetInternal, this, this._context); 
+            Looper.ObjectEach(object, JSLibrary.RegisterSetInternal, this); 
         }
     }
     
-    static RegisterSetInternal(fnValue, fnName, object, self, context) {
-        self.Register(context, fnName, fnValue);
+    static RegisterSetInternal(fnValue, fnName, object, self) {
+        self.Register(fnName, fnValue);
     }
 }

@@ -3,9 +3,10 @@ import {Assert} from "Assert";
 
 import {JSAlgorithms} from "Algorithms/JSAlgorithms";
 import {TestArrays} from "Algorithms/TestArrays";
+import {TestBooleans} from "Algorithms/TestBooleans";
 import {TestLooper} from "Algorithms/TestLooper";
+import {TestNumbers} from "Algorithms/TestNumbers";
 import {TestFunctions} from "Algorithms/TestFunctions";
-import {TestTypeChecker} from "Algorithms/TestTypeChecker";
 
 export class TestJSAlgorithms extends TestObject {
     constructor(jspyder) {
@@ -13,18 +14,24 @@ export class TestJSAlgorithms extends TestObject {
         
         super();
         
-        this.addTest("Algorithms", this.testAlgorithms);
         this.addTest("Algorithms/JSAlgorithms.arrEach", this.testArrEach);
         this.addTest("Algorithms/JSAlgorithms.each", this.testEach);
+        this.addTest("Algorithms", this.testAlgorithms);
         
+        this.log("Algorithm Tests");
+        this.logIndent(1);
         this.startTests();
+        this.logIndent(-1);
     }
     
     testAlgorithms() {
+        this.logIndent(1);
         new TestArrays();
-        new TestLooper();
+        new TestBooleans();
         new TestFunctions();
-        new TestTypeChecker();
+        new TestLooper();
+        new TestNumbers();
+        this.logIndent(-1);
     }
     
     testArrEach() {

@@ -1,6 +1,6 @@
-import {TypeChecker} from "Algorithms/TypeChecker";
-import {Functions} from "Algorithms/Functions";
-import {LoopController, ObjectLoopController, ArrayLoopController} from "Algorithms/LooperController";
+import {Functions} from "Algorithms/Functions/Functions";
+import {LoopController, ObjectLoopController, ArrayLoopController} from "Algorithms/Looper/LooperController";
+import {Numbers} from "Algorithms/Numbers/Numbers";
 
 export class Looper {
     /**
@@ -50,21 +50,15 @@ export class Looper {
      * Profile: O(n)
      */
     static ArrayEach(array, loopFunction, ...data) {
-        console.log("ArrayEach");
         // drop everything if we can't iterate
         if(array && typeof array === "object") {
-            console.log("Array Passes Check");
             // create the loop controller
             var controller = new ArrayLoopController(array);
-            console.log(controller);
-            console.log(`controller.index = ${controller.index} to ${array.length};`);
             for(controller.index = 0; controller.index < array.length; ++controller.index) {
                 if(controller.breaking) {
-                    console.log("breaking");
                     break;
                 }
                 
-                console.log("Loop index: " + controller.index);
                 Functions.Use(controller, loopFunction, [array[controller.index], controller.index, array, ...data]);
             }
         }
@@ -79,8 +73,8 @@ export class Looper {
      * Profile: O(n)
      */
     static Iterate(start, end, iterator, ...data) {
-        start = TypeChecker.Number(start);
-        end = TypeChecker.Number(end);
+        start = Numbers.ToNumber(start);
+        end = Numbers.ToNumber(end);
         
         var controller = new LoopController(null);
         var step = (end < start ? -1 : 1);
@@ -94,4 +88,3 @@ export class Looper {
         }
     }
 }
-

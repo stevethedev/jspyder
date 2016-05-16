@@ -3,7 +3,7 @@
  * from this one.
  */
 
-import {Functions} from "Algorithms/Functions";
+import {Functions} from "Algorithms/Functions/Functions";
 
 export class JSObject {
     constructor() {}
@@ -44,26 +44,27 @@ export class JSObject {
         var property = Functions.Use(this, propertyFunction, args);
         return this.extend(name, property);
     }
-    
-    use(functionDefinition, args) {
+   
+    use(functionDefinition, args = []) {
         Functions.Use(this, functionDefinition, args);
         return this;
     }
     
-    static Mix(Class, ...Subs) {
-        Class = Class["prototype"];
-        for(let sub of Subs) {
-            let proto = sub["prototype"];
-            let props = Object.getOwnPropertyNames(proto);
-            for(let i = 0; i < props.length; ++i) {
-                let prop = props[i];
-                if(prop !== "constructor") {
-                    let descriptor = /** @type Object */ (Object.getOwnPropertyDescriptor(proto, prop));
-                    Object.defineProperty(Class, prop, descriptor || {});
+    static Mix(...Subs) {
+        var Class = this;
+        for(let i = 0; i < Subs.length; ++i) {
+            let sub = Subs[i];
+            let properties = Object.getOwnPropertyNames(sub.prototype);
+            for(let j = 0; j < properties.length; ++j) {
+                let property = properties[j];
+                if(property !== "constructor") {
+                    Object.defineProperty(Class.prototype,
+                        property,
+                        Object.getOwnPropertyDescriptor(
+                            sub.prototype, property));
                 }
             }
         }
-        
         return Class;
     }
 }

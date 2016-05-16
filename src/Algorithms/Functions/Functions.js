@@ -1,4 +1,4 @@
-import {Arrays} from "Algorithms/Arrays";
+import {Arrays} from "Algorithms/Arrays/Arrays";
 
 export class Functions {
     /**

@@ -1,12 +1,12 @@
-import {Arrays} from "Algorithms/Arrays";
+import {Arrays} from "Algorithms/Arrays/Arrays";
 import {JSRegistry} from "Registry/JSRegistry";
 
-const REGEX_DOM_TAG = /(^\\\<|\<)/g;
+const REGEX_DOM_TAG = /^(\s|\n)*(\\\<|\<)/;
 const HTML_ELEMENT_EXISTS = "object" === typeof window["HTMLElement"];
 
 export class DOMElement {
     /**
-     * Converts arbitrary data into a DOM node that JSpyder
+     * Converts arbitrary data into a DOM node array that JSpyder
      * can use.
      * 
      * Profile: O(n), Q(1)
@@ -80,7 +80,12 @@ export class DOMElement {
      * @return {Array}
      */
     static querySelectorAll(selector, parent = window["document"]) {
-        return Arrays.Slice(parent.querySelectorAll(selector));
+        try {
+            return Arrays.Slice(parent.querySelectorAll(selector));
+        }
+        catch(e) {
+            return [];
+        }
     }
     
     /**
@@ -88,8 +93,8 @@ export class DOMElement {
      * has been created; otherwise, exits early.
      */
     static attachRegistry(element) {
-        if(!element.__jsRegistry) {
-            element.__jsRegistry = new JSRegistry().GetInterface();
+        if(!element["__jsRegistry"]) {
+            element["__jsRegistry"] = new JSRegistry().GetInterface();
         }
     }
 }

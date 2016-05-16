@@ -5,6 +5,16 @@ class Test {
     }
 }
 
+const INDENT_CHARACTER = "    ";
+var indentCount = 0;
+function indent() {
+    var str = "";
+    for(let i = indentCount; i > 0; --i) {
+        str += INDENT_CHARACTER;
+    }
+    return str;
+}
+
 var outputFunction = function(message) {};
 export class TestObject {
     constructor() {
@@ -20,8 +30,13 @@ export class TestObject {
     }
     
     log(message) {
-        console.log(message);
-        outputFunction(message);
+        console.log(indent() + message);
+        outputFunction(indent() + message);
+    }
+    
+    logIndent(change = 1) {
+        if(change > 0) this.log("\r\n");
+        indentCount += change;
     }
     
     startTests() {
@@ -29,10 +44,10 @@ export class TestObject {
         var count = 0;
         var total = this.tests.length;
 
-        while(test = this.tests.pop()) {
+        while(test = this.tests.shift()) {
             let message = `Starting Test: ${test.name}`;
-            console.log(message);
-            outputFunction(message);
+            console.log(indent() + message);
+            outputFunction(indent() + message);
             let ret = 0;
             let hadError = null;
             

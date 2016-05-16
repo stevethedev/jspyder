@@ -3,13 +3,13 @@
  */
 export class RegistryInterface {
     /**
-     * @param {String} key
+     * @param {string} key
      * @param {Function} [callback]
      */
     fetch(key, callback) { }
     
     /**
-     * @param {String} key
+     * @param {string} key
      * @param {Object} [value]
      */
     stash(key, value) { }

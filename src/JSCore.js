@@ -20,26 +20,39 @@ export class JSCore extends JSObject {
         
         // bootstrap lib
         this.extend("lib", new JSLibrary(this).GetInterface());
-
+        this.extend("alg", new JSAlgorithms(this));
         // TODO: bootstrap DOM
         // TODO: loadScript
     }
     
+    /**
+     * @method
+     * @param {string} alias
+     * @param {Object} global
+     */
     static Bootstrap(alias = "jspyder", global = window) {
         var jspyder = global[alias] = new JSCore();
         return jspyder;
     }
     
-    // algorithms
+    /**
+     * @method
+     */
     get alg() { return JSAlgorithms; }
     
-    // Environment Variables
+    /**
+     * @method
+     */
     get env() { return JSEnvironment; }
     
-    // logger is a constant
+    /**
+     * @method
+     */
     get log() { return JS_LOGGER_INTERFACE; }
     
-    // bootstrap dom
+    /**
+     * @method
+     */
     dom(...args) {
         return new JSDom(...args);
     }

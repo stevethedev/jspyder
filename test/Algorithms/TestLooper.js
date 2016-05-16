@@ -1,7 +1,7 @@
 import {TestObject} from "TestObject";
 import {Assert} from "Assert";
 
-import {Looper} from "Algorithms/Looper";
+import {Looper} from "Algorithms/Looper/Looper";
 
 export class TestLooper extends TestObject {
     constructor() {

@@ -1,13 +1,13 @@
 import {TestObject} from "TestObject";
 import {Assert} from "Assert";
 
-import {Arrays} from "Algorithms/Arrays";
+import {Arrays} from "Algorithms/Arrays/Arrays";
 
 export class TestArrays extends TestObject {
     constructor() {
         super();
 
-        this.addTest("JSAlgorithms/Prototypes/TestArrays", this.testSlice);
+        this.addTest("Algorithms/Arrays/Slice", this.testSlice);
         
         return this.startTests();
     }

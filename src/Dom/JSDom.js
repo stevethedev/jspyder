@@ -4,7 +4,7 @@ import {JSRegistry} from "Registry/JSRegistry";
 import {DOMElement} from "Dom/DOMElement";
 import {DOMCss} from "Dom/DOMCss";
 
-import {Looper} from "Algorithms/Looper";
+import {Looper} from "Algorithms/Looper/Looper";
 
 /**
  * @class JSDom
@@ -19,6 +19,7 @@ export class JSDom extends JSObject {
         this._element = element;
         this.extend("_element", this._element);
         this.each(DOMElement.attachRegistry);
+        this.use(callbackFunction, argumentArray);
     }
     
     /** Returns the number of elements this object wraps */
@@ -66,7 +67,7 @@ export class JSDom extends JSObject {
      */
     setCss(cssObject = {}, callbackFunction = undefined) {
         this.each(DOMCss.setCssOnLoop, cssObject);
-        this.use(callbackFunction, cssObject);
+        this.use(callbackFunction, [cssObject]);
         return this;
     }
     
