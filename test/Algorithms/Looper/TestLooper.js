@@ -5,12 +5,9 @@ import {Looper} from "Algorithms/Looper/Looper";
 
 export class TestLooper extends TestObject {
     constructor() {
-        super();
+        super("Algorithms/Looper/Looper");
         
-        this.addTest("Algorithms/Looper/ObjectEach", this.testObjectEach);
-        this.addTest("Algorithms/Looper/ArrayEach", this.testArrayEach);
-        this.addTest("Algorithms/Looper/Iterate", this.testIterate);
-        
+        this.autoloadTests();
         this.startTests();
     }
     

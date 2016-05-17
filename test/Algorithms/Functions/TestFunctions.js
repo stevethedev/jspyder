@@ -5,13 +5,9 @@ import {Functions} from "Algorithms/Functions/Functions";
 
 export class TestFunctions extends TestObject {
     constructor() {
-        super();
+        super("Algorithms/Functions/Functions");
         
-        this.addTest("Algorithms/Functions/IsFunction", this.testIsFunction);
-        this.addTest("Algorithms/Functions/Use", this.testUse);
-        this.addTest("Algorithms/Functions/Run", this.testRun);
-        this.addTest("Algorithms/Functions/Bind", this.testBind);
-        
+        this.autoloadTests();
         this.startTests();
     }
     

@@ -8,18 +8,9 @@ export class TestJSLibrary extends TestObject {
     constructor(jspyder) {
         this.jspyder = jspyder;
         
-        super();
-        
-        this.log("Library");
-        this.addTest("Library/JSLibrary", this.testConstructor);
-        this.addTest("Library/GetInterface", this.testGetInterface);
-        this.addTest("Library/Execute", this.testExecute);
-        this.addTest("Library/Register", this.testRegister);
-        this.addTest("Library/RegisterSet", this.testRegisterSet);
-        
-        this.logIndent(1);
+        super("Library/JSLibrary");
+        this.autoloadTests();
         this.startTests();
-        this.logIndent(-1);
     }
     
     testConstructor() {
@@ -83,6 +74,22 @@ export class TestJSLibrary extends TestObject {
     }
     
     testRegisterSet() {
-        Assert(false, "Test not implemented");
+        var i = 0;
+        var library = new JSLibrary();
+
+        library.RegisterSet({
+            "set1": function() { return ++i; },
+            "set2": function() { return ++i; }
+        });
+        
+        library.Execute("set1", null, function(x) { 
+            Assert.Equal(1, x);
+            Assert.Equal(i, x);
+        });
+        library.Execute("set2", null, function(x) {
+            Assert.Equal(2, x);
+            Assert.Equal(i, x);
+        });
+        Assert.Equal(2, i, `Expected JSLibrary to execute 2 functions after registerSet; executed ${i}`);
     }
 }

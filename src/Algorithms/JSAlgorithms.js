@@ -31,8 +31,8 @@ import {StringsInterface} from "Algorithms/Strings/StringsInterface";
  * JSpyder Algorithm Class
  * 
  * @class
- * @implements {ArraysInterface}
- * @implements {BooleansInterface}
+ * @extends {ArraysInterface}
+ * @extends {BooleansInterface}
  * @implements {DatesInterface}
  * @implements {FunctionsInterface}
  * @implements {KeyCodesInterface}
@@ -65,4 +65,7 @@ export class JSAlgorithms extends JSObject {
     // StringsInterface    
 }
 
-JSAlgorithms.Mix(LooperInterface)
+JSAlgorithms.Mix(
+    ArraysInterface,
+    BooleansInterface,
+    LooperInterface);

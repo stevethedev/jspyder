@@ -5,7 +5,10 @@ import {LooperInterface} from "Algorithms/Looper/LooperInterface";
 
 export class TestLooperInterface extends TestObject {
     constructor(jspyder) {
+        super("Algorithms/Looper/LooperInterface");
         this.jspyder = jspyder;
+        this.autoloadTests();
+        this.startTests();
     }
 
     testArrEach() {
@@ -44,6 +47,11 @@ export class TestLooperInterface extends TestObject {
     }
 
     testEach() {
-        Assert.Fail();
+        var object = ["0", "1", "2", "3", "4", "5"];
+        this.jspyder.alg.each(object, function(value, key, obj) {
+            Assert.Equal(object, obj);
+            Assert.Equal(obj[key], value);
+            Assert.Equal(object[key], value);
+        });
     }
 }

@@ -21,6 +21,8 @@ Assert.Type = function(expectedType, object, failMessage = `Assert.Type Failed: 
     return Assert.Equal(expectedType, typeof object, failMessage);
 }
 
-Assert.Fail(failMessage = "Test Not Built");
+Assert.Fail = function(failMessage = "Test Not Built") {
+    return Assert(false, failMessage);
+}
 
 export {Assert};

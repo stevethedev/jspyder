@@ -60,8 +60,9 @@ export class JSObject {
                 if(property !== "constructor") {
                     Object.defineProperty(Class.prototype,
                         property,
-                        Object.getOwnPropertyDescriptor(
-                            sub.prototype, property));
+                        /** @type {!Object} */
+                        (Object.getOwnPropertyDescriptor(
+                            sub.prototype, property)));
                 }
             }
         }

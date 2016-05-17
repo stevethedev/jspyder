@@ -45,8 +45,8 @@ export class ArraysInterface {
      *
      * @return {Array}
      */
-    sliceArray(array = [], index = 0) {
-        return Arrays.SliceArray(array, index);
+    sliceArray(array = [], index = 0, end = undefined) {
+        return Arrays.Slice(array, index, end);
     }
 
     /**

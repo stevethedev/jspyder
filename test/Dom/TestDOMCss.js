@@ -5,11 +5,9 @@ import {DOMCss} from "Dom/DOMCss";
 
 export class TestDOMCss extends TestObject {
     constructor() {
-        super();
+        super("Dom/DOMCss");
         
-        this.addTest("Dom/DOMCss/setCssOn", this.testSetCssOn);
-        this.addTest("Dom/DOMCss/getCssFrom", this.testGetCssFrom);
-        
+        this.autoloadTests();
         this.startTests();
     }
     

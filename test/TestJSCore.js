@@ -10,15 +10,15 @@ import {TestJSLibrary} from "Library/TestJSLibrary";
 var JSpyder = window["JSpyder"];
 class TestJSCore extends TestObject {
     constructor(jspyderName = "jspyder") {
-        super();
+        super("JSCore");
         
         this.jspyderName = jspyderName;
         this.jspyder = JSpyder.Bootstrap(this.jspyderName, this);
         Assert(JSpyder.inPrototypeChain(this.jspyder), "Failed Prototype Chain test");
         
-        this.addTest("JSpyder Constructor and Bootstrap", this.testConstructor);
+        this.autoloadTests();
         this.startTests();
-        
+
         new TestJSAlgorithms(this.jspyder);
         new TestJSDom(this.jspyder);
         new TestJSLibrary(this.jspyder);
@@ -35,6 +35,8 @@ class TestJSCore extends TestObject {
     }
 }
 
+var total = 0, passed = 0;
+
 var div = document.createElement("pre");
 document.body.appendChild(div);
 TestObject.setLogger(function(message) {
@@ -45,11 +47,24 @@ TestObject.setLogger(function(message) {
             ? "<font color='darkgreen'>PASSED</font>" 
             : "<font color='darkred'>FAILED</font>")
             
+        passed += (found === "Passed");
+        total++;
+            
         return msg.split(found).join(replace);
-    })
+    });
+    
+    message = message.replace(/(\d+) of (\d+) tests passed/, function(msg, num1, num2) {
+        num1 = +num1;
+        num2 = +num2;
+        
+        var color = (num2 <= num1) ? "darkgreen": "darkred";
+        
+        return `<font color="${color}">${num1}/${num2} TESTS PASSED</font>`;
+    });
     
     div.innerHTML += message;
 });
 
 window["Tests"] = new TestJSCore();
-window["Tests"].startTests();
+
+alert(`${passed} of ${total} Tests Passed: ${((passed/total)*100)|0}%`);

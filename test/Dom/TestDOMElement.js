@@ -5,15 +5,9 @@ import {DOMElement} from "Dom/DOMElement";
 
 export class TestDOMElement extends TestObject {
     constructor() {
-        super();
+        super("Dom/DOMElement");
         
-        this.addTest("Dom/DOMElement/toElement", this.testToElement);
-        this.addTest("Dom/DOMElement/isElement", this.testIsElement);
-        this.addTest("Dom/DOMElement/isDomString", this.testIsDomString);
-        this.addTest("Dom/DOMElement/parseHtmlAsNodes", this.testParseHtmlAsNodes);
-        this.addTest("Dom/DOMElement/querySelectorAll", this.testQuerySelectorAll);
-        this.addTest("Dom/DOMElement/attachRegistry", this.testAttachRegistry);
-        
+        this.autoloadTests();        
         this.startTests();
     }
     

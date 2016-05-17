@@ -1,3 +1,5 @@
+import {Numbers} from "Algorithms/Numbers/Numbers";
+
 /** @interface */
 export class NumbersInterface {
     magnitude(num, base) {}

@@ -9,25 +9,13 @@ export class TestJSDom extends TestObject {
     constructor(jspyder) {
         this.jspyder = jspyder;
         
-        super();
+        super("Dom/JSDom");
         
-        this.addTest("Dom/JSDom", this.testConstructor);
-        this.addTest("Dom/JSDom.count", this.testCount);
-        this.addTest("Dom/JSDom.each", this.testEach);
-        this.addTest("Dom/JSDom.setCss|getCss", this.testCss);
-        this.addTest("Dom", this.testDOM);
-        
-        this.log("DOM Tests");
-        this.logIndent(1);
+        this.autoloadTests();
         this.startTests();
-        this.logIndent(-1);
-    }
-    
-    testDOM() {
-        this.logIndent(1);
+
         new TestDOMCss();
         new TestDOMElement();
-        this.logIndent(-1);
     }
     
     testConstructor() {

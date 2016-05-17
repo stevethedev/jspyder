@@ -1,15 +1,4 @@
 export class Booleans {
-    /**
-     * Coerces any value to a boolean
-     *
-     * @param {?} value
-     * 
-     *      Value to convert to a boolean.
-     * 
-     * @param {?} defaultValue
-     * 
-     *      Value to use if [value] is undefined.
-     */
     static ToBoolean(value, defaultValue = false) {
         switch(typeof value) {
             

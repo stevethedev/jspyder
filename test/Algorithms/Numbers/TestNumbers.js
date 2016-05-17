@@ -5,14 +5,12 @@ import {Assert} from "Assert";
 
 export class TestNumbers extends TestObject {
     constructor() {
-        super();
-        
-        this.addTest("Algorithms/Numbers/ToNumber", this.testNumber);
-        
+        super("Algorithms/Numbers/Numbers");
+        this.autoloadTests();
         this.startTests();
     }
     
-    testNumber() {
+    testToNumber() {
         Assert.Equal(1, Numbers.ToNumber(1), "1:1");
         Assert.Equal(1, Numbers.ToNumber("1"), "1:'1'");
         Assert.Equal(0, Numbers.ToNumber(null), "0:null");
@@ -22,5 +20,9 @@ export class TestNumbers extends TestObject {
         Assert.Equal("banana", Numbers.ToNumber(null, "banana"), "'banana':null:'banana'");
         Assert.Equal(1, Numbers.ToNumber(true), "Boolean True");
         Assert.Equal(0, Numbers.ToNumber(false), "Boolean False");
+    }
+    
+    testMagnitude() {
+        Assert.Fail();
     }
 }

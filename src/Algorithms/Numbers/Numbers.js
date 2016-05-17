@@ -1,5 +1,3 @@
-import {Numbers} from "Algorithms/Numbers/Numbers";
-
 export class Numbers {
     /**
      * @param {?} value

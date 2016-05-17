@@ -5,10 +5,9 @@ import {Assert} from "Assert";
 
 export class TestBooleans extends TestObject {
     constructor() {
-        super();
+        super("Algorithms/Booleans/Booleans");
 
-        this.addTest("Algorithms/Booleans/ToBoolean", this.testToBoolean);
-
+        this.autoloadTests();
         this.startTests();
     }
 
