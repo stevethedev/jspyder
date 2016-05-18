@@ -5,8 +5,12 @@ const FILENAME = "JSpyder/Library/LibraryInterfaceDefs";
 
 /** 
  * Abstract library interface object
+ * 
+ * @class LibraryInterfaceDefs
+ * @constructor
+ * @return {LibraryInterfaceDefs}
  */
-export function LibraryInterfaceDefs(...args) {
+function LibraryInterfaceDefs(...args) {
     throw new JSError(ABSTRACT_ERROR, FILENAME);
 }
 LibraryInterfaceDefs.register = function(...args) {
@@ -18,3 +22,5 @@ LibraryInterfaceDefs.registerSet = function(...args) {
 LibraryInterfaceDefs.execute = function(...args) {
     throw new JSError(ABSTRACT_ERROR, FILENAME, "register()");
 }
+
+export {LibraryInterfaceDefs};

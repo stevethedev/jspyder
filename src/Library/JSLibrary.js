@@ -21,13 +21,18 @@ export class JSLibrary extends JSObject {
     }
     
     /**
-     * @method {LibraryInterfaceDefs}
+     * @method {!LibraryInterfaceDefs}
+     * @return {!LibraryInterfaceDefs}
      */
     GetInterface() {
         var jsLibrary = this;
         
         /**
          * JSLibrary Interface
+         * 
+         * @class JSLibraryInterface
+         * @constructor
+         * @extends {LibraryInterfaceDefs}
          */
         function JSLibraryInterface(...args) {
             jsLibrary.Execute(...args);
