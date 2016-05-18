@@ -31,15 +31,6 @@ import {StringsInterface} from "Algorithms/Strings/StringsInterface";
  * JSpyder Algorithm Class
  * 
  * @class
- * @extends {ArraysInterface}
- * @extends {BooleansInterface}
- * @implements {DatesInterface}
- * @implements {FunctionsInterface}
- * @implements {KeyCodesInterface}
- * @extends {LooperInterface}
- * @implements {NumbersInterface}
- * @implements {ObjectsInterface}
- * @implements {StringsInterface}
  * 
  * @inheritDoc
  */

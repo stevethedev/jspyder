@@ -59,7 +59,7 @@ export class ArraysInterface {
      *      js.alg.sortArrayNum(array); // [1, 2, 3, 10, 20, 30]
      *
      * @param {Array<number>} array
-     * @param {Boolean} ascending
+     * @param {boolean} ascending
      */
     sortArrayNum(array, ascending = true) {
         return Arrays.SortArrayNumbers(array, ascending);
@@ -77,7 +77,7 @@ export class ArraysInterface {
      *      js.alg.sortArrayObj(arr, true, "foo", "bar"); // a1, a2, a3
      *      js.alg.sortArrayObj(arr, false, "foo", "bar"); // a3, a2, a1
      *
-     * @param {Object[]} array
+     * @param {Object} array
      * @param {boolean} ascending
      * @param {...String} fields
      */

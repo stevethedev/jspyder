@@ -7,7 +7,7 @@ export class FunctionsInterface {
      * @param {*} context
      *      The [this] context to apply
      *
-     * @param {Function} useFunction
+     * @param {Function} functionReference
      *      The function to run
      *
      * @param {Array} argsArray
@@ -24,8 +24,8 @@ export class FunctionsInterface {
      * 
      * Profile: O(1)
      * 
-     * @params {Function} functionReference
-     * @params {Array} argsArray
+     * @param {Function} functionReference
+     * @param {Array} argsArray
      * 
      * @return The return value from the executed function.
      */

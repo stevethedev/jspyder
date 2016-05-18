@@ -3,7 +3,7 @@ const CONST_STRING_UNSAFE_REPLACEMENT = "\\$&";
 const CONST_REGEXP_TO_STRING_MATCH = /^\/(.*)\/[a-z]*$/;
 
 export class Strings {
-    static ToString(value, defaultValue) {
+    static ToString(value, defaultValue = "") {
         if(typeof value === "string") {
             return value;
         }
@@ -11,7 +11,7 @@ export class Strings {
             return value.toString();
         }
         else if(null !== value && "object" === typeof value && value.isPrototypeOf(RegExp)) {
-            return ('' + value).match(
+            return ('' + value).replace(
                 CONST_REGEXP_TO_STRING_MATCH, "$1");
         }
         else if(value || value === 0) {

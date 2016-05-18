@@ -30,7 +30,7 @@ export class Arrays {
      * Profile: (browser-dependent)
      */
     static SortArrayNumbers(array, ascending) {
-        array = Arrays.ToArray(array);
+        array = Arrays.ToArray(array, []);
         array.sort(function(left, right) {
             left = Numbers.ToNumber(left);
             right = Numbers.ToNumber(right);
@@ -50,7 +50,7 @@ export class Arrays {
      * Profile: (browser-dependent)
      */
     static SortArrayObjects(array, ascending, ...fields) {
-        array = Arrays.ToArray(array);
+        array = Arrays.ToArray(array, []);
 
         array.sort(Arrays.GetBestSortArrayObjectFunction(
                 ascending, fields));

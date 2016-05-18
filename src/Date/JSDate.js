@@ -1,10 +1,13 @@
 import {JSObject} from "JSObject";
 
+/**
+ * @class JSDate
+ * 
+ * @property {Date} _date
+ */
 export class JSDate extends JSObject {
-    /**
-     * @private {Date} _date
-     */
-    constructor() {}
+    constructor() {
+    }
     
     getQuarter(callbackFunction) {}
     exportQuarter() {}

@@ -3,7 +3,7 @@ export class Dates {
      * @param {Date} dateObject
      */
     static GetQuarter(dateObject) {
-        var month = dateObject.exportMonth() - 1;
+        var month = dateObject.getMonth() - 1;
         return ((month / 3)|0) + 1;
     }
     

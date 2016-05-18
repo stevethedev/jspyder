@@ -12,6 +12,7 @@ const JS_LOGGER_INTERFACE = new JSLogger().GetInterface();
  * @class JSCore
  * @extends JSObject
  * @inheritDoc
+ * @export
  */
 export class JSCore extends JSObject {
     constructor() {

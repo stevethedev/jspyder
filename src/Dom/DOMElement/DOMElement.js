@@ -3,6 +3,7 @@ import {JSRegistry} from "Registry/JSRegistry";
 
 const REGEX_DOM_TAG = /^(\s|\n)*(\\\<|\<)/;
 const HTML_ELEMENT_EXISTS = "object" === typeof window["HTMLElement"];
+const HTML_NODE_EXISTS = "object" === typeof window["Node"];
 
 export class DOMElement {
     /**
@@ -35,12 +36,26 @@ export class DOMElement {
      */
     static isElement(element) {
         if (element) {
-            if (HTML_ELEMENT_EXISTS && element instanceof window["HTMLElement"]) {
-                return true;
+            if (HTML_ELEMENT_EXISTS) {
+                return element instanceof window["HTMLElement"];
             }
             else if ("object" === typeof element
                 && element["nodeType"] === 1
                 && "string" === typeof element["nodeName"]) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    static isNode(object) {
+        if (object) {
+            if (HTML_NODE_EXISTS) {
+                return object instanceof window["Node"];
+            }
+            else if ("object" === typeof object
+                && object["nodeType"] === 1
+                && "string" === typeof object["nodeName"]) {
                 return true;
             }
         }
@@ -73,7 +88,7 @@ export class DOMElement {
         div["innerHTML"] = source;
         return Arrays.Slice(div["children"], 0);
     }
-    
+
     /**
      * Profile: O(n)
      * 
@@ -83,17 +98,19 @@ export class DOMElement {
         try {
             return Arrays.Slice(parent.querySelectorAll(selector));
         }
-        catch(e) {
+        catch (e) {
             return [];
         }
     }
-    
+
     /**
      * Attaches a registry to the defined element, if a registry
      * has been created; otherwise, exits early.
+     * 
+     * PRofile: O(1)
      */
     static attachRegistry(element) {
-        if(!element["__jsRegistry"]) {
+        if (!element["__jsRegistry"]) {
             element["__jsRegistry"] = new JSRegistry().GetInterface();
         }
     }

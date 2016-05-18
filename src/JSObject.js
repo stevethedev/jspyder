@@ -50,6 +50,9 @@ export class JSObject {
         return this;
     }
     
+    /**
+     * @param {...Object} Subs
+     */
     static Mix(...Subs) {
         var Class = this;
         for(let i = 0; i < Subs.length; ++i) {
@@ -69,4 +72,3 @@ export class JSObject {
         return Class;
     }
 }
-
