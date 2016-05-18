@@ -23,6 +23,26 @@ export class TestNumbers extends TestObject {
     }
     
     testMagnitude() {
-        Assert.Fail();
+        // Decimal
+        Assert.Equal(10, Numbers.Magnitude(1));
+        Assert.Equal(10, Numbers.Magnitude(5));
+        Assert.Equal(10, Numbers.Magnitude(10));
+        
+        // Binary
+        Assert.Equal(2, Numbers.Magnitude(1, 2));
+        Assert.Equal(2, Numbers.Magnitude(2, 2));
+        Assert.Equal(4, Numbers.Magnitude(3, 2));
+        
+        // Octal
+        Assert.Equal(8, Numbers.Magnitude(1, 8));
+        Assert.Equal(8, Numbers.Magnitude(4, 8));
+        Assert.Equal(8, Numbers.Magnitude(8, 8));
+        Assert.Equal(16, Numbers.Magnitude(9, 8));
+        
+        // Hexadecimal
+        Assert.Equal(0x10, Numbers.Magnitude(9, 16));
+        Assert.Equal(0x10, Numbers.Magnitude(15, 16));
+        Assert.Equal(0x20, Numbers.Magnitude(17, 16));
+        Assert.Equal(0xb0, Numbers.Magnitude(161, 16));
     }
 }

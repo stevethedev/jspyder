@@ -20,7 +20,7 @@ export class Numbers {
      * @param {number} num    The number to calculate a magnitude from.
      * @param {number=} base  The number to be used as a base.
      */
-    static Magnitude(num, base) {
+    static Magnitude(num, base=10) {
         num = Numbers.ToNumber(num)|0;
         var abs = (num < 0) 
             ? -num 

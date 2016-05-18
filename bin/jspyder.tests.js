@@ -777,6 +777,7 @@ Numbers$$module$Algorithms$Numbers$Numbers.ToNumber = function $Numbers$$module$
   return $num$$ == $value$$ && $num$$ === $num$$ ? $num$$ : void 0 === $defaultValue$$ ? 0 : $defaultValue$$;
 };
 Numbers$$module$Algorithms$Numbers$Numbers.Magnitude = function $Numbers$$module$Algorithms$Numbers$Numbers$Magnitude$($num$$, $base$$) {
+  $base$$ = void 0 === $base$$ ? 10 : $base$$;
   $num$$ = Numbers$$module$Algorithms$Numbers$Numbers.ToNumber($num$$) | 0;
   var $pow_width$$ = ((0 > $num$$ ? -$num$$ : $num$$) | 0).toString($base$$).length - 1 || 1, $pow_width$$ = Math.pow($base$$, $pow_width$$);
   return 0 > $num$$ ? Math.floor($num$$ / $pow_width$$) * $pow_width$$ : Math.ceil($num$$ / $pow_width$$) * $pow_width$$;
@@ -797,7 +798,7 @@ Arrays$$module$Algorithms$Arrays$Arrays.Slice = function $Arrays$$module$Algorit
   return $array$$;
 };
 Arrays$$module$Algorithms$Arrays$Arrays.SortArrayNumbers = function $Arrays$$module$Algorithms$Arrays$Arrays$SortArrayNumbers$($array$$, $ascending$$) {
-  $array$$ = Arrays$$module$Algorithms$Arrays$Arrays.ToArray($array$$);
+  $array$$ = Arrays$$module$Algorithms$Arrays$Arrays.ToArray($array$$, []);
   $array$$.sort(function($left$$, $right$$) {
     $left$$ = Numbers$$module$Algorithms$Numbers$Numbers.ToNumber($left$$);
     $right$$ = Numbers$$module$Algorithms$Numbers$Numbers.ToNumber($right$$);
@@ -809,7 +810,7 @@ Arrays$$module$Algorithms$Arrays$Arrays.SortArrayObjects = function $Arrays$$mod
   for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$ = 2;$$jscomp$restIndex$$ < arguments.length;++$$jscomp$restIndex$$) {
     $$jscomp$restParams$$[$$jscomp$restIndex$$ - 2] = arguments[$$jscomp$restIndex$$];
   }
-  $array$$ = Arrays$$module$Algorithms$Arrays$Arrays.ToArray($array$$);
+  $array$$ = Arrays$$module$Algorithms$Arrays$Arrays.ToArray($array$$, []);
   $array$$.sort(Arrays$$module$Algorithms$Arrays$Arrays.GetBestSortArrayObjectFunction($ascending$$, $$jscomp$restParams$$));
   return $array$$;
 };
@@ -1072,7 +1073,7 @@ module$Algorithms$Booleans$TestBooleansInterface.TestBooleansInterface = TestBoo
 var module$Algorithms$Dates$Dates = {}, Dates$$module$Algorithms$Dates$Dates = function $Dates$$module$Algorithms$Dates$Dates$() {
 };
 Dates$$module$Algorithms$Dates$Dates.GetQuarter = function $Dates$$module$Algorithms$Dates$Dates$GetQuarter$($dateObject$$) {
-  return (($dateObject$$.exportMonth() - 1) / 3 | 0) + 1;
+  return (($dateObject$$.getMonth() - 1) / 3 | 0) + 1;
 };
 Dates$$module$Algorithms$Dates$Dates.GetFiscalQuarter = function $Dates$$module$Algorithms$Dates$Dates$GetFiscalQuarter$($dateObject$$) {
   $dateObject$$ = Dates$$module$Algorithms$Dates$Dates.GetQuarter($dateObject$$);
@@ -1450,7 +1451,20 @@ TestNumbers$$module$Algorithms$Numbers$TestNumbers.prototype.testToNumber = func
   module$Assert.Assert.Equal(0, Numbers$$module$Algorithms$Numbers$Numbers.ToNumber(!1), "Boolean False");
 };
 TestNumbers$$module$Algorithms$Numbers$TestNumbers.prototype.testMagnitude = function $TestNumbers$$module$Algorithms$Numbers$TestNumbers$$testMagnitude$() {
-  module$Assert.Assert.Fail();
+  module$Assert.Assert.Equal(10, Numbers$$module$Algorithms$Numbers$Numbers.Magnitude(1));
+  module$Assert.Assert.Equal(10, Numbers$$module$Algorithms$Numbers$Numbers.Magnitude(5));
+  module$Assert.Assert.Equal(10, Numbers$$module$Algorithms$Numbers$Numbers.Magnitude(10));
+  module$Assert.Assert.Equal(2, Numbers$$module$Algorithms$Numbers$Numbers.Magnitude(1, 2));
+  module$Assert.Assert.Equal(2, Numbers$$module$Algorithms$Numbers$Numbers.Magnitude(2, 2));
+  module$Assert.Assert.Equal(4, Numbers$$module$Algorithms$Numbers$Numbers.Magnitude(3, 2));
+  module$Assert.Assert.Equal(8, Numbers$$module$Algorithms$Numbers$Numbers.Magnitude(1, 8));
+  module$Assert.Assert.Equal(8, Numbers$$module$Algorithms$Numbers$Numbers.Magnitude(4, 8));
+  module$Assert.Assert.Equal(8, Numbers$$module$Algorithms$Numbers$Numbers.Magnitude(8, 8));
+  module$Assert.Assert.Equal(16, Numbers$$module$Algorithms$Numbers$Numbers.Magnitude(9, 8));
+  module$Assert.Assert.Equal(16, Numbers$$module$Algorithms$Numbers$Numbers.Magnitude(9, 16));
+  module$Assert.Assert.Equal(16, Numbers$$module$Algorithms$Numbers$Numbers.Magnitude(15, 16));
+  module$Assert.Assert.Equal(32, Numbers$$module$Algorithms$Numbers$Numbers.Magnitude(17, 16));
+  module$Assert.Assert.Equal(176, Numbers$$module$Algorithms$Numbers$Numbers.Magnitude(161, 16));
 };
 module$Algorithms$Numbers$TestNumbers.TestNumbers = TestNumbers$$module$Algorithms$Numbers$TestNumbers;
 var module$Algorithms$Numbers$NumbersInterface = {}, NumbersInterface$$module$Algorithms$Numbers$NumbersInterface = function $NumbersInterface$$module$Algorithms$Numbers$NumbersInterface$() {
@@ -1591,7 +1605,8 @@ module$Algorithms$Objects$TestObjectsInterface.TestObjectsInterface = TestObject
 var module$Algorithms$Strings$Strings = {}, CONST_REGEXP_UNSAFE_CHARACTERS$$module$Algorithms$Strings$Strings = /[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, CONST_STRING_UNSAFE_REPLACEMENT$$module$Algorithms$Strings$Strings = "\\$&", CONST_REGEXP_TO_STRING_MATCH$$module$Algorithms$Strings$Strings = /^\/(.*)\/[a-z]*$/, Strings$$module$Algorithms$Strings$Strings = function $Strings$$module$Algorithms$Strings$Strings$() {
 };
 Strings$$module$Algorithms$Strings$Strings.ToString = function $Strings$$module$Algorithms$Strings$Strings$ToString$($value$$, $defaultValue$$) {
-  return "string" === typeof $value$$ ? $value$$ : $value$$ && "function" === typeof $value$$.toString ? $value$$.toString() : null !== $value$$ && "object" === typeof $value$$ && $value$$.isPrototypeOf(RegExp) ? ("" + $value$$).match(CONST_REGEXP_TO_STRING_MATCH$$module$Algorithms$Strings$Strings, "$1") : $value$$ || 0 === $value$$ ? "" + $value$$ : $defaultValue$$ || $value$$;
+  $defaultValue$$ = void 0 === $defaultValue$$ ? "" : $defaultValue$$;
+  return "string" === typeof $value$$ ? $value$$ : $value$$ && "function" === typeof $value$$.toString ? $value$$.toString() : null !== $value$$ && "object" === typeof $value$$ && $value$$.isPrototypeOf(RegExp) ? ("" + $value$$).replace(CONST_REGEXP_TO_STRING_MATCH$$module$Algorithms$Strings$Strings, "$1") : $value$$ || 0 === $value$$ ? "" + $value$$ : $defaultValue$$ || $value$$;
 };
 Strings$$module$Algorithms$Strings$Strings.EscapeString = function $Strings$$module$Algorithms$Strings$Strings$EscapeString$($stringToEscape$$) {
   return Strings$$module$Algorithms$Strings$Strings.ToString($stringToEscape$$).replace(CONST_REGEXP_UNSAFE_CHARACTERS$$module$Algorithms$Strings$Strings, CONST_STRING_UNSAFE_REPLACEMENT$$module$Algorithms$Strings$Strings);
@@ -1690,29 +1705,29 @@ var module$Algorithms$TestJSAlgorithms = {}, TestJSAlgorithms$$module$Algorithms
 $jscomp.inherits(TestJSAlgorithms$$module$Algorithms$TestJSAlgorithms, TestObject$$module$TestObject);
 TestJSAlgorithms$$module$Algorithms$TestJSAlgorithms.setLogger = TestObject$$module$TestObject.setLogger;
 module$Algorithms$TestJSAlgorithms.TestJSAlgorithms = TestJSAlgorithms$$module$Algorithms$TestJSAlgorithms;
-var module$Dom$DOMCss = {}, DOMCss$$module$Dom$DOMCss = function $DOMCss$$module$Dom$DOMCss$() {
+var module$Dom$DOMCss$DOMCss = {}, DOMCss$$module$Dom$DOMCss$DOMCss = function $DOMCss$$module$Dom$DOMCss$DOMCss$() {
 };
-DOMCss$$module$Dom$DOMCss.setCssOn = function $DOMCss$$module$Dom$DOMCss$setCssOn$($element$$, $cssObject$$) {
+DOMCss$$module$Dom$DOMCss$DOMCss.setCssOn = function $DOMCss$$module$Dom$DOMCss$DOMCss$setCssOn$($element$$, $cssObject$$) {
   return Looper$$module$Algorithms$Looper$Looper.ObjectEach($cssObject$$, function($value$$, $property$$, $cssObject$$) {
     $element$$.style[$property$$] = $value$$;
   });
 };
-DOMCss$$module$Dom$DOMCss.setCssOnLoop = function $DOMCss$$module$Dom$DOMCss$setCssOnLoop$($element$$, $index$$, $elementList$$, $cssObject$$) {
-  return DOMCss$$module$Dom$DOMCss.setCssOn($element$$, $cssObject$$);
+DOMCss$$module$Dom$DOMCss$DOMCss.setCssOnLoop = function $DOMCss$$module$Dom$DOMCss$DOMCss$setCssOnLoop$($element$$, $index$$, $elementList$$, $cssObject$$) {
+  return DOMCss$$module$Dom$DOMCss$DOMCss.setCssOn($element$$, $cssObject$$);
 };
-DOMCss$$module$Dom$DOMCss.getCssFrom = function $DOMCss$$module$Dom$DOMCss$getCssFrom$($element$$, $cssObject$$0$$) {
+DOMCss$$module$Dom$DOMCss$DOMCss.getCssFrom = function $DOMCss$$module$Dom$DOMCss$DOMCss$getCssFrom$($element$$, $cssObject$$0$$) {
   var $computedStyle$$ = window.getComputedStyle($element$$), $elementStyle$$ = $element$$.style;
   Looper$$module$Algorithms$Looper$Looper.ObjectEach($cssObject$$0$$, function($value$$, $property$$, $cssObject$$) {
     $cssObject$$[$property$$] = $elementStyle$$[$property$$] || $computedStyle$$[$property$$];
   });
   return $cssObject$$0$$;
 };
-DOMCss$$module$Dom$DOMCss.getCssFromLoop = function $DOMCss$$module$Dom$DOMCss$getCssFromLoop$($element$$, $index$$, $elementList$$, $JSDom$$, $cssObject$$, $callbackFunction$$) {
+DOMCss$$module$Dom$DOMCss$DOMCss.getCssFromLoop = function $DOMCss$$module$Dom$DOMCss$DOMCss$getCssFromLoop$($element$$, $index$$, $elementList$$, $JSDom$$, $cssObject$$, $callbackFunction$$) {
   0 < $index$$ && ($cssObject$$ = Object.create($cssObject$$));
-  DOMCss$$module$Dom$DOMCss.getCssFrom($element$$, $cssObject$$);
+  DOMCss$$module$Dom$DOMCss$DOMCss.getCssFrom($element$$, $cssObject$$);
   new $JSDom$$($element$$, $callbackFunction$$, [$cssObject$$]);
 };
-module$Dom$DOMCss.DOMCss = DOMCss$$module$Dom$DOMCss;
+module$Dom$DOMCss$DOMCss.DOMCss = DOMCss$$module$Dom$DOMCss$DOMCss;
 var module$Dom$TestDOMCss = {}, TestDOMCss$$module$Dom$TestDOMCss = function $TestDOMCss$$module$Dom$TestDOMCss$() {
   TestObject$$module$TestObject.call(this, "Dom/DOMCss");
   this.autoloadTests();
@@ -1722,10 +1737,10 @@ $jscomp.inherits(TestDOMCss$$module$Dom$TestDOMCss, TestObject$$module$TestObjec
 TestDOMCss$$module$Dom$TestDOMCss.setLogger = TestObject$$module$TestObject.setLogger;
 TestDOMCss$$module$Dom$TestDOMCss.prototype.testSetCssOn = function $TestDOMCss$$module$Dom$TestDOMCss$$testSetCssOn$() {
   var $div$$ = document.createElement("div");
-  DOMCss$$module$Dom$DOMCss.setCssOn($div$$, {position:"absolute", width:"300px"});
+  DOMCss$$module$Dom$DOMCss$DOMCss.setCssOn($div$$, {position:"absolute", width:"300px"});
   module$Assert.Assert.Equal("absolute", $div$$.style.position);
   module$Assert.Assert.Equal("300px", $div$$.style.width);
-  DOMCss$$module$Dom$DOMCss.setCssOn($div$$, {position:"static", width:"150px"});
+  DOMCss$$module$Dom$DOMCss$DOMCss.setCssOn($div$$, {position:"static", width:"150px"});
   module$Assert.Assert.Equal("static", $div$$.style.position);
   module$Assert.Assert.Equal("150px", $div$$.style.width);
 };
@@ -1733,12 +1748,12 @@ TestDOMCss$$module$Dom$TestDOMCss.prototype.testGetCssFrom = function $TestDOMCs
   var $div$$ = document.createElement("div"), $cssObject$$ = {position:null, width:null};
   $div$$.style.position = "absolute";
   $div$$.style.width = "300px";
-  DOMCss$$module$Dom$DOMCss.getCssFrom($div$$, $cssObject$$);
+  DOMCss$$module$Dom$DOMCss$DOMCss.getCssFrom($div$$, $cssObject$$);
   module$Assert.Assert.Equal("absolute", $cssObject$$.position);
   module$Assert.Assert.Equal("300px", $cssObject$$.width);
   $div$$.style.position = "static";
   $div$$.style.width = "150px";
-  DOMCss$$module$Dom$DOMCss.getCssFrom($div$$, $cssObject$$);
+  DOMCss$$module$Dom$DOMCss$DOMCss.getCssFrom($div$$, $cssObject$$);
   module$Assert.Assert.Equal("static", $cssObject$$.position);
   module$Assert.Assert.Equal("150px", $cssObject$$.width);
 };
@@ -1804,27 +1819,46 @@ JSRegistry$$module$Registry$JSRegistry.prototype.Stash = function $JSRegistry$$m
   return this._cache[$key$$] = $value$$;
 };
 module$Registry$JSRegistry.JSRegistry = JSRegistry$$module$Registry$JSRegistry;
-var module$Dom$DOMElement = {}, REGEX_DOM_TAG$$module$Dom$DOMElement = /^(\s|\n)*(\\\<|\<)/, HTML_ELEMENT_EXISTS$$module$Dom$DOMElement = "object" === typeof window.HTMLElement, DOMElement$$module$Dom$DOMElement = function $DOMElement$$module$Dom$DOMElement$() {
+var module$Dom$DOMElement$DOMElement = {}, REGEX_DOM_TAG$$module$Dom$DOMElement$DOMElement = /^(\s|\n)*(\\\<|\<)/, HTML_ELEMENT_EXISTS$$module$Dom$DOMElement$DOMElement = "object" === typeof window.HTMLElement, HTML_NODE_EXISTS$$module$Dom$DOMElement$DOMElement = "object" === typeof window.Node, DOMElement$$module$Dom$DOMElement$DOMElement = function $DOMElement$$module$Dom$DOMElement$DOMElement$() {
 };
-DOMElement$$module$Dom$DOMElement.toElement = function $DOMElement$$module$Dom$DOMElement$toElement$($source$$) {
-  return DOMElement$$module$Dom$DOMElement.isElement($source$$) ? [$source$$] : "string" === typeof $source$$ ? DOMElement$$module$Dom$DOMElement.isDomString($source$$) ? DOMElement$$module$Dom$DOMElement.parseHtmlAsNodes($source$$) : DOMElement$$module$Dom$DOMElement.querySelectorAll($source$$) : Arrays$$module$Algorithms$Arrays$Arrays.Slice($source$$);
+DOMElement$$module$Dom$DOMElement$DOMElement.toElement = function $DOMElement$$module$Dom$DOMElement$DOMElement$toElement$($source$$) {
+  return DOMElement$$module$Dom$DOMElement$DOMElement.isElement($source$$) ? [$source$$] : "string" === typeof $source$$ ? DOMElement$$module$Dom$DOMElement$DOMElement.isDomString($source$$) ? DOMElement$$module$Dom$DOMElement$DOMElement.parseHtmlAsNodes($source$$) : DOMElement$$module$Dom$DOMElement$DOMElement.querySelectorAll($source$$) : Arrays$$module$Algorithms$Arrays$Arrays.Slice($source$$);
 };
-DOMElement$$module$Dom$DOMElement.isElement = function $DOMElement$$module$Dom$DOMElement$isElement$($element$$) {
-  return $element$$ && (HTML_ELEMENT_EXISTS$$module$Dom$DOMElement && $element$$ instanceof window.HTMLElement || "object" === typeof $element$$ && 1 === $element$$.nodeType && "string" === typeof $element$$.nodeName) ? !0 : !1;
+DOMElement$$module$Dom$DOMElement$DOMElement.isElement = function $DOMElement$$module$Dom$DOMElement$DOMElement$isElement$($element$$) {
+  if ($element$$) {
+    if (HTML_ELEMENT_EXISTS$$module$Dom$DOMElement$DOMElement) {
+      return $element$$ instanceof window.HTMLElement;
+    }
+    if ("object" === typeof $element$$ && 1 === $element$$.nodeType && "string" === typeof $element$$.nodeName) {
+      return !0;
+    }
+  }
+  return !1;
 };
-DOMElement$$module$Dom$DOMElement.isDomString = function $DOMElement$$module$Dom$DOMElement$isDomString$($match_source$$) {
+DOMElement$$module$Dom$DOMElement$DOMElement.isNode = function $DOMElement$$module$Dom$DOMElement$DOMElement$isNode$($object$$) {
+  if ($object$$) {
+    if (HTML_NODE_EXISTS$$module$Dom$DOMElement$DOMElement) {
+      return $object$$ instanceof window.Node;
+    }
+    if ("object" === typeof $object$$ && 1 === $object$$.nodeType && "string" === typeof $object$$.nodeName) {
+      return !0;
+    }
+  }
+  return !1;
+};
+DOMElement$$module$Dom$DOMElement$DOMElement.isDomString = function $DOMElement$$module$Dom$DOMElement$DOMElement$isDomString$($match_source$$) {
   if ("string" !== typeof $match_source$$) {
     return !1;
   }
-  $match_source$$ = $match_source$$.match(REGEX_DOM_TAG$$module$Dom$DOMElement);
+  $match_source$$ = $match_source$$.match(REGEX_DOM_TAG$$module$Dom$DOMElement$DOMElement);
   return null !== $match_source$$ && -1 < $match_source$$.indexOf("<");
 };
-DOMElement$$module$Dom$DOMElement.parseHtmlAsNodes = function $DOMElement$$module$Dom$DOMElement$parseHtmlAsNodes$($source$$) {
+DOMElement$$module$Dom$DOMElement$DOMElement.parseHtmlAsNodes = function $DOMElement$$module$Dom$DOMElement$DOMElement$parseHtmlAsNodes$($source$$) {
   var $div$$ = window.document.createElement("div");
   $div$$.innerHTML = $source$$;
   return Arrays$$module$Algorithms$Arrays$Arrays.Slice($div$$.children, 0);
 };
-DOMElement$$module$Dom$DOMElement.querySelectorAll = function $DOMElement$$module$Dom$DOMElement$querySelectorAll$($selector$$, $parent$$) {
+DOMElement$$module$Dom$DOMElement$DOMElement.querySelectorAll = function $DOMElement$$module$Dom$DOMElement$DOMElement$querySelectorAll$($selector$$, $parent$$) {
   $parent$$ = void 0 === $parent$$ ? window.document : $parent$$;
   try {
     return Arrays$$module$Algorithms$Arrays$Arrays.Slice($parent$$.querySelectorAll($selector$$));
@@ -1832,10 +1866,10 @@ DOMElement$$module$Dom$DOMElement.querySelectorAll = function $DOMElement$$modul
     return [];
   }
 };
-DOMElement$$module$Dom$DOMElement.attachRegistry = function $DOMElement$$module$Dom$DOMElement$attachRegistry$($element$$) {
+DOMElement$$module$Dom$DOMElement$DOMElement.attachRegistry = function $DOMElement$$module$Dom$DOMElement$DOMElement$attachRegistry$($element$$) {
   $element$$.__jsRegistry || ($element$$.__jsRegistry = (new JSRegistry$$module$Registry$JSRegistry).GetInterface());
 };
-module$Dom$DOMElement.DOMElement = DOMElement$$module$Dom$DOMElement;
+module$Dom$DOMElement$DOMElement.DOMElement = DOMElement$$module$Dom$DOMElement$DOMElement;
 var module$Dom$TestDOMElement = {}, TestDOMElement$$module$Dom$TestDOMElement = function $TestDOMElement$$module$Dom$TestDOMElement$() {
   TestObject$$module$TestObject.call(this, "Dom/DOMElement");
   this.autoloadTests();
@@ -1844,7 +1878,7 @@ var module$Dom$TestDOMElement = {}, TestDOMElement$$module$Dom$TestDOMElement = 
 $jscomp.inherits(TestDOMElement$$module$Dom$TestDOMElement, TestObject$$module$TestObject);
 TestDOMElement$$module$Dom$TestDOMElement.setLogger = TestObject$$module$TestObject.setLogger;
 TestDOMElement$$module$Dom$TestDOMElement.prototype.testToElement = function $TestDOMElement$$module$Dom$TestDOMElement$$testToElement$() {
-  var $DOM_OBJECT$$ = document.createElement("div"), $domString$$ = DOMElement$$module$Dom$DOMElement.toElement("<div>"), $cssString$$ = DOMElement$$module$Dom$DOMElement.toElement("body"), $domObject$$ = DOMElement$$module$Dom$DOMElement.toElement($DOM_OBJECT$$);
+  var $DOM_OBJECT$$ = document.createElement("div"), $domString$$ = DOMElement$$module$Dom$DOMElement$DOMElement.toElement("<div>"), $cssString$$ = DOMElement$$module$Dom$DOMElement$DOMElement.toElement("body"), $domObject$$ = DOMElement$$module$Dom$DOMElement$DOMElement.toElement($DOM_OBJECT$$);
   module$Assert.Assert($domString$$ instanceof Array, "Expected domString to return an array");
   module$Assert.Assert.Equal("DIV", $domString$$[0].tagName, "Expected domString to create a DIV node");
   module$Assert.Assert($cssString$$ instanceof Array, "Expected cssString to return an array");
@@ -1855,44 +1889,156 @@ TestDOMElement$$module$Dom$TestDOMElement.prototype.testToElement = function $Te
 };
 TestDOMElement$$module$Dom$TestDOMElement.prototype.testIsElement = function $TestDOMElement$$module$Dom$TestDOMElement$$testIsElement$() {
   var $div$$ = document.createElement("div"), $span$$ = document.createElementNS("myTest", "span"), $textNode$$ = document.createTextNode("text node");
-  module$Assert.Assert(DOMElement$$module$Dom$DOMElement.isElement($div$$), "DOMElement.isElement(DOM)");
-  module$Assert.Assert(!DOMElement$$module$Dom$DOMElement.isElement("div"), "DOMElement.isElement(String)");
-  module$Assert.Assert(DOMElement$$module$Dom$DOMElement.isElement($span$$), "DOMElement.isElement(NS:DOM)");
-  module$Assert.Assert(!DOMElement$$module$Dom$DOMElement.isElement($textNode$$), "DOMElement.isElement(TextNode)");
+  module$Assert.Assert(DOMElement$$module$Dom$DOMElement$DOMElement.isElement($div$$), "DOMElement.isElement(DOM)");
+  module$Assert.Assert(!DOMElement$$module$Dom$DOMElement$DOMElement.isElement("div"), "DOMElement.isElement(String)");
+  module$Assert.Assert(DOMElement$$module$Dom$DOMElement$DOMElement.isElement($span$$), "DOMElement.isElement(NS:DOM)");
+  module$Assert.Assert(!DOMElement$$module$Dom$DOMElement$DOMElement.isElement($textNode$$), "DOMElement.isElement(TextNode)");
 };
 TestDOMElement$$module$Dom$TestDOMElement.prototype.testIsDomString = function $TestDOMElement$$module$Dom$TestDOMElement$$testIsDomString$() {
-  module$Assert.Assert(DOMElement$$module$Dom$DOMElement.isDomString("<div>"), "<div>");
-  module$Assert.Assert(!DOMElement$$module$Dom$DOMElement.isDomString("div"), "div");
-  module$Assert.Assert(DOMElement$$module$Dom$DOMElement.isDomString(" <div></div> "), " <div></div> ");
-  module$Assert.Assert(!DOMElement$$module$Dom$DOMElement.isDomString(" Text <div></div>"), " Text <div></div>");
+  module$Assert.Assert(DOMElement$$module$Dom$DOMElement$DOMElement.isDomString("<div>"), "<div>");
+  module$Assert.Assert(!DOMElement$$module$Dom$DOMElement$DOMElement.isDomString("div"), "div");
+  module$Assert.Assert(DOMElement$$module$Dom$DOMElement$DOMElement.isDomString(" <div></div> "), " <div></div> ");
+  module$Assert.Assert(!DOMElement$$module$Dom$DOMElement$DOMElement.isDomString(" Text <div></div>"), " Text <div></div>");
 };
 TestDOMElement$$module$Dom$TestDOMElement.prototype.testParseHtmlAsNodes = function $TestDOMElement$$module$Dom$TestDOMElement$$testParseHtmlAsNodes$() {
-  var $nodes$$ = DOMElement$$module$Dom$DOMElement.parseHtmlAsNodes("<div></div><span></span><pre></pre>");
+  var $nodes$$ = DOMElement$$module$Dom$DOMElement$DOMElement.parseHtmlAsNodes("<div></div><span></span><pre></pre>");
   module$Assert.Assert($nodes$$ instanceof Array, "Should return an array");
   module$Assert.Assert.Equal(3, $nodes$$.length, "Expected 3 elements");
   module$Assert.Assert.Equal("DIV", $nodes$$[0].tagName, "Expected first element to be a DIV");
 };
 TestDOMElement$$module$Dom$TestDOMElement.prototype.testQuerySelectorAll = function $TestDOMElement$$module$Dom$TestDOMElement$$testQuerySelectorAll$() {
-  module$Assert.Assert(DOMElement$$module$Dom$DOMElement.querySelectorAll("body") instanceof Array, "Should return an array");
-  module$Assert.Assert(DOMElement$$module$Dom$DOMElement.querySelectorAll("1") instanceof Array, "Should return an array");
+  module$Assert.Assert(DOMElement$$module$Dom$DOMElement$DOMElement.querySelectorAll("body") instanceof Array, "Should return an array");
+  module$Assert.Assert(DOMElement$$module$Dom$DOMElement$DOMElement.querySelectorAll("1") instanceof Array, "Should return an array");
 };
 TestDOMElement$$module$Dom$TestDOMElement.prototype.testAttachRegistry = function $TestDOMElement$$module$Dom$TestDOMElement$$testAttachRegistry$() {
   var $node$$ = document.createElement("div"), $nsNode$$ = document.createElementNS("namespace", "div");
   module$Assert.Assert(!$node$$.__jsRegistry);
-  DOMElement$$module$Dom$DOMElement.attachRegistry($node$$);
+  DOMElement$$module$Dom$DOMElement$DOMElement.attachRegistry($node$$);
   module$Assert.Assert($node$$.__jsRegistry);
   module$Assert.Assert(!$nsNode$$.__jsRegistry);
-  DOMElement$$module$Dom$DOMElement.attachRegistry($nsNode$$);
+  DOMElement$$module$Dom$DOMElement$DOMElement.attachRegistry($nsNode$$);
   module$Assert.Assert($nsNode$$.__jsRegistry);
 };
 module$Dom$TestDOMElement.TestDOMElement = TestDOMElement$$module$Dom$TestDOMElement;
+var module$Dom$DOMAttributes$DOMAttributesInterface = {}, DOMAttributesInterface$$module$Dom$DOMAttributes$DOMAttributesInterface = function $DOMAttributesInterface$$module$Dom$DOMAttributes$DOMAttributesInterface$() {
+};
+DOMAttributesInterface$$module$Dom$DOMAttributes$DOMAttributesInterface.prototype.getAttrs = function $DOMAttributesInterface$$module$Dom$DOMAttributes$DOMAttributesInterface$$getAttrs$($attributeObject$$, $callbackFunction$$) {
+};
+DOMAttributesInterface$$module$Dom$DOMAttributes$DOMAttributesInterface.prototype.exportAttrs = function $DOMAttributesInterface$$module$Dom$DOMAttributes$DOMAttributesInterface$$exportAttrs$($attributeObject$$) {
+};
+DOMAttributesInterface$$module$Dom$DOMAttributes$DOMAttributesInterface.prototype.setAttrs = function $DOMAttributesInterface$$module$Dom$DOMAttributes$DOMAttributesInterface$$setAttrs$($attributeObject$$, $callbackFunction$$) {
+};
+DOMAttributesInterface$$module$Dom$DOMAttributes$DOMAttributesInterface.prototype.getAttr = function $DOMAttributesInterface$$module$Dom$DOMAttributes$DOMAttributesInterface$$getAttr$($attribute$$, $callbackFunction$$) {
+};
+DOMAttributesInterface$$module$Dom$DOMAttributes$DOMAttributesInterface.prototype.exportAttr = function $DOMAttributesInterface$$module$Dom$DOMAttributes$DOMAttributesInterface$$exportAttr$($attribute$$) {
+};
+DOMAttributesInterface$$module$Dom$DOMAttributes$DOMAttributesInterface.prototype.setAttr = function $DOMAttributesInterface$$module$Dom$DOMAttributes$DOMAttributesInterface$$setAttr$($attribute$$, $value$$) {
+};
+module$Dom$DOMAttributes$DOMAttributesInterface.DOMAttributesInterface = DOMAttributesInterface$$module$Dom$DOMAttributes$DOMAttributesInterface;
+var module$Dom$DOMElement$DOMElementInterface = {}, DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$() {
+};
+DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.attach = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$$attach$($parent$$, $callbackFunction$$) {
+};
+DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.attachStart = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$$attachStart$($parent$$, $callbackFunction$$) {
+};
+DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.attachEnd = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$$attachEnd$($parent$$, $callbackFunction$$) {
+};
+DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.append = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$$append$($child$$) {
+};
+DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.appendBefore = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$$appendBefore$($child$$) {
+};
+DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.appendAfter = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$$appendAfter$($child$$) {
+};
+DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.prepend = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$$prepend$($child$$) {
+};
+DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.remove = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$$remove$() {
+};
+DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.parents = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$$parents$($callbackFunction$$) {
+};
+DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.children = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$$children$($callbackFunction$$, $daraArray$$) {
+};
+DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.setHtml = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$$setHtml$($html$$) {
+};
+DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.getHtml = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$$getHtml$($callbackFunction$$) {
+};
+DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.exportHtml = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$$exportHtml$() {
+};
+DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.getText = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$$getText$($callbackFunction$$) {
+};
+DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.exportText = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$$exportText$() {
+};
+DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.setText = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$$setText$($text$$) {
+};
+DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.find = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$$find$($cssSelector$$) {
+};
+DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.filter = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$$filter$($cssSelector$$) {
+};
+DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.exclude = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$$exclude$($cssSelector$$) {
+};
+DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.and = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$$and$($elements$$) {
+};
+DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.getProps = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$$getProps$($propertyObject$$, $callbackFunction$$) {
+};
+DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.exportProps = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$$exportProps$($propertyObject$$) {
+};
+DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.setProps = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$$setProps$($propertyObject$$) {
+};
+DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.setValue = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$$setValue$($value$$, $callbackFunction$$) {
+};
+DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.getValue = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$$getValue$($callbackFunction$$) {
+};
+DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.exportValue = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$$exportValue$() {
+};
+module$Dom$DOMElement$DOMElementInterface.DOMElementInterface = DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface;
+var module$Dom$DOMAttributes$DOMAttributes = {}, DOMAttributes$$module$Dom$DOMAttributes$DOMAttributes = function $DOMAttributes$$module$Dom$DOMAttributes$DOMAttributes$() {
+};
+module$Dom$DOMAttributes$DOMAttributes.DOMAttributes = DOMAttributes$$module$Dom$DOMAttributes$DOMAttributes;
+var module$Dom$DOMCss$DOMCssInterface = {}, DOMCssInterface$$module$Dom$DOMCss$DOMCssInterface = function $DOMCssInterface$$module$Dom$DOMCss$DOMCssInterface$() {
+};
+DOMCssInterface$$module$Dom$DOMCss$DOMCssInterface.prototype.setCss = function $DOMCssInterface$$module$Dom$DOMCss$DOMCssInterface$$setCss$($cssObject$$, $callbackFunction$$) {
+};
+DOMCssInterface$$module$Dom$DOMCss$DOMCssInterface.prototype.getCss = function $DOMCssInterface$$module$Dom$DOMCss$DOMCssInterface$$getCss$($cssObject$$, $callbackFunction$$) {
+};
+DOMCssInterface$$module$Dom$DOMCss$DOMCssInterface.prototype.exportCss = function $DOMCssInterface$$module$Dom$DOMCss$DOMCssInterface$$exportCss$($cssObject$$) {
+};
+DOMCssInterface$$module$Dom$DOMCss$DOMCssInterface.prototype.inlineStyles = function $DOMCssInterface$$module$Dom$DOMCss$DOMCssInterface$$inlineStyles$() {
+};
+module$Dom$DOMCss$DOMCssInterface.DOMCssInterface = DOMCssInterface$$module$Dom$DOMCss$DOMCssInterface;
+var module$Dom$DOMClasses$DOMClassesInterface = {}, DOMClassesInterface$$module$Dom$DOMClasses$DOMClassesInterface = function $DOMClassesInterface$$module$Dom$DOMClasses$DOMClassesInterface$() {
+};
+DOMClassesInterface$$module$Dom$DOMClasses$DOMClassesInterface.prototype.setClasses = function $DOMClassesInterface$$module$Dom$DOMClasses$DOMClassesInterface$$setClasses$($classObject$$) {
+};
+DOMClassesInterface$$module$Dom$DOMClasses$DOMClassesInterface.prototype.getClasses = function $DOMClassesInterface$$module$Dom$DOMClasses$DOMClassesInterface$$getClasses$($classObject$$, $callbackFunction$$) {
+};
+DOMClassesInterface$$module$Dom$DOMClasses$DOMClassesInterface.prototype.exportClasses = function $DOMClassesInterface$$module$Dom$DOMClasses$DOMClassesInterface$$exportClasses$($classObject$$) {
+};
+module$Dom$DOMClasses$DOMClassesInterface.DOMClassesInterface = DOMClassesInterface$$module$Dom$DOMClasses$DOMClassesInterface;
+var module$Dom$DOMClasses$DOMClasses = {}, REGEXP_INCONVENIENT_SPACES$$module$Dom$DOMClasses$DOMClasses = /(^\s+)|(\s(?=\s))|(\s+$)/g, DOMClasses$$module$Dom$DOMClasses$DOMClasses = function $DOMClasses$$module$Dom$DOMClasses$DOMClasses$() {
+};
+DOMClasses$$module$Dom$DOMClasses$DOMClasses.GetClasses = function $DOMClasses$$module$Dom$DOMClasses$DOMClasses$GetClasses$($element$$) {
+  if (DOMElement$$module$Dom$DOMElement$DOMElement.isElement($element$$)) {
+    $element$$.className.replace(REGEXP_INCONVENIENT_SPACES$$module$Dom$DOMClasses$DOMClasses, "").split(" ");
+  } else {
+    return [];
+  }
+};
+DOMClasses$$module$Dom$DOMClasses$DOMClasses.SetClass = function $DOMClasses$$module$Dom$DOMClasses$DOMClasses$SetClass$($element$$, $className$$, $enabled$$) {
+  var $classNames$$ = DOMClasses$$module$Dom$DOMClasses$DOMClasses.GetClasses($element$$), $index$$ = $classNames$$.indexOf($className$$), $classesChanged$$ = !1;
+  $enabled$$ && -1 === $index$$ ? ($classNames$$.push($className$$), $classesChanged$$ = !0) : $enabled$$ || -1 === $index$$ || ($classNames$$.splice($index$$, 1), $classesChanged$$ = !0);
+  $classesChanged$$ && ($element$$.className = $classNames$$.join(" "));
+  return $classesChanged$$;
+};
+DOMClasses$$module$Dom$DOMClasses$DOMClasses.HasClass = function $DOMClasses$$module$Dom$DOMClasses$DOMClasses$HasClass$($element$$, $className$$) {
+  return -1 !== DOMClasses$$module$Dom$DOMClasses$DOMClasses.GetClasses($element$$).indexOf($className$$);
+};
+module$Dom$DOMClasses$DOMClasses.DOMClasses = DOMClasses$$module$Dom$DOMClasses$DOMClasses;
 var module$Dom$JSDom = {}, JSDom$$module$Dom$JSDom = function $JSDom$$module$Dom$JSDom$($element$$, $callbackFunction$$, $argumentArray$$) {
   $callbackFunction$$ = void 0 === $callbackFunction$$ ? null : $callbackFunction$$;
   $argumentArray$$ = void 0 === $argumentArray$$ ? [] : $argumentArray$$;
-  JSDom$$module$Dom$JSDom.inPrototypeChain($element$$) || ($element$$ = DOMElement$$module$Dom$DOMElement.toElement($element$$));
+  JSDom$$module$Dom$JSDom.inPrototypeChain($element$$) || ($element$$ = DOMElement$$module$Dom$DOMElement$DOMElement.toElement($element$$));
   this._element = $element$$;
   this.extend("_element", this._element);
-  this.each(DOMElement$$module$Dom$DOMElement.attachRegistry);
+  this.each(DOMElement$$module$Dom$DOMElement$DOMElement.attachRegistry);
   this.use($callbackFunction$$, $argumentArray$$);
 };
 $jscomp.inherits(JSDom$$module$Dom$JSDom, JSObject$$module$JSObject);
@@ -1907,18 +2053,123 @@ JSDom$$module$Dom$JSDom.prototype.each = function $JSDom$$module$Dom$JSDom$$each
 };
 JSDom$$module$Dom$JSDom.prototype.setCss = function $JSDom$$module$Dom$JSDom$$setCss$($cssObject$$, $callbackFunction$$) {
   $cssObject$$ = void 0 === $cssObject$$ ? {} : $cssObject$$;
-  this.each(DOMCss$$module$Dom$DOMCss.setCssOnLoop, $cssObject$$);
+  this.each(DOMCss$$module$Dom$DOMCss$DOMCss.setCssOnLoop, $cssObject$$);
   this.use($callbackFunction$$, [$cssObject$$]);
   return this;
 };
 JSDom$$module$Dom$JSDom.prototype.getCss = function $JSDom$$module$Dom$JSDom$$getCss$($cssObject$$, $callbackFunction$$) {
   $cssObject$$ = void 0 === $cssObject$$ ? {} : $cssObject$$;
-  this.each(DOMCss$$module$Dom$DOMCss.getCssFromLoop, JSDom$$module$Dom$JSDom, $cssObject$$, $callbackFunction$$);
+  this.each(DOMCss$$module$Dom$DOMCss$DOMCss.getCssFromLoop, this.constructor, $cssObject$$, $callbackFunction$$);
   return this;
+};
+JSDom$$module$Dom$JSDom.prototype.exportCss = function $JSDom$$module$Dom$JSDom$$exportCss$($cssObject$$) {
+  $cssObject$$ = void 0 === $cssObject$$ ? {} : $cssObject$$;
+  this.getCss($cssObject$$);
+  return $cssObject$$;
+};
+JSDom$$module$Dom$JSDom.prototype.inlineStyles = function $JSDom$$module$Dom$JSDom$$inlineStyles$() {
+};
+JSDom$$module$Dom$JSDom.prototype.getPosition = function $JSDom$$module$Dom$JSDom$$getPosition$($callbackFunction$$) {
+};
+JSDom$$module$Dom$JSDom.prototype.exportPosition = function $JSDom$$module$Dom$JSDom$$exportPosition$() {
+};
+JSDom$$module$Dom$JSDom.prototype.getOffsetPosition = function $JSDom$$module$Dom$JSDom$$getOffsetPosition$($callbackFunction$$) {
+};
+JSDom$$module$Dom$JSDom.prototype.exportOffsetPosition = function $JSDom$$module$Dom$JSDom$$exportOffsetPosition$() {
+};
+JSDom$$module$Dom$JSDom.prototype.at = function $JSDom$$module$Dom$JSDom$$at$($index$$, $callbackFunction$$) {
+};
+JSDom$$module$Dom$JSDom.prototype.element = function $JSDom$$module$Dom$JSDom$$element$($index$$, $callbackFunction$$) {
+};
+JSDom$$module$Dom$JSDom.prototype.exportElement = function $JSDom$$module$Dom$JSDom$$exportElement$($index$$) {
+};
+JSDom$$module$Dom$JSDom.prototype.on = function $JSDom$$module$Dom$JSDom$$on$($eventString$$, $handlerFunction$$) {
+};
+JSDom$$module$Dom$JSDom.prototype.off = function $JSDom$$module$Dom$JSDom$$off$($eventString$$, $handlerFunction$$) {
+};
+JSDom$$module$Dom$JSDom.prototype.trigger = function $JSDom$$module$Dom$JSDom$$trigger$($eventString$$) {
+};
+JSDom$$module$Dom$JSDom.prototype.attach = function $JSDom$$module$Dom$JSDom$$attach$($parent$$, $callbackFunction$$) {
+};
+JSDom$$module$Dom$JSDom.prototype.attachStart = function $JSDom$$module$Dom$JSDom$$attachStart$($parent$$, $callbackFunction$$) {
+};
+JSDom$$module$Dom$JSDom.prototype.attachEnd = function $JSDom$$module$Dom$JSDom$$attachEnd$($parent$$, $callbackFunction$$) {
+};
+JSDom$$module$Dom$JSDom.prototype.append = function $JSDom$$module$Dom$JSDom$$append$($child$$) {
+};
+JSDom$$module$Dom$JSDom.prototype.appendBefore = function $JSDom$$module$Dom$JSDom$$appendBefore$($child$$) {
+};
+JSDom$$module$Dom$JSDom.prototype.appendAfter = function $JSDom$$module$Dom$JSDom$$appendAfter$($child$$) {
+};
+JSDom$$module$Dom$JSDom.prototype.prepend = function $JSDom$$module$Dom$JSDom$$prepend$($child$$) {
+};
+JSDom$$module$Dom$JSDom.prototype.remove = function $JSDom$$module$Dom$JSDom$$remove$() {
+};
+JSDom$$module$Dom$JSDom.prototype.parents = function $JSDom$$module$Dom$JSDom$$parents$($callbackFunction$$) {
+};
+JSDom$$module$Dom$JSDom.prototype.children = function $JSDom$$module$Dom$JSDom$$children$($callbackFunction$$, $daraArray$$) {
+};
+JSDom$$module$Dom$JSDom.prototype.setHtml = function $JSDom$$module$Dom$JSDom$$setHtml$($html$$) {
+};
+JSDom$$module$Dom$JSDom.prototype.getHtml = function $JSDom$$module$Dom$JSDom$$getHtml$($callbackFunction$$) {
+};
+JSDom$$module$Dom$JSDom.prototype.exportHtml = function $JSDom$$module$Dom$JSDom$$exportHtml$() {
+};
+JSDom$$module$Dom$JSDom.prototype.getText = function $JSDom$$module$Dom$JSDom$$getText$($callbackFunction$$) {
+};
+JSDom$$module$Dom$JSDom.prototype.exportText = function $JSDom$$module$Dom$JSDom$$exportText$() {
+};
+JSDom$$module$Dom$JSDom.prototype.setText = function $JSDom$$module$Dom$JSDom$$setText$($text$$) {
+};
+JSDom$$module$Dom$JSDom.prototype.find = function $JSDom$$module$Dom$JSDom$$find$($cssSelector$$) {
+};
+JSDom$$module$Dom$JSDom.prototype.filter = function $JSDom$$module$Dom$JSDom$$filter$($cssSelector$$) {
+};
+JSDom$$module$Dom$JSDom.prototype.exclude = function $JSDom$$module$Dom$JSDom$$exclude$($cssSelector$$) {
+};
+JSDom$$module$Dom$JSDom.prototype.and = function $JSDom$$module$Dom$JSDom$$and$($elements$$) {
+};
+JSDom$$module$Dom$JSDom.prototype.getProps = function $JSDom$$module$Dom$JSDom$$getProps$($propertyObject$$, $callbackFunction$$) {
+};
+JSDom$$module$Dom$JSDom.prototype.exportProps = function $JSDom$$module$Dom$JSDom$$exportProps$($propertyObject$$) {
+};
+JSDom$$module$Dom$JSDom.prototype.setProps = function $JSDom$$module$Dom$JSDom$$setProps$($propertyObject$$) {
+};
+JSDom$$module$Dom$JSDom.prototype.setValue = function $JSDom$$module$Dom$JSDom$$setValue$($value$$, $callbackFunction$$) {
+};
+JSDom$$module$Dom$JSDom.prototype.getValue = function $JSDom$$module$Dom$JSDom$$getValue$($callbackFunction$$) {
+};
+JSDom$$module$Dom$JSDom.prototype.exportValue = function $JSDom$$module$Dom$JSDom$$exportValue$() {
+};
+JSDom$$module$Dom$JSDom.prototype.getAttrs = function $JSDom$$module$Dom$JSDom$$getAttrs$($attributeObject$$, $callbackFunction$$) {
+};
+JSDom$$module$Dom$JSDom.prototype.exportAttrs = function $JSDom$$module$Dom$JSDom$$exportAttrs$($attributeObject$$) {
+};
+JSDom$$module$Dom$JSDom.prototype.setAttrs = function $JSDom$$module$Dom$JSDom$$setAttrs$($attributeObject$$, $callbackFunction$$) {
+};
+JSDom$$module$Dom$JSDom.prototype.getAttr = function $JSDom$$module$Dom$JSDom$$getAttr$($attribute$$, $callbackFunction$$) {
+};
+JSDom$$module$Dom$JSDom.prototype.exportAttr = function $JSDom$$module$Dom$JSDom$$exportAttr$($attribute$$) {
+};
+JSDom$$module$Dom$JSDom.prototype.setAttr = function $JSDom$$module$Dom$JSDom$$setAttr$($attribute$$, $value$$) {
+};
+JSDom$$module$Dom$JSDom.prototype.setClasses = function $JSDom$$module$Dom$JSDom$$setClasses$($classObject$$) {
+};
+JSDom$$module$Dom$JSDom.prototype.getClasses = function $JSDom$$module$Dom$JSDom$$getClasses$($classObject$$, $callbackFunction$$) {
+};
+JSDom$$module$Dom$JSDom.prototype.exportClasses = function $JSDom$$module$Dom$JSDom$$exportClasses$($classObject$$) {
+};
+JSDom$$module$Dom$JSDom.prototype.template = function $JSDom$$module$Dom$JSDom$$template$($fields$$) {
+};
+JSDom$$module$Dom$JSDom.prototype.setDraggable = function $JSDom$$module$Dom$JSDom$$setDraggable$($dragSelector$$) {
 };
 Object.defineProperties(JSDom$$module$Dom$JSDom.prototype, {count:{configurable:!0, enumerable:!0, get:function() {
   return this._element.length;
 }}});
+Object.defineProperties(JSDom$$module$Dom$JSDom, {doc:{configurable:!0, enumerable:!0, get:function() {
+  return new JSDom$$module$Dom$JSDom(document.documentElement);
+}}});
+JSDom$$module$Dom$JSDom.Mix(DOMAttributesInterface$$module$Dom$DOMAttributes$DOMAttributesInterface, DOMClassesInterface$$module$Dom$DOMClasses$DOMClassesInterface, DOMCssInterface$$module$Dom$DOMCss$DOMCssInterface, DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface);
 module$Dom$JSDom.JSDom = JSDom$$module$Dom$JSDom;
 var module$Dom$TestJSDom = {}, TestJSDom$$module$Dom$TestJSDom = function $TestJSDom$$module$Dom$TestJSDom$($jspyder$$) {
   this.jspyder = $jspyder$$;
@@ -2255,6 +2506,25 @@ TestObject$$module$TestObject.setLogger(function($message$$) {
 });
 window.Tests = new TestJSCore$$module$TestJSCore;
 alert(passed$$module$TestJSCore + " of " + total$$module$TestJSCore + " Tests Passed: " + (passed$$module$TestJSCore / total$$module$TestJSCore * 100 | 0) + "%");
+var goog = {};
+goog.global = window;
+goog.isDef = function $goog$isDef$($test$$) {
+  return "undefined" !== typeof $test$$;
+};
+goog.exportSymbol = function $goog$exportSymbol$($publicPath$$, $object$$, $opt_objectToExportTo$$) {
+  goog.exportPath_($publicPath$$, $object$$, $opt_objectToExportTo$$);
+};
+goog.exportProperty = function $goog$exportProperty$($object$$, $publicName$$, $symbol$$) {
+  $object$$[$publicName$$] = $symbol$$;
+};
+goog.exportPath_ = function $goog$exportPath_$($name$$, $opt_object$$, $cur_opt_objectToExportTo$$) {
+  $name$$ = $name$$.split(".");
+  $cur_opt_objectToExportTo$$ = $cur_opt_objectToExportTo$$ || goog.global;
+  $name$$[0] in $cur_opt_objectToExportTo$$ || !$cur_opt_objectToExportTo$$.execScript || $cur_opt_objectToExportTo$$.execScript("var " + $name$$[0]);
+  for (var $part$$;$name$$.length && ($part$$ = $name$$.shift());) {
+    !$name$$.length && goog.isDef($opt_object$$) ? $cur_opt_objectToExportTo$$[$part$$] = $opt_object$$ : $cur_opt_objectToExportTo$$ = $cur_opt_objectToExportTo$$[$part$$] ? $cur_opt_objectToExportTo$$[$part$$] : $cur_opt_objectToExportTo$$[$part$$] = {};
+  }
+};
 var module$Date$JSDate = {}, JSDate$$module$Date$JSDate = function $JSDate$$module$Date$JSDate$() {
 };
 $jscomp.inherits(JSDate$$module$Date$JSDate, JSObject$$module$JSObject);

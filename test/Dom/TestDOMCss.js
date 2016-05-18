@@ -1,7 +1,7 @@
 import {TestObject} from "TestObject";
 import {Assert} from "Assert";
 
-import {DOMCss} from "Dom/DOMCss";
+import {DOMCss} from "Dom/DOMCss/DOMCss";
 
 export class TestDOMCss extends TestObject {
     constructor() {
