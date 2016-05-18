@@ -3,6 +3,12 @@ const CONST_STRING_UNSAFE_REPLACEMENT = "\\$&";
 const CONST_REGEXP_TO_STRING_MATCH = /^\/(.*)\/[a-z]*$/;
 
 export class Strings {
+    /**
+     * @param {?} value
+     * @param {?} [defaultValue]
+     *
+     * @return {string|?}
+     */
     static ToString(value, defaultValue = "") {
         if(typeof value === "string") {
             return value;
@@ -14,17 +20,17 @@ export class Strings {
             return ('' + value).replace(
                 CONST_REGEXP_TO_STRING_MATCH, "$1");
         }
-        else if(value || value === 0) {
+        else if(value || value === 0 || value === false) {
             return '' + value;
         }
         else {
-            return defaultValue || value;
+            return defaultValue;
         }
     }
-    
+
     static EscapeString(stringToEscape) {
-        return Strings.ToString(stringToEscape)
-            .replace(CONST_REGEXP_UNSAFE_CHARACTERS, 
-                CONST_STRING_UNSAFE_REPLACEMENT);
+        return Strings.ToString(stringToEscape).replace(
+            CONST_REGEXP_UNSAFE_CHARACTERS,
+            CONST_STRING_UNSAFE_REPLACEMENT);
     }
 }

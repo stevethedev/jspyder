@@ -21,25 +21,26 @@ export class TestObject {
         this.name = suiteName;
         this.tests = [];
     }
-    
+
     static setLogger(logFunction) {
         outputFunction = logFunction;
     }
-    
+
     addTest(name, testFunction) {
         this.tests.push(new Test(name, testFunction));
     }
-    
+
     log(message) {
         console.log(indent() + message);
         outputFunction(indent() + message);
     }
-    
+
     logIndent(change = 1) {
         if(change > 0) this.log("\r\n");
         indentCount += change;
     }
 
+    /** @suppress {accessControls} */
     autoloadTests() {
         var properties = Object.getOwnPropertyNames(this.prototype);
         for(let i = 0; i < properties.length; ++i) {
@@ -49,12 +50,12 @@ export class TestObject {
             }
         }
     }
-    
+
     startTests() {
         var test = function() { }
         var count = 0;
         var total = this.tests.length;
-        
+
         this.log(`Starting Suite: ${this.name}`);
         this.logIndent(1);
 
@@ -64,19 +65,19 @@ export class TestObject {
             outputFunction(indent() + message);
             let ret = 0;
             let hadError = null;
-            
-            try { 
+
+            try {
                 ret = test.fn.apply(this);
                 if(typeof ret === "undefined") {
                     ret = 1;
-                } 
+                }
             }
             catch(e) { console.log(e); hadError = e; }
-            
+
             let status = ` ... ${ret ? "Passed" : "Failed"} ${hadError ?"\r\n\r\n"+hadError+"\r\n\r\n"+hadError.stack+"\r\n":""}\r\n`;
             console.log(status);
             outputFunction(status);
-            
+
             count += ret;
         }
 
@@ -84,7 +85,7 @@ export class TestObject {
         this.logIndent(-1);
         return count;
     }
-    
+
     get prototype() {
         return this.constructor.prototype;
     }

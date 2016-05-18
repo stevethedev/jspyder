@@ -29,14 +29,14 @@ import {StringsInterface} from "Algorithms/Strings/StringsInterface";
 
 /**
  * JSpyder Algorithm Class
- * 
+ *
  * @class
- * 
+ *
  * @inheritDoc
  */
 export class JSAlgorithms extends JSObject {
     // ArraysInterface
-    
+
     // FunctionsInterface
     use(context, functionReference, argsArray = []) {
         return Functions.Use(context, functionReference, argsArray);
@@ -47,16 +47,17 @@ export class JSAlgorithms extends JSObject {
     bindFn(context, functionReference, args = []) {
         return Functions.Bind(context, functionReference, args);
     }
-    
+
     // NumbersInterface
     magnitude(num, base = 10) {
         return Numbers.Magnitude(num, base);
     }
-    
-    // StringsInterface    
+
+    // StringsInterface
 }
 
 JSAlgorithms.Mix(
     ArraysInterface,
+    DatesInterface,
     BooleansInterface,
     LooperInterface);

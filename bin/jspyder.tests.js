@@ -1070,7 +1070,30 @@ TestBooleansInterface$$module$Algorithms$Booleans$TestBooleansInterface.prototyp
   module$Assert.Assert.Equal(!1, this.jspyder.alg.bool(0, null));
 };
 module$Algorithms$Booleans$TestBooleansInterface.TestBooleansInterface = TestBooleansInterface$$module$Algorithms$Booleans$TestBooleansInterface;
-var module$Algorithms$Dates$Dates = {}, Dates$$module$Algorithms$Dates$Dates = function $Dates$$module$Algorithms$Dates$Dates$() {
+var module$Algorithms$Dates$Dates = {}, CONST_DATE_OBJECT_STRING$$module$Algorithms$Dates$Dates = "[object Date]", CONST_DATE_INVALID_STRING$$module$Algorithms$Dates$Dates = "Invalid Date", Dates$$module$Algorithms$Dates$Dates = function $Dates$$module$Algorithms$Dates$Dates$() {
+};
+Dates$$module$Algorithms$Dates$Dates.ToDate = function $Dates$$module$Algorithms$Dates$Dates$ToDate$($value$$, $defaultValue$$) {
+  $defaultValue$$ = void 0 === $defaultValue$$ ? new Date : $defaultValue$$;
+  if (Dates$$module$Algorithms$Dates$Dates.IsDate($value$$)) {
+    return $value$$;
+  }
+  if ("string" === typeof $value$$) {
+    var $fromNumber_fromString$$ = Date.parse($value$$);
+    if (Dates$$module$Algorithms$Dates$Dates.IsValid($fromNumber_fromString$$)) {
+      return $fromNumber_fromString$$;
+    }
+  } else {
+    if ("number" === typeof $value$$ && ($fromNumber_fromString$$ = new Date($value$$), Dates$$module$Algorithms$Dates$Dates.IsValid($fromNumber_fromString$$))) {
+      return $fromNumber_fromString$$;
+    }
+  }
+  return $defaultValue$$;
+};
+Dates$$module$Algorithms$Dates$Dates.IsDate = function $Dates$$module$Algorithms$Dates$Dates$IsDate$($value$$) {
+  return $value$$ instanceof Date || Object.prototype.toString.call($value$$) === CONST_DATE_OBJECT_STRING$$module$Algorithms$Dates$Dates;
+};
+Dates$$module$Algorithms$Dates$Dates.IsValid = function $Dates$$module$Algorithms$Dates$Dates$IsValid$($value$$) {
+  return !(isNaN($value$$) || CONST_DATE_INVALID_STRING$$module$Algorithms$Dates$Dates === $value$$.toString());
 };
 Dates$$module$Algorithms$Dates$Dates.GetQuarter = function $Dates$$module$Algorithms$Dates$Dates$GetQuarter$($dateObject$$) {
   return (($dateObject$$.getMonth() - 1) / 3 | 0) + 1;
@@ -1091,6 +1114,8 @@ module$Algorithms$Dates$TestDates.TestDates = TestDates$$module$Algorithms$Dates
 var module$Algorithms$Dates$DatesInterface = {}, DatesInterface$$module$Algorithms$Dates$DatesInterface = function $DatesInterface$$module$Algorithms$Dates$DatesInterface$() {
 };
 DatesInterface$$module$Algorithms$Dates$DatesInterface.prototype.date = function $DatesInterface$$module$Algorithms$Dates$DatesInterface$$date$($value$$, $defaultValue$$) {
+  $defaultValue$$ = void 0 === $defaultValue$$ ? new Date : $defaultValue$$;
+  return Dates$$module$Algorithms$Dates$Dates.ToDate($value$$, $defaultValue$$);
 };
 module$Algorithms$Dates$DatesInterface.DatesInterface = DatesInterface$$module$Algorithms$Dates$DatesInterface;
 var module$Algorithms$Dates$TestDatesInterface = {}, TestDatesInterface$$module$Algorithms$Dates$TestDatesInterface = function $TestDatesInterface$$module$Algorithms$Dates$TestDatesInterface$($jspyder$$) {
@@ -1102,7 +1127,13 @@ var module$Algorithms$Dates$TestDatesInterface = {}, TestDatesInterface$$module$
 $jscomp.inherits(TestDatesInterface$$module$Algorithms$Dates$TestDatesInterface, TestObject$$module$TestObject);
 TestDatesInterface$$module$Algorithms$Dates$TestDatesInterface.setLogger = TestObject$$module$TestObject.setLogger;
 TestDatesInterface$$module$Algorithms$Dates$TestDatesInterface.prototype.testDate = function $TestDatesInterface$$module$Algorithms$Dates$TestDatesInterface$$testDate$() {
-  module$Assert.Assert.Fail();
+  var $dateInterface$$ = new DatesInterface$$module$Algorithms$Dates$DatesInterface, $baseDate$$ = new Date;
+  module$Assert.Assert.Equal($baseDate$$, $dateInterface$$.date("", $baseDate$$), "Blank String");
+  module$Assert.Assert.NotEqual($baseDate$$, $dateInterface$$.date(-1, $baseDate$$), "Negative Number");
+  module$Assert.Assert.Equal($baseDate$$, $dateInterface$$.date("a098a4a", $baseDate$$), "Garbage String");
+  module$Assert.Assert.NotNull($dateInterface$$.date("1 January 2015", null), "1 January 2015");
+  module$Assert.Assert.NotNull($dateInterface$$.date(0, null), "Valid Number");
+  module$Assert.Assert.Equal($baseDate$$, $dateInterface$$.date($baseDate$$, null), "Valid Number");
 };
 module$Algorithms$Dates$TestDatesInterface.TestDatesInterface = TestDatesInterface$$module$Algorithms$Dates$TestDatesInterface;
 var module$Algorithms$Functions$Functions = {}, Functions$$module$Algorithms$Functions$Functions = function $Functions$$module$Algorithms$Functions$Functions$() {
@@ -1606,7 +1637,7 @@ var module$Algorithms$Strings$Strings = {}, CONST_REGEXP_UNSAFE_CHARACTERS$$modu
 };
 Strings$$module$Algorithms$Strings$Strings.ToString = function $Strings$$module$Algorithms$Strings$Strings$ToString$($value$$, $defaultValue$$) {
   $defaultValue$$ = void 0 === $defaultValue$$ ? "" : $defaultValue$$;
-  return "string" === typeof $value$$ ? $value$$ : $value$$ && "function" === typeof $value$$.toString ? $value$$.toString() : null !== $value$$ && "object" === typeof $value$$ && $value$$.isPrototypeOf(RegExp) ? ("" + $value$$).replace(CONST_REGEXP_TO_STRING_MATCH$$module$Algorithms$Strings$Strings, "$1") : $value$$ || 0 === $value$$ ? "" + $value$$ : $defaultValue$$ || $value$$;
+  return "string" === typeof $value$$ ? $value$$ : $value$$ && "function" === typeof $value$$.toString ? $value$$.toString() : null !== $value$$ && "object" === typeof $value$$ && $value$$.isPrototypeOf(RegExp) ? ("" + $value$$).replace(CONST_REGEXP_TO_STRING_MATCH$$module$Algorithms$Strings$Strings, "$1") : $value$$ || 0 === $value$$ || !1 === $value$$ ? "" + $value$$ : $defaultValue$$;
 };
 Strings$$module$Algorithms$Strings$Strings.EscapeString = function $Strings$$module$Algorithms$Strings$Strings$EscapeString$($stringToEscape$$) {
   return Strings$$module$Algorithms$Strings$Strings.ToString($stringToEscape$$).replace(CONST_REGEXP_UNSAFE_CHARACTERS$$module$Algorithms$Strings$Strings, CONST_STRING_UNSAFE_REPLACEMENT$$module$Algorithms$Strings$Strings);
@@ -1620,10 +1651,23 @@ var module$Algorithms$Strings$TestStrings = {}, TestStrings$$module$Algorithms$S
 $jscomp.inherits(TestStrings$$module$Algorithms$Strings$TestStrings, TestObject$$module$TestObject);
 TestStrings$$module$Algorithms$Strings$TestStrings.setLogger = TestObject$$module$TestObject.setLogger;
 TestStrings$$module$Algorithms$Strings$TestStrings.prototype.testToString = function $TestStrings$$module$Algorithms$Strings$TestStrings$$testToString$() {
-  module$Assert.Assert.Fail();
+  var $object$$ = {toString:function() {
+    return "test";
+  }};
+  module$Assert.Assert.Equal("test", Strings$$module$Algorithms$Strings$Strings.ToString($object$$), "String Conversion");
+  module$Assert.Assert.Equal($object$$.toString(), Strings$$module$Algorithms$Strings$Strings.ToString($object$$), "Object Conversion with toString");
+  module$Assert.Assert.Equal("", Strings$$module$Algorithms$Strings$Strings.ToString(null), "Null to blank string");
+  module$Assert.Assert.Equal("0", Strings$$module$Algorithms$Strings$Strings.ToString(0), "Zero");
+  module$Assert.Assert.Equal("1", Strings$$module$Algorithms$Strings$Strings.ToString(1), "One");
+  module$Assert.Assert.Equal("true", Strings$$module$Algorithms$Strings$Strings.ToString(!0), "True");
+  module$Assert.Assert.Equal("false", Strings$$module$Algorithms$Strings$Strings.ToString(!1), "False");
+  module$Assert.Assert.Equal(!1, Strings$$module$Algorithms$Strings$Strings.ToString(null, !1), "Null,False");
 };
 TestStrings$$module$Algorithms$Strings$TestStrings.prototype.testEscapeString = function $TestStrings$$module$Algorithms$Strings$TestStrings$$testEscapeString$() {
-  module$Assert.Assert.Fail();
+  module$Assert.Assert.Equal("\\-\\*\\+\\?\\.\\\\\\^\\$\\|", Strings$$module$Algorithms$Strings$Strings.EscapeString("-*+?.\\^$|"));
+  module$Assert.Assert.Equal("\\[\\]", Strings$$module$Algorithms$Strings$Strings.EscapeString("[]"));
+  module$Assert.Assert.Equal("\\{\\}", Strings$$module$Algorithms$Strings$Strings.EscapeString("{}"));
+  module$Assert.Assert.Equal("\\(\\)", Strings$$module$Algorithms$Strings$Strings.EscapeString("()"));
 };
 module$Algorithms$Strings$TestStrings.TestStrings = TestStrings$$module$Algorithms$Strings$TestStrings;
 var module$Algorithms$Strings$StringsInterface = {}, StringsInterface$$module$Algorithms$Strings$StringsInterface = function $StringsInterface$$module$Algorithms$Strings$StringsInterface$() {
@@ -1678,7 +1722,7 @@ JSAlgorithms$$module$Algorithms$JSAlgorithms.prototype.bindFn = function $JSAlgo
 JSAlgorithms$$module$Algorithms$JSAlgorithms.prototype.magnitude = function $JSAlgorithms$$module$Algorithms$JSAlgorithms$$magnitude$($num$$, $base$$) {
   return Numbers$$module$Algorithms$Numbers$Numbers.Magnitude($num$$, void 0 === $base$$ ? 10 : $base$$);
 };
-JSAlgorithms$$module$Algorithms$JSAlgorithms.Mix(ArraysInterface$$module$Algorithms$Arrays$ArraysInterface, BooleansInterface$$module$Algorithms$Booleans$BooleansInterface, LooperInterface$$module$Algorithms$Looper$LooperInterface);
+JSAlgorithms$$module$Algorithms$JSAlgorithms.Mix(ArraysInterface$$module$Algorithms$Arrays$ArraysInterface, DatesInterface$$module$Algorithms$Dates$DatesInterface, BooleansInterface$$module$Algorithms$Booleans$BooleansInterface, LooperInterface$$module$Algorithms$Looper$LooperInterface);
 module$Algorithms$JSAlgorithms.JSAlgorithms = JSAlgorithms$$module$Algorithms$JSAlgorithms;
 var module$Algorithms$TestJSAlgorithms = {}, TestJSAlgorithms$$module$Algorithms$TestJSAlgorithms = function $TestJSAlgorithms$$module$Algorithms$TestJSAlgorithms$($jspyder$$) {
   TestObject$$module$TestObject.call(this, "Algorithms/JSAlgorithms");
@@ -2169,7 +2213,6 @@ Object.defineProperties(JSDom$$module$Dom$JSDom.prototype, {count:{configurable:
 Object.defineProperties(JSDom$$module$Dom$JSDom, {doc:{configurable:!0, enumerable:!0, get:function() {
   return new JSDom$$module$Dom$JSDom(document.documentElement);
 }}});
-JSDom$$module$Dom$JSDom.Mix(DOMAttributesInterface$$module$Dom$DOMAttributes$DOMAttributesInterface, DOMClassesInterface$$module$Dom$DOMClasses$DOMClassesInterface, DOMCssInterface$$module$Dom$DOMCss$DOMCssInterface, DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface);
 module$Dom$JSDom.JSDom = JSDom$$module$Dom$JSDom;
 var module$Dom$TestJSDom = {}, TestJSDom$$module$Dom$TestJSDom = function $TestJSDom$$module$Dom$TestJSDom$($jspyder$$) {
   this.jspyder = $jspyder$$;

@@ -11,8 +11,16 @@ export class TestDatesInterface extends TestObject {
         this.autoloadTests();
         this.startTests();
     }
-    
+
     testDate() {
-        Assert.Fail();
+        var dateInterface = new DatesInterface();
+        var baseDate = new Date();
+
+        Assert.Equal(baseDate, dateInterface.date("", baseDate), "Blank String");
+        Assert.NotEqual(baseDate, dateInterface.date(-1, baseDate), "Negative Number");
+        Assert.Equal(baseDate, dateInterface.date("a098a4a", baseDate), "Garbage String");
+        Assert.NotNull(dateInterface.date("1 January 2015", null), "1 January 2015");
+        Assert.NotNull(dateInterface.date(0, null), "Valid Number");
+        Assert.Equal(baseDate, dateInterface.date(baseDate, null), "Valid Number");
     }
 }
