@@ -62,9 +62,11 @@ export class Arrays {
      * @return {function(Object,Object):(number|boolean)}
      */
     static GetBestSortArrayObjectFunction(ascending, fields) {
+        var __memo;
+
         switch(Browser.name) {
             case BROWSER_FIREFOX: // Firefox can use a shortcut function
-                return function(left, right) {
+                __memo = function(left, right) {
                     for(let i = 0; left && right && i < fields.length; ++i) {
                         left = left[fields[i]];
                         right = right[fields[i]];
@@ -77,7 +79,7 @@ export class Arrays {
             case BROWSER_IE:
             case BROWSER_EDGE:
             default:
-                return function(left, right) {
+                __memo = function(left, right) {
                     for(let i = 0; left && right && i < fields.length; ++i) {
                         left = left[fields[i]];
                         right = right[fields[i]];
@@ -96,6 +98,10 @@ export class Arrays {
                         return 0;
                     }
                 };
+        }
+        
+        this.GetBestSortArrayObjectFunction = function(ascending, fields) {
+            return __memo;
         }
     }
 

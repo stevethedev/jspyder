@@ -64,4 +64,15 @@ export class Functions {
             return Functions.Use(context, useFunction, args);
         }
     }
+    
+    static Memoize(memoizeFunction) {
+        var memo = {};
+
+        return function(...args) {
+            if(memo.hasOwnProperty(args)) {
+                return memo[args];
+            }
+            return memo[args] = memoizeFunction(...args);
+        }
+    }
 }
