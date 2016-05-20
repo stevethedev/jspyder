@@ -21,7 +21,6 @@ export class JSLibrary extends JSObject {
     }
     
     /**
-     * @method {!LibraryInterfaceDefs}
      * @return {!LibraryInterfaceDefs}
      */
     GetInterface() {
@@ -31,29 +30,34 @@ export class JSLibrary extends JSObject {
          * JSLibrary Interface
          * 
          * @class JSLibraryInterface
-         * @constructor
-         * @extends {LibraryInterfaceDefs}
+         * @implements {LibraryInterfaceDefs}
          */
-        function JSLibraryInterface(...args) {
-            jsLibrary.Execute(...args);
-            return JSLibraryInterface;
+        class JSLibraryInterface {
+            constructor() {
+                
+            }
+
+            lib(...args) {
+                jsLibrary.Execute(...args);
+                return this;
+            }
+            
+            register(...args) {
+                jsLibrary.Register(...args);
+                return this;
+            }
+            
+            registerSet(...args) {
+                jsLibrary.RegisterSet(...args);
+                return this;
+            }
+            
+            execute(...args) {
+                return jsLibrary.Execute(...args);
+            }
         }
         
-        JSLibraryInterface.register = function(...args) {
-            jsLibrary.Register(...args);
-            return JSLibraryInterface;
-        }
-        
-        JSLibraryInterface.registerSet = function(...args) {
-            jsLibrary.RegisterSet(...args);
-            return JSLibraryInterface;
-        }
-        
-        JSLibraryInterface.execute = function(...args) {
-            return jsLibrary.Execute(...args);
-        }
-        
-        return JSLibraryInterface;
+        return new JSLibraryInterface;
     }
     
     Execute(functionName, argumentArray = [], callbackFunction = null, callbackArguments = []) {

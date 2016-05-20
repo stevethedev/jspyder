@@ -1,7 +1,24 @@
 import {Numbers} from "Algorithms/Numbers/Numbers";
 
-/** @interface */
+/** 
+ * @interface 
+ */
 export class NumbersInterface {
+    /**
+     * Calculates the nearest multiple of an order of magnitude in the
+     * given base number, which is further from zero than the provided
+     * value [num].  For example:
+     * 
+     *     magnitude(9, 10);  // 10
+     *     magnitude(9, 8);   // 16
+     *     magnitude(9, 0xF); // 16
+     *     magnitude(9, 2);   // 16
+     * 
+     * @param {number} num
+     * @param {number} base
+     * 
+     * @return {number}
+     */
     magnitude(num, base) {}
     
     /**
@@ -9,6 +26,8 @@ export class NumbersInterface {
      * 
      * @param {*} value
      * @param {*} defaultValue
+     * 
+     * @return {number|?}
      */
     number(value, defaultValue) {}
     
@@ -16,8 +35,14 @@ export class NumbersInterface {
      * Returns the smallest value from the list of arguments.
      * 
      * @param {...number} numbers
+     * @return {number}
      */
     min(...numbers) {}
+    
+    /**
+     * @param {...number} numbers
+     * @return {number}
+     */
     max(...numbers) {}
     
     /**

@@ -31,6 +31,9 @@ import {StringsInterface} from "Algorithms/Strings/StringsInterface";
  * JSpyder Algorithm Class
  *
  * @class
+ * 
+ * @implements {FunctionsInterface}
+ * @implements {NumbersInterface}
  *
  * @inheritDoc
  */
@@ -49,8 +52,39 @@ export class JSAlgorithms extends JSObject {
     }
 
     // NumbersInterface
+    
+    /**
+     * @return {number}
+     */
     magnitude(num, base = 10) {
         return Numbers.Magnitude(num, base);
+    }
+    
+    /**
+     * Coerces any value to a numerical value, or else returns the value
+     * of [defaultValue]
+     * 
+     * @param {?} value
+     * @param {?} [defaultValue]
+     * 
+     * @return {number|?}
+     */
+    number(value, defaultValue = 0) {
+        return Numbers.ToNumber(value, defaultValue);
+    }
+    
+    /**
+     * @return {number}
+     */
+    min(...numbers) {
+        return Numbers.Minimum(...numbers);
+    }
+    
+    /**
+     * @return {number}
+     */
+    max(...numbers) {
+        return Numbers.Maximum(...numbers);
     }
 
     // StringsInterface

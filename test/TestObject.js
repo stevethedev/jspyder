@@ -40,7 +40,11 @@ export class TestObject {
         indentCount += change;
     }
 
-    /** @suppress {accessControls} */
+    /** 
+     * @suppress {accessControls}
+     * @template THIS
+     * @this {THIS} 
+     */
     autoloadTests() {
         var properties = Object.getOwnPropertyNames(this.prototype);
         for(let i = 0; i < properties.length; ++i) {

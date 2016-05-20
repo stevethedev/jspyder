@@ -2,6 +2,8 @@ export class Numbers {
     /**
      * @param {?} value
      * @param {?} defaultValue
+     * 
+     * @return {number|?}
      */
     static ToNumber(value, defaultValue = 0) {
         var num = +value;
@@ -35,5 +37,33 @@ export class Numbers {
         else {
             return Math.ceil(num/width) * width;
         }
+    }
+    
+    /**
+     * @param {...number} numbers
+     * @return {number} The smallest number in the parameters.
+     */
+    static Minimum(...numbers) {
+        var minimum = numbers[0];
+        for(let i = 1, li = numbers.length; i < li; ++i) {
+            if(numbers[i] < minimum) {
+                minimum = numbers[i];
+            }
+        }
+        return minimum;
+    }
+    
+    /**
+     * @param {...number} numbers
+     * @return {number} The largest number in the parameters.
+     */
+    static Maximum(...numbers) {
+        var maximum = numbers[0];
+        for(let i = 1, li = numbers.length; i < li; ++i) {
+            if(numbers[i] > maximum) {
+                maximum = numbers[i];
+            }
+        }
+        return maximum;
     }
 }

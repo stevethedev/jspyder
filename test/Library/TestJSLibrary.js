@@ -21,8 +21,6 @@ export class TestJSLibrary extends TestObject {
     }
     
     testGetInterface() {
-        var jsLibraryInterface = new JSLibrary(this).GetInterface();
-        
         function storedFunction(arg1, arg2) {
             Assert.Equal(0, arg1, `Stored Function Argument 1: ${arg1}`);
             Assert.Equal(1, arg2, `Stored Function Argument 2: ${arg2}`);
@@ -30,13 +28,13 @@ export class TestJSLibrary extends TestObject {
         }
         
         // test register & execute
-        jsLibraryInterface.register("test", storedFunction);
-        var executed = jsLibraryInterface.execute("test", [0,1]);
+        this.jspyder.lib.register("test", storedFunction);
+        var executed = this.jspyder.lib.execute("test", [0,1]);
         Assert.Equal(true, executed, `Expected function 'test' to return true; returned ${executed}`);
         
         // test core execution
         executed = false;
-        jsLibraryInterface("test", [0,1], function(result) {
+        this.jspyder.lib("test", [0,1], function(result) {
             Assert.Equal(true, result, `Expected callback to return true; returned ${result}`);
             executed = true;
         });
@@ -44,12 +42,12 @@ export class TestJSLibrary extends TestObject {
         
         // test registerSet
         var i = 0;
-        jsLibraryInterface.registerSet({
+        this.jspyder.lib.registerSet({
             "set1": function() { return ++i; },
             "set2": function() { return ++i; }
         });
         
-        jsLibraryInterface("set1", null, function(x) { 
+        this.jspyder.lib("set1", null, function(x) { 
             Assert.Equal(1, x);
             Assert.Equal(i, x);
         })("set2", null, function(x) {

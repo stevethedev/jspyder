@@ -782,6 +782,24 @@ Numbers$$module$Algorithms$Numbers$Numbers.Magnitude = function $Numbers$$module
   var $pow_width$$ = ((0 > $num$$ ? -$num$$ : $num$$) | 0).toString($base$$).length - 1 || 1, $pow_width$$ = Math.pow($base$$, $pow_width$$);
   return 0 > $num$$ ? Math.floor($num$$ / $pow_width$$) * $pow_width$$ : Math.ceil($num$$ / $pow_width$$) * $pow_width$$;
 };
+Numbers$$module$Algorithms$Numbers$Numbers.Minimum = function $Numbers$$module$Algorithms$Numbers$Numbers$Minimum$($numbers$$) {
+  for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$ = 0;$$jscomp$restIndex$$ < arguments.length;++$$jscomp$restIndex$$) {
+    $$jscomp$restParams$$[$$jscomp$restIndex$$ - 0] = arguments[$$jscomp$restIndex$$];
+  }
+  for (var $$jscomp$restIndex$$ = $$jscomp$restParams$$[0], $i$$ = 1, $li$$ = $$jscomp$restParams$$.length;$i$$ < $li$$;++$i$$) {
+    $$jscomp$restParams$$[$i$$] < $$jscomp$restIndex$$ && ($$jscomp$restIndex$$ = $$jscomp$restParams$$[$i$$]);
+  }
+  return $$jscomp$restIndex$$;
+};
+Numbers$$module$Algorithms$Numbers$Numbers.Maximum = function $Numbers$$module$Algorithms$Numbers$Numbers$Maximum$($numbers$$) {
+  for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$ = 0;$$jscomp$restIndex$$ < arguments.length;++$$jscomp$restIndex$$) {
+    $$jscomp$restParams$$[$$jscomp$restIndex$$ - 0] = arguments[$$jscomp$restIndex$$];
+  }
+  for (var $$jscomp$restIndex$$ = $$jscomp$restParams$$[0], $i$$ = 1, $li$$ = $$jscomp$restParams$$.length;$i$$ < $li$$;++$i$$) {
+    $$jscomp$restParams$$[$i$$] > $$jscomp$restIndex$$ && ($$jscomp$restIndex$$ = $$jscomp$restParams$$[$i$$]);
+  }
+  return $$jscomp$restIndex$$;
+};
 module$Algorithms$Numbers$Numbers.Numbers = Numbers$$module$Algorithms$Numbers$Numbers;
 var module$Algorithms$Arrays$Arrays = {}, MAX_CHUNK_SIZE$$module$Algorithms$Arrays$Arrays = 8192, ARRAY_PROTOTYPE$$module$Algorithms$Arrays$Arrays = window.Array.prototype, ARRAY_SLICE$$module$Algorithms$Arrays$Arrays = ARRAY_PROTOTYPE$$module$Algorithms$Arrays$Arrays.slice, ARRAY_PUSH$$module$Algorithms$Arrays$Arrays = ARRAY_PROTOTYPE$$module$Algorithms$Arrays$Arrays.push, ARRAY$$module$Algorithms$Arrays$Arrays = window.Array, Arrays$$module$Algorithms$Arrays$Arrays = function $Arrays$$module$Algorithms$Arrays$Arrays$() {
 };
@@ -910,8 +928,8 @@ TestArrays$$module$Algorithms$Arrays$TestArrays.prototype.testWidePush = functio
   }
   $array2_i$$ = [];
   Arrays$$module$Algorithms$Arrays$Arrays.WidePush($array2_i$$, $array1$$);
-  for (var $i$4$$ = 0;$i$4$$ < $array1$$.length;++$i$4$$) {
-    module$Assert.Assert.Equal($array1$$[$i$4$$], $array2_i$$[$i$4$$]);
+  for (var $i$6$$ = 0;$i$6$$ < $array1$$.length;++$i$6$$) {
+    module$Assert.Assert.Equal($array1$$[$i$6$$], $array2_i$$[$i$6$$]);
   }
 };
 TestArrays$$module$Algorithms$Arrays$TestArrays.prototype.testToArray = function $TestArrays$$module$Algorithms$Arrays$TestArrays$$testToArray$() {
@@ -927,11 +945,11 @@ ArraysInterface$$module$Algorithms$Arrays$ArraysInterface.prototype.array = func
   return Arrays$$module$Algorithms$Arrays$Arrays.ToArray($value$$, $defaultValue$$);
 };
 ArraysInterface$$module$Algorithms$Arrays$ArraysInterface.prototype.joinArray = function $ArraysInterface$$module$Algorithms$Arrays$ArraysInterface$$joinArray$($arrayRef$$, $arraysFrom$$) {
-  for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$6_i$$ = 1;$$jscomp$restIndex$$6_i$$ < arguments.length;++$$jscomp$restIndex$$6_i$$) {
-    $$jscomp$restParams$$[$$jscomp$restIndex$$6_i$$ - 1] = arguments[$$jscomp$restIndex$$6_i$$];
+  for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$8_i$$ = 1;$$jscomp$restIndex$$8_i$$ < arguments.length;++$$jscomp$restIndex$$8_i$$) {
+    $$jscomp$restParams$$[$$jscomp$restIndex$$8_i$$ - 1] = arguments[$$jscomp$restIndex$$8_i$$];
   }
-  for ($$jscomp$restIndex$$6_i$$ = 0;$$jscomp$restIndex$$6_i$$ < $$jscomp$restParams$$.length;++$$jscomp$restIndex$$6_i$$) {
-    Arrays$$module$Algorithms$Arrays$Arrays.WidePush($arrayRef$$, $$jscomp$restParams$$[$$jscomp$restIndex$$6_i$$]);
+  for ($$jscomp$restIndex$$8_i$$ = 0;$$jscomp$restIndex$$8_i$$ < $$jscomp$restParams$$.length;++$$jscomp$restIndex$$8_i$$) {
+    Arrays$$module$Algorithms$Arrays$Arrays.WidePush($arrayRef$$, $$jscomp$restParams$$[$$jscomp$restIndex$$8_i$$]);
   }
   return $arrayRef$$;
 };
@@ -1229,13 +1247,41 @@ var module$Algorithms$Functions$TestFunctionsInterface = {}, TestFunctionsInterf
 $jscomp.inherits(TestFunctionsInterface$$module$Algorithms$Functions$TestFunctionsInterface, TestObject$$module$TestObject);
 TestFunctionsInterface$$module$Algorithms$Functions$TestFunctionsInterface.setLogger = TestObject$$module$TestObject.setLogger;
 TestFunctionsInterface$$module$Algorithms$Functions$TestFunctionsInterface.prototype.testUse = function $TestFunctionsInterface$$module$Algorithms$Functions$TestFunctionsInterface$$testUse$() {
-  module$Assert.Assert.Fail();
+  var $context$$ = {}, $args$$ = [1, 2, 3], $retval$$ = {};
+  module$Assert.Assert.Equal($retval$$, this.jspyder.alg.use($context$$, function fn() {
+    module$Assert.Assert.Equal($context$$, this);
+    module$Assert.Assert.Equal($args$$.length, arguments.length);
+    for (var $i$$ = 0;$i$$ < arguments.length;++$i$$) {
+      module$Assert.Assert.Equal($args$$[$i$$], arguments[$i$$]);
+    }
+    return $retval$$;
+  }, $args$$));
 };
 TestFunctionsInterface$$module$Algorithms$Functions$TestFunctionsInterface.prototype.testRun = function $TestFunctionsInterface$$module$Algorithms$Functions$TestFunctionsInterface$$testRun$() {
-  module$Assert.Assert.Fail();
+  var $args$$ = [1, 2, 3], $retval$$ = {};
+  module$Assert.Assert.Equal($retval$$, this.jspyder.alg.run(function fn() {
+    module$Assert.Assert.Equal($args$$.length, arguments.length);
+    for (var $i$$ = 0;$i$$ < arguments.length;++$i$$) {
+      module$Assert.Assert.Equal($args$$[$i$$], arguments[$i$$]);
+    }
+    return $retval$$;
+  }, $args$$));
 };
 TestFunctionsInterface$$module$Algorithms$Functions$TestFunctionsInterface.prototype.testBindFn = function $TestFunctionsInterface$$module$Algorithms$Functions$TestFunctionsInterface$$testBindFn$() {
-  module$Assert.Assert.Fail();
+  var $args1$$ = [1, 2, 3], $args2$$ = [4, 5, 6], $retval$$ = {}, $context$$ = {}, $boundFn$$ = this.jspyder.alg.bindFn($context$$, function fn() {
+    module$Assert.Assert.Equal($context$$, this, "Bind Context Failed");
+    module$Assert.Assert.Equal($args1$$.length + $args2$$.length, arguments.length);
+    var $i$$, $j$$;
+    for ($i$$ = 0;$i$$ < $args1$$.length;++$i$$) {
+      module$Assert.Assert.Equal($args1$$[$i$$], arguments[$i$$]);
+    }
+    for ($j$$ = 0;$j$$ < $args2$$.length;++$j$$) {
+      module$Assert.Assert.Equal($args2$$[$j$$], arguments[$i$$ + $j$$]);
+    }
+    return $retval$$;
+  }, $args1$$);
+  module$Assert.Assert.Type("function", $boundFn$$);
+  module$Assert.Assert.Equal($retval$$, $boundFn$$.apply(null, [].concat($jscomp.arrayFromIterable($args2$$))), "Bind Return Value Failed");
 };
 module$Algorithms$Functions$TestFunctionsInterface.TestFunctionsInterface = TestFunctionsInterface$$module$Algorithms$Functions$TestFunctionsInterface;
 var module$JSObject = {}, JSObject$$module$JSObject = function $JSObject$$module$JSObject$() {
@@ -1257,11 +1303,11 @@ JSObject$$module$JSObject.prototype.use = function $JSObject$$module$JSObject$$u
   return this;
 };
 JSObject$$module$JSObject.Mix = function $JSObject$$module$JSObject$Mix$($Subs$$) {
-  for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$8_i$$ = 0;$$jscomp$restIndex$$8_i$$ < arguments.length;++$$jscomp$restIndex$$8_i$$) {
-    $$jscomp$restParams$$[$$jscomp$restIndex$$8_i$$ - 0] = arguments[$$jscomp$restIndex$$8_i$$];
+  for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$10_i$$ = 0;$$jscomp$restIndex$$10_i$$ < arguments.length;++$$jscomp$restIndex$$10_i$$) {
+    $$jscomp$restParams$$[$$jscomp$restIndex$$10_i$$ - 0] = arguments[$$jscomp$restIndex$$10_i$$];
   }
-  for ($$jscomp$restIndex$$8_i$$ = 0;$$jscomp$restIndex$$8_i$$ < $$jscomp$restParams$$.length;++$$jscomp$restIndex$$8_i$$) {
-    for (var $sub$$ = $$jscomp$restParams$$[$$jscomp$restIndex$$8_i$$], $properties$$ = Object.getOwnPropertyNames($sub$$.prototype), $j$$ = 0;$j$$ < $properties$$.length;++$j$$) {
+  for ($$jscomp$restIndex$$10_i$$ = 0;$$jscomp$restIndex$$10_i$$ < $$jscomp$restParams$$.length;++$$jscomp$restIndex$$10_i$$) {
+    for (var $sub$$ = $$jscomp$restParams$$[$$jscomp$restIndex$$10_i$$], $properties$$ = Object.getOwnPropertyNames($sub$$.prototype), $j$$ = 0;$j$$ < $properties$$.length;++$j$$) {
       var $property$$ = $properties$$[$j$$];
       "constructor" !== $property$$ && Object.defineProperty(this.prototype, $property$$, Object.getOwnPropertyDescriptor($sub$$.prototype, $property$$));
     }
@@ -1342,23 +1388,23 @@ Looper$$module$Algorithms$Looper$Looper.ObjectEach = function $Looper$$module$Al
   }
 };
 Looper$$module$Algorithms$Looper$Looper.ArrayEach = function $Looper$$module$Algorithms$Looper$Looper$ArrayEach$($array$$, $loopFunction$$, $data$$) {
-  for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$11_controller$$ = 2;$$jscomp$restIndex$$11_controller$$ < arguments.length;++$$jscomp$restIndex$$11_controller$$) {
-    $$jscomp$restParams$$[$$jscomp$restIndex$$11_controller$$ - 2] = arguments[$$jscomp$restIndex$$11_controller$$];
+  for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$13_controller$$ = 2;$$jscomp$restIndex$$13_controller$$ < arguments.length;++$$jscomp$restIndex$$13_controller$$) {
+    $$jscomp$restParams$$[$$jscomp$restIndex$$13_controller$$ - 2] = arguments[$$jscomp$restIndex$$13_controller$$];
   }
   if ($array$$ && "object" === typeof $array$$) {
-    for ($$jscomp$restIndex$$11_controller$$ = new ArrayLoopController$$module$Algorithms$Looper$LooperController($array$$), $$jscomp$restIndex$$11_controller$$.index = 0;$$jscomp$restIndex$$11_controller$$.index < $array$$.length && !$$jscomp$restIndex$$11_controller$$.breaking;++$$jscomp$restIndex$$11_controller$$.index) {
-      Functions$$module$Algorithms$Functions$Functions.Use($$jscomp$restIndex$$11_controller$$, $loopFunction$$, [].concat([$array$$[$$jscomp$restIndex$$11_controller$$.index], $$jscomp$restIndex$$11_controller$$.index, $array$$], $jscomp.arrayFromIterable($$jscomp$restParams$$)));
+    for ($$jscomp$restIndex$$13_controller$$ = new ArrayLoopController$$module$Algorithms$Looper$LooperController($array$$), $$jscomp$restIndex$$13_controller$$.index = 0;$$jscomp$restIndex$$13_controller$$.index < $array$$.length && !$$jscomp$restIndex$$13_controller$$.breaking;++$$jscomp$restIndex$$13_controller$$.index) {
+      Functions$$module$Algorithms$Functions$Functions.Use($$jscomp$restIndex$$13_controller$$, $loopFunction$$, [].concat([$array$$[$$jscomp$restIndex$$13_controller$$.index], $$jscomp$restIndex$$13_controller$$.index, $array$$], $jscomp.arrayFromIterable($$jscomp$restParams$$)));
     }
   }
 };
 Looper$$module$Algorithms$Looper$Looper.Iterate = function $Looper$$module$Algorithms$Looper$Looper$Iterate$($start$$, $end$$, $iterator$$, $data$$) {
-  for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$12_controller$$ = 3;$$jscomp$restIndex$$12_controller$$ < arguments.length;++$$jscomp$restIndex$$12_controller$$) {
-    $$jscomp$restParams$$[$$jscomp$restIndex$$12_controller$$ - 3] = arguments[$$jscomp$restIndex$$12_controller$$];
+  for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$14_controller$$ = 3;$$jscomp$restIndex$$14_controller$$ < arguments.length;++$$jscomp$restIndex$$14_controller$$) {
+    $$jscomp$restParams$$[$$jscomp$restIndex$$14_controller$$ - 3] = arguments[$$jscomp$restIndex$$14_controller$$];
   }
   $start$$ = Numbers$$module$Algorithms$Numbers$Numbers.ToNumber($start$$);
   $end$$ = Numbers$$module$Algorithms$Numbers$Numbers.ToNumber($end$$);
-  for (var $$jscomp$restIndex$$12_controller$$ = new LoopController$$module$Algorithms$Looper$LooperController(null), $step$$ = $end$$ < $start$$ ? -1 : 1, $i$$ = $start$$;$i$$ !== $end$$ && !$$jscomp$restIndex$$12_controller$$.breaking;$i$$ += $step$$) {
-    Functions$$module$Algorithms$Functions$Functions.Use($$jscomp$restIndex$$12_controller$$, $iterator$$, [].concat([$i$$], $jscomp.arrayFromIterable($$jscomp$restParams$$)));
+  for (var $$jscomp$restIndex$$14_controller$$ = new LoopController$$module$Algorithms$Looper$LooperController(null), $step$$ = $end$$ < $start$$ ? -1 : 1, $i$$ = $start$$;$i$$ !== $end$$ && !$$jscomp$restIndex$$14_controller$$.breaking;$i$$ += $step$$) {
+    Functions$$module$Algorithms$Functions$Functions.Use($$jscomp$restIndex$$14_controller$$, $iterator$$, [].concat([$i$$], $jscomp.arrayFromIterable($$jscomp$restParams$$)));
   }
 };
 module$Algorithms$Looper$Looper.Looper = Looper$$module$Algorithms$Looper$Looper;
@@ -1540,10 +1586,31 @@ var module$Algorithms$Numbers$TestNumbersInterface = {}, TestNumbersInterface$$m
 $jscomp.inherits(TestNumbersInterface$$module$Algorithms$Numbers$TestNumbersInterface, TestObject$$module$TestObject);
 TestNumbersInterface$$module$Algorithms$Numbers$TestNumbersInterface.setLogger = TestObject$$module$TestObject.setLogger;
 TestNumbersInterface$$module$Algorithms$Numbers$TestNumbersInterface.prototype.testMagnitude = function $TestNumbersInterface$$module$Algorithms$Numbers$TestNumbersInterface$$testMagnitude$() {
-  module$Assert.Assert.Fail();
+  module$Assert.Assert.Equal(10, this.jspyder.alg.magnitude(1));
+  module$Assert.Assert.Equal(10, this.jspyder.alg.magnitude(5));
+  module$Assert.Assert.Equal(10, this.jspyder.alg.magnitude(10));
+  module$Assert.Assert.Equal(2, this.jspyder.alg.magnitude(1, 2));
+  module$Assert.Assert.Equal(2, this.jspyder.alg.magnitude(2, 2));
+  module$Assert.Assert.Equal(4, this.jspyder.alg.magnitude(3, 2));
+  module$Assert.Assert.Equal(8, this.jspyder.alg.magnitude(1, 8));
+  module$Assert.Assert.Equal(8, this.jspyder.alg.magnitude(4, 8));
+  module$Assert.Assert.Equal(8, this.jspyder.alg.magnitude(8, 8));
+  module$Assert.Assert.Equal(16, this.jspyder.alg.magnitude(9, 8));
+  module$Assert.Assert.Equal(16, this.jspyder.alg.magnitude(9, 16));
+  module$Assert.Assert.Equal(16, this.jspyder.alg.magnitude(15, 16));
+  module$Assert.Assert.Equal(32, this.jspyder.alg.magnitude(17, 16));
+  module$Assert.Assert.Equal(176, this.jspyder.alg.magnitude(161, 16));
 };
 TestNumbersInterface$$module$Algorithms$Numbers$TestNumbersInterface.prototype.testNumber = function $TestNumbersInterface$$module$Algorithms$Numbers$TestNumbersInterface$$testNumber$() {
-  module$Assert.Assert.Fail();
+  module$Assert.Assert.Equal(1, this.jspyder.alg.number(1), "1:1");
+  module$Assert.Assert.Equal(1, this.jspyder.alg.number("1"), "1:'1'");
+  module$Assert.Assert.Equal(0, this.jspyder.alg.number(null), "0:null");
+  module$Assert.Assert.Equal(1, this.jspyder.alg.number("1", 2), "1:'1':2");
+  module$Assert.Assert.Equal(2, this.jspyder.alg.number(null, 2), "2:null:2");
+  module$Assert.Assert.Equal(2, this.jspyder.alg.number(NaN, 2), "2:NaN:2");
+  module$Assert.Assert.Equal("banana", this.jspyder.alg.number(null, "banana"), "'banana':null:'banana'");
+  module$Assert.Assert.Equal(1, this.jspyder.alg.number(!0), "Boolean True");
+  module$Assert.Assert.Equal(0, this.jspyder.alg.number(!1), "Boolean False");
 };
 TestNumbersInterface$$module$Algorithms$Numbers$TestNumbersInterface.prototype.testMin = function $TestNumbersInterface$$module$Algorithms$Numbers$TestNumbersInterface$$testMin$() {
   module$Assert.Assert.Fail();
@@ -1721,6 +1788,21 @@ JSAlgorithms$$module$Algorithms$JSAlgorithms.prototype.bindFn = function $JSAlgo
 };
 JSAlgorithms$$module$Algorithms$JSAlgorithms.prototype.magnitude = function $JSAlgorithms$$module$Algorithms$JSAlgorithms$$magnitude$($num$$, $base$$) {
   return Numbers$$module$Algorithms$Numbers$Numbers.Magnitude($num$$, void 0 === $base$$ ? 10 : $base$$);
+};
+JSAlgorithms$$module$Algorithms$JSAlgorithms.prototype.number = function $JSAlgorithms$$module$Algorithms$JSAlgorithms$$number$($value$$, $defaultValue$$) {
+  return Numbers$$module$Algorithms$Numbers$Numbers.ToNumber($value$$, void 0 === $defaultValue$$ ? 0 : $defaultValue$$);
+};
+JSAlgorithms$$module$Algorithms$JSAlgorithms.prototype.min = function $JSAlgorithms$$module$Algorithms$JSAlgorithms$$min$($numbers$$) {
+  for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$ = 0;$$jscomp$restIndex$$ < arguments.length;++$$jscomp$restIndex$$) {
+    $$jscomp$restParams$$[$$jscomp$restIndex$$ - 0] = arguments[$$jscomp$restIndex$$];
+  }
+  return Numbers$$module$Algorithms$Numbers$Numbers.Minimum.apply(Numbers$$module$Algorithms$Numbers$Numbers, [].concat($jscomp.arrayFromIterable($$jscomp$restParams$$)));
+};
+JSAlgorithms$$module$Algorithms$JSAlgorithms.prototype.max = function $JSAlgorithms$$module$Algorithms$JSAlgorithms$$max$($numbers$$) {
+  for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$ = 0;$$jscomp$restIndex$$ < arguments.length;++$$jscomp$restIndex$$) {
+    $$jscomp$restParams$$[$$jscomp$restIndex$$ - 0] = arguments[$$jscomp$restIndex$$];
+  }
+  return Numbers$$module$Algorithms$Numbers$Numbers.Maximum.apply(Numbers$$module$Algorithms$Numbers$Numbers, [].concat($jscomp.arrayFromIterable($$jscomp$restParams$$)));
 };
 JSAlgorithms$$module$Algorithms$JSAlgorithms.Mix(ArraysInterface$$module$Algorithms$Arrays$ArraysInterface, DatesInterface$$module$Algorithms$Dates$DatesInterface, BooleansInterface$$module$Algorithms$Booleans$BooleansInterface, LooperInterface$$module$Algorithms$Looper$LooperInterface);
 module$Algorithms$JSAlgorithms.JSAlgorithms = JSAlgorithms$$module$Algorithms$JSAlgorithms;
@@ -2253,26 +2335,15 @@ TestJSDom$$module$Dom$TestJSDom.prototype.testCss = function $TestJSDom$$module$
   module$Assert.Assert.Equal($cssObject$$.height, $getCssObject$$.height);
 };
 module$Dom$TestJSDom.TestJSDom = TestJSDom$$module$Dom$TestJSDom;
-var module$Library$LibraryInterfaceDefs = {}, ABSTRACT_ERROR$$module$Library$LibraryInterfaceDefs = "LibraryInterfaceDefs is an abstract function!", FILENAME$$module$Library$LibraryInterfaceDefs = "JSpyder/Library/LibraryInterfaceDefs";
-function LibraryInterfaceDefs$$module$Library$LibraryInterfaceDefs($args$$) {
-  for (var $$jscomp$restIndex$$ = 0;$$jscomp$restIndex$$ < arguments.length;++$$jscomp$restIndex$$) {
-  }
-  throw new JSError$$module$Error$JSError(ABSTRACT_ERROR$$module$Library$LibraryInterfaceDefs, FILENAME$$module$Library$LibraryInterfaceDefs);
-}
-LibraryInterfaceDefs$$module$Library$LibraryInterfaceDefs.register = function $LibraryInterfaceDefs$$module$Library$LibraryInterfaceDefs$register$($args$$) {
-  for (var $$jscomp$restIndex$$ = 0;$$jscomp$restIndex$$ < arguments.length;++$$jscomp$restIndex$$) {
-  }
-  throw new JSError$$module$Error$JSError(ABSTRACT_ERROR$$module$Library$LibraryInterfaceDefs, FILENAME$$module$Library$LibraryInterfaceDefs, "register()");
+var module$Library$LibraryInterfaceDefs = {}, LibraryInterfaceDefs$$module$Library$LibraryInterfaceDefs = function $LibraryInterfaceDefs$$module$Library$LibraryInterfaceDefs$() {
 };
-LibraryInterfaceDefs$$module$Library$LibraryInterfaceDefs.registerSet = function $LibraryInterfaceDefs$$module$Library$LibraryInterfaceDefs$registerSet$($args$$) {
-  for (var $$jscomp$restIndex$$ = 0;$$jscomp$restIndex$$ < arguments.length;++$$jscomp$restIndex$$) {
-  }
-  throw new JSError$$module$Error$JSError(ABSTRACT_ERROR$$module$Library$LibraryInterfaceDefs, FILENAME$$module$Library$LibraryInterfaceDefs, "register()");
+LibraryInterfaceDefs$$module$Library$LibraryInterfaceDefs.prototype.lib = function $LibraryInterfaceDefs$$module$Library$LibraryInterfaceDefs$$lib$($args$$) {
 };
-LibraryInterfaceDefs$$module$Library$LibraryInterfaceDefs.execute = function $LibraryInterfaceDefs$$module$Library$LibraryInterfaceDefs$execute$($args$$) {
-  for (var $$jscomp$restIndex$$ = 0;$$jscomp$restIndex$$ < arguments.length;++$$jscomp$restIndex$$) {
-  }
-  throw new JSError$$module$Error$JSError(ABSTRACT_ERROR$$module$Library$LibraryInterfaceDefs, FILENAME$$module$Library$LibraryInterfaceDefs, "register()");
+LibraryInterfaceDefs$$module$Library$LibraryInterfaceDefs.prototype.register = function $LibraryInterfaceDefs$$module$Library$LibraryInterfaceDefs$$register$($args$$) {
+};
+LibraryInterfaceDefs$$module$Library$LibraryInterfaceDefs.prototype.registerSet = function $LibraryInterfaceDefs$$module$Library$LibraryInterfaceDefs$$registerSet$($args$$) {
+};
+LibraryInterfaceDefs$$module$Library$LibraryInterfaceDefs.prototype.execute = function $LibraryInterfaceDefs$$module$Library$LibraryInterfaceDefs$$execute$($args$$) {
 };
 module$Library$LibraryInterfaceDefs.LibraryInterfaceDefs = LibraryInterfaceDefs$$module$Library$LibraryInterfaceDefs;
 var module$Library$JSLibrary = {}, JSLibrary$$module$Library$JSLibrary = function $JSLibrary$$module$Library$JSLibrary$($context$$) {
@@ -2284,35 +2355,36 @@ $jscomp.inherits(JSLibrary$$module$Library$JSLibrary, JSObject$$module$JSObject)
 JSLibrary$$module$Library$JSLibrary.Mix = JSObject$$module$JSObject.Mix;
 JSLibrary$$module$Library$JSLibrary.inPrototypeChain = JSObject$$module$JSObject.inPrototypeChain;
 JSLibrary$$module$Library$JSLibrary.prototype.GetInterface = function $JSLibrary$$module$Library$JSLibrary$$GetInterface$() {
-  function $JSLibraryInterface$$($args$$) {
+  var $jsLibrary$$ = this, $JSLibraryInterface$$ = function $$JSLibraryInterface$$$() {
+  };
+  $JSLibraryInterface$$.prototype.lib = function $$JSLibraryInterface$$$$lib$($args$$) {
     for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$ = 0;$$jscomp$restIndex$$ < arguments.length;++$$jscomp$restIndex$$) {
       $$jscomp$restParams$$[$$jscomp$restIndex$$ - 0] = arguments[$$jscomp$restIndex$$];
     }
     $jsLibrary$$.Execute.apply($jsLibrary$$, [].concat($jscomp.arrayFromIterable($$jscomp$restParams$$)));
-    return $JSLibraryInterface$$;
-  }
-  var $jsLibrary$$ = this;
-  $JSLibraryInterface$$.register = function $$JSLibraryInterface$$$register$($args$$) {
+    return this;
+  };
+  $JSLibraryInterface$$.prototype.register = function $$JSLibraryInterface$$$$register$($args$$) {
     for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$ = 0;$$jscomp$restIndex$$ < arguments.length;++$$jscomp$restIndex$$) {
       $$jscomp$restParams$$[$$jscomp$restIndex$$ - 0] = arguments[$$jscomp$restIndex$$];
     }
     $jsLibrary$$.Register.apply($jsLibrary$$, [].concat($jscomp.arrayFromIterable($$jscomp$restParams$$)));
-    return $JSLibraryInterface$$;
+    return this;
   };
-  $JSLibraryInterface$$.registerSet = function $$JSLibraryInterface$$$registerSet$($args$$) {
+  $JSLibraryInterface$$.prototype.registerSet = function $$JSLibraryInterface$$$$registerSet$($args$$) {
     for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$ = 0;$$jscomp$restIndex$$ < arguments.length;++$$jscomp$restIndex$$) {
       $$jscomp$restParams$$[$$jscomp$restIndex$$ - 0] = arguments[$$jscomp$restIndex$$];
     }
     $jsLibrary$$.RegisterSet.apply($jsLibrary$$, [].concat($jscomp.arrayFromIterable($$jscomp$restParams$$)));
-    return $JSLibraryInterface$$;
+    return this;
   };
-  $JSLibraryInterface$$.execute = function $$JSLibraryInterface$$$execute$($args$$) {
+  $JSLibraryInterface$$.prototype.execute = function $$JSLibraryInterface$$$$execute$($args$$) {
     for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$ = 0;$$jscomp$restIndex$$ < arguments.length;++$$jscomp$restIndex$$) {
       $$jscomp$restParams$$[$$jscomp$restIndex$$ - 0] = arguments[$$jscomp$restIndex$$];
     }
     return $jsLibrary$$.Execute.apply($jsLibrary$$, [].concat($jscomp.arrayFromIterable($$jscomp$restParams$$)));
   };
-  return $JSLibraryInterface$$;
+  return new $JSLibraryInterface$$;
 };
 JSLibrary$$module$Library$JSLibrary.prototype.Execute = function $JSLibrary$$module$Library$JSLibrary$$Execute$($functionName_lookupFunction$$, $argumentArray$$, $callbackFunction$$, $callbackArguments$$) {
   $argumentArray$$ = void 0 === $argumentArray$$ ? [] : $argumentArray$$;
@@ -2350,27 +2422,26 @@ TestJSLibrary$$module$Library$TestJSLibrary.prototype.testConstructor = function
   module$Assert.Assert.Equal(this, $jsLibrary$$._context, "Expected to be the context of the library");
 };
 TestJSLibrary$$module$Library$TestJSLibrary.prototype.testGetInterface = function $TestJSLibrary$$module$Library$TestJSLibrary$$testGetInterface$() {
-  var $jsLibraryInterface$$ = (new JSLibrary$$module$Library$JSLibrary(this)).GetInterface();
-  $jsLibraryInterface$$.register("test", function storedFunction($arg1$$, $arg2$$) {
+  this.jspyder.lib.register("test", function storedFunction($arg1$$, $arg2$$) {
     module$Assert.Assert.Equal(0, $arg1$$, "Stored Function Argument 1: " + $arg1$$);
     module$Assert.Assert.Equal(1, $arg2$$, "Stored Function Argument 2: " + $arg2$$);
     return !0;
   });
-  var $executed$$ = $jsLibraryInterface$$.execute("test", [0, 1]);
+  var $executed$$ = this.jspyder.lib.execute("test", [0, 1]);
   module$Assert.Assert.Equal(!0, $executed$$, "Expected function 'test' to return true; returned " + $executed$$);
   $executed$$ = !1;
-  $jsLibraryInterface$$("test", [0, 1], function($result$$) {
+  this.jspyder.lib("test", [0, 1], function($result$$) {
     module$Assert.Assert.Equal(!0, $result$$, "Expected callback to return true; returned " + $result$$);
     $executed$$ = !0;
   });
   module$Assert.Assert($executed$$, "Callback function failed to execute");
   var $i$$ = 0;
-  $jsLibraryInterface$$.registerSet({set1:function() {
+  this.jspyder.lib.registerSet({set1:function() {
     return ++$i$$;
   }, set2:function() {
     return ++$i$$;
   }});
-  $jsLibraryInterface$$("set1", null, function($x$$) {
+  this.jspyder.lib("set1", null, function($x$$) {
     module$Assert.Assert.Equal(1, $x$$);
     module$Assert.Assert.Equal($i$$, $x$$);
   })("set2", null, function($x$$) {
