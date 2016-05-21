@@ -770,11 +770,157 @@ Object.defineProperties(Browser$$module$Environment$Browser, {version:{configura
   return BROWSER_NAME$$module$Environment$Browser;
 }}});
 module$Environment$Browser.Browser = Browser$$module$Environment$Browser;
-var module$Algorithms$Numbers$Numbers = {}, Numbers$$module$Algorithms$Numbers$Numbers = function $Numbers$$module$Algorithms$Numbers$Numbers$() {
+var module$Algorithms$Numbers$Numbers = {}, USE_INT8_ARRAY$$module$Algorithms$Numbers$Numbers = "undefined" === typeof window.Int8Array, USE_UINT8_ARRAY$$module$Algorithms$Numbers$Numbers = "undefined" === typeof window.Uint8Array, USE_INT16_ARRAY$$module$Algorithms$Numbers$Numbers = "undefined" === typeof window.Int16Array, USE_UINT16_ARRAY$$module$Algorithms$Numbers$Numbers = "undefined" === typeof window.Uint16Array, USE_INT32_ARRAY$$module$Algorithms$Numbers$Numbers = "undefined" === typeof window.Int32Array, 
+USE_UINT32_ARRAY$$module$Algorithms$Numbers$Numbers = "undefined" === typeof window.Uint32Array, USE_FLOAT_ARRAY$$module$Algorithms$Numbers$Numbers = "undefined" === typeof window.Float32Array, USE_DOUBLE_ARRAY$$module$Algorithms$Numbers$Numbers = "undefined" === typeof window.Float64Array, CONST_RAD_TO_DEG$$module$Algorithms$Numbers$Numbers = 180 / Math.PI, CONST_DEG_TO_RAD$$module$Algorithms$Numbers$Numbers = Math.PI / 180, Numbers$$module$Algorithms$Numbers$Numbers = function $Numbers$$module$Algorithms$Numbers$Numbers$() {
 };
 Numbers$$module$Algorithms$Numbers$Numbers.ToNumber = function $Numbers$$module$Algorithms$Numbers$Numbers$ToNumber$($value$$, $defaultValue$$) {
   var $num$$ = +$value$$;
   return $num$$ == $value$$ && $num$$ === $num$$ ? $num$$ : void 0 === $defaultValue$$ ? 0 : $defaultValue$$;
+};
+Numbers$$module$Algorithms$Numbers$Numbers.ToInt8 = function $Numbers$$module$Algorithms$Numbers$Numbers$ToInt8$($value$$0$$) {
+  if (USE_INT8_ARRAY$$module$Algorithms$Numbers$Numbers) {
+    this.ToInt8 = function $this$ToInt8$($value$$) {
+      $value$$ = Numbers$$module$Algorithms$Numbers$Numbers.ToNumber($value$$);
+      for ($value$$ = ($value$$ === $value$$ ? $value$$ : 0) & 255;-128 > $value$$;) {
+        $value$$ += 256;
+      }
+      for (;127 < $value$$;) {
+        $value$$ -= 256;
+      }
+      return $value$$;
+    };
+  } else {
+    var $buffer$$ = new window.ArrayBuffer(1), $byteArray$$ = new window.Int8Array($buffer$$);
+    this.ToInt8 = function $this$ToInt8$($value$$) {
+      $byteArray$$[0] = Numbers$$module$Algorithms$Numbers$Numbers.ToNumber($value$$);
+      return $byteArray$$[0];
+    };
+  }
+  return this.ToInt8($value$$0$$);
+};
+Numbers$$module$Algorithms$Numbers$Numbers.ToUInt8 = function $Numbers$$module$Algorithms$Numbers$Numbers$ToUInt8$($value$$0$$) {
+  if (USE_UINT8_ARRAY$$module$Algorithms$Numbers$Numbers) {
+    this.ToUInt8 = function $this$ToUInt8$($value$$) {
+      $value$$ = Numbers$$module$Algorithms$Numbers$Numbers.ToNumber($value$$);
+      $value$$ = ($value$$ === $value$$ ? $value$$ : 0) & 255;
+      return 0 > $value$$ ? -$value$$ : $value$$;
+    };
+  } else {
+    var $buffer$$ = new ArrayBuffer(1), $byteArray$$ = new window.Uint8Array($buffer$$);
+    this.ToUInt8 = function $this$ToUInt8$($value$$) {
+      $byteArray$$[0] = $value$$;
+      return $byteArray$$[0];
+    };
+  }
+  return this.ToUInt8($value$$0$$);
+};
+Numbers$$module$Algorithms$Numbers$Numbers.ToInt16 = function $Numbers$$module$Algorithms$Numbers$Numbers$ToInt16$($value$$0$$) {
+  if (USE_INT16_ARRAY$$module$Algorithms$Numbers$Numbers) {
+    this.ToInt16 = function $this$ToInt16$($value$$) {
+      $value$$ = Numbers$$module$Algorithms$Numbers$Numbers.ToNumber($value$$);
+      for ($value$$ = ($value$$ === $value$$ ? $value$$ : 0) & 65535;-32768 > $value$$;) {
+        $value$$ += 65536;
+      }
+      for (;32767 < $value$$;) {
+        $value$$ -= 65536;
+      }
+      return $value$$;
+    };
+  } else {
+    var $buffer$$ = new ArrayBuffer(2), $byteArray$$ = new window.Int16Array($buffer$$);
+    this.ToInt16 = function $this$ToInt16$($value$$) {
+      $byteArray$$[0] = Numbers$$module$Algorithms$Numbers$Numbers.ToNumber($value$$);
+      return $byteArray$$[0];
+    };
+  }
+  return this.ToInt16($value$$0$$);
+};
+Numbers$$module$Algorithms$Numbers$Numbers.ToUInt16 = function $Numbers$$module$Algorithms$Numbers$Numbers$ToUInt16$($value$$0$$) {
+  if (USE_UINT16_ARRAY$$module$Algorithms$Numbers$Numbers) {
+    this.ToUInt16 = function $this$ToUInt16$($value$$) {
+      $value$$ = Numbers$$module$Algorithms$Numbers$Numbers.ToNumber($value$$);
+      $value$$ = ($value$$ === $value$$ ? $value$$ : 0) & 65535;
+      return 0 > $value$$ ? -$value$$ : $value$$;
+    };
+  } else {
+    var $buffer$$ = new ArrayBuffer(2), $byteArray$$ = new window.Uint16Array($buffer$$);
+    this.ToUInt16 = function $this$ToUInt16$($value$$) {
+      $byteArray$$[0] = Numbers$$module$Algorithms$Numbers$Numbers.ToNumber($value$$);
+      return $byteArray$$[0];
+    };
+  }
+  return this.ToUInt16($value$$0$$);
+};
+Numbers$$module$Algorithms$Numbers$Numbers.ToInt32 = function $Numbers$$module$Algorithms$Numbers$Numbers$ToInt32$($value$$0$$) {
+  if (USE_INT32_ARRAY$$module$Algorithms$Numbers$Numbers) {
+    this.ToInt32 = function $this$ToInt32$($value$$) {
+      $value$$ = Numbers$$module$Algorithms$Numbers$Numbers.ToNumber($value$$);
+      for ($value$$ = ($value$$ === $value$$ ? $value$$ : 0) & 4294967295;-2147483648 > $value$$;) {
+        $value$$ += 4294967296;
+      }
+      for (;2147483647 < $value$$;) {
+        $value$$ -= 4294967296;
+      }
+      return $value$$;
+    };
+  } else {
+    var $buffer$$ = new ArrayBuffer(4), $byteArray$$ = new window.Int32Array($buffer$$);
+    this.ToInt32 = function $this$ToInt32$($value$$) {
+      $byteArray$$[0] = Numbers$$module$Algorithms$Numbers$Numbers.ToNumber($value$$);
+      return $byteArray$$[0];
+    };
+  }
+  return this.ToInt32($value$$0$$);
+};
+Numbers$$module$Algorithms$Numbers$Numbers.ToUInt32 = function $Numbers$$module$Algorithms$Numbers$Numbers$ToUInt32$($value$$0$$) {
+  if (USE_UINT32_ARRAY$$module$Algorithms$Numbers$Numbers) {
+    this.ToUInt32 = function $this$ToUInt32$($value$$) {
+      $value$$ = Numbers$$module$Algorithms$Numbers$Numbers.ToNumber($value$$);
+      $value$$ = ($value$$ === $value$$ ? $value$$ : 0) % 4294967296;
+      return 0 > $value$$ ? -$value$$ : $value$$;
+    };
+  } else {
+    var $buffer$$ = new ArrayBuffer(4), $byteArray$$ = new window.Uint32Array($buffer$$);
+    this.ToUInt32 = function $this$ToUInt32$($value$$) {
+      $byteArray$$[0] = Numbers$$module$Algorithms$Numbers$Numbers.ToNumber($value$$);
+      return $byteArray$$[0];
+    };
+  }
+  return this.ToUInt32($value$$0$$);
+};
+Numbers$$module$Algorithms$Numbers$Numbers.ToFloat = function $Numbers$$module$Algorithms$Numbers$Numbers$ToFloat$($value$$0$$) {
+  if (USE_FLOAT_ARRAY$$module$Algorithms$Numbers$Numbers) {
+    this.ToFloat = function $this$ToFloat$($value$$) {
+      for (var $sign$$ = 0 < $value$$ ? 1 : -1, $exp$$ = 0, $base$$ = $value$$ * $sign$$, $frac$$ = 0;2 <= $base$$ || 1 > $base$$;) {
+        2 <= $base$$ && ($base$$ /= 2, $exp$$++), 1 > $base$$ && ($base$$ *= 2, $exp$$--);
+      }
+      $frac$$ = $value$$ / Math.pow(2, $exp$$) - 1;
+      $frac$$ = 1 + Math.round(8388608 * $frac$$) / 8388608;
+      return +($sign$$ * $frac$$ * Math.pow(2, $exp$$)).toPrecision(8);
+    };
+  } else {
+    var $buffer$$ = new ArrayBuffer(4), $byteArray$$ = new window.Float32Array($buffer$$);
+    this.ToFloat = function $this$ToFloat$($value$$) {
+      $byteArray$$[0] = Numbers$$module$Algorithms$Numbers$Numbers.ToNumber($value$$);
+      return +$byteArray$$[0].toPrecision(8);
+    };
+  }
+  return this.ToFloat($value$$0$$);
+};
+Numbers$$module$Algorithms$Numbers$Numbers.ToDouble = function $Numbers$$module$Algorithms$Numbers$Numbers$ToDouble$($value$$0$$) {
+  if (USE_DOUBLE_ARRAY$$module$Algorithms$Numbers$Numbers) {
+    this.ToDouble = function $this$ToDouble$($value$$) {
+      $value$$ = +Numbers$$module$Algorithms$Numbers$Numbers.ToNumber($value$$).toPrecision(16);
+      return $value$$ === $value$$ ? $value$$ : 0;
+    };
+  } else {
+    var $buffer$$ = new ArrayBuffer(8), $byteArray$$ = new window.Float64Array($buffer$$);
+    this.ToDouble = function $this$ToDouble$($value$$) {
+      $byteArray$$[0] = Numbers$$module$Algorithms$Numbers$Numbers.ToNumber($value$$);
+      return $byteArray$$[0];
+    };
+  }
+  return this.ToDouble($value$$0$$);
 };
 Numbers$$module$Algorithms$Numbers$Numbers.Magnitude = function $Numbers$$module$Algorithms$Numbers$Numbers$Magnitude$($num$$, $base$$) {
   $base$$ = void 0 === $base$$ ? 10 : $base$$;
@@ -799,6 +945,19 @@ Numbers$$module$Algorithms$Numbers$Numbers.Maximum = function $Numbers$$module$A
     $$jscomp$restParams$$[$i$$] > $$jscomp$restIndex$$ && ($$jscomp$restIndex$$ = $$jscomp$restParams$$[$i$$]);
   }
   return $$jscomp$restIndex$$;
+};
+Numbers$$module$Algorithms$Numbers$Numbers.DegreesToRadians = function $Numbers$$module$Algorithms$Numbers$Numbers$DegreesToRadians$($value$$, $defaultValue$$) {
+  return Numbers$$module$Algorithms$Numbers$Numbers.ToNumber($value$$, void 0 === $defaultValue$$ ? 0 : $defaultValue$$) * CONST_DEG_TO_RAD$$module$Algorithms$Numbers$Numbers;
+};
+Numbers$$module$Algorithms$Numbers$Numbers.RadiansToDegrees = function $Numbers$$module$Algorithms$Numbers$Numbers$RadiansToDegrees$($value$$, $defaultValue$$) {
+  return Numbers$$module$Algorithms$Numbers$Numbers.ToNumber($value$$, void 0 === $defaultValue$$ ? 0 : $defaultValue$$) * CONST_RAD_TO_DEG$$module$Algorithms$Numbers$Numbers;
+};
+Numbers$$module$Algorithms$Numbers$Numbers.MakeEnumeratedObject = function $Numbers$$module$Algorithms$Numbers$Numbers$MakeEnumeratedObject$($keys$$, $attachTo$$) {
+  $attachTo$$ = void 0 === $attachTo$$ ? {} : $attachTo$$;
+  for (var $value$$ = 1, $i$$ = 0, $li$$ = $keys$$.length;$i$$ < $li$$;++$i$$) {
+    Object.defineProperty($attachTo$$, $keys$$[$i$$], {value:$value$$}), $value$$ <<= 1;
+  }
+  return $attachTo$$;
 };
 module$Algorithms$Numbers$Numbers.Numbers = Numbers$$module$Algorithms$Numbers$Numbers;
 var module$Algorithms$Arrays$Arrays = {}, MAX_CHUNK_SIZE$$module$Algorithms$Arrays$Arrays = 8192, ARRAY_PROTOTYPE$$module$Algorithms$Arrays$Arrays = window.Array.prototype, ARRAY_SLICE$$module$Algorithms$Arrays$Arrays = ARRAY_PROTOTYPE$$module$Algorithms$Arrays$Arrays.slice, ARRAY_PUSH$$module$Algorithms$Arrays$Arrays = ARRAY_PROTOTYPE$$module$Algorithms$Arrays$Arrays.push, ARRAY$$module$Algorithms$Arrays$Arrays = window.Array, Arrays$$module$Algorithms$Arrays$Arrays = function $Arrays$$module$Algorithms$Arrays$Arrays$() {
@@ -832,24 +991,33 @@ Arrays$$module$Algorithms$Arrays$Arrays.SortArrayObjects = function $Arrays$$mod
   $array$$.sort(Arrays$$module$Algorithms$Arrays$Arrays.GetBestSortArrayObjectFunction($ascending$$, $$jscomp$restParams$$));
   return $array$$;
 };
-Arrays$$module$Algorithms$Arrays$Arrays.GetBestSortArrayObjectFunction = function $Arrays$$module$Algorithms$Arrays$Arrays$GetBestSortArrayObjectFunction$($ascending$$, $fields$$) {
-  switch(Browser$$module$Environment$Browser.name) {
-    case module$Environment$BrowserData.BROWSER_FIREFOX:
-      return function($left$$, $right$$) {
-        for (var $i$$ = 0;$left$$ && $right$$ && $i$$ < $fields$$.length;++$i$$) {
-          $left$$ = $left$$[$fields$$[$i$$]], $right$$ = $right$$[$fields$$[$i$$]];
-        }
-        return $ascending$$ ? $left$$ >= $right$$ : $left$$ <= $right$$;
-      };
-    default:
-      return function($left$$, $right$$) {
-        for (var $a$$1_i$$ = 0;$left$$ && $right$$ && $a$$1_i$$ < $fields$$.length;++$a$$1_i$$) {
-          $left$$ = $left$$[$fields$$[$a$$1_i$$]], $right$$ = $right$$[$fields$$[$a$$1_i$$]];
-        }
-        var $a$$1_i$$ = $ascending$$ ? $left$$ : $right$$, $b$$ = $ascending$$ ? $right$$ : $left$$;
-        return $a$$1_i$$ > $b$$ ? 1 : $a$$1_i$$ < $b$$ ? -1 : 0;
-      };
+Arrays$$module$Algorithms$Arrays$Arrays.GetBestSortArrayObjectFunction = function $Arrays$$module$Algorithms$Arrays$Arrays$GetBestSortArrayObjectFunction$($ascending$$0$$, $fields$$0$$) {
+  function $memoized$$($ascending$$, $fields$$) {
+    if ($__memo$$[$ascending$$]) {
+      return $__memo$$[$ascending$$];
+    }
+    switch(Browser$$module$Environment$Browser.name) {
+      case module$Environment$BrowserData.BROWSER_FIREFOX:
+        $__memo$$[$ascending$$] = function $$__memo$$$$ascending$$$($left$$, $right$$) {
+          for (var $i$$ = 0;$left$$ && $right$$ && $i$$ < $fields$$.length;++$i$$) {
+            $left$$ = $left$$[$fields$$[$i$$]], $right$$ = $right$$[$fields$$[$i$$]];
+          }
+          return $ascending$$ ? $left$$ >= $right$$ : $left$$ <= $right$$;
+        };
+      default:
+        $__memo$$[$ascending$$] = function $$__memo$$$$ascending$$$($left$$, $right$$) {
+          for (var $a$$1_i$$ = 0;$left$$ && $right$$ && $a$$1_i$$ < $fields$$.length;++$a$$1_i$$) {
+            $left$$ = $left$$[$fields$$[$a$$1_i$$]], $right$$ = $right$$[$fields$$[$a$$1_i$$]];
+          }
+          var $a$$1_i$$ = $ascending$$ ? $left$$ : $right$$, $b$$ = $ascending$$ ? $right$$ : $left$$;
+          return $a$$1_i$$ > $b$$ ? 1 : $a$$1_i$$ < $b$$ ? -1 : 0;
+        };
+    }
+    return $__memo$$[$ascending$$];
   }
+  var $__memo$$ = {};
+  this.GetBestSortArrayObjectFunction = $memoized$$;
+  return $memoized$$.apply(null, [].concat($jscomp.arrayFromIterable(arguments)));
 };
 Arrays$$module$Algorithms$Arrays$Arrays.WidePush = function $Arrays$$module$Algorithms$Arrays$Arrays$WidePush$($intoArray$$, $fromArray$$) {
   for (var $i$$ = 0, $end$$ = $fromArray$$.length;$i$$ < $end$$;$i$$ += MAX_CHUNK_SIZE$$module$Algorithms$Arrays$Arrays) {
@@ -879,6 +1047,9 @@ Assert$$module$Assert.NotEqual = function $Assert$$module$Assert$NotEqual$($notE
 };
 Assert$$module$Assert.Type = function $Assert$$module$Assert$Type$($expectedType$$, $object$$, $failMessage$$) {
   return Assert$$module$Assert.Equal($expectedType$$, typeof $object$$, void 0 === $failMessage$$ ? "Assert.Type Failed: Expected " + $expectedType$$ + ", received " + typeof $object$$ : $failMessage$$);
+};
+Assert$$module$Assert.Undefined = function $Assert$$module$Assert$Undefined$($object$$, $failMessage$$) {
+  return Assert$$module$Assert.Type("undefined", $object$$, $failMessage$$);
 };
 Assert$$module$Assert.Fail = function $Assert$$module$Assert$Fail$($failMessage$$) {
   return Assert$$module$Assert(!1, void 0 === $failMessage$$ ? "Test Not Built" : $failMessage$$);
@@ -915,11 +1086,11 @@ TestArrays$$module$Algorithms$Arrays$TestArrays.prototype.testSortArrayObjects =
   var $array$$ = [{foo:{bar:{baz:0}}}, {foo:{bar:{baz:9}}}, {foo:{bar:{baz:2}}}, {foo:{bar:{baz:7}}}, {foo:{bar:{baz:4}}}, {foo:{bar:{baz:5}}}, {foo:{bar:{baz:6}}}, {foo:{bar:{baz:3}}}, {foo:{bar:{baz:8}}}, {foo:{bar:{baz:1}}}];
   Arrays$$module$Algorithms$Arrays$Arrays.SortArrayObjects($array$$, !0, "foo", "bar", "baz");
   for (var $i$$ = 1;$i$$ < $array$$.length;++$i$$) {
-    module$Assert.Assert($array$$[$i$$].foo.bar.baz >= $array$$[$i$$ - 1].foo.bar.baz);
+    module$Assert.Assert($array$$[$i$$].foo.bar.baz >= $array$$[$i$$ - 1].foo.bar.baz, "Ascending Sort is in the wrong order at index " + ($i$$ - 1) + ": " + $array$$[$i$$].foo.bar.baz + " >= " + $array$$[$i$$ - 1].foo.bar.baz);
   }
   Arrays$$module$Algorithms$Arrays$Arrays.SortArrayObjects($array$$, !1, "foo", "bar", "baz");
   for ($i$$ = 1;$i$$ < $array$$.length;++$i$$) {
-    module$Assert.Assert($array$$[$i$$].foo.bar.baz <= $array$$[$i$$ - 1].foo.bar.baz);
+    module$Assert.Assert($array$$[$i$$].foo.bar.baz <= $array$$[$i$$ - 1].foo.bar.baz, "Descending Sort is in the wrong order at index " + ($i$$ - 1) + ": " + $array$$[$i$$].foo.bar.baz + " <= " + $array$$[$i$$ - 1].foo.bar.baz);
   }
 };
 TestArrays$$module$Algorithms$Arrays$TestArrays.prototype.testWidePush = function $TestArrays$$module$Algorithms$Arrays$TestArrays$$testWidePush$() {
@@ -941,30 +1112,14 @@ module$Algorithms$Arrays$TestArrays.TestArrays = TestArrays$$module$Algorithms$A
 var module$Algorithms$Arrays$ArraysInterface = {}, ArraysInterface$$module$Algorithms$Arrays$ArraysInterface = function $ArraysInterface$$module$Algorithms$Arrays$ArraysInterface$() {
 };
 ArraysInterface$$module$Algorithms$Arrays$ArraysInterface.prototype.array = function $ArraysInterface$$module$Algorithms$Arrays$ArraysInterface$$array$($value$$, $defaultValue$$) {
-  $defaultValue$$ = void 0 === $defaultValue$$ ? [] : $defaultValue$$;
-  return Arrays$$module$Algorithms$Arrays$Arrays.ToArray($value$$, $defaultValue$$);
 };
 ArraysInterface$$module$Algorithms$Arrays$ArraysInterface.prototype.joinArray = function $ArraysInterface$$module$Algorithms$Arrays$ArraysInterface$$joinArray$($arrayRef$$, $arraysFrom$$) {
-  for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$8_i$$ = 1;$$jscomp$restIndex$$8_i$$ < arguments.length;++$$jscomp$restIndex$$8_i$$) {
-    $$jscomp$restParams$$[$$jscomp$restIndex$$8_i$$ - 1] = arguments[$$jscomp$restIndex$$8_i$$];
-  }
-  for ($$jscomp$restIndex$$8_i$$ = 0;$$jscomp$restIndex$$8_i$$ < $$jscomp$restParams$$.length;++$$jscomp$restIndex$$8_i$$) {
-    Arrays$$module$Algorithms$Arrays$Arrays.WidePush($arrayRef$$, $$jscomp$restParams$$[$$jscomp$restIndex$$8_i$$]);
-  }
-  return $arrayRef$$;
 };
 ArraysInterface$$module$Algorithms$Arrays$ArraysInterface.prototype.sliceArray = function $ArraysInterface$$module$Algorithms$Arrays$ArraysInterface$$sliceArray$($array$$, $index$$, $end$$) {
-  $array$$ = void 0 === $array$$ ? [] : $array$$;
-  return Arrays$$module$Algorithms$Arrays$Arrays.Slice($array$$, void 0 === $index$$ ? 0 : $index$$, $end$$);
 };
 ArraysInterface$$module$Algorithms$Arrays$ArraysInterface.prototype.sortArrayNum = function $ArraysInterface$$module$Algorithms$Arrays$ArraysInterface$$sortArrayNum$($array$$, $ascending$$) {
-  return Arrays$$module$Algorithms$Arrays$Arrays.SortArrayNumbers($array$$, void 0 === $ascending$$ ? !0 : $ascending$$);
 };
 ArraysInterface$$module$Algorithms$Arrays$ArraysInterface.prototype.sortArrayObj = function $ArraysInterface$$module$Algorithms$Arrays$ArraysInterface$$sortArrayObj$($array$$, $ascending$$, $fields$$) {
-  for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$ = 2;$$jscomp$restIndex$$ < arguments.length;++$$jscomp$restIndex$$) {
-    $$jscomp$restParams$$[$$jscomp$restIndex$$ - 2] = arguments[$$jscomp$restIndex$$];
-  }
-  return Arrays$$module$Algorithms$Arrays$Arrays.SortArrayObjects.apply(Arrays$$module$Algorithms$Arrays$Arrays, [].concat([$array$$, void 0 === $ascending$$ ? !0 : $ascending$$], $jscomp.arrayFromIterable($$jscomp$restParams$$)));
 };
 module$Algorithms$Arrays$ArraysInterface.ArraysInterface = ArraysInterface$$module$Algorithms$Arrays$ArraysInterface;
 var module$Algorithms$Arrays$TestArraysInterface = {}, TestArraysInterface$$module$Algorithms$Arrays$TestArraysInterface = function $TestArraysInterface$$module$Algorithms$Arrays$TestArraysInterface$($jspyder$$) {
@@ -1064,7 +1219,6 @@ module$Algorithms$Booleans$TestBooleans.TestBooleans = TestBooleans$$module$Algo
 var module$Algorithms$Booleans$BooleansInterface = {}, BooleansInterface$$module$Algorithms$Booleans$BooleansInterface = function $BooleansInterface$$module$Algorithms$Booleans$BooleansInterface$() {
 };
 BooleansInterface$$module$Algorithms$Booleans$BooleansInterface.prototype.bool = function $BooleansInterface$$module$Algorithms$Booleans$BooleansInterface$$bool$($value$$, $defaultValue$$) {
-  return Booleans$$module$Algorithms$Booleans$Booleans.ToBoolean($value$$, void 0 === $defaultValue$$ ? !1 : $defaultValue$$);
 };
 module$Algorithms$Booleans$BooleansInterface.BooleansInterface = BooleansInterface$$module$Algorithms$Booleans$BooleansInterface;
 var module$Algorithms$Booleans$TestBooleansInterface = {}, TestBooleansInterface$$module$Algorithms$Booleans$TestBooleansInterface = function $TestBooleansInterface$$module$Algorithms$Booleans$TestBooleansInterface$($jspyder$$) {
@@ -1176,6 +1330,15 @@ Functions$$module$Algorithms$Functions$Functions.Bind = function $Functions$$mod
   return function() {
     $args$$ = $args$$.concat(Arrays$$module$Algorithms$Arrays$Arrays.Slice(arguments));
     return Functions$$module$Algorithms$Functions$Functions.Use($context$$, $useFunction$$, $args$$);
+  };
+};
+Functions$$module$Algorithms$Functions$Functions.Memoize = function $Functions$$module$Algorithms$Functions$Functions$Memoize$($memoizeFunction$$) {
+  var $memo$$ = {};
+  return function($args$$) {
+    for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$ = 0;$$jscomp$restIndex$$ < arguments.length;++$$jscomp$restIndex$$) {
+      $$jscomp$restParams$$[$$jscomp$restIndex$$ - 0] = arguments[$$jscomp$restIndex$$];
+    }
+    return $memo$$.hasOwnProperty($$jscomp$restParams$$) ? $memo$$[$$jscomp$restParams$$] : $memo$$[$$jscomp$restParams$$] = $memoizeFunction$$.apply(null, [].concat($jscomp.arrayFromIterable($$jscomp$restParams$$)));
   };
 };
 module$Algorithms$Functions$Functions.Functions = Functions$$module$Algorithms$Functions$Functions;
@@ -1303,11 +1466,11 @@ JSObject$$module$JSObject.prototype.use = function $JSObject$$module$JSObject$$u
   return this;
 };
 JSObject$$module$JSObject.Mix = function $JSObject$$module$JSObject$Mix$($Subs$$) {
-  for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$10_i$$ = 0;$$jscomp$restIndex$$10_i$$ < arguments.length;++$$jscomp$restIndex$$10_i$$) {
-    $$jscomp$restParams$$[$$jscomp$restIndex$$10_i$$ - 0] = arguments[$$jscomp$restIndex$$10_i$$];
+  for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$9_i$$ = 0;$$jscomp$restIndex$$9_i$$ < arguments.length;++$$jscomp$restIndex$$9_i$$) {
+    $$jscomp$restParams$$[$$jscomp$restIndex$$9_i$$ - 0] = arguments[$$jscomp$restIndex$$9_i$$];
   }
-  for ($$jscomp$restIndex$$10_i$$ = 0;$$jscomp$restIndex$$10_i$$ < $$jscomp$restParams$$.length;++$$jscomp$restIndex$$10_i$$) {
-    for (var $sub$$ = $$jscomp$restParams$$[$$jscomp$restIndex$$10_i$$], $properties$$ = Object.getOwnPropertyNames($sub$$.prototype), $j$$ = 0;$j$$ < $properties$$.length;++$j$$) {
+  for ($$jscomp$restIndex$$9_i$$ = 0;$$jscomp$restIndex$$9_i$$ < $$jscomp$restParams$$.length;++$$jscomp$restIndex$$9_i$$) {
+    for (var $sub$$ = $$jscomp$restParams$$[$$jscomp$restIndex$$9_i$$], $properties$$ = Object.getOwnPropertyNames($sub$$.prototype), $j$$ = 0;$j$$ < $properties$$.length;++$j$$) {
       var $property$$ = $properties$$[$j$$];
       "constructor" !== $property$$ && Object.defineProperty(this.prototype, $property$$, Object.getOwnPropertyDescriptor($sub$$.prototype, $property$$));
     }
@@ -1388,23 +1551,23 @@ Looper$$module$Algorithms$Looper$Looper.ObjectEach = function $Looper$$module$Al
   }
 };
 Looper$$module$Algorithms$Looper$Looper.ArrayEach = function $Looper$$module$Algorithms$Looper$Looper$ArrayEach$($array$$, $loopFunction$$, $data$$) {
-  for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$13_controller$$ = 2;$$jscomp$restIndex$$13_controller$$ < arguments.length;++$$jscomp$restIndex$$13_controller$$) {
-    $$jscomp$restParams$$[$$jscomp$restIndex$$13_controller$$ - 2] = arguments[$$jscomp$restIndex$$13_controller$$];
+  for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$12_controller$$ = 2;$$jscomp$restIndex$$12_controller$$ < arguments.length;++$$jscomp$restIndex$$12_controller$$) {
+    $$jscomp$restParams$$[$$jscomp$restIndex$$12_controller$$ - 2] = arguments[$$jscomp$restIndex$$12_controller$$];
   }
   if ($array$$ && "object" === typeof $array$$) {
-    for ($$jscomp$restIndex$$13_controller$$ = new ArrayLoopController$$module$Algorithms$Looper$LooperController($array$$), $$jscomp$restIndex$$13_controller$$.index = 0;$$jscomp$restIndex$$13_controller$$.index < $array$$.length && !$$jscomp$restIndex$$13_controller$$.breaking;++$$jscomp$restIndex$$13_controller$$.index) {
-      Functions$$module$Algorithms$Functions$Functions.Use($$jscomp$restIndex$$13_controller$$, $loopFunction$$, [].concat([$array$$[$$jscomp$restIndex$$13_controller$$.index], $$jscomp$restIndex$$13_controller$$.index, $array$$], $jscomp.arrayFromIterable($$jscomp$restParams$$)));
+    for ($$jscomp$restIndex$$12_controller$$ = new ArrayLoopController$$module$Algorithms$Looper$LooperController($array$$), $$jscomp$restIndex$$12_controller$$.index = 0;$$jscomp$restIndex$$12_controller$$.index < $array$$.length && !$$jscomp$restIndex$$12_controller$$.breaking;++$$jscomp$restIndex$$12_controller$$.index) {
+      Functions$$module$Algorithms$Functions$Functions.Use($$jscomp$restIndex$$12_controller$$, $loopFunction$$, [].concat([$array$$[$$jscomp$restIndex$$12_controller$$.index], $$jscomp$restIndex$$12_controller$$.index, $array$$], $jscomp.arrayFromIterable($$jscomp$restParams$$)));
     }
   }
 };
 Looper$$module$Algorithms$Looper$Looper.Iterate = function $Looper$$module$Algorithms$Looper$Looper$Iterate$($start$$, $end$$, $iterator$$, $data$$) {
-  for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$14_controller$$ = 3;$$jscomp$restIndex$$14_controller$$ < arguments.length;++$$jscomp$restIndex$$14_controller$$) {
-    $$jscomp$restParams$$[$$jscomp$restIndex$$14_controller$$ - 3] = arguments[$$jscomp$restIndex$$14_controller$$];
+  for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$13_controller$$ = 3;$$jscomp$restIndex$$13_controller$$ < arguments.length;++$$jscomp$restIndex$$13_controller$$) {
+    $$jscomp$restParams$$[$$jscomp$restIndex$$13_controller$$ - 3] = arguments[$$jscomp$restIndex$$13_controller$$];
   }
   $start$$ = Numbers$$module$Algorithms$Numbers$Numbers.ToNumber($start$$);
   $end$$ = Numbers$$module$Algorithms$Numbers$Numbers.ToNumber($end$$);
-  for (var $$jscomp$restIndex$$14_controller$$ = new LoopController$$module$Algorithms$Looper$LooperController(null), $step$$ = $end$$ < $start$$ ? -1 : 1, $i$$ = $start$$;$i$$ !== $end$$ && !$$jscomp$restIndex$$14_controller$$.breaking;$i$$ += $step$$) {
-    Functions$$module$Algorithms$Functions$Functions.Use($$jscomp$restIndex$$14_controller$$, $iterator$$, [].concat([$i$$], $jscomp.arrayFromIterable($$jscomp$restParams$$)));
+  for (var $$jscomp$restIndex$$13_controller$$ = new LoopController$$module$Algorithms$Looper$LooperController(null), $step$$ = $end$$ < $start$$ ? -1 : 1, $i$$ = $start$$;$i$$ !== $end$$ && !$$jscomp$restIndex$$13_controller$$.breaking;$i$$ += $step$$) {
+    Functions$$module$Algorithms$Functions$Functions.Use($$jscomp$restIndex$$13_controller$$, $iterator$$, [].concat([$i$$], $jscomp.arrayFromIterable($$jscomp$restParams$$)));
   }
 };
 module$Algorithms$Looper$Looper.Looper = Looper$$module$Algorithms$Looper$Looper;
@@ -1459,25 +1622,10 @@ module$Algorithms$Looper$TestLooper.TestLooper = TestLooper$$module$Algorithms$L
 var module$Algorithms$Looper$LooperInterface = {}, LooperInterface$$module$Algorithms$Looper$LooperInterface = function $LooperInterface$$module$Algorithms$Looper$LooperInterface$() {
 };
 LooperInterface$$module$Algorithms$Looper$LooperInterface.prototype.each = function $LooperInterface$$module$Algorithms$Looper$LooperInterface$$each$($object$$, $loopFunction$$, $data$$) {
-  for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$ = 2;$$jscomp$restIndex$$ < arguments.length;++$$jscomp$restIndex$$) {
-    $$jscomp$restParams$$[$$jscomp$restIndex$$ - 2] = arguments[$$jscomp$restIndex$$];
-  }
-  Looper$$module$Algorithms$Looper$Looper.ObjectEach.apply(Looper$$module$Algorithms$Looper$Looper, [].concat([$object$$, $loopFunction$$], $jscomp.arrayFromIterable($$jscomp$restParams$$)));
-  return this;
 };
 LooperInterface$$module$Algorithms$Looper$LooperInterface.prototype.arrEach = function $LooperInterface$$module$Algorithms$Looper$LooperInterface$$arrEach$($array$$, $loopFunction$$, $data$$) {
-  for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$ = 2;$$jscomp$restIndex$$ < arguments.length;++$$jscomp$restIndex$$) {
-    $$jscomp$restParams$$[$$jscomp$restIndex$$ - 2] = arguments[$$jscomp$restIndex$$];
-  }
-  Looper$$module$Algorithms$Looper$Looper.ArrayEach.apply(Looper$$module$Algorithms$Looper$Looper, [].concat([$array$$, $loopFunction$$], $jscomp.arrayFromIterable($$jscomp$restParams$$)));
-  return this;
 };
 LooperInterface$$module$Algorithms$Looper$LooperInterface.prototype.iterate = function $LooperInterface$$module$Algorithms$Looper$LooperInterface$$iterate$($start$$, $end$$, $iterator$$, $data$$) {
-  for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$ = 3;$$jscomp$restIndex$$ < arguments.length;++$$jscomp$restIndex$$) {
-    $$jscomp$restParams$$[$$jscomp$restIndex$$ - 3] = arguments[$$jscomp$restIndex$$];
-  }
-  Looper$$module$Algorithms$Looper$Looper.Iterate.apply(Looper$$module$Algorithms$Looper$Looper, [].concat([$start$$, $end$$, $iterator$$], $jscomp.arrayFromIterable($$jscomp$restParams$$)));
-  return this;
 };
 module$Algorithms$Looper$LooperInterface.LooperInterface = LooperInterface$$module$Algorithms$Looper$LooperInterface;
 var module$Algorithms$Looper$TestLooperInterface = {}, TestLooperInterface$$module$Algorithms$Looper$TestLooperInterface = function $TestLooperInterface$$module$Algorithms$Looper$TestLooperInterface$($jspyder$$) {
@@ -1509,7 +1657,9 @@ TestLooperInterface$$module$Algorithms$Looper$TestLooperInterface.prototype.test
   });
 };
 module$Algorithms$Looper$TestLooperInterface.TestLooperInterface = TestLooperInterface$$module$Algorithms$Looper$TestLooperInterface;
-var module$Algorithms$Numbers$TestNumbers = {}, TestNumbers$$module$Algorithms$Numbers$TestNumbers = function $TestNumbers$$module$Algorithms$Numbers$TestNumbers$() {
+var module$Algorithms$Numbers$TestNumbers = {}, PI$$module$Algorithms$Numbers$TestNumbers = function $PI$$module$Algorithms$Numbers$TestNumbers$($n$$) {
+  return Math.PI * $n$$;
+}, TestNumbers$$module$Algorithms$Numbers$TestNumbers = function $TestNumbers$$module$Algorithms$Numbers$TestNumbers$() {
   TestObject$$module$TestObject.call(this, "Algorithms/Numbers/Numbers");
   this.autoloadTests();
   this.startTests();
@@ -1542,6 +1692,105 @@ TestNumbers$$module$Algorithms$Numbers$TestNumbers.prototype.testMagnitude = fun
   module$Assert.Assert.Equal(16, Numbers$$module$Algorithms$Numbers$Numbers.Magnitude(15, 16));
   module$Assert.Assert.Equal(32, Numbers$$module$Algorithms$Numbers$Numbers.Magnitude(17, 16));
   module$Assert.Assert.Equal(176, Numbers$$module$Algorithms$Numbers$Numbers.Magnitude(161, 16));
+};
+TestNumbers$$module$Algorithms$Numbers$TestNumbers.prototype.testToInt8 = function $TestNumbers$$module$Algorithms$Numbers$TestNumbers$$testToInt8$() {
+  module$Assert.Assert.Equal(-128, Numbers$$module$Algorithms$Numbers$Numbers.ToInt8(128));
+  module$Assert.Assert.Equal(127, Numbers$$module$Algorithms$Numbers$Numbers.ToInt8(127));
+  module$Assert.Assert.Equal(-1, Numbers$$module$Algorithms$Numbers$Numbers.ToInt8(255));
+  module$Assert.Assert.Equal(0, Numbers$$module$Algorithms$Numbers$Numbers.ToInt8(256));
+  module$Assert.Assert.Equal(0, Numbers$$module$Algorithms$Numbers$Numbers.ToInt8(0));
+};
+TestNumbers$$module$Algorithms$Numbers$TestNumbers.prototype.testToUInt8 = function $TestNumbers$$module$Algorithms$Numbers$TestNumbers$$testToUInt8$() {
+  module$Assert.Assert.Equal(128, Numbers$$module$Algorithms$Numbers$Numbers.ToUInt8(128));
+  module$Assert.Assert.Equal(127, Numbers$$module$Algorithms$Numbers$Numbers.ToUInt8(127));
+  module$Assert.Assert.Equal(255, Numbers$$module$Algorithms$Numbers$Numbers.ToUInt8(255));
+  module$Assert.Assert.Equal(0, Numbers$$module$Algorithms$Numbers$Numbers.ToUInt8(256));
+  module$Assert.Assert.Equal(0, Numbers$$module$Algorithms$Numbers$Numbers.ToUInt8(0));
+};
+TestNumbers$$module$Algorithms$Numbers$TestNumbers.prototype.testToInt16 = function $TestNumbers$$module$Algorithms$Numbers$TestNumbers$$testToInt16$() {
+  module$Assert.Assert.Equal(-32768, Numbers$$module$Algorithms$Numbers$Numbers.ToInt16(32768));
+  module$Assert.Assert.Equal(32767, Numbers$$module$Algorithms$Numbers$Numbers.ToInt16(32767));
+  module$Assert.Assert.Equal(-1, Numbers$$module$Algorithms$Numbers$Numbers.ToInt16(65535));
+  module$Assert.Assert.Equal(0, Numbers$$module$Algorithms$Numbers$Numbers.ToInt16(65536));
+  module$Assert.Assert.Equal(0, Numbers$$module$Algorithms$Numbers$Numbers.ToInt16(0));
+};
+TestNumbers$$module$Algorithms$Numbers$TestNumbers.prototype.testToUInt16 = function $TestNumbers$$module$Algorithms$Numbers$TestNumbers$$testToUInt16$() {
+  module$Assert.Assert.Equal(32768, Numbers$$module$Algorithms$Numbers$Numbers.ToUInt16(32768));
+  module$Assert.Assert.Equal(32767, Numbers$$module$Algorithms$Numbers$Numbers.ToUInt16(32767));
+  module$Assert.Assert.Equal(65535, Numbers$$module$Algorithms$Numbers$Numbers.ToUInt16(65535));
+  module$Assert.Assert.Equal(0, Numbers$$module$Algorithms$Numbers$Numbers.ToUInt16(65536));
+  module$Assert.Assert.Equal(0, Numbers$$module$Algorithms$Numbers$Numbers.ToUInt16(0));
+};
+TestNumbers$$module$Algorithms$Numbers$TestNumbers.prototype.testToInt32 = function $TestNumbers$$module$Algorithms$Numbers$TestNumbers$$testToInt32$() {
+  module$Assert.Assert.Equal(-2147483648, Numbers$$module$Algorithms$Numbers$Numbers.ToInt32(2147483648));
+  module$Assert.Assert.Equal(2147483647, Numbers$$module$Algorithms$Numbers$Numbers.ToInt32(2147483647));
+  module$Assert.Assert.Equal(-1, Numbers$$module$Algorithms$Numbers$Numbers.ToInt32(4294967295));
+  module$Assert.Assert.Equal(0, Numbers$$module$Algorithms$Numbers$Numbers.ToInt32(4294967296));
+  module$Assert.Assert.Equal(0, Numbers$$module$Algorithms$Numbers$Numbers.ToInt32(0));
+};
+TestNumbers$$module$Algorithms$Numbers$TestNumbers.prototype.testToUInt32 = function $TestNumbers$$module$Algorithms$Numbers$TestNumbers$$testToUInt32$() {
+  module$Assert.Assert.Equal(2147483648, Numbers$$module$Algorithms$Numbers$Numbers.ToUInt32(2147483648));
+  module$Assert.Assert.Equal(2147483647, Numbers$$module$Algorithms$Numbers$Numbers.ToUInt32(2147483647));
+  module$Assert.Assert.Equal(4294967295, Numbers$$module$Algorithms$Numbers$Numbers.ToUInt32(4294967295));
+  module$Assert.Assert.Equal(0, Numbers$$module$Algorithms$Numbers$Numbers.ToUInt32(4294967296));
+  module$Assert.Assert.Equal(0, Numbers$$module$Algorithms$Numbers$Numbers.ToUInt32(0));
+};
+TestNumbers$$module$Algorithms$Numbers$TestNumbers.prototype.testToFloat = function $TestNumbers$$module$Algorithms$Numbers$TestNumbers$$testToFloat$() {
+  module$Assert.Assert.Equal(.21212122, Numbers$$module$Algorithms$Numbers$Numbers.ToFloat(.212121212));
+};
+TestNumbers$$module$Algorithms$Numbers$TestNumbers.prototype.testToDouble = function $TestNumbers$$module$Algorithms$Numbers$TestNumbers$$testToDouble$() {
+  module$Assert.Assert.Equal(.212121212, Numbers$$module$Algorithms$Numbers$Numbers.ToDouble(.212121212));
+};
+TestNumbers$$module$Algorithms$Numbers$TestNumbers.prototype.testMinimum = function $TestNumbers$$module$Algorithms$Numbers$TestNumbers$$testMinimum$() {
+  module$Assert.Assert.Equal(0, Numbers$$module$Algorithms$Numbers$Numbers.Minimum.apply(Numbers$$module$Algorithms$Numbers$Numbers, [].concat($jscomp.arrayFromIterable([9, 0, 8, 1, 7, 2, 6, 3, 5, 4]))));
+};
+TestNumbers$$module$Algorithms$Numbers$TestNumbers.prototype.testMaximum = function $TestNumbers$$module$Algorithms$Numbers$TestNumbers$$testMaximum$() {
+  module$Assert.Assert.Equal(9, Numbers$$module$Algorithms$Numbers$Numbers.Maximum.apply(Numbers$$module$Algorithms$Numbers$Numbers, [].concat($jscomp.arrayFromIterable([9, 0, 8, 1, 7, 2, 6, 3, 5, 4]))));
+};
+TestNumbers$$module$Algorithms$Numbers$TestNumbers.prototype.testDegreesToRadians = function $TestNumbers$$module$Algorithms$Numbers$TestNumbers$$testDegreesToRadians$() {
+  module$Assert.Assert.Equal(PI$$module$Algorithms$Numbers$TestNumbers(0), Numbers$$module$Algorithms$Numbers$Numbers.DegreesToRadians(0), "0 Degrees");
+  module$Assert.Assert.Equal(PI$$module$Algorithms$Numbers$TestNumbers(1 / 6), Numbers$$module$Algorithms$Numbers$Numbers.DegreesToRadians(30), "30 Degrees");
+  module$Assert.Assert.Equal(PI$$module$Algorithms$Numbers$TestNumbers(.25), Numbers$$module$Algorithms$Numbers$Numbers.DegreesToRadians(45), "45 Degrees");
+  module$Assert.Assert.Equal(PI$$module$Algorithms$Numbers$TestNumbers(1 / 3), Numbers$$module$Algorithms$Numbers$Numbers.DegreesToRadians(60), "60 Degrees");
+  module$Assert.Assert.Equal(PI$$module$Algorithms$Numbers$TestNumbers(.5), Numbers$$module$Algorithms$Numbers$Numbers.DegreesToRadians(90), "90 Degrees");
+  module$Assert.Assert.Equal(PI$$module$Algorithms$Numbers$TestNumbers(2 / 3), Numbers$$module$Algorithms$Numbers$Numbers.DegreesToRadians(120), "120 Degrees");
+  module$Assert.Assert.Equal(PI$$module$Algorithms$Numbers$TestNumbers(.75), Numbers$$module$Algorithms$Numbers$Numbers.DegreesToRadians(135), "135 Degrees");
+  module$Assert.Assert.Equal(PI$$module$Algorithms$Numbers$TestNumbers(5 / 6), Numbers$$module$Algorithms$Numbers$Numbers.DegreesToRadians(150), "150 Degrees");
+  module$Assert.Assert.Equal(PI$$module$Algorithms$Numbers$TestNumbers(1), Numbers$$module$Algorithms$Numbers$Numbers.DegreesToRadians(180), "180 Degrees");
+  module$Assert.Assert.Equal(3.6651914291880923, Numbers$$module$Algorithms$Numbers$Numbers.DegreesToRadians(210), "210 Degrees");
+  module$Assert.Assert.Equal(PI$$module$Algorithms$Numbers$TestNumbers(1.25), Numbers$$module$Algorithms$Numbers$Numbers.DegreesToRadians(225), "225 Degrees");
+  module$Assert.Assert.Equal(PI$$module$Algorithms$Numbers$TestNumbers(4 / 3), Numbers$$module$Algorithms$Numbers$Numbers.DegreesToRadians(240), "240 Degrees");
+  module$Assert.Assert.Equal(PI$$module$Algorithms$Numbers$TestNumbers(1.5), Numbers$$module$Algorithms$Numbers$Numbers.DegreesToRadians(270), "270 Degrees");
+  module$Assert.Assert.Equal(PI$$module$Algorithms$Numbers$TestNumbers(5 / 3), Numbers$$module$Algorithms$Numbers$Numbers.DegreesToRadians(300), "300 Degrees");
+  module$Assert.Assert.Equal(PI$$module$Algorithms$Numbers$TestNumbers(1.75), Numbers$$module$Algorithms$Numbers$Numbers.DegreesToRadians(315), "315 Degrees");
+  module$Assert.Assert.Equal(PI$$module$Algorithms$Numbers$TestNumbers(11 / 6), Numbers$$module$Algorithms$Numbers$Numbers.DegreesToRadians(330), "330 Degrees");
+  module$Assert.Assert.Equal(PI$$module$Algorithms$Numbers$TestNumbers(2), Numbers$$module$Algorithms$Numbers$Numbers.DegreesToRadians(360), "360 Degrees");
+};
+TestNumbers$$module$Algorithms$Numbers$TestNumbers.prototype.testRadiansToDegrees = function $TestNumbers$$module$Algorithms$Numbers$TestNumbers$$testRadiansToDegrees$() {
+  module$Assert.Assert.Equal(0, Math.round(Numbers$$module$Algorithms$Numbers$Numbers.RadiansToDegrees(PI$$module$Algorithms$Numbers$TestNumbers(0))), "0&pi; Radians");
+  module$Assert.Assert.Equal(30, Math.round(Numbers$$module$Algorithms$Numbers$Numbers.RadiansToDegrees(PI$$module$Algorithms$Numbers$TestNumbers(1 / 6))), "1&pi;/6 Radians");
+  module$Assert.Assert.Equal(45, Math.round(Numbers$$module$Algorithms$Numbers$Numbers.RadiansToDegrees(PI$$module$Algorithms$Numbers$TestNumbers(.25))), "1&pi;/4 Radians");
+  module$Assert.Assert.Equal(60, Math.round(Numbers$$module$Algorithms$Numbers$Numbers.RadiansToDegrees(PI$$module$Algorithms$Numbers$TestNumbers(1 / 3))), "1&pi;/3 Radians");
+  module$Assert.Assert.Equal(90, Math.round(Numbers$$module$Algorithms$Numbers$Numbers.RadiansToDegrees(PI$$module$Algorithms$Numbers$TestNumbers(.5))), "1&pi;/2 Radians");
+  module$Assert.Assert.Equal(120, Math.round(Numbers$$module$Algorithms$Numbers$Numbers.RadiansToDegrees(PI$$module$Algorithms$Numbers$TestNumbers(2 / 3))), "2&pi;/3 Radians");
+  module$Assert.Assert.Equal(135, Math.round(Numbers$$module$Algorithms$Numbers$Numbers.RadiansToDegrees(PI$$module$Algorithms$Numbers$TestNumbers(.75))), "3&pi;/4 Radians");
+  module$Assert.Assert.Equal(150, Math.round(Numbers$$module$Algorithms$Numbers$Numbers.RadiansToDegrees(PI$$module$Algorithms$Numbers$TestNumbers(5 / 6))), "5&pi;/6 Radians");
+  module$Assert.Assert.Equal(180, Math.round(Numbers$$module$Algorithms$Numbers$Numbers.RadiansToDegrees(PI$$module$Algorithms$Numbers$TestNumbers(1))), "1&pi;/1 Radians");
+  module$Assert.Assert.Equal(210, Math.round(Numbers$$module$Algorithms$Numbers$Numbers.RadiansToDegrees(3.6651914291880923)), "7&pi;/6 Radians");
+  module$Assert.Assert.Equal(225, Math.round(Numbers$$module$Algorithms$Numbers$Numbers.RadiansToDegrees(PI$$module$Algorithms$Numbers$TestNumbers(1.25))), "5&pi;/4 Radians");
+  module$Assert.Assert.Equal(240, Math.round(Numbers$$module$Algorithms$Numbers$Numbers.RadiansToDegrees(PI$$module$Algorithms$Numbers$TestNumbers(4 / 3))), "4&pi;/3 Radians");
+  module$Assert.Assert.Equal(270, Math.round(Numbers$$module$Algorithms$Numbers$Numbers.RadiansToDegrees(PI$$module$Algorithms$Numbers$TestNumbers(1.5))), "3&pi;/2 Radians");
+  module$Assert.Assert.Equal(300, Math.round(Numbers$$module$Algorithms$Numbers$Numbers.RadiansToDegrees(PI$$module$Algorithms$Numbers$TestNumbers(5 / 3))), "5&pi;/3 Radians");
+  module$Assert.Assert.Equal(315, Math.round(Numbers$$module$Algorithms$Numbers$Numbers.RadiansToDegrees(PI$$module$Algorithms$Numbers$TestNumbers(1.75))), "7&pi;/4 Radians");
+  module$Assert.Assert.Equal(330, Math.round(Numbers$$module$Algorithms$Numbers$Numbers.RadiansToDegrees(PI$$module$Algorithms$Numbers$TestNumbers(11 / 6))), "1&pi;/6 Radians");
+  module$Assert.Assert.Equal(360, Math.round(Numbers$$module$Algorithms$Numbers$Numbers.RadiansToDegrees(PI$$module$Algorithms$Numbers$TestNumbers(2))), "2&pi;/1 Radians");
+};
+TestNumbers$$module$Algorithms$Numbers$TestNumbers.prototype.testMakeEnumeratedObject = function $TestNumbers$$module$Algorithms$Numbers$TestNumbers$$testMakeEnumeratedObject$() {
+  var $keys$$ = "ABCDEF".split(""), $n$$ = 1, $object$$ = {};
+  Numbers$$module$Algorithms$Numbers$Numbers.MakeEnumeratedObject($keys$$, $object$$);
+  for (var $i$$ = 0, $li$$ = $keys$$.length;$i$$ < $li$$;++$i$$) {
+    module$Assert.Assert.Equal($n$$, $object$$[$keys$$[$i$$]]), $n$$ <<= 1;
+  }
 };
 module$Algorithms$Numbers$TestNumbers.TestNumbers = TestNumbers$$module$Algorithms$Numbers$TestNumbers;
 var module$Algorithms$Numbers$NumbersInterface = {}, NumbersInterface$$module$Algorithms$Numbers$NumbersInterface = function $NumbersInterface$$module$Algorithms$Numbers$NumbersInterface$() {
@@ -1577,7 +1826,9 @@ NumbersInterface$$module$Algorithms$Numbers$NumbersInterface.prototype.rad2deg =
 NumbersInterface$$module$Algorithms$Numbers$NumbersInterface.prototype.deg2rad = function $NumbersInterface$$module$Algorithms$Numbers$NumbersInterface$$deg2rad$($number$$, $defaultValue$$) {
 };
 module$Algorithms$Numbers$NumbersInterface.NumbersInterface = NumbersInterface$$module$Algorithms$Numbers$NumbersInterface;
-var module$Algorithms$Numbers$TestNumbersInterface = {}, TestNumbersInterface$$module$Algorithms$Numbers$TestNumbersInterface = function $TestNumbersInterface$$module$Algorithms$Numbers$TestNumbersInterface$($jspyder$$) {
+var module$Algorithms$Numbers$TestNumbersInterface = {}, PI$$module$Algorithms$Numbers$TestNumbersInterface = function $PI$$module$Algorithms$Numbers$TestNumbersInterface$($n$$) {
+  return Math.PI * $n$$;
+}, TestNumbersInterface$$module$Algorithms$Numbers$TestNumbersInterface = function $TestNumbersInterface$$module$Algorithms$Numbers$TestNumbersInterface$($jspyder$$) {
   TestObject$$module$TestObject.call(this, "Algorithms/Numbers/NumbersInterface");
   this.jspyder = $jspyder$$;
   this.autoloadTests();
@@ -1613,46 +1864,150 @@ TestNumbersInterface$$module$Algorithms$Numbers$TestNumbersInterface.prototype.t
   module$Assert.Assert.Equal(0, this.jspyder.alg.number(!1), "Boolean False");
 };
 TestNumbersInterface$$module$Algorithms$Numbers$TestNumbersInterface.prototype.testMin = function $TestNumbersInterface$$module$Algorithms$Numbers$TestNumbersInterface$$testMin$() {
-  module$Assert.Assert.Fail();
+  module$Assert.Assert.Equal(0, this.jspyder.alg.min.apply(this.jspyder.alg, [].concat($jscomp.arrayFromIterable([9, 0, 8, 1, 7, 2, 6, 3, 5, 4]))));
 };
 TestNumbersInterface$$module$Algorithms$Numbers$TestNumbersInterface.prototype.testMax = function $TestNumbersInterface$$module$Algorithms$Numbers$TestNumbersInterface$$testMax$() {
-  module$Assert.Assert.Fail();
+  module$Assert.Assert.Equal(9, this.jspyder.alg.max.apply(this.jspyder.alg, [].concat($jscomp.arrayFromIterable([9, 0, 8, 1, 7, 2, 6, 3, 5, 4]))));
 };
 TestNumbersInterface$$module$Algorithms$Numbers$TestNumbersInterface.prototype.testByte = function $TestNumbersInterface$$module$Algorithms$Numbers$TestNumbersInterface$$testByte$() {
-  module$Assert.Assert.Fail();
+  module$Assert.Assert.Equal(-128, this.jspyder.alg.byte(128));
+  module$Assert.Assert.Equal(127, this.jspyder.alg.byte(127));
+  module$Assert.Assert.Equal(-1, this.jspyder.alg.byte(255));
+  module$Assert.Assert.Equal(0, this.jspyder.alg.byte(256));
+  module$Assert.Assert.Equal(0, this.jspyder.alg.byte(0));
 };
 TestNumbersInterface$$module$Algorithms$Numbers$TestNumbersInterface.prototype.testUByte = function $TestNumbersInterface$$module$Algorithms$Numbers$TestNumbersInterface$$testUByte$() {
-  module$Assert.Assert.Fail();
+  module$Assert.Assert.Equal(128, this.jspyder.alg.ubyte(128));
+  module$Assert.Assert.Equal(127, this.jspyder.alg.ubyte(127));
+  module$Assert.Assert.Equal(255, this.jspyder.alg.ubyte(255));
+  module$Assert.Assert.Equal(0, this.jspyder.alg.ubyte(256));
+  module$Assert.Assert.Equal(0, this.jspyder.alg.ubyte(0));
 };
 TestNumbersInterface$$module$Algorithms$Numbers$TestNumbersInterface.prototype.testShort = function $TestNumbersInterface$$module$Algorithms$Numbers$TestNumbersInterface$$testShort$() {
-  module$Assert.Assert.Fail();
+  module$Assert.Assert.Equal(-32768, this.jspyder.alg.short(32768));
+  module$Assert.Assert.Equal(32767, this.jspyder.alg.short(32767));
+  module$Assert.Assert.Equal(-1, this.jspyder.alg.short(65535));
+  module$Assert.Assert.Equal(0, this.jspyder.alg.short(65536));
+  module$Assert.Assert.Equal(0, this.jspyder.alg.short(0));
 };
 TestNumbersInterface$$module$Algorithms$Numbers$TestNumbersInterface.prototype.testUShort = function $TestNumbersInterface$$module$Algorithms$Numbers$TestNumbersInterface$$testUShort$() {
-  module$Assert.Assert.Fail();
+  module$Assert.Assert.Equal(32768, this.jspyder.alg.ushort(32768));
+  module$Assert.Assert.Equal(32767, this.jspyder.alg.ushort(32767));
+  module$Assert.Assert.Equal(65535, this.jspyder.alg.ushort(65535));
+  module$Assert.Assert.Equal(0, this.jspyder.alg.ushort(65536));
+  module$Assert.Assert.Equal(0, this.jspyder.alg.ushort(0));
 };
 TestNumbersInterface$$module$Algorithms$Numbers$TestNumbersInterface.prototype.testInt = function $TestNumbersInterface$$module$Algorithms$Numbers$TestNumbersInterface$$testInt$() {
-  module$Assert.Assert.Fail();
+  module$Assert.Assert.Equal(-2147483648, this.jspyder.alg.int(2147483648));
+  module$Assert.Assert.Equal(2147483647, this.jspyder.alg.int(2147483647));
+  module$Assert.Assert.Equal(-1, this.jspyder.alg.int(4294967295));
+  module$Assert.Assert.Equal(0, this.jspyder.alg.int(4294967296));
+  module$Assert.Assert.Equal(0, this.jspyder.alg.int(0));
 };
 TestNumbersInterface$$module$Algorithms$Numbers$TestNumbersInterface.prototype.testUInt = function $TestNumbersInterface$$module$Algorithms$Numbers$TestNumbersInterface$$testUInt$() {
-  module$Assert.Assert.Fail();
+  module$Assert.Assert.Equal(2147483648, this.jspyder.alg.uint(2147483648));
+  module$Assert.Assert.Equal(2147483647, this.jspyder.alg.uint(2147483647));
+  module$Assert.Assert.Equal(4294967295, this.jspyder.alg.uint(4294967295));
+  module$Assert.Assert.Equal(0, this.jspyder.alg.uint(4294967296));
+  module$Assert.Assert.Equal(0, this.jspyder.alg.uint(0));
 };
 TestNumbersInterface$$module$Algorithms$Numbers$TestNumbersInterface.prototype.testFloat = function $TestNumbersInterface$$module$Algorithms$Numbers$TestNumbersInterface$$testFloat$() {
-  module$Assert.Assert.Fail();
+  module$Assert.Assert.Equal(.21212122, this.jspyder.alg.float(.212121212));
 };
 TestNumbersInterface$$module$Algorithms$Numbers$TestNumbersInterface.prototype.testDouble = function $TestNumbersInterface$$module$Algorithms$Numbers$TestNumbersInterface$$testDouble$() {
-  module$Assert.Assert.Fail();
+  module$Assert.Assert.Equal(.212121212, this.jspyder.alg.double(.212121212));
 };
 TestNumbersInterface$$module$Algorithms$Numbers$TestNumbersInterface.prototype.testMakeEnum = function $TestNumbersInterface$$module$Algorithms$Numbers$TestNumbersInterface$$testMakeEnum$() {
-  module$Assert.Assert.Fail();
+  var $keys$$ = "ABCDEF".split(""), $n$$ = 1, $object$$ = {};
+  this.jspyder.alg.makeEnum($keys$$, $object$$);
+  for (var $i$$ = 0, $li$$ = $keys$$.length;$i$$ < $li$$;++$i$$) {
+    module$Assert.Assert.Equal($n$$, $object$$[$keys$$[$i$$]]), $n$$ <<= 1;
+  }
 };
 TestNumbersInterface$$module$Algorithms$Numbers$TestNumbersInterface.prototype.testRad2Deg = function $TestNumbersInterface$$module$Algorithms$Numbers$TestNumbersInterface$$testRad2Deg$() {
-  module$Assert.Assert.Fail();
+  module$Assert.Assert.Equal(0, Math.round(this.jspyder.alg.rad2deg(PI$$module$Algorithms$Numbers$TestNumbersInterface(0))), "0&pi; Radians");
+  module$Assert.Assert.Equal(30, Math.round(this.jspyder.alg.rad2deg(PI$$module$Algorithms$Numbers$TestNumbersInterface(1 / 6))), "1&pi;/6 Radians");
+  module$Assert.Assert.Equal(45, Math.round(this.jspyder.alg.rad2deg(PI$$module$Algorithms$Numbers$TestNumbersInterface(.25))), "1&pi;/4 Radians");
+  module$Assert.Assert.Equal(60, Math.round(this.jspyder.alg.rad2deg(PI$$module$Algorithms$Numbers$TestNumbersInterface(1 / 3))), "1&pi;/3 Radians");
+  module$Assert.Assert.Equal(90, Math.round(this.jspyder.alg.rad2deg(PI$$module$Algorithms$Numbers$TestNumbersInterface(.5))), "1&pi;/2 Radians");
+  module$Assert.Assert.Equal(120, Math.round(this.jspyder.alg.rad2deg(PI$$module$Algorithms$Numbers$TestNumbersInterface(2 / 3))), "2&pi;/3 Radians");
+  module$Assert.Assert.Equal(135, Math.round(this.jspyder.alg.rad2deg(PI$$module$Algorithms$Numbers$TestNumbersInterface(.75))), "3&pi;/4 Radians");
+  module$Assert.Assert.Equal(150, Math.round(this.jspyder.alg.rad2deg(PI$$module$Algorithms$Numbers$TestNumbersInterface(5 / 6))), "5&pi;/6 Radians");
+  module$Assert.Assert.Equal(180, Math.round(this.jspyder.alg.rad2deg(PI$$module$Algorithms$Numbers$TestNumbersInterface(1))), "1&pi;/1 Radians");
+  module$Assert.Assert.Equal(210, Math.round(this.jspyder.alg.rad2deg(3.6651914291880923)), "7&pi;/6 Radians");
+  module$Assert.Assert.Equal(225, Math.round(this.jspyder.alg.rad2deg(PI$$module$Algorithms$Numbers$TestNumbersInterface(1.25))), "5&pi;/4 Radians");
+  module$Assert.Assert.Equal(240, Math.round(this.jspyder.alg.rad2deg(PI$$module$Algorithms$Numbers$TestNumbersInterface(4 / 3))), "4&pi;/3 Radians");
+  module$Assert.Assert.Equal(270, Math.round(this.jspyder.alg.rad2deg(PI$$module$Algorithms$Numbers$TestNumbersInterface(1.5))), "3&pi;/2 Radians");
+  module$Assert.Assert.Equal(300, Math.round(this.jspyder.alg.rad2deg(PI$$module$Algorithms$Numbers$TestNumbersInterface(5 / 3))), "5&pi;/3 Radians");
+  module$Assert.Assert.Equal(315, Math.round(this.jspyder.alg.rad2deg(PI$$module$Algorithms$Numbers$TestNumbersInterface(1.75))), "7&pi;/4 Radians");
+  module$Assert.Assert.Equal(330, Math.round(this.jspyder.alg.rad2deg(PI$$module$Algorithms$Numbers$TestNumbersInterface(11 / 6))), "1&pi;/6 Radians");
+  module$Assert.Assert.Equal(360, Math.round(this.jspyder.alg.rad2deg(PI$$module$Algorithms$Numbers$TestNumbersInterface(2))), "2&pi;/1 Radians");
 };
 TestNumbersInterface$$module$Algorithms$Numbers$TestNumbersInterface.prototype.testDeg2Rad = function $TestNumbersInterface$$module$Algorithms$Numbers$TestNumbersInterface$$testDeg2Rad$() {
-  module$Assert.Assert.Fail();
+  module$Assert.Assert.Equal(PI$$module$Algorithms$Numbers$TestNumbersInterface(0), this.jspyder.alg.deg2rad(0), "0 Degrees");
+  module$Assert.Assert.Equal(PI$$module$Algorithms$Numbers$TestNumbersInterface(1 / 6), this.jspyder.alg.deg2rad(30), "30 Degrees");
+  module$Assert.Assert.Equal(PI$$module$Algorithms$Numbers$TestNumbersInterface(.25), this.jspyder.alg.deg2rad(45), "45 Degrees");
+  module$Assert.Assert.Equal(PI$$module$Algorithms$Numbers$TestNumbersInterface(1 / 3), this.jspyder.alg.deg2rad(60), "60 Degrees");
+  module$Assert.Assert.Equal(PI$$module$Algorithms$Numbers$TestNumbersInterface(.5), this.jspyder.alg.deg2rad(90), "90 Degrees");
+  module$Assert.Assert.Equal(PI$$module$Algorithms$Numbers$TestNumbersInterface(2 / 3), this.jspyder.alg.deg2rad(120), "120 Degrees");
+  module$Assert.Assert.Equal(PI$$module$Algorithms$Numbers$TestNumbersInterface(.75), this.jspyder.alg.deg2rad(135), "135 Degrees");
+  module$Assert.Assert.Equal(PI$$module$Algorithms$Numbers$TestNumbersInterface(5 / 6), this.jspyder.alg.deg2rad(150), "150 Degrees");
+  module$Assert.Assert.Equal(PI$$module$Algorithms$Numbers$TestNumbersInterface(1), this.jspyder.alg.deg2rad(180), "180 Degrees");
+  module$Assert.Assert.Equal(3.6651914291880923, this.jspyder.alg.deg2rad(210), "210 Degrees");
+  module$Assert.Assert.Equal(PI$$module$Algorithms$Numbers$TestNumbersInterface(1.25), this.jspyder.alg.deg2rad(225), "225 Degrees");
+  module$Assert.Assert.Equal(PI$$module$Algorithms$Numbers$TestNumbersInterface(4 / 3), this.jspyder.alg.deg2rad(240), "240 Degrees");
+  module$Assert.Assert.Equal(PI$$module$Algorithms$Numbers$TestNumbersInterface(1.5), this.jspyder.alg.deg2rad(270), "270 Degrees");
+  module$Assert.Assert.Equal(PI$$module$Algorithms$Numbers$TestNumbersInterface(5 / 3), this.jspyder.alg.deg2rad(300), "300 Degrees");
+  module$Assert.Assert.Equal(PI$$module$Algorithms$Numbers$TestNumbersInterface(1.75), this.jspyder.alg.deg2rad(315), "315 Degrees");
+  module$Assert.Assert.Equal(PI$$module$Algorithms$Numbers$TestNumbersInterface(11 / 6), this.jspyder.alg.deg2rad(330), "330 Degrees");
+  module$Assert.Assert.Equal(PI$$module$Algorithms$Numbers$TestNumbersInterface(2), this.jspyder.alg.deg2rad(360), "360 Degrees");
 };
 module$Algorithms$Numbers$TestNumbersInterface.TestNumbersInterface = TestNumbersInterface$$module$Algorithms$Numbers$TestNumbersInterface;
 var module$Algorithms$Objects$Objects = {}, Objects$$module$Algorithms$Objects$Objects = function $Objects$$module$Algorithms$Objects$Objects$() {
+};
+Objects$$module$Algorithms$Objects$Objects.ToObject = function $Objects$$module$Algorithms$Objects$Objects$ToObject$($value$$, $defaultValue$$) {
+  $defaultValue$$ = void 0 === $defaultValue$$ ? {} : $defaultValue$$;
+  return null !== $value$$ && Objects$$module$Algorithms$Objects$Objects.IsObject($value$$) ? $value$$ : $defaultValue$$;
+};
+Objects$$module$Algorithms$Objects$Objects.IsObject = function $Objects$$module$Algorithms$Objects$Objects$IsObject$($value$$) {
+  return Object.prototype.isPrototypeOf($value$$);
+};
+Objects$$module$Algorithms$Objects$Objects.MergeObjects = function $Objects$$module$Algorithms$Objects$Objects$MergeObjects$($base$$, $subs$$) {
+  for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$14_i$$ = 1;$$jscomp$restIndex$$14_i$$ < arguments.length;++$$jscomp$restIndex$$14_i$$) {
+    $$jscomp$restParams$$[$$jscomp$restIndex$$14_i$$ - 1] = arguments[$$jscomp$restIndex$$14_i$$];
+  }
+  for (var $$jscomp$restIndex$$14_i$$ = 0, $li$$ = $$jscomp$restParams$$.length;$$jscomp$restIndex$$14_i$$ < $li$$;++$$jscomp$restIndex$$14_i$$) {
+    var $sub$$ = $$jscomp$restParams$$[$$jscomp$restIndex$$14_i$$];
+    if ($sub$$) {
+      for (var $properties$$ = Object.getOwnPropertyNames($sub$$), $j$$ = 0, $lj$$ = $properties$$.length;$j$$ < $lj$$;++$j$$) {
+        var $property$$ = $properties$$[$j$$], $subProperty$$ = $sub$$[$property$$], $baseProperty$$ = $base$$[$property$$], $baseObject$$ = Objects$$module$Algorithms$Objects$Objects.IsObject($baseProperty$$), $subObject$$ = Objects$$module$Algorithms$Objects$Objects.IsObject($subProperty$$);
+        $subObject$$ ? $subObject$$ && ($baseObject$$ || ($baseProperty$$ = {}), $base$$[$property$$] = Objects$$module$Algorithms$Objects$Objects.MergeObjects($baseProperty$$, $subProperty$$)) : $base$$[$property$$] = $subProperty$$;
+      }
+    }
+  }
+  return $base$$;
+};
+Objects$$module$Algorithms$Objects$Objects.CloneObject = function $Objects$$module$Algorithms$Objects$Objects$CloneObject$($object$$) {
+  if (!$object$$) {
+    return $object$$;
+  }
+  for (var $cloned$$ = {}, $properties$$ = Object.getOwnPropertyNames($object$$), $i$$ = 0, $li$$ = $properties$$.length;$i$$ < $li$$;++$i$$) {
+    var $property$$ = $properties$$[$i$$];
+    $cloned$$[$property$$] = $object$$[$property$$];
+  }
+  return $cloned$$;
+};
+Objects$$module$Algorithms$Objects$Objects.DeepCloneObject = function $Objects$$module$Algorithms$Objects$Objects$DeepCloneObject$($object$$) {
+  return $object$$ ? Objects$$module$Algorithms$Objects$Objects.MergeObjects({}, $object$$) : $object$$;
+};
+Objects$$module$Algorithms$Objects$Objects.GetProperty = function $Objects$$module$Algorithms$Objects$Objects$GetProperty$($object$$, $keyChain$$) {
+  for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$15_i$$ = 1;$$jscomp$restIndex$$15_i$$ < arguments.length;++$$jscomp$restIndex$$15_i$$) {
+    $$jscomp$restParams$$[$$jscomp$restIndex$$15_i$$ - 1] = arguments[$$jscomp$restIndex$$15_i$$];
+  }
+  for (var $$jscomp$restIndex$$15_i$$ = 0, $li$$ = $$jscomp$restParams$$.length;$$jscomp$restIndex$$15_i$$ < $li$$ && $object$$;++$$jscomp$restIndex$$15_i$$) {
+    $object$$ = $object$$[$$jscomp$restParams$$[$$jscomp$restIndex$$15_i$$]];
+  }
+  return $object$$;
 };
 module$Algorithms$Objects$Objects.Objects = Objects$$module$Algorithms$Objects$Objects;
 var module$Algorithms$Objects$TestObjects = {}, TestObjects$$module$Algorithms$Objects$TestObjects = function $TestObjects$$module$Algorithms$Objects$TestObjects$() {
@@ -1662,20 +2017,61 @@ var module$Algorithms$Objects$TestObjects = {}, TestObjects$$module$Algorithms$O
 };
 $jscomp.inherits(TestObjects$$module$Algorithms$Objects$TestObjects, TestObject$$module$TestObject);
 TestObjects$$module$Algorithms$Objects$TestObjects.setLogger = TestObject$$module$TestObject.setLogger;
+TestObjects$$module$Algorithms$Objects$TestObjects.prototype.testToObject = function $TestObjects$$module$Algorithms$Objects$TestObjects$$testToObject$() {
+  var $defaultObject$$ = {};
+  module$Assert.Assert.Equal($defaultObject$$, Objects$$module$Algorithms$Objects$Objects.ToObject(null, $defaultObject$$));
+  module$Assert.Assert.Equal($defaultObject$$, Objects$$module$Algorithms$Objects$Objects.ToObject(!0, $defaultObject$$));
+  module$Assert.Assert.Equal($defaultObject$$, Objects$$module$Algorithms$Objects$Objects.ToObject(!1, $defaultObject$$));
+  module$Assert.Assert.Equal($defaultObject$$, Objects$$module$Algorithms$Objects$Objects.ToObject("test", $defaultObject$$));
+  module$Assert.Assert.Equal($defaultObject$$, Objects$$module$Algorithms$Objects$Objects.ToObject(7, $defaultObject$$));
+  module$Assert.Assert.Equal($defaultObject$$, Objects$$module$Algorithms$Objects$Objects.ToObject($defaultObject$$));
+};
+TestObjects$$module$Algorithms$Objects$TestObjects.prototype.testIsObject = function $TestObjects$$module$Algorithms$Objects$TestObjects$$testIsObject$() {
+  module$Assert.Assert.Equal(!0, Objects$$module$Algorithms$Objects$Objects.IsObject({}), "Object");
+  module$Assert.Assert.Equal(!1, Objects$$module$Algorithms$Objects$Objects.IsObject(null), "Null");
+  module$Assert.Assert.Equal(!0, Objects$$module$Algorithms$Objects$Objects.IsObject(function() {
+  }), "function() {}");
+  module$Assert.Assert.Equal(!0, Objects$$module$Algorithms$Objects$Objects.IsObject(new Function), "Function");
+  module$Assert.Assert.Equal(!1, Objects$$module$Algorithms$Objects$Objects.IsObject(!1), "false");
+  module$Assert.Assert.Equal(!1, Objects$$module$Algorithms$Objects$Objects.IsObject(!0), "true");
+  module$Assert.Assert.Equal(!1, Objects$$module$Algorithms$Objects$Objects.IsObject("string"), "string");
+};
+TestObjects$$module$Algorithms$Objects$TestObjects.prototype.testMergeObjects = function $TestObjects$$module$Algorithms$Objects$TestObjects$$testMergeObjects$() {
+  var $object$$ = {foo:{bar:!1}}, $merged$$ = Objects$$module$Algorithms$Objects$Objects.MergeObjects($object$$, {foo:{bar:{baz:!0}}});
+  module$Assert.Assert.Equal($object$$, $merged$$, "Returns param1");
+  module$Assert.Assert.Equal(!0, $merged$$.foo.bar.baz, "Muti-level merge");
+};
+TestObjects$$module$Algorithms$Objects$TestObjects.prototype.testCloneObject = function $TestObjects$$module$Algorithms$Objects$TestObjects$$testCloneObject$() {
+  var $object$$ = {foo:{bar:{baz:!0}}}, $cloned$$ = Objects$$module$Algorithms$Objects$Objects.CloneObject($object$$);
+  module$Assert.Assert.NotEqual($object$$, $cloned$$, "Different Objects");
+  module$Assert.Assert.Equal($object$$.foo, $cloned$$.foo, "Shared level-2 values");
+};
+TestObjects$$module$Algorithms$Objects$TestObjects.prototype.testDeepCloneObject = function $TestObjects$$module$Algorithms$Objects$TestObjects$$testDeepCloneObject$() {
+  var $object$$ = {foo:{bar:{baz:!0}}}, $cloned$$ = Objects$$module$Algorithms$Objects$Objects.DeepCloneObject($object$$);
+  module$Assert.Assert.NotEqual($object$$, $cloned$$, "Different Objects");
+  module$Assert.Assert.NotEqual($object$$.foo, $cloned$$.foo, "Different level-2 values");
+  module$Assert.Assert.NotEqual($object$$.foo.bar, $cloned$$.foo.bar, "Different level-3 values");
+  module$Assert.Assert.Equal($object$$.foo.bar.baz, $cloned$$.foo.bar.baz, "Shared Primitives");
+};
+TestObjects$$module$Algorithms$Objects$TestObjects.prototype.testGetProperty = function $TestObjects$$module$Algorithms$Objects$TestObjects$$testGetProperty$() {
+  var $object$$ = {foo:{bar:{baz:!0}}};
+  module$Assert.Assert.Equal(!0, Objects$$module$Algorithms$Objects$Objects.GetProperty($object$$, "foo", "bar", "baz"));
+  module$Assert.Assert.Undefined(Objects$$module$Algorithms$Objects$Objects.GetProperty($object$$, "undefinedProperty"));
+};
 module$Algorithms$Objects$TestObjects.TestObjects = TestObjects$$module$Algorithms$Objects$TestObjects;
-var module$Algorithms$Objects$ObjectsInterface = {}, Objects$$module$Algorithms$Objects$ObjectsInterface = function $Objects$$module$Algorithms$Objects$ObjectsInterface$() {
+var module$Algorithms$Objects$ObjectsInterface = {}, ObjectsInterface$$module$Algorithms$Objects$ObjectsInterface = function $ObjectsInterface$$module$Algorithms$Objects$ObjectsInterface$() {
 };
-Objects$$module$Algorithms$Objects$ObjectsInterface.prototype.object = function $Objects$$module$Algorithms$Objects$ObjectsInterface$$object$($value$$, $defaultValue$$) {
+ObjectsInterface$$module$Algorithms$Objects$ObjectsInterface.prototype.object = function $ObjectsInterface$$module$Algorithms$Objects$ObjectsInterface$$object$($value$$, $defaultValue$$) {
 };
-Objects$$module$Algorithms$Objects$ObjectsInterface.prototype.mergeObj = function $Objects$$module$Algorithms$Objects$ObjectsInterface$$mergeObj$($base$$, $subs$$) {
+ObjectsInterface$$module$Algorithms$Objects$ObjectsInterface.prototype.mergeObj = function $ObjectsInterface$$module$Algorithms$Objects$ObjectsInterface$$mergeObj$($base$$, $subs$$) {
 };
-Objects$$module$Algorithms$Objects$ObjectsInterface.prototype.cloneObj = function $Objects$$module$Algorithms$Objects$ObjectsInterface$$cloneObj$($object$$) {
+ObjectsInterface$$module$Algorithms$Objects$ObjectsInterface.prototype.cloneObj = function $ObjectsInterface$$module$Algorithms$Objects$ObjectsInterface$$cloneObj$($object$$) {
 };
-Objects$$module$Algorithms$Objects$ObjectsInterface.prototype.deepCloneObj = function $Objects$$module$Algorithms$Objects$ObjectsInterface$$deepCloneObj$($object$$) {
+ObjectsInterface$$module$Algorithms$Objects$ObjectsInterface.prototype.deepCloneObj = function $ObjectsInterface$$module$Algorithms$Objects$ObjectsInterface$$deepCloneObj$($object$$) {
 };
-Objects$$module$Algorithms$Objects$ObjectsInterface.prototype.property = function $Objects$$module$Algorithms$Objects$ObjectsInterface$$property$($object$$, $levels$$) {
+ObjectsInterface$$module$Algorithms$Objects$ObjectsInterface.prototype.property = function $ObjectsInterface$$module$Algorithms$Objects$ObjectsInterface$$property$($object$$, $levels$$) {
 };
-module$Algorithms$Objects$ObjectsInterface.Objects = Objects$$module$Algorithms$Objects$ObjectsInterface;
+module$Algorithms$Objects$ObjectsInterface.ObjectsInterface = ObjectsInterface$$module$Algorithms$Objects$ObjectsInterface;
 var module$Algorithms$Objects$TestObjectsInterface = {}, TestObjectsInterface$$module$Algorithms$Objects$TestObjectsInterface = function $TestObjectsInterface$$module$Algorithms$Objects$TestObjectsInterface$($jspyder$$) {
   TestObject$$module$TestObject.call(this, "Algorithms/Objects/ObjectsInterface");
   this.jspyder = $jspyder$$;
@@ -1685,19 +2081,35 @@ var module$Algorithms$Objects$TestObjectsInterface = {}, TestObjectsInterface$$m
 $jscomp.inherits(TestObjectsInterface$$module$Algorithms$Objects$TestObjectsInterface, TestObject$$module$TestObject);
 TestObjectsInterface$$module$Algorithms$Objects$TestObjectsInterface.setLogger = TestObject$$module$TestObject.setLogger;
 TestObjectsInterface$$module$Algorithms$Objects$TestObjectsInterface.prototype.testObject = function $TestObjectsInterface$$module$Algorithms$Objects$TestObjectsInterface$$testObject$() {
-  module$Assert.Assert.Fail();
+  var $defaultObject$$ = {};
+  module$Assert.Assert.Equal($defaultObject$$, this.jspyder.alg.object(null, $defaultObject$$));
+  module$Assert.Assert.Equal($defaultObject$$, this.jspyder.alg.object(!0, $defaultObject$$));
+  module$Assert.Assert.Equal($defaultObject$$, this.jspyder.alg.object(!1, $defaultObject$$));
+  module$Assert.Assert.Equal($defaultObject$$, this.jspyder.alg.object("test", $defaultObject$$));
+  module$Assert.Assert.Equal($defaultObject$$, this.jspyder.alg.object(7, $defaultObject$$));
+  module$Assert.Assert.Equal($defaultObject$$, this.jspyder.alg.object($defaultObject$$));
 };
 TestObjectsInterface$$module$Algorithms$Objects$TestObjectsInterface.prototype.testMergeObj = function $TestObjectsInterface$$module$Algorithms$Objects$TestObjectsInterface$$testMergeObj$() {
-  module$Assert.Assert.Fail();
+  var $object$$ = {foo:{bar:!1}}, $merged$$ = this.jspyder.alg.mergeObj($object$$, {foo:{bar:{baz:!0}}});
+  module$Assert.Assert.Equal($object$$, $merged$$, "Returns param1");
+  module$Assert.Assert.Equal(!0, $merged$$.foo.bar.baz, "Muti-level merge");
 };
 TestObjectsInterface$$module$Algorithms$Objects$TestObjectsInterface.prototype.testCloneObj = function $TestObjectsInterface$$module$Algorithms$Objects$TestObjectsInterface$$testCloneObj$() {
-  module$Assert.Assert.Fail();
+  var $object$$ = {foo:{bar:{baz:!0}}}, $cloned$$ = this.jspyder.alg.cloneObj($object$$);
+  module$Assert.Assert.NotEqual($object$$, $cloned$$, "Different Objects");
+  module$Assert.Assert.Equal($object$$.foo, $cloned$$.foo, "Shared level-2 values");
 };
 TestObjectsInterface$$module$Algorithms$Objects$TestObjectsInterface.prototype.testDeepCloneObj = function $TestObjectsInterface$$module$Algorithms$Objects$TestObjectsInterface$$testDeepCloneObj$() {
-  module$Assert.Assert.Fail();
+  var $object$$ = {foo:{bar:{baz:!0}}}, $cloned$$ = this.jspyder.alg.deepCloneObj($object$$);
+  module$Assert.Assert.NotEqual($object$$, $cloned$$, "Different Objects");
+  module$Assert.Assert.NotEqual($object$$.foo, $cloned$$.foo, "Different level-2 values");
+  module$Assert.Assert.NotEqual($object$$.foo.bar, $cloned$$.foo.bar, "Different level-3 values");
+  module$Assert.Assert.Equal($object$$.foo.bar.baz, $cloned$$.foo.bar.baz, "Shared Primitives");
 };
 TestObjectsInterface$$module$Algorithms$Objects$TestObjectsInterface.prototype.testProperty = function $TestObjectsInterface$$module$Algorithms$Objects$TestObjectsInterface$$testProperty$() {
-  module$Assert.Assert.Fail();
+  var $object$$ = {foo:{bar:{baz:!0}}};
+  module$Assert.Assert.Equal(!0, this.jspyder.alg.property($object$$, "foo", "bar", "baz"));
+  module$Assert.Assert.Undefined(this.jspyder.alg.property($object$$, "undefinedProperty"));
 };
 module$Algorithms$Objects$TestObjectsInterface.TestObjectsInterface = TestObjectsInterface$$module$Algorithms$Objects$TestObjectsInterface;
 var module$Algorithms$Strings$Strings = {}, CONST_REGEXP_UNSAFE_CHARACTERS$$module$Algorithms$Strings$Strings = /[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, CONST_STRING_UNSAFE_REPLACEMENT$$module$Algorithms$Strings$Strings = "\\$&", CONST_REGEXP_TO_STRING_MATCH$$module$Algorithms$Strings$Strings = /^\/(.*)\/[a-z]*$/, Strings$$module$Algorithms$Strings$Strings = function $Strings$$module$Algorithms$Strings$Strings$() {
@@ -1753,10 +2165,23 @@ var module$Algorithms$Strings$TestStringsInterface = {}, TestStringsInterface$$m
 $jscomp.inherits(TestStringsInterface$$module$Algorithms$Strings$TestStringsInterface, TestObject$$module$TestObject);
 TestStringsInterface$$module$Algorithms$Strings$TestStringsInterface.setLogger = TestObject$$module$TestObject.setLogger;
 TestStringsInterface$$module$Algorithms$Strings$TestStringsInterface.prototype.testString = function $TestStringsInterface$$module$Algorithms$Strings$TestStringsInterface$$testString$() {
-  module$Assert.Assert.Fail();
+  var $object$$ = {toString:function() {
+    return "test";
+  }};
+  module$Assert.Assert.Equal("test", this.jspyder.alg.string($object$$), "String Conversion");
+  module$Assert.Assert.Equal($object$$.toString(), this.jspyder.alg.string($object$$), "Object Conversion with toString");
+  module$Assert.Assert.Equal("", this.jspyder.alg.string(null), "Null to blank string");
+  module$Assert.Assert.Equal("0", this.jspyder.alg.string(0), "Zero");
+  module$Assert.Assert.Equal("1", this.jspyder.alg.string(1), "One");
+  module$Assert.Assert.Equal("true", this.jspyder.alg.string(!0), "True");
+  module$Assert.Assert.Equal("false", this.jspyder.alg.string(!1), "False");
+  module$Assert.Assert.Equal(!1, this.jspyder.alg.string(null, !1), "Null,False");
 };
 TestStringsInterface$$module$Algorithms$Strings$TestStringsInterface.prototype.testEscapeString = function $TestStringsInterface$$module$Algorithms$Strings$TestStringsInterface$$testEscapeString$() {
-  module$Assert.Assert.Fail();
+  module$Assert.Assert.Equal("\\-\\*\\+\\?\\.\\\\\\^\\$\\|", this.jspyder.alg.escapeString("-*+?.\\^$|"));
+  module$Assert.Assert.Equal("\\[\\]", this.jspyder.alg.escapeString("[]"));
+  module$Assert.Assert.Equal("\\{\\}", this.jspyder.alg.escapeString("{}"));
+  module$Assert.Assert.Equal("\\(\\)", this.jspyder.alg.escapeString("()"));
 };
 module$Algorithms$Strings$TestStringsInterface.TestStringsInterface = TestStringsInterface$$module$Algorithms$Strings$TestStringsInterface;
 var module$Algorithms$KeyCodes$KeyCodesInterface = {}, KeyCodesInterface$$module$Algorithms$KeyCodes$KeyCodesInterface = function $KeyCodesInterface$$module$Algorithms$KeyCodes$KeyCodesInterface$() {
@@ -1774,6 +2199,35 @@ var module$Algorithms$JSAlgorithms = {}, JSAlgorithms$$module$Algorithms$JSAlgor
 $jscomp.inherits(JSAlgorithms$$module$Algorithms$JSAlgorithms, JSObject$$module$JSObject);
 JSAlgorithms$$module$Algorithms$JSAlgorithms.Mix = JSObject$$module$JSObject.Mix;
 JSAlgorithms$$module$Algorithms$JSAlgorithms.inPrototypeChain = JSObject$$module$JSObject.inPrototypeChain;
+JSAlgorithms$$module$Algorithms$JSAlgorithms.prototype.array = function $JSAlgorithms$$module$Algorithms$JSAlgorithms$$array$($value$$, $defaultValue$$) {
+  $defaultValue$$ = void 0 === $defaultValue$$ ? [] : $defaultValue$$;
+  return Arrays$$module$Algorithms$Arrays$Arrays.ToArray($value$$, $defaultValue$$);
+};
+JSAlgorithms$$module$Algorithms$JSAlgorithms.prototype.joinArray = function $JSAlgorithms$$module$Algorithms$JSAlgorithms$$joinArray$($arrayRef$$, $arraysFrom$$) {
+  for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$16_i$$ = 1;$$jscomp$restIndex$$16_i$$ < arguments.length;++$$jscomp$restIndex$$16_i$$) {
+    $$jscomp$restParams$$[$$jscomp$restIndex$$16_i$$ - 1] = arguments[$$jscomp$restIndex$$16_i$$];
+  }
+  for ($$jscomp$restIndex$$16_i$$ = 0;$$jscomp$restIndex$$16_i$$ < $$jscomp$restParams$$.length;++$$jscomp$restIndex$$16_i$$) {
+    Arrays$$module$Algorithms$Arrays$Arrays.WidePush($arrayRef$$, $$jscomp$restParams$$[$$jscomp$restIndex$$16_i$$]);
+  }
+  return $arrayRef$$;
+};
+JSAlgorithms$$module$Algorithms$JSAlgorithms.prototype.sliceArray = function $JSAlgorithms$$module$Algorithms$JSAlgorithms$$sliceArray$($array$$, $index$$, $end$$) {
+  $array$$ = void 0 === $array$$ ? [] : $array$$;
+  return Arrays$$module$Algorithms$Arrays$Arrays.Slice($array$$, void 0 === $index$$ ? 0 : $index$$, $end$$);
+};
+JSAlgorithms$$module$Algorithms$JSAlgorithms.prototype.sortArrayNum = function $JSAlgorithms$$module$Algorithms$JSAlgorithms$$sortArrayNum$($array$$, $ascending$$) {
+  return Arrays$$module$Algorithms$Arrays$Arrays.SortArrayNumbers($array$$, void 0 === $ascending$$ ? !0 : $ascending$$);
+};
+JSAlgorithms$$module$Algorithms$JSAlgorithms.prototype.sortArrayObj = function $JSAlgorithms$$module$Algorithms$JSAlgorithms$$sortArrayObj$($array$$, $ascending$$, $fields$$) {
+  for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$ = 2;$$jscomp$restIndex$$ < arguments.length;++$$jscomp$restIndex$$) {
+    $$jscomp$restParams$$[$$jscomp$restIndex$$ - 2] = arguments[$$jscomp$restIndex$$];
+  }
+  return Arrays$$module$Algorithms$Arrays$Arrays.SortArrayObjects.apply(Arrays$$module$Algorithms$Arrays$Arrays, [].concat([$array$$, void 0 === $ascending$$ ? !0 : $ascending$$], $jscomp.arrayFromIterable($$jscomp$restParams$$)));
+};
+JSAlgorithms$$module$Algorithms$JSAlgorithms.prototype.bool = function $JSAlgorithms$$module$Algorithms$JSAlgorithms$$bool$($value$$, $defaultValue$$) {
+  return Booleans$$module$Algorithms$Booleans$Booleans.ToBoolean($value$$, void 0 === $defaultValue$$ ? !1 : $defaultValue$$);
+};
 JSAlgorithms$$module$Algorithms$JSAlgorithms.prototype.use = function $JSAlgorithms$$module$Algorithms$JSAlgorithms$$use$($context$$, $functionReference$$, $argsArray$$) {
   $argsArray$$ = void 0 === $argsArray$$ ? [] : $argsArray$$;
   return Functions$$module$Algorithms$Functions$Functions.Use($context$$, $functionReference$$, $argsArray$$);
@@ -1785,6 +2239,27 @@ JSAlgorithms$$module$Algorithms$JSAlgorithms.prototype.run = function $JSAlgorit
 JSAlgorithms$$module$Algorithms$JSAlgorithms.prototype.bindFn = function $JSAlgorithms$$module$Algorithms$JSAlgorithms$$bindFn$($context$$, $functionReference$$, $args$$) {
   $args$$ = void 0 === $args$$ ? [] : $args$$;
   return Functions$$module$Algorithms$Functions$Functions.Bind($context$$, $functionReference$$, $args$$);
+};
+JSAlgorithms$$module$Algorithms$JSAlgorithms.prototype.each = function $JSAlgorithms$$module$Algorithms$JSAlgorithms$$each$($object$$, $loopFunction$$, $data$$) {
+  for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$ = 2;$$jscomp$restIndex$$ < arguments.length;++$$jscomp$restIndex$$) {
+    $$jscomp$restParams$$[$$jscomp$restIndex$$ - 2] = arguments[$$jscomp$restIndex$$];
+  }
+  Looper$$module$Algorithms$Looper$Looper.ObjectEach.apply(Looper$$module$Algorithms$Looper$Looper, [].concat([$object$$, $loopFunction$$], $jscomp.arrayFromIterable($$jscomp$restParams$$)));
+  return this;
+};
+JSAlgorithms$$module$Algorithms$JSAlgorithms.prototype.arrEach = function $JSAlgorithms$$module$Algorithms$JSAlgorithms$$arrEach$($array$$, $loopFunction$$, $data$$) {
+  for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$ = 2;$$jscomp$restIndex$$ < arguments.length;++$$jscomp$restIndex$$) {
+    $$jscomp$restParams$$[$$jscomp$restIndex$$ - 2] = arguments[$$jscomp$restIndex$$];
+  }
+  Looper$$module$Algorithms$Looper$Looper.ArrayEach.apply(Looper$$module$Algorithms$Looper$Looper, [].concat([$array$$, $loopFunction$$], $jscomp.arrayFromIterable($$jscomp$restParams$$)));
+  return this;
+};
+JSAlgorithms$$module$Algorithms$JSAlgorithms.prototype.iterate = function $JSAlgorithms$$module$Algorithms$JSAlgorithms$$iterate$($start$$, $end$$, $iterator$$, $data$$) {
+  for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$ = 3;$$jscomp$restIndex$$ < arguments.length;++$$jscomp$restIndex$$) {
+    $$jscomp$restParams$$[$$jscomp$restIndex$$ - 3] = arguments[$$jscomp$restIndex$$];
+  }
+  Looper$$module$Algorithms$Looper$Looper.Iterate.apply(Looper$$module$Algorithms$Looper$Looper, [].concat([$start$$, $end$$, $iterator$$], $jscomp.arrayFromIterable($$jscomp$restParams$$)));
+  return this;
 };
 JSAlgorithms$$module$Algorithms$JSAlgorithms.prototype.magnitude = function $JSAlgorithms$$module$Algorithms$JSAlgorithms$$magnitude$($num$$, $base$$) {
   return Numbers$$module$Algorithms$Numbers$Numbers.Magnitude($num$$, void 0 === $base$$ ? 10 : $base$$);
@@ -1804,7 +2279,68 @@ JSAlgorithms$$module$Algorithms$JSAlgorithms.prototype.max = function $JSAlgorit
   }
   return Numbers$$module$Algorithms$Numbers$Numbers.Maximum.apply(Numbers$$module$Algorithms$Numbers$Numbers, [].concat($jscomp.arrayFromIterable($$jscomp$restParams$$)));
 };
-JSAlgorithms$$module$Algorithms$JSAlgorithms.Mix(ArraysInterface$$module$Algorithms$Arrays$ArraysInterface, DatesInterface$$module$Algorithms$Dates$DatesInterface, BooleansInterface$$module$Algorithms$Booleans$BooleansInterface, LooperInterface$$module$Algorithms$Looper$LooperInterface);
+JSAlgorithms$$module$Algorithms$JSAlgorithms.prototype.byte = function $JSAlgorithms$$module$Algorithms$JSAlgorithms$$byte$($value$$) {
+  return Numbers$$module$Algorithms$Numbers$Numbers.ToInt8($value$$);
+};
+JSAlgorithms$$module$Algorithms$JSAlgorithms.prototype.ubyte = function $JSAlgorithms$$module$Algorithms$JSAlgorithms$$ubyte$($value$$) {
+  return Numbers$$module$Algorithms$Numbers$Numbers.ToUInt8($value$$);
+};
+JSAlgorithms$$module$Algorithms$JSAlgorithms.prototype.short = function $JSAlgorithms$$module$Algorithms$JSAlgorithms$$short$($value$$) {
+  return Numbers$$module$Algorithms$Numbers$Numbers.ToInt16($value$$);
+};
+JSAlgorithms$$module$Algorithms$JSAlgorithms.prototype.ushort = function $JSAlgorithms$$module$Algorithms$JSAlgorithms$$ushort$($value$$) {
+  return Numbers$$module$Algorithms$Numbers$Numbers.ToUInt16($value$$);
+};
+JSAlgorithms$$module$Algorithms$JSAlgorithms.prototype.int = function $JSAlgorithms$$module$Algorithms$JSAlgorithms$$int$($value$$) {
+  return Numbers$$module$Algorithms$Numbers$Numbers.ToInt32($value$$);
+};
+JSAlgorithms$$module$Algorithms$JSAlgorithms.prototype.uint = function $JSAlgorithms$$module$Algorithms$JSAlgorithms$$uint$($value$$) {
+  return Numbers$$module$Algorithms$Numbers$Numbers.ToUInt32($value$$);
+};
+JSAlgorithms$$module$Algorithms$JSAlgorithms.prototype.float = function $JSAlgorithms$$module$Algorithms$JSAlgorithms$$float$($value$$) {
+  return Numbers$$module$Algorithms$Numbers$Numbers.ToFloat($value$$);
+};
+JSAlgorithms$$module$Algorithms$JSAlgorithms.prototype.double = function $JSAlgorithms$$module$Algorithms$JSAlgorithms$$double$($value$$) {
+  return Numbers$$module$Algorithms$Numbers$Numbers.ToDouble($value$$);
+};
+JSAlgorithms$$module$Algorithms$JSAlgorithms.prototype.rad2deg = function $JSAlgorithms$$module$Algorithms$JSAlgorithms$$rad2deg$($value$$, $defaultValue$$) {
+  return Numbers$$module$Algorithms$Numbers$Numbers.RadiansToDegrees($value$$, void 0 === $defaultValue$$ ? 0 : $defaultValue$$);
+};
+JSAlgorithms$$module$Algorithms$JSAlgorithms.prototype.deg2rad = function $JSAlgorithms$$module$Algorithms$JSAlgorithms$$deg2rad$($value$$, $defaultValue$$) {
+  return Numbers$$module$Algorithms$Numbers$Numbers.DegreesToRadians($value$$, void 0 === $defaultValue$$ ? 0 : $defaultValue$$);
+};
+JSAlgorithms$$module$Algorithms$JSAlgorithms.prototype.makeEnum = function $JSAlgorithms$$module$Algorithms$JSAlgorithms$$makeEnum$($keys$$, $attachTo$$) {
+  $attachTo$$ = void 0 === $attachTo$$ ? {} : $attachTo$$;
+  return Numbers$$module$Algorithms$Numbers$Numbers.MakeEnumeratedObject($keys$$, $attachTo$$);
+};
+JSAlgorithms$$module$Algorithms$JSAlgorithms.prototype.object = function $JSAlgorithms$$module$Algorithms$JSAlgorithms$$object$($value$$, $defaultValue$$) {
+  $defaultValue$$ = void 0 === $defaultValue$$ ? {} : $defaultValue$$;
+  return Objects$$module$Algorithms$Objects$Objects.ToObject($value$$, $defaultValue$$);
+};
+JSAlgorithms$$module$Algorithms$JSAlgorithms.prototype.mergeObj = function $JSAlgorithms$$module$Algorithms$JSAlgorithms$$mergeObj$($base$$, $subs$$) {
+  for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$ = 1;$$jscomp$restIndex$$ < arguments.length;++$$jscomp$restIndex$$) {
+    $$jscomp$restParams$$[$$jscomp$restIndex$$ - 1] = arguments[$$jscomp$restIndex$$];
+  }
+  return Objects$$module$Algorithms$Objects$Objects.MergeObjects.apply(Objects$$module$Algorithms$Objects$Objects, [].concat([$base$$], $jscomp.arrayFromIterable($$jscomp$restParams$$)));
+};
+JSAlgorithms$$module$Algorithms$JSAlgorithms.prototype.cloneObj = function $JSAlgorithms$$module$Algorithms$JSAlgorithms$$cloneObj$($object$$) {
+  return Objects$$module$Algorithms$Objects$Objects.CloneObject($object$$);
+};
+JSAlgorithms$$module$Algorithms$JSAlgorithms.prototype.deepCloneObj = function $JSAlgorithms$$module$Algorithms$JSAlgorithms$$deepCloneObj$($object$$) {
+  return Objects$$module$Algorithms$Objects$Objects.DeepCloneObject($object$$);
+};
+JSAlgorithms$$module$Algorithms$JSAlgorithms.prototype.property = function $JSAlgorithms$$module$Algorithms$JSAlgorithms$$property$($object$$, $levels$$) {
+  for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$ = 1;$$jscomp$restIndex$$ < arguments.length;++$$jscomp$restIndex$$) {
+    $$jscomp$restParams$$[$$jscomp$restIndex$$ - 1] = arguments[$$jscomp$restIndex$$];
+  }
+  return Objects$$module$Algorithms$Objects$Objects.GetProperty.apply(Objects$$module$Algorithms$Objects$Objects, [].concat([$object$$], $jscomp.arrayFromIterable($$jscomp$restParams$$)));
+};
+JSAlgorithms$$module$Algorithms$JSAlgorithms.prototype.string = function $JSAlgorithms$$module$Algorithms$JSAlgorithms$$string$($value$$, $defaultValue$$) {
+  return Strings$$module$Algorithms$Strings$Strings.ToString($value$$, void 0 === $defaultValue$$ ? "" : $defaultValue$$);
+};
+JSAlgorithms$$module$Algorithms$JSAlgorithms.prototype.escapeString = function $JSAlgorithms$$module$Algorithms$JSAlgorithms$$escapeString$($stringToEscape$$) {
+  return Strings$$module$Algorithms$Strings$Strings.EscapeString($stringToEscape$$);
+};
 module$Algorithms$JSAlgorithms.JSAlgorithms = JSAlgorithms$$module$Algorithms$JSAlgorithms;
 var module$Algorithms$TestJSAlgorithms = {}, TestJSAlgorithms$$module$Algorithms$TestJSAlgorithms = function $TestJSAlgorithms$$module$Algorithms$TestJSAlgorithms$($jspyder$$) {
   TestObject$$module$TestObject.call(this, "Algorithms/JSAlgorithms");
@@ -2335,15 +2871,14 @@ TestJSDom$$module$Dom$TestJSDom.prototype.testCss = function $TestJSDom$$module$
   module$Assert.Assert.Equal($cssObject$$.height, $getCssObject$$.height);
 };
 module$Dom$TestJSDom.TestJSDom = TestJSDom$$module$Dom$TestJSDom;
-var module$Library$LibraryInterfaceDefs = {}, LibraryInterfaceDefs$$module$Library$LibraryInterfaceDefs = function $LibraryInterfaceDefs$$module$Library$LibraryInterfaceDefs$() {
+var module$Library$LibraryInterfaceDefs = {};
+function LibraryInterfaceDefs$$module$Library$LibraryInterfaceDefs($args$$) {
+}
+LibraryInterfaceDefs$$module$Library$LibraryInterfaceDefs.register = function $LibraryInterfaceDefs$$module$Library$LibraryInterfaceDefs$register$($args$$) {
 };
-LibraryInterfaceDefs$$module$Library$LibraryInterfaceDefs.prototype.lib = function $LibraryInterfaceDefs$$module$Library$LibraryInterfaceDefs$$lib$($args$$) {
+LibraryInterfaceDefs$$module$Library$LibraryInterfaceDefs.registerSet = function $LibraryInterfaceDefs$$module$Library$LibraryInterfaceDefs$registerSet$($args$$) {
 };
-LibraryInterfaceDefs$$module$Library$LibraryInterfaceDefs.prototype.register = function $LibraryInterfaceDefs$$module$Library$LibraryInterfaceDefs$$register$($args$$) {
-};
-LibraryInterfaceDefs$$module$Library$LibraryInterfaceDefs.prototype.registerSet = function $LibraryInterfaceDefs$$module$Library$LibraryInterfaceDefs$$registerSet$($args$$) {
-};
-LibraryInterfaceDefs$$module$Library$LibraryInterfaceDefs.prototype.execute = function $LibraryInterfaceDefs$$module$Library$LibraryInterfaceDefs$$execute$($args$$) {
+LibraryInterfaceDefs$$module$Library$LibraryInterfaceDefs.execute = function $LibraryInterfaceDefs$$module$Library$LibraryInterfaceDefs$execute$($args$$) {
 };
 module$Library$LibraryInterfaceDefs.LibraryInterfaceDefs = LibraryInterfaceDefs$$module$Library$LibraryInterfaceDefs;
 var module$Library$JSLibrary = {}, JSLibrary$$module$Library$JSLibrary = function $JSLibrary$$module$Library$JSLibrary$($context$$) {
@@ -2355,36 +2890,42 @@ $jscomp.inherits(JSLibrary$$module$Library$JSLibrary, JSObject$$module$JSObject)
 JSLibrary$$module$Library$JSLibrary.Mix = JSObject$$module$JSObject.Mix;
 JSLibrary$$module$Library$JSLibrary.inPrototypeChain = JSObject$$module$JSObject.inPrototypeChain;
 JSLibrary$$module$Library$JSLibrary.prototype.GetInterface = function $JSLibrary$$module$Library$JSLibrary$$GetInterface$() {
-  var $jsLibrary$$ = this, $JSLibraryInterface$$ = function $$JSLibraryInterface$$$() {
-  };
-  $JSLibraryInterface$$.prototype.lib = function $$JSLibraryInterface$$$$lib$($args$$) {
+  function $JSLibraryInterface$$($args$$) {
     for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$ = 0;$$jscomp$restIndex$$ < arguments.length;++$$jscomp$restIndex$$) {
       $$jscomp$restParams$$[$$jscomp$restIndex$$ - 0] = arguments[$$jscomp$restIndex$$];
     }
     $jsLibrary$$.Execute.apply($jsLibrary$$, [].concat($jscomp.arrayFromIterable($$jscomp$restParams$$)));
-    return this;
+    return $JSLibraryInterface$$;
+  }
+  var $jsLibrary$$ = this;
+  $JSLibraryInterface$$.lib = function $$JSLibraryInterface$$$lib$($args$$) {
+    for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$ = 0;$$jscomp$restIndex$$ < arguments.length;++$$jscomp$restIndex$$) {
+      $$jscomp$restParams$$[$$jscomp$restIndex$$ - 0] = arguments[$$jscomp$restIndex$$];
+    }
+    $jsLibrary$$.Execute.apply($jsLibrary$$, [].concat($jscomp.arrayFromIterable($$jscomp$restParams$$)));
+    return $JSLibraryInterface$$;
   };
-  $JSLibraryInterface$$.prototype.register = function $$JSLibraryInterface$$$$register$($args$$) {
+  $JSLibraryInterface$$.register = function $$JSLibraryInterface$$$register$($args$$) {
     for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$ = 0;$$jscomp$restIndex$$ < arguments.length;++$$jscomp$restIndex$$) {
       $$jscomp$restParams$$[$$jscomp$restIndex$$ - 0] = arguments[$$jscomp$restIndex$$];
     }
     $jsLibrary$$.Register.apply($jsLibrary$$, [].concat($jscomp.arrayFromIterable($$jscomp$restParams$$)));
-    return this;
+    return $JSLibraryInterface$$;
   };
-  $JSLibraryInterface$$.prototype.registerSet = function $$JSLibraryInterface$$$$registerSet$($args$$) {
+  $JSLibraryInterface$$.registerSet = function $$JSLibraryInterface$$$registerSet$($args$$) {
     for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$ = 0;$$jscomp$restIndex$$ < arguments.length;++$$jscomp$restIndex$$) {
       $$jscomp$restParams$$[$$jscomp$restIndex$$ - 0] = arguments[$$jscomp$restIndex$$];
     }
     $jsLibrary$$.RegisterSet.apply($jsLibrary$$, [].concat($jscomp.arrayFromIterable($$jscomp$restParams$$)));
-    return this;
+    return $JSLibraryInterface$$;
   };
-  $JSLibraryInterface$$.prototype.execute = function $$JSLibraryInterface$$$$execute$($args$$) {
+  $JSLibraryInterface$$.execute = function $$JSLibraryInterface$$$execute$($args$$) {
     for (var $$jscomp$restParams$$ = [], $$jscomp$restIndex$$ = 0;$$jscomp$restIndex$$ < arguments.length;++$$jscomp$restIndex$$) {
       $$jscomp$restParams$$[$$jscomp$restIndex$$ - 0] = arguments[$$jscomp$restIndex$$];
     }
     return $jsLibrary$$.Execute.apply($jsLibrary$$, [].concat($jscomp.arrayFromIterable($$jscomp$restParams$$)));
   };
-  return new $JSLibraryInterface$$;
+  return $JSLibraryInterface$$;
 };
 JSLibrary$$module$Library$JSLibrary.prototype.Execute = function $JSLibrary$$module$Library$JSLibrary$$Execute$($functionName_lookupFunction$$, $argumentArray$$, $callbackFunction$$, $callbackArguments$$) {
   $argumentArray$$ = void 0 === $argumentArray$$ ? [] : $argumentArray$$;

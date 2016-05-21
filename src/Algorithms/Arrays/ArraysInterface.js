@@ -1,5 +1,6 @@
 import {Arrays} from "Algorithms/Arrays/Arrays";
 
+/** @interface */
 export class ArraysInterface {
     /**
      * Coerces any value to an array.
@@ -9,9 +10,7 @@ export class ArraysInterface {
      *
      * @return {Array}
      */
-    array(value, defaultValue = []) {
-        return Arrays.ToArray(value, defaultValue);
-    }
+    array(value, defaultValue) {}
 
     /**
      * Performs an in-place concatenation of the 2nd-Nth parameter
@@ -25,12 +24,7 @@ export class ArraysInterface {
      *
      * @return {Array} arrayRef parameter
      */
-    joinArray(arrayRef, ...arraysFrom) {
-        for(let i = 0; i < arraysFrom.length; ++i) {
-            Arrays.WidePush(arrayRef, arraysFrom[i]);
-        }
-        return arrayRef;
-    }
+    joinArray(arrayRef, ...arraysFrom) {}
 
     /**
      * Applies an array slice against an object, if it is
@@ -42,12 +36,13 @@ export class ArraysInterface {
      *
      * @param {number} index
      *      The argument to pass to the slice attempt.
+     * 
+     * @param {number} end
+     *      The second argument to pass to the slice attempt
      *
      * @return {Array}
      */
-    sliceArray(array = [], index = 0, end = undefined) {
-        return Arrays.Slice(array, index, end);
-    }
+    sliceArray(array, index, end) {}
 
     /**
      * Sorts an array of numbers, to compensate for the fact that vanilla
@@ -61,9 +56,7 @@ export class ArraysInterface {
      * @param {Array<number>} array
      * @param {boolean} ascending
      */
-    sortArrayNum(array, ascending = true) {
-        return Arrays.SortArrayNumbers(array, ascending);
-    }
+    sortArrayNum(array, ascending) {}
 
     /**
      * Sorts an array of objects, based on a specified key-tree.  For
@@ -81,7 +74,5 @@ export class ArraysInterface {
      * @param {boolean} ascending
      * @param {...String} fields
      */
-    sortArrayObj(array, ascending = true, ...fields) {
-        return Arrays.SortArrayObjects(array, ascending, ...fields);
-    }
+    sortArrayObj(array, ascending, ...fields) {}
 }

@@ -1,5 +1,4 @@
-import {Looper} from "Algorithms/Looper/Looper";
-
+/** @interface */
 export class LooperInterface {
     /**
      * Iterates through a provided object and executes fn() on each
@@ -31,10 +30,7 @@ export class LooperInterface {
      * @this {THIS}
      * @return {THIS}
      */
-    each(object, loopFunction, ...data) {
-        Looper.ObjectEach(object, loopFunction, ...data);
-        return this;
-    }
+    each(object, loopFunction, ...data) {}
     
     /**
      * Profile: O(n)
@@ -42,10 +38,7 @@ export class LooperInterface {
      * @this {THIS}
      * @return {THIS}
      */
-    arrEach(array, loopFunction, ...data) {
-        Looper.ArrayEach(array, loopFunction, ...data);
-        return this;
-    }
+    arrEach(array, loopFunction, ...data) {}
 
     /**
      * Iterates from [start] to [end], executing [fn] on each step and
@@ -59,8 +52,5 @@ export class LooperInterface {
      * @this {THIS}
      * @return {THIS}
      */
-    iterate(start, end, iterator, ...data) {
-        Looper.Iterate(start, end, iterator, ...data);
-        return this;
-    }
+    iterate(start, end, iterator, ...data) {}
 }

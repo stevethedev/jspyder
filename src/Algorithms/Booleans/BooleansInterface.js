@@ -1,5 +1,4 @@
-import {Booleans} from "Algorithms/Booleans/Booleans";
-
+/** @interface */
 export class BooleansInterface {
     /**
      * Coerces any value to a boolean.
@@ -12,7 +11,5 @@ export class BooleansInterface {
      * 
      *      Default value to use as a last resort.
      */
-    bool(value, defaultValue = false) {
-        return Booleans.ToBoolean(value, defaultValue);
-    }
+    bool(value, defaultValue) {}
 }

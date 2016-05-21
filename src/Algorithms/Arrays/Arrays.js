@@ -59,50 +59,61 @@ export class Arrays {
     }
 
     /**
+     * This function is memoized so to improve performance.
+     * 
+     * Profile: Amortized O(1)
+     * 
      * @return {function(Object,Object):(number|boolean)}
      */
     static GetBestSortArrayObjectFunction(ascending, fields) {
-        var __memo;
+        var __memo = {};
+        function memoized(ascending, fields) {
+            if(__memo[ascending]) {
+                return __memo[ascending];
+            }
 
-        switch(Browser.name) {
-            case BROWSER_FIREFOX: // Firefox can use a shortcut function
-                __memo = function(left, right) {
-                    for(let i = 0; left && right && i < fields.length; ++i) {
-                        left = left[fields[i]];
-                        right = right[fields[i]];
-                    }
+            switch(Browser.name) {
+                // Firefox can use a shorter function
+                case BROWSER_FIREFOX:
+                    __memo[ascending] = function(left, right) {
+                        for(let i = 0; left && right && i < fields.length; ++i) {
+                            left = left[fields[i]];
+                            right = right[fields[i]];
+                        }
 
-                    return (ascending ? left >= right : left <= right);
-                };
+                        return (ascending ? left >= right : left <= right);
+                    };
 
-            // Internet Explorer needs numerical values
-            case BROWSER_IE:
-            case BROWSER_EDGE:
-            default:
-                __memo = function(left, right) {
-                    for(let i = 0; left && right && i < fields.length; ++i) {
-                        left = left[fields[i]];
-                        right = right[fields[i]];
-                    }
+                // Internet Explorer needs numerical values
+                case BROWSER_IE:
+                case BROWSER_EDGE:
+                default:
+                    __memo[ascending] = function(left, right) {
+                        for(let i = 0; left && right && i < fields.length; ++i) {
+                            left = left[fields[i]];
+                            right = right[fields[i]];
+                        }
 
-                    var a = (ascending ? left : right);
-                    var b = (ascending ? right : left);
+                        var a = (ascending ? left : right);
+                        var b = (ascending ? right : left);
 
-                    if(a > b) {
-                        return 1;
-                    }
-                    else if(a < b) {
-                        return -1;
-                    }
-                    else {
-                        return 0;
-                    }
-                };
-        }
+                        if(a > b) {
+                            return 1;
+                        }
+                        else if(a < b) {
+                            return -1;
+                        }
+                        else {
+                            return 0;
+                        }
+                    };
+            }
+            
+            return __memo[ascending];
+        };
         
-        this.GetBestSortArrayObjectFunction = function(ascending, fields) {
-            return __memo;
-        }
+        this.GetBestSortArrayObjectFunction = memoized;
+        return memoized(...arguments);
     }
 
     /**

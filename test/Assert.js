@@ -21,6 +21,10 @@ Assert.Type = function(expectedType, object, failMessage = `Assert.Type Failed: 
     return Assert.Equal(expectedType, typeof object, failMessage);
 }
 
+Assert.Undefined = function(object, failMessage = undefined) {
+    return Assert.Type("undefined", object, failMessage);
+}
+
 Assert.Fail = function(failMessage = "Test Not Built") {
     return Assert(false, failMessage);
 }

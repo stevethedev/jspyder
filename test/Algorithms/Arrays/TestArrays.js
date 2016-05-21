@@ -58,15 +58,15 @@ export class TestArrays extends TestObject {
             { "foo": { "bar": { "baz": 8 } } },
             { "foo": { "bar": { "baz": 1 } } },
         ];
-        
+
         Arrays.SortArrayObjects(array, true, "foo", "bar", "baz");
         for(let i = 1; i < array.length; ++i) {
-            Assert(array[i]["foo"]["bar"]["baz"] >= array[i - 1]["foo"]["bar"]["baz"]);
+            Assert(array[i]["foo"]["bar"]["baz"] >= array[i - 1]["foo"]["bar"]["baz"], `Ascending Sort is in the wrong order at index ${i-1}: ${array[i].foo.bar.baz} >= ${array[i-1].foo.bar.baz}`);
         }
-        
+
         Arrays.SortArrayObjects(array, false, "foo", "bar", "baz");
         for(let i = 1; i < array.length; ++i) {
-            Assert(array[i]["foo"]["bar"]["baz"] <= array[i - 1]["foo"]["bar"]["baz"]);
+            Assert(array[i]["foo"]["bar"]["baz"] <= array[i - 1]["foo"]["bar"]["baz"], `Descending Sort is in the wrong order at index ${i-1}: ${array[i].foo.bar.baz} <= ${array[i-1].foo.bar.baz}`);
         }
     }
 

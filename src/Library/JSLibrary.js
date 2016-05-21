@@ -21,7 +21,7 @@ export class JSLibrary extends JSObject {
     }
     
     /**
-     * @return {!LibraryInterfaceDefs}
+     * @return {function():function()}
      */
     GetInterface() {
         var jsLibrary = this;
@@ -29,35 +29,35 @@ export class JSLibrary extends JSObject {
         /**
          * JSLibrary Interface
          * 
-         * @class JSLibraryInterface
-         * @implements {LibraryInterfaceDefs}
+         * @template THIS
+         * @this {THIS}
+         * @return {THIS}
          */
-        class JSLibraryInterface {
-            constructor() {
-                
-            }
-
-            lib(...args) {
-                jsLibrary.Execute(...args);
-                return this;
-            }
-            
-            register(...args) {
-                jsLibrary.Register(...args);
-                return this;
-            }
-            
-            registerSet(...args) {
-                jsLibrary.RegisterSet(...args);
-                return this;
-            }
-            
-            execute(...args) {
-                return jsLibrary.Execute(...args);
-            }
+        function JSLibraryInterface(...args) {
+            jsLibrary.Execute(...args);
+            return JSLibraryInterface;
         }
         
-        return new JSLibraryInterface;
+        JSLibraryInterface.lib = function(...args) {
+            jsLibrary.Execute(...args);
+            return JSLibraryInterface;
+        };
+            
+        JSLibraryInterface.register = function(...args) {
+            jsLibrary.Register(...args);
+            return JSLibraryInterface;
+        };
+            
+        JSLibraryInterface.registerSet = function(...args) {
+            jsLibrary.RegisterSet(...args);
+            return JSLibraryInterface;
+        };
+            
+        JSLibraryInterface.execute = function(...args) {
+            return jsLibrary.Execute(...args);
+        };
+        
+        return JSLibraryInterface;
     }
     
     Execute(functionName, argumentArray = [], callbackFunction = null, callbackArguments = []) {

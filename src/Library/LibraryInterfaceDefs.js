@@ -1,31 +1,29 @@
 /** 
  * Abstract library interface object
  * 
- * @interface LibraryInterfaceDefs
  * @template THIS
+ * @this {THIS}
+ * @return {THIS}
  */
-export class LibraryInterfaceDefs {
-    /**
-     * @this {THIS}
-     * @return {THIS}
-     */
-    lib(...args) {}
+export function LibraryInterfaceDefs(...args) {}
 
-    /**
-     * @this {THIS}
-     * @return {THIS}
-     */
-    register(...args) {}
+/** 
+ * @template THIS 
+ * @this {THIS} 
+ * @return {THIS}
+ */
+LibraryInterfaceDefs.register = function(...args) {}
 
-    /**
-     * @this {THIS}
-     * @return {THIS}
-     */
-    registerSet(...args) {}
+/** 
+ * @template THIS 
+ * @this {THIS} 
+ * @return {THIS} 
+ */
+LibraryInterfaceDefs.registerSet = function(...args) {}
 
-    /**
-     * @this {THIS}
-     * @return {THIS}
-     */
-    execute(...args) {}
-}
+/** 
+ * @template THIS 
+ * @this {THIS} 
+ * @return {THIS} 
+ */
+LibraryInterfaceDefs.execute = function(...args) {}
