@@ -1,3 +1,5 @@
+const OBJECT_PROTOTYPE = Object.prototype;
+
 export class Objects {
     /**
      * Coerces any value to an Object value.
@@ -98,11 +100,30 @@ export class Objects {
     static GetProperty(object, ...keyChain) {
         for(let i = 0, li = keyChain.length; i < li; ++i) {
             let key = keyChain[i];
-            if(!object) {
-                break;
+            if(object[key]) {
+                return object[key];
             }
-            object = object[key];
         }
-        return object;
+        return;
+    }
+    
+    /**
+     * @param {Object} object
+     * @param {boolean} includePrototypes
+     * 
+     * @return {Array<string>} property names.
+     */
+    static GetProperties(object, includePrototypes = false) {
+        var propertyNames = [];
+        do {
+            let temp = Object.getOwnPropertyNames(object || {});
+            object = Object.getPrototypeOf(object || {});
+            for(let i = 0, li = temp.length; i < li; ++i) {
+                if(-1 === propertyNames.indexOf(temp[i])) {
+                    propertyNames.push(temp[i]);
+                }
+            }
+        } while(includePrototypes && Objects.IsObject(object) && object !== OBJECT_PROTOTYPE);
+        return propertyNames;
     }
 }

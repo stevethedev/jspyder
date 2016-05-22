@@ -5,7 +5,7 @@ import {DOMCss} from "Dom/DOMCss/DOMCss";
 
 export class TestDOMCss extends TestObject {
     constructor() {
-        super("Dom/DOMCss");
+        super("Dom/DOMCss/DOMCss");
         
         this.autoloadTests();
         this.startTests();
@@ -38,5 +38,20 @@ export class TestDOMCss extends TestObject {
         DOMCss.getCssFrom(div, cssObject);
         Assert.Equal("static", cssObject["position"]);
         Assert.Equal("150px", cssObject["width"]);
+    }
+    
+    testInlineStyles() {
+        var style = document.createElement("style");
+        style.innerHTML = ".test { border: 1px solid black; }";
+        document.body.appendChild(style);
+
+        var div = document.createElement("div");
+        div.className = "test";
+        document.body.appendChild(div);
+
+        DOMCss.InlineStyles(div);
+        document.body.removeChild(style);
+
+        Assert.Equal("border-width: 1px; border-style: solid; border-color: rgb(0, 0, 0); border-image: none;", div.getAttribute("style"));
     }
 }

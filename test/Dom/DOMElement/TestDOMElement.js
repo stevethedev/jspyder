@@ -5,7 +5,7 @@ import {DOMElement} from "Dom/DOMElement/DOMElement";
 
 export class TestDOMElement extends TestObject {
     constructor() {
-        super("Dom/DOMElement");
+        super("Dom/DOMElement/DOMElement");
         
         this.autoloadTests();        
         this.startTests();
@@ -16,9 +16,9 @@ export class TestDOMElement extends TestObject {
         const CSS_STRING = "body";
         const DOM_OBJECT = document.createElement("div");
         
-        var domString = DOMElement.toElement(DOM_STRING);
-        var cssString = DOMElement.toElement(CSS_STRING);
-        var domObject = DOMElement.toElement(DOM_OBJECT);
+        var domString = DOMElement.ToElement(DOM_STRING);
+        var cssString = DOMElement.ToElement(CSS_STRING);
+        var domObject = DOMElement.ToElement(DOM_OBJECT);
         
         Assert(domString instanceof Array, "Expected domString to return an array");
         Assert.Equal("DIV", domString[0].tagName, "Expected domString to create a DIV node");
@@ -36,10 +36,18 @@ export class TestDOMElement extends TestObject {
         var span = document.createElementNS("myTest", "span");
         var textNode = document.createTextNode("text node");
         
-        Assert(DOMElement.isElement(div), "DOMElement.isElement(DOM)");
-        Assert(!DOMElement.isElement("div"), "DOMElement.isElement(String)");
-        Assert(DOMElement.isElement(span), "DOMElement.isElement(NS:DOM)");
-        Assert(!DOMElement.isElement(textNode), "DOMElement.isElement(TextNode)");
+        Assert(DOMElement.IsElement(div), "DOMElement.IsElement(DOM)");
+        Assert(!DOMElement.IsElement("div"), "DOMElement.IsElement(String)");
+        Assert(DOMElement.IsElement(span), "DOMElement.IsElement(NS:DOM)");
+        Assert(!DOMElement.IsElement(textNode), "DOMElement.IsElement(TextNode)");
+    }
+    
+    testIsNode() {
+        var textNode = document.createTextNode("Test Text Node");
+        var elementNode = document.createElement("div");
+        
+        Assert(DOMElement.IsNode(textNode));
+        Assert(DOMElement.IsNode(elementNode));
     }
     
     testIsDomString() {
@@ -48,24 +56,24 @@ export class TestDOMElement extends TestObject {
         const DOMISH_STRING = " <div></div> ";
         const DOM_LIKE_STRING = " Text <div></div>";
         
-        Assert(DOMElement.isDomString(DOM_STRING), DOM_STRING);
-        Assert(!DOMElement.isDomString(NOT_DOM_STRING), NOT_DOM_STRING);
-        Assert(DOMElement.isDomString(DOMISH_STRING), DOMISH_STRING);
-        Assert(!DOMElement.isDomString(DOM_LIKE_STRING), DOM_LIKE_STRING);
+        Assert(DOMElement.IsDomString(DOM_STRING), DOM_STRING);
+        Assert(!DOMElement.IsDomString(NOT_DOM_STRING), NOT_DOM_STRING);
+        Assert(DOMElement.IsDomString(DOMISH_STRING), DOMISH_STRING);
+        Assert(!DOMElement.IsDomString(DOM_LIKE_STRING), DOM_LIKE_STRING);
     }
     
     testParseHtmlAsNodes() {
         const DOM_STRING = "<div></div><span></span><pre></pre>";
         
-        var nodes = DOMElement.parseHtmlAsNodes(DOM_STRING);
+        var nodes = DOMElement.ParseHtmlAsNodes(DOM_STRING);
         Assert(nodes instanceof Array, "Should return an array");
         Assert.Equal(3, nodes.length, "Expected 3 elements");
         Assert.Equal("DIV", nodes[0]["tagName"], "Expected first element to be a DIV");
     }
     
     testQuerySelectorAll() {
-        Assert(DOMElement.querySelectorAll("body") instanceof Array, "Should return an array");
-        Assert(DOMElement.querySelectorAll("1") instanceof Array, "Should return an array");
+        Assert(DOMElement.QuerySelectorAll("body") instanceof Array, "Should return an array");
+        Assert(DOMElement.QuerySelectorAll("1") instanceof Array, "Should return an array");
     }
     
     testAttachRegistry() {
@@ -73,11 +81,11 @@ export class TestDOMElement extends TestObject {
         var nsNode = document.createElementNS("namespace", "div");
         
         Assert(!node["__jsRegistry"]);
-        DOMElement.attachRegistry(node);
+        DOMElement.AttachRegistry(node);
         Assert(node["__jsRegistry"]);
         
         Assert(!nsNode["__jsRegistry"]);
-        DOMElement.attachRegistry(nsNode);
+        DOMElement.AttachRegistry(nsNode);
         Assert(nsNode["__jsRegistry"]);
     }
 }

@@ -58,9 +58,14 @@ export class JSCore extends JSObject {
 
     /**
      * @method
+     * @return {JSDom}
      */
     dom(...args) {
         return new JSDom(...args);
+    }
+    
+    static get DOM() {
+        return JSDom;
     }
 }
 

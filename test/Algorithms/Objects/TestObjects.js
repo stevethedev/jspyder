@@ -61,7 +61,7 @@ export class TestObjects extends TestObject {
     testGetProperty() {
         var object = { foo: { bar: { baz: true } } };
 
-        Assert.Equal(true, Objects.GetProperty(object, "foo", "bar", "baz"));
+        Assert.Equal(object.foo, Objects.GetProperty(object, "noProperty", "foo", "baz"));
         Assert.Undefined(Objects.GetProperty(object, "undefinedProperty"));
     }
 }

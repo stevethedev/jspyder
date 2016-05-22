@@ -32,9 +32,13 @@ import {StringsInterface} from "Algorithms/Strings/StringsInterface";
  *
  * @class
  * 
+ * @extends {JSObject}
+ * 
  * @implements {ArraysInterface}
  * @implements {BooleansInterface}
+ * @implements {DatesInterface} -- date
  * @implements {FunctionsInterface}
+ * @implements {KeyCodesInterface}
  * @implements {LooperInterface}
  * @implements {NumbersInterface}
  * @implements {ObjectsInterface}
@@ -47,22 +51,18 @@ export class JSAlgorithms extends JSObject {
     array(value, defaultValue = []) {
         return Arrays.ToArray(value, defaultValue);
     }
-
     joinArray(arrayRef, ...arraysFrom) {
         for(let i = 0; i < arraysFrom.length; ++i) {
             Arrays.WidePush(arrayRef, arraysFrom[i]);
         }
         return arrayRef;
     }
-
     sliceArray(array = [], index = 0, end = undefined) {
         return Arrays.Slice(array, index, end);
     }
-
     sortArrayNum(array, ascending = true) {
         return Arrays.SortArrayNumbers(array, ascending);
     }
-
     sortArrayObj(array, ascending = true, ...fields) {
         return Arrays.SortArrayObjects(array, ascending, ...fields);
     }
@@ -72,28 +72,36 @@ export class JSAlgorithms extends JSObject {
         return Booleans.ToBoolean(value, defaultValue);
     }
 
+    // [DatesInterface] ========================================
+    date(value, defaultValue = new Date()) {
+        return Dates.ToDate(value, defaultValue);
+    }
+
     // [FunctionsInterface] ====================================
-    use(context, functionReference, argsArray = []) {
-        return Functions.Use(context, functionReference, argsArray);
+    bindFn(context, functionReference, args = []) {
+        return Functions.Bind(context, functionReference, args);
     }
     run(functionReference, argsArray = []) {
         return Functions.Run(functionReference, argsArray);
     }
-    bindFn(context, functionReference, args = []) {
-        return Functions.Bind(context, functionReference, args);
+    use(context, functionReference, argsArray = []) {
+        return Functions.Use(context, functionReference, argsArray);
+    }
+
+    // [KeyCodesInterface] =====================================
+    get keycodes() {
+        return KeyCodes;
     }
 
     // [LooperInterface] =======================================
-    each(object, loopFunction, ...data) {
-        Looper.ObjectEach(object, loopFunction, ...data);
-        return this;
-    }
-
     arrEach(array, loopFunction, ...data) {
         Looper.ArrayEach(array, loopFunction, ...data);
         return this;
     }
-
+    each(object, loopFunction, ...data) {
+        Looper.ObjectEach(object, loopFunction, ...data);
+        return this;
+    }
     iterate(start, end, iterator, ...data) {
         Looper.Iterate(start, end, iterator, ...data);
         return this;
@@ -101,111 +109,74 @@ export class JSAlgorithms extends JSObject {
 
     // [NumbersInterface] ======================================
     
-    /**
-     * @return {number}
-     */
-    magnitude(num, base = 10) {
-        return Numbers.Magnitude(num, base);
-    }
-    
-    /**
-     * Coerces any value to a numerical value, or else returns the value
-     * of [defaultValue]
-     * 
-     * @param {?} value
-     * @param {?} [defaultValue]
-     * 
-     * @return {number|?}
-     */
-    number(value, defaultValue = 0) {
-        return Numbers.ToNumber(value, defaultValue);
-    }
-    
-    /**
-     * @return {number}
-     */
-    min(...numbers) {
-        return Numbers.Minimum(...numbers);
-    }
-    
-    /**
-     * @return {number}
-     */
-    max(...numbers) {
-        return Numbers.Maximum(...numbers);
-    }
-    
     byte(value) {
         return Numbers.ToInt8(value);
     }
-    
-    ubyte(value) {
-        return Numbers.ToUInt8(value);
-    }
-    
-    short(value) {
-        return Numbers.ToInt16(value);
-    }
-    
-    ushort(value) {
-        return Numbers.ToUInt16(value);
-    }
-    
-    int(value) {
-        return Numbers.ToInt32(value);
-    }
-    
-    uint(value) {
-        return Numbers.ToUInt32(value);
-    }
-    
-    float(value) {
-        return Numbers.ToFloat(value);
-    }
-    
-    double(value) {
-        return Numbers.ToDouble(value);
-    }
-    
-    rad2deg(value, defaultValue = 0) {
-        return Numbers.RadiansToDegrees(value, defaultValue);
-    }
-    
     deg2rad(value, defaultValue = 0) {
         return Numbers.DegreesToRadians(value, defaultValue);
     }
-    
+    double(value) {
+        return Numbers.ToDouble(value);
+    }
+    float(value) {
+        return Numbers.ToFloat(value);
+    }
+    int(value) {
+        return Numbers.ToInt32(value);
+    }
+    magnitude(num, base = 10) {
+        return Numbers.Magnitude(num, base);
+    }
     makeEnum(keys, attachTo = {}) {
         return Numbers.MakeEnumeratedObject(keys, attachTo);
     }
-    
-    // Objects
-    object(value, defaultValue = {}) {
-        return Objects.ToObject(value, defaultValue);
+    max(...numbers) {
+        return Numbers.Maximum(...numbers);
+    }
+    min(...numbers) {
+        return Numbers.Minimum(...numbers);
+    }
+    number(value, defaultValue = 0) {
+        return Numbers.ToNumber(value, defaultValue);
+    }
+    rad2deg(value, defaultValue = 0) {
+        return Numbers.RadiansToDegrees(value, defaultValue);
+    }
+    short(value) {
+        return Numbers.ToInt16(value);
+    }
+    ubyte(value) {
+        return Numbers.ToUInt8(value);
+    }
+    uint(value) {
+        return Numbers.ToUInt32(value);
+    }
+    ushort(value) {
+        return Numbers.ToUInt16(value);
     }
 
-    mergeObj(base, ...subs) {
-        return Objects.MergeObjects(base, ...subs);
-    }
-
+    // [Objects] =============================================
     cloneObj(object) {
         return Objects.CloneObject(object);
     }
-
     deepCloneObj(object) {
         return Objects.DeepCloneObject(object);
     }
-
+    mergeObj(base, ...subs) {
+        return Objects.MergeObjects(base, ...subs);
+    }
+    object(value, defaultValue = {}) {
+        return Objects.ToObject(value, defaultValue);
+    }
     property(object, ...levels) {
         return Objects.GetProperty(object, ...levels);
     }
 
     // [StringsInterface] ======================================
-    string(value, defaultValue = "") {
-        return Strings.ToString(value, defaultValue);
-    }
-    
     escapeString(stringToEscape) {
         return Strings.EscapeString(stringToEscape);
+    }
+    string(value, defaultValue = "") {
+        return Strings.ToString(value, defaultValue);
     }
 }

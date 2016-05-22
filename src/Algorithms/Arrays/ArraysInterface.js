@@ -1,5 +1,3 @@
-import {Arrays} from "Algorithms/Arrays/Arrays";
-
 /** @interface */
 export class ArraysInterface {
     /**

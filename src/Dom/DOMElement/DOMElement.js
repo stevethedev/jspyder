@@ -1,9 +1,33 @@
 import {Arrays} from "Algorithms/Arrays/Arrays";
+import {Objects} from "Algorithms/Objects/Objects";
+import {Functions} from "Algorithms/Functions/Functions";
 import {JSRegistry} from "Registry/JSRegistry";
 
 const REGEX_DOM_TAG = /^(\s|\n)*(\\\<|\<)/;
 const HTML_ELEMENT_EXISTS = "object" === typeof window["HTMLElement"];
 const HTML_NODE_EXISTS = "object" === typeof window["Node"];
+
+const NODE_TYPE_ELEMENT_NODE = 1;
+const /** @deprecated */ NODE_TYPE_ATTRIBUTE_NODE = 2;
+const NODE_TYPE_TEXT_NODE = 3;
+const /** @deprecated */ NODE_TYPE_CDATA_SECTION_NODE = 4;
+const /** @deprecated */ NODE_TYPE_ENTITY_REFERENCE_NODE = 5;
+const /** @deprecated */ NODE_TYPE_ENTITY_NODE = 6;
+const NODE_TYPE_PROCESSING_INSTRUCTION_NODE = 7;
+const NODE_TYPE_COMMENT_NODE = 8;
+const NODE_TYPE_DOCUMENT_NODE = 9;
+const NODE_TYPE_DOCUMENT_TYPE_NODE = 10;
+const NODE_TYPE_DOCUMENT_FRAGMENT_NODE = 11;
+const /** @deprecated */ NODE_TYPE_NOTATION_NODE = 12;
+const NODE_TYPE_SWITCHER = {
+    [NODE_TYPE_ELEMENT_NODE]: true,
+    [NODE_TYPE_TEXT_NODE]: true,
+    [NODE_TYPE_PROCESSING_INSTRUCTION_NODE]: true,
+    [NODE_TYPE_COMMENT_NODE]: true,
+    [NODE_TYPE_DOCUMENT_NODE]: true,
+    [NODE_TYPE_DOCUMENT_TYPE_NODE]: true,
+    [NODE_TYPE_DOCUMENT_FRAGMENT_NODE]: true
+};
 
 export class DOMElement {
     /**
@@ -14,16 +38,16 @@ export class DOMElement {
      * 
      * @return {Array}
      */
-    static toElement(source) {
-        if (DOMElement.isElement(source)) {
+    static ToElement(source) {
+        if (DOMElement.IsElement(source)) {
             return [source];
         }
         else if ("string" === typeof source) {
-            if (DOMElement.isDomString(source)) {
-                return DOMElement.parseHtmlAsNodes(source);
+            if (DOMElement.IsDomString(source)) {
+                return DOMElement.ParseHtmlAsNodes(source);
             }
             else {
-                return DOMElement.querySelectorAll(source);
+                return DOMElement.QuerySelectorAll(source);
             }
         }
         else {
@@ -32,31 +56,34 @@ export class DOMElement {
     }
 
     /**
+     * Profile: O(1)
+     * @param {*} element
      * @return {boolean}
      */
-    static isElement(element) {
+    static IsElement(element) {
         if (element) {
             if (HTML_ELEMENT_EXISTS) {
-                return element instanceof window["HTMLElement"];
+                return element instanceof window.HTMLElement;
             }
-            else if ("object" === typeof element
-                && element["nodeType"] === 1
-                && "string" === typeof element["nodeName"]) {
-                return true;
+            else if (DOMElement.IsNode(element)) {
+                return element.nodeType === NODE_TYPE_ELEMENT_NODE;
             }
         }
         return false;
     }
 
-    static isNode(object) {
+    /**
+     * Profile: O(1)
+     * @param {*} object
+     * @return {boolean}
+     */
+    static IsNode(object) {
         if (object) {
             if (HTML_NODE_EXISTS) {
-                return object instanceof window["Node"];
+                return object instanceof window.Node;
             }
-            else if ("object" === typeof object
-                && object["nodeType"] === 1
-                && "string" === typeof object["nodeName"]) {
-                return true;
+            else if ("object" === typeof object) {
+                return NODE_TYPE_SWITCHER[object.nodeType];
             }
         }
         return false;
@@ -68,7 +95,7 @@ export class DOMElement {
      * 
      * @return {boolean}
      */
-    static isDomString(source) {
+    static IsDomString(source) {
         if ("string" !== typeof source) {
             return false;
         }
@@ -83,7 +110,7 @@ export class DOMElement {
      * 
      * @return {Array}
      */
-    static parseHtmlAsNodes(source) {
+    static ParseHtmlAsNodes(source) {
         let div = window["document"].createElement("div");
         div["innerHTML"] = source;
         return Arrays.Slice(div["children"], 0);
@@ -94,7 +121,7 @@ export class DOMElement {
      * 
      * @return {Array}
      */
-    static querySelectorAll(selector, parent = window["document"]) {
+    static QuerySelectorAll(selector, parent = window["document"]) {
         try {
             return Arrays.Slice(parent.querySelectorAll(selector));
         }
@@ -107,9 +134,9 @@ export class DOMElement {
      * Attaches a registry to the defined element, if a registry
      * has been created; otherwise, exits early.
      * 
-     * PRofile: O(1)
+     * Profile: O(1)
      */
-    static attachRegistry(element) {
+    static AttachRegistry(element) {
         if (!element["__jsRegistry"]) {
             element["__jsRegistry"] = new JSRegistry().GetInterface();
         }

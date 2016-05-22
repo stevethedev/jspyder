@@ -2,8 +2,18 @@ import {TestObject} from "TestObject";
 import {Assert} from "Assert";
 
 import {JSDom} from "Dom/JSDom";
-import {TestDOMCss} from "Dom/TestDOMCss";
-import {TestDOMElement} from "Dom/TestDOMElement";
+
+import {TestDOMAttributes} from "Dom/DOMAttributes/TestDOMAttributes";
+import {TestDOMClasses} from "Dom/DOMClasses/TestDOMClasses";
+import {TestDOMCss} from "Dom/DOMCss/TestDOMCss";
+import {TestDOMElement} from "Dom/DOMElement/TestDOMElement";
+import {TestDOMPosition} from "Dom/DOMPosition/TestDOMPosition";
+
+import {TestDOMAttributesInterface} from "Dom/DOMAttributes/TestDOMAttributesInterface";
+import {TestDOMClassesInterface} from "Dom/DOMClasses/TestDOMClassesInterface";
+import {TestDOMCssInterface} from "Dom/DOMCss/TestDOMCssInterface";
+import {TestDOMElementInterface} from "Dom/DOMElement/TestDOMElementInterface";
+import {TestDOMPositionInterface} from "Dom/DOMPosition/TestDOMPositionInterface";
 
 export class TestJSDom extends TestObject {
     constructor(jspyder) {
@@ -14,8 +24,17 @@ export class TestJSDom extends TestObject {
         this.autoloadTests();
         this.startTests();
 
+        new TestDOMAttributes();
+        new TestDOMClasses();
         new TestDOMCss();
         new TestDOMElement();
+        new TestDOMPosition();
+
+        new TestDOMAttributesInterface(jspyder);
+        new TestDOMClassesInterface(jspyder);
+        new TestDOMCssInterface(jspyder);
+        new TestDOMElementInterface(jspyder);
+        new TestDOMPositionInterface(jspyder);
     }
     
     testConstructor() {
@@ -56,5 +75,9 @@ export class TestJSDom extends TestObject {
             
         Assert.Equal(cssObject["position"], getCssObject["position"]);
         Assert.Equal(cssObject["height"], getCssObject["height"]);
+    }
+    
+    testAt() {
+        
     }
 }

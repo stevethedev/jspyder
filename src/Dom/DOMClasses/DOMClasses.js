@@ -1,21 +1,26 @@
 import {DOMElement} from "Dom/DOMElement/DOMElement";
 
-const REGEXP_INCONVENIENT_SPACES = /(^\s+)|(\s(?=\s))|(\s+$)/g;
+const REGEXP_INCONVENIENT_SPACES = /(^\s+)|(\s(?=\s+))|(\s+$)/g;
 
 export class DOMClasses {
+    /**
+     * Profile: O(n)
+     * 
+     * @param {HTMLElement|Element} element
+     * @return {Array<string>} Classes on the element
+     */
     static GetClasses(element) {
-        if(DOMElement.isElement(element)) {
-            element.className
-                .replace(REGEXP_INCONVENIENT_SPACES, "")
-                .split(" ");
+        var classes = [];
+        if(DOMElement.IsElement(element)) { // O(1)
+            classes = element.className
+                .replace(REGEXP_INCONVENIENT_SPACES, "") // O(n)
+                .split(" "); // O(1)
         }
-        else {
-            return [];
-        }
+        return classes;
     }
     
     /**
-     * @param {HTMLElement} element
+     * @param {HTMLElement|Element} element
      * @param {!string} className
      * @param {!boolean} enabled
      */
@@ -25,7 +30,12 @@ export class DOMClasses {
         var classesChanged = false;
         
         if(enabled && index === -1) {
-            classNames.push(className);
+            if(classNames[0] === "") {
+                classNames[0] = className;
+            }
+            else {
+                classNames.push(className);
+            }
             classesChanged = true;
         }
         else if(!enabled && index !== -1) {
@@ -41,7 +51,7 @@ export class DOMClasses {
     }
     
     /**
-     * @param {!HTMLElement} element
+     * @param {!HTMLElement|Element} element
      * @param {!string} className
      * @return {!boolean}
      */

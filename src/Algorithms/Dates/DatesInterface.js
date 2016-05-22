@@ -1,5 +1,4 @@
-import {Dates} from "Algorithms/Dates/Dates";
-
+/** @interface */
 export class DatesInterface {
     /**
      * Coerces any value to a date
@@ -9,7 +8,5 @@ export class DatesInterface {
      *
      * @return {Date|?}
      */
-    date(value, defaultValue = new Date()) {
-        return Dates.ToDate(value, defaultValue);
-    }
+    date(value, defaultValue) {}
 }

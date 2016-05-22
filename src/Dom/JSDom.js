@@ -1,17 +1,22 @@
 import {JSObject} from "JSObject";
 
 import {JSRegistry} from "Registry/JSRegistry";
-
+import {Objects} from "Algorithms/Objects/Objects";
+import {Booleans} from "Algorithms/Booleans/Booleans";
+import {Functions} from "Algorithms/Functions/Functions";
+import {Numbers} from "Algorithms/Numbers/Numbers";
 
 import {DOMAttributes} from "Dom/DOMAttributes/DOMAttributes";
 import {DOMCss} from "Dom/DOMCss/DOMCss";
-import {DOMElement} from "Dom/DOMElement/DOMElement";
 import {DOMClasses} from "Dom/DOMClasses/DOMClasses";
+import {DOMElement} from "Dom/DOMElement/DOMElement";
+import {DOMPosition} from "Dom/DOMPosition/DOMPosition";
 
 import {DOMAttributesInterface} from "Dom/DOMAttributes/DOMAttributesInterface";
+import {DOMClassesInterface} from "Dom/DOMClasses/DOMClassesInterface";
 import {DOMCssInterface} from "Dom/DOMCss/DOMCssInterface";
 import {DOMElementInterface} from "Dom/DOMElement/DOMElementInterface";
-import {DOMClassesInterface} from "Dom/DOMClasses/DOMClassesInterface";
+import {DOMPositionInterface} from "Dom/DOMPosition/DOMPositionInterface";
 
 import {Looper} from "Algorithms/Looper/Looper";
 
@@ -22,8 +27,9 @@ import {Looper} from "Algorithms/Looper/Looper";
  *
  * @implements {DOMAttributesInterface}
  * @implements {DOMElementInterface}
- * @implements {DOMCssInterface}
  * @implements {DOMClassesInterface}
+ * @implements {DOMCssInterface}
+ * @implements {DOMPositionInterface}
  *
  * @inheritDoc
  */
@@ -33,17 +39,17 @@ export class JSDom extends JSObject {
 
     constructor(element, callbackFunction = null, argumentArray = []) {
         if (!JSDom.inPrototypeChain(element)) {
-            element = DOMElement.toElement(element);
+            element = DOMElement.ToElement(element);
         }
 
         this._element = element;
         this.extend("_element", this._element);
-        this.each(DOMElement.attachRegistry);
+        this.each(DOMElement.AttachRegistry);
         this.use(callbackFunction, argumentArray);
     }
 
     /** Returns the number of elements this object wraps */
-    get count() { return this._element.length; }
+    get count() { return this._element ? this._element.length : 0; }
 
     /**
      * Iterates through all of the elements in the jsDom object.
@@ -68,25 +74,151 @@ export class JSDom extends JSObject {
         Looper.ArrayEach(this._element, iteratorFunction, ...args);
         return this;
     }
-
+    
     /**
-     * Applies the specified CSS template to all of the elements in
-     * the jsDom object
-     *
-     * Profile: O(this._elements * cssObject.size)
-     *
-     * @param {Object} cssObject
-     *      A JavaScript Object where keys correspond to attributes.
-     *      If more than one value must be applied, then both values
-     *      should be placed in an array; or can be passed as a comma-
-     *      separated list in a string.
-     *
-     * @param {Function} callbackFunction
-     *      A callback, which takes [css] as a parameter and uses
-     *      [this] as the context.
-     *
+     * Retrieves the element at [index]; executes the callback
+     * function against that element, if a callback was provided.
+     * 
+     * Profile: O(1)
+     * 
+     * @param {!number} index
+     * @param {function()|undefined} [callbackFunction]
+     * 
+     * @return {JSDom} Element at [index]
+     */
+    at(index, callbackFunction = undefined) {
+        index = Numbers.ToUInt32(index);
+        return new JSDom(this._element[index], callbackFunction);
+    }
+    
+    /**
+     * Profile: O(1)
+     * 
+     * @param {!number} index
+     * @param {function({JSDom})|undefined} [callbackFunction]
+     * 
      * @return this
      */
+    element(index, callbackFunction = undefined) {
+        index = Numbers.ToUInt32(index);
+        this.at(index, function() {
+            var element = this._element[0];
+            if(element) {
+                Functions.Use(element, callbackFunction, [this]);
+            }
+        });
+        return this;
+    }
+    
+    /**
+     * Exports a DOM element.
+     * 
+     * Profile: O(1)
+     * 
+     * @param {!number} index
+     * @return {HTMLElement}
+     */
+    exportElement(index) {
+        index = Numbers.ToUInt32(index);
+        return this._element[index];
+    }
+
+    // [DOMAttributesInterface] ==================================
+    /**
+     * Profile: O(m * n)
+     * 
+     * @param {!Object} attributeObject
+     * @param {function(Object)} callbackFunction
+     * @return this
+     */
+    getAttrs(attributeObject, callbackFunction = undefined) {
+        var attributeKeys = Object.getOwnPropertyNames(attributeObject);
+        var li = attributeKeys.length;
+        this.each((element, index) => {
+            var attributes = (index ? {} : attributeObject);
+            for(let i = 0; i < li; ++i) {
+                let key = attributeKeys[i];
+                attributes[key] = DOMAttributes.GetAttribute(element, key);
+            }
+            new JSDom(element, callbackFunction, [attributeObject]);
+        });
+        return this;
+    }
+
+    /**
+     * Profile: O(m * n)
+     * 
+     * @param {!Object} attributeObject
+     * @return this
+     */
+    setAttrs(attributeObject) {
+        var attributeKeys = Object.getOwnPropertyNames(attributeObject);
+        var li = attributeKeys.length;
+        this.each((element) => {
+            for(let i = 0; i < li; ++i) {
+                let key = attributeKeys[i];
+                DOMAttributes.SetAttribute(element, key, attributeObject[key]);
+            }
+        });
+        return this;
+    }
+
+    /**
+     * Profile: O(m)
+     * 
+     * @param {!Object} attributeObject
+     * @return {Object} attributeObject
+     */
+    exportAttrs(attributeObject) {
+        var attributeKeys = Object.getOwnPropertyNames(attributeObject);
+        for(let i = 0; i < attributeKeys.length; ++i) {
+            let key = attributeKeys[i];
+            attributeObject[key] = this.exportAttr(key);
+        }
+        return attributeObject;
+    }
+
+    /**
+     * Profile: O(n)
+     * 
+     * @param {string} attribute
+     * @param {function(Object)} [callbackFunction]
+     * @return this
+     */
+    getAttr(attribute, callbackFunction = undefined) {
+        this.each((element) => {
+            var value = DOMAttributes.GetAttribute(element, attribute);
+            new JSDom(element, callbackFunction, [value]);
+        });
+        return this;
+    }
+
+    /**
+     * Profile: O(m)
+     * 
+     * @param {string} attribute
+     * @param {?} value
+     * @return this
+     */
+    setAttr(attribute, value) {
+        this.each((element) => {
+            DOMAttributes.SetAttribute(element, attribute, value);
+        });
+        return this;
+    }
+
+    /**
+     * Profile: O(1)
+     * 
+     * @param {string} attribute
+     * @return {string|null}
+     */
+    exportAttr(attribute) {
+        return DOMAttributes.GetAttribute(this._element[0], attribute);
+    }
+
+    // [DOMCssInterface] =========================================
+    // O(n)
     setCss(cssObject = {}, callbackFunction = undefined) {
         this.each(DOMCss.setCssOnLoop, cssObject);
         this.use(callbackFunction, [cssObject]);
@@ -94,18 +226,11 @@ export class JSDom extends JSObject {
     }
 
     /**
-     * Gathers whether the specified CSS attributes have been assigned,
-     * and then calls [fn] with the context of the jsDom object, and
-     * the parameter being the css object passed in.
-     *
-     * @param {Object} cssObject
-     *      A JavaScript Object where keys correspond to attributes.
-     *      Values will be loaded into the object reference.
-     *
-     * @param {Function} callbackFunction
-     *      A callback, which takes [css] as a parameter and uses
-     *      [this] as the context.
-     *
+     * Profile: O(n)
+     * 
+     * @param {Object<string>} cssObject
+     * @param {function(Object<string>)} [callbackFunction]
+     * 
      * @return this
      */
     getCss(cssObject = {}, callbackFunction = undefined) {
@@ -113,32 +238,111 @@ export class JSDom extends JSObject {
         return this;
     }
 
-    /**
-     * Gathers whether the specified CSS attributes have been assigned,
-     * and then calls [fn] with the context of the jsDom object, and
-     * the parameter being the css object passed in.
-     *
-     * @param {Object} cssObject
-     *      A JavaScript Object where keys correspond to attributes.
-     *      Values will be loaded into the object reference.
-     *
-     * @return cssObject
-     */
+    // O(1)
     exportCss(cssObject = {}) {
-        this.getCss(cssObject);
+        this.at(0).getCss(cssObject);
         return cssObject;
     }
 
-    inlineStyles() {}
+    inlineStyles() {
+        this.each((element) => DOMCss.InlineStyles(element));
+    }
 
-    getPosition(callbackFunction) {}
-    exportPosition() {}
-    getOffsetPosition(callbackFunction) {}
-    exportOffsetPosition() {}
+    // [DOMClassesInterface] =====================================
+    /**
+     * Profile: O(m*n)
+     * 
+     * @param {Object<boolean>} classObject
+     * @return this
+     */
+    setClasses(classObject) {
+        var keys = Objects.GetProperties(classObject);
+        var li = keys.length;
+        this.each((element) => {
+            for(let i = 0; i < li; ++i) {
+                DOMClasses.SetClass(element, keys[i], Booleans.ToBoolean(classObject[keys[i]]));
+            }
+        });
+        return this;
+    }
+    
+    /**
+     * Profile: O(n)
+     * 
+     * @param {Object<boolean>} classObject
+     * @param {function(Object<boolean>)} [callbackFunction]
+     * 
+     * @return this
+     */
+    getClasses(classObject, callbackFunction = undefined) {
+        // Minimize the number of calculations required.
+        const keys = Objects.GetProperties(classObject);
+        const li = keys.length;
+        const USE_CALLBACK = Functions.IsFunction(callbackFunction); 
 
-    at(index, callbackFunction) {}
-    element(index, callbackFunction) {}
-    exportElement(index) {}
+        // Iterate all of my elements.
+        this.each((element, index) => {
+            // Only copy values to classObject for the first element.
+            let elementClasses = (!index ? classObject : {});
+            let classCache = DOMClasses.GetClasses(element);
+            for(let i = 0; i < li; ++i) {
+                elementClasses[keys[i]] = (classCache.indexOf(keys[i]) !== -1);
+            }
+            
+            if(USE_CALLBACK) {
+                new JSDom(element, callbackFunction, [elementClasses]);
+            }
+        });
+
+        return this;
+    }
+    /**
+     * Profile: O(n)
+     * 
+     * @param {Object<boolean>} classObject
+     * @return this
+     */
+    exportClasses(classObject) {
+        this.at(0).getClasses(classObject);
+        return classObject;
+    }
+
+    // [DOMPositionInterface] ====================================
+    /**
+     * @return {Object}
+     */
+    exportPosition() {
+        return DOMPosition.GetPosition(this._element[0]);
+    }
+    /**
+     * @return {Object}
+     */
+    exportOffsetPosition() {
+        return DOMPosition.GetOffsetPosition(this._element[0]);
+    }
+    /**
+     * @param {function({Object})} [callbackFunction]
+     * @return this
+     */
+    getPosition(callbackFunction = undefined) {
+        this.each((element, index) => {
+            var position = DOMPosition.GetPosition(element);
+            this.at(index).use(callbackFunction, [position]);
+        });
+        return this;
+    }
+    /**
+     * @param {function({Object})|undefined} [callbackFunction]
+     * @return this
+     */
+    getOffsetPosition(callbackFunction = undefined) {
+        this.each((element, index) => {
+            var position = DOMPosition.GetOffsetPosition(element);
+            this.at(index).use(callbackFunction, [position]);
+        });
+        return this;
+    }
+    // ===========================================================
 
     on(eventString, handlerFunction) {}
     off(eventString, handlerFunction) {}
@@ -172,18 +376,6 @@ export class JSDom extends JSObject {
     setValue(value, callbackFunction) {}
     getValue(callbackFunction) {}
     exportValue() {}
-
-    getAttrs(attributeObject, callbackFunction) {}
-    exportAttrs(attributeObject) {}
-    setAttrs(attributeObject, callbackFunction) {}
-
-    getAttr(attribute, callbackFunction) {}
-    exportAttr(attribute) {}
-    setAttr(attribute, value) {}
-
-    setClasses(classObject) {}
-    getClasses(classObject, callbackFunction) {}
-    exportClasses(classObject) {}
 
     template(fields) {}
 

@@ -13,7 +13,7 @@ export class TestDatesInterface extends TestObject {
     }
 
     testDate() {
-        var dateInterface = new DatesInterface();
+        var dateInterface = this.jspyder.alg;
         var baseDate = new Date();
 
         Assert.Equal(baseDate, dateInterface.date("", baseDate), "Blank String");

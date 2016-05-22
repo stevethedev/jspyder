@@ -52,7 +52,7 @@ export class TestObjectsInterface extends TestObject {
     testProperty() {
         var object = { foo: { bar: { baz: true } } };
 
-        Assert.Equal(true, this.jspyder.alg.property(object, "foo", "bar", "baz"));
+        Assert.Equal(object.foo, this.jspyder.alg.property(object, "undefinedProperty", "foo", "bar", "baz"));
         Assert.Undefined(this.jspyder.alg.property(object, "undefinedProperty"));
     }
 }
