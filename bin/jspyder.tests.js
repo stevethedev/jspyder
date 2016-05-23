@@ -1036,6 +1036,9 @@ function Assert$$module$Assert($test$$, $failMessage$$) {
   }
   return $test$$;
 }
+Assert$$module$Assert.IsNull = function $Assert$$module$Assert$IsNull$($object$$, $failMessage$$) {
+  return Assert$$module$Assert(null === $object$$, void 0 === $failMessage$$ ? "Assert.IsNull Failed: " + $object$$ : $failMessage$$);
+};
 Assert$$module$Assert.NotNull = function $Assert$$module$Assert$NotNull$($object$$, $failMessage$$) {
   return Assert$$module$Assert(null !== $object$$, void 0 === $failMessage$$ ? "Assert.NotNull Failed: " + $object$$ : $failMessage$$);
 };
@@ -2852,36 +2855,6 @@ var module$Dom$DOMElement$TestDOMElementInterface = {}, TestDOMElementInterface$
 };
 $jscomp.inherits(TestDOMElementInterface$$module$Dom$DOMElement$TestDOMElementInterface, TestObject$$module$TestObject);
 TestDOMElementInterface$$module$Dom$DOMElement$TestDOMElementInterface.setLogger = TestObject$$module$TestObject.setLogger;
-TestDOMElementInterface$$module$Dom$DOMElement$TestDOMElementInterface.prototype.testAttach = function $TestDOMElementInterface$$module$Dom$DOMElement$TestDOMElementInterface$$testAttach$() {
-  module$Assert.Assert.Fail();
-};
-TestDOMElementInterface$$module$Dom$DOMElement$TestDOMElementInterface.prototype.testAttachStart = function $TestDOMElementInterface$$module$Dom$DOMElement$TestDOMElementInterface$$testAttachStart$() {
-  module$Assert.Assert.Fail();
-};
-TestDOMElementInterface$$module$Dom$DOMElement$TestDOMElementInterface.prototype.testAttachEnd = function $TestDOMElementInterface$$module$Dom$DOMElement$TestDOMElementInterface$$testAttachEnd$() {
-  module$Assert.Assert.Fail();
-};
-TestDOMElementInterface$$module$Dom$DOMElement$TestDOMElementInterface.prototype.testAppend = function $TestDOMElementInterface$$module$Dom$DOMElement$TestDOMElementInterface$$testAppend$() {
-  module$Assert.Assert.Fail();
-};
-TestDOMElementInterface$$module$Dom$DOMElement$TestDOMElementInterface.prototype.testAppendBefore = function $TestDOMElementInterface$$module$Dom$DOMElement$TestDOMElementInterface$$testAppendBefore$() {
-  module$Assert.Assert.Fail();
-};
-TestDOMElementInterface$$module$Dom$DOMElement$TestDOMElementInterface.prototype.testAppendAfter = function $TestDOMElementInterface$$module$Dom$DOMElement$TestDOMElementInterface$$testAppendAfter$() {
-  module$Assert.Assert.Fail();
-};
-TestDOMElementInterface$$module$Dom$DOMElement$TestDOMElementInterface.prototype.testPrepend = function $TestDOMElementInterface$$module$Dom$DOMElement$TestDOMElementInterface$$testPrepend$() {
-  module$Assert.Assert.Fail();
-};
-TestDOMElementInterface$$module$Dom$DOMElement$TestDOMElementInterface.prototype.testRemove = function $TestDOMElementInterface$$module$Dom$DOMElement$TestDOMElementInterface$$testRemove$() {
-  module$Assert.Assert.Fail();
-};
-TestDOMElementInterface$$module$Dom$DOMElement$TestDOMElementInterface.prototype.testParents = function $TestDOMElementInterface$$module$Dom$DOMElement$TestDOMElementInterface$$testParents$() {
-  module$Assert.Assert.Fail();
-};
-TestDOMElementInterface$$module$Dom$DOMElement$TestDOMElementInterface.prototype.testChildren = function $TestDOMElementInterface$$module$Dom$DOMElement$TestDOMElementInterface$$testChildren$() {
-  module$Assert.Assert.Fail();
-};
 TestDOMElementInterface$$module$Dom$DOMElement$TestDOMElementInterface.prototype.testSetHtml = function $TestDOMElementInterface$$module$Dom$DOMElement$TestDOMElementInterface$$testSetHtml$() {
   module$Assert.Assert.Fail();
 };
@@ -2948,6 +2921,122 @@ var module$Dom$DOMPosition$TestDOMPositionInterface = {}, TestDOMPositionInterfa
 $jscomp.inherits(TestDOMPositionInterface$$module$Dom$DOMPosition$TestDOMPositionInterface, TestObject$$module$TestObject);
 TestDOMPositionInterface$$module$Dom$DOMPosition$TestDOMPositionInterface.setLogger = TestObject$$module$TestObject.setLogger;
 module$Dom$DOMPosition$TestDOMPositionInterface.TestDOMPositionInterface = TestDOMPositionInterface$$module$Dom$DOMPosition$TestDOMPositionInterface;
+var module$Dom$DOMTree$DOMTree = {}, DOMTree$$module$Dom$DOMTree$DOMTree = function $DOMTree$$module$Dom$DOMTree$DOMTree$() {
+};
+DOMTree$$module$Dom$DOMTree$DOMTree.AttachChildNode = function $DOMTree$$module$Dom$DOMTree$DOMTree$AttachChildNode$($parent$$, $child$$) {
+  return DOMElement$$module$Dom$DOMElement$DOMElement.IsElement($parent$$) && DOMElement$$module$Dom$DOMElement$DOMElement.IsNode($child$$) ? ($parent$$.appendChild($child$$), !0) : !1;
+};
+DOMTree$$module$Dom$DOMTree$DOMTree.AttachChildNodeAtStart = function $DOMTree$$module$Dom$DOMTree$DOMTree$AttachChildNodeAtStart$($parent$$, $child$$) {
+  return DOMElement$$module$Dom$DOMElement$DOMElement.IsElement($parent$$) && DOMElement$$module$Dom$DOMElement$DOMElement.IsNode($child$$) ? ($parent$$.insertBefore($child$$, $parent$$.firstChild), !0) : !1;
+};
+DOMTree$$module$Dom$DOMTree$DOMTree.RemoveNodeFromParent = function $DOMTree$$module$Dom$DOMTree$DOMTree$RemoveNodeFromParent$($element$$) {
+  return DOMElement$$module$Dom$DOMElement$DOMElement.IsElement($element$$) && $element$$.parentNode ? ($element$$.parentNode.removeChild($element$$), !0) : !1;
+};
+DOMTree$$module$Dom$DOMTree$DOMTree.InsertNodeBefore = function $DOMTree$$module$Dom$DOMTree$DOMTree$InsertNodeBefore$($beforeThisNode$$, $insertThisNode$$) {
+  return DOMElement$$module$Dom$DOMElement$DOMElement.IsElement($beforeThisNode$$) && DOMElement$$module$Dom$DOMElement$DOMElement.IsElement($insertThisNode$$) && $beforeThisNode$$.parentNode ? ($beforeThisNode$$.parentNode.insertBefore($insertThisNode$$, $beforeThisNode$$), !0) : !1;
+};
+DOMTree$$module$Dom$DOMTree$DOMTree.InsertNodeAfter = function $DOMTree$$module$Dom$DOMTree$DOMTree$InsertNodeAfter$($afterThisNode$$, $insertThisNode$$) {
+  return DOMElement$$module$Dom$DOMElement$DOMElement.IsElement($afterThisNode$$) && DOMElement$$module$Dom$DOMElement$DOMElement.IsElement($insertThisNode$$) && $afterThisNode$$.parentNode && $afterThisNode$$.nextSibling !== $insertThisNode$$ ? ($afterThisNode$$.parentNode.insertBefore($insertThisNode$$, $afterThisNode$$.nextSibling), !0) : !1;
+};
+DOMTree$$module$Dom$DOMTree$DOMTree.GetParent = function $DOMTree$$module$Dom$DOMTree$DOMTree$GetParent$($element$$) {
+  return DOMElement$$module$Dom$DOMElement$DOMElement.IsElement($element$$) ? $element$$.parentNode : null;
+};
+DOMTree$$module$Dom$DOMTree$DOMTree.GetChildren = function $DOMTree$$module$Dom$DOMTree$DOMTree$GetChildren$($element$$) {
+  return DOMElement$$module$Dom$DOMElement$DOMElement.IsElement($element$$) ? Arrays$$module$Algorithms$Arrays$Arrays.Slice($element$$.children) : [];
+};
+DOMTree$$module$Dom$DOMTree$DOMTree.CreateDocumentFragment = function $DOMTree$$module$Dom$DOMTree$DOMTree$CreateDocumentFragment$($elementArray$$) {
+  $elementArray$$ || ($elementArray$$ = []);
+  for (var $documentFragment$$ = document.createDocumentFragment(), $i$$ = 0, $li$$ = $elementArray$$.length;$i$$ < $li$$;++$i$$) {
+    DOMTree$$module$Dom$DOMTree$DOMTree.AttachChildNode($documentFragment$$, $elementArray$$[$i$$]);
+  }
+  return $documentFragment$$;
+};
+DOMTree$$module$Dom$DOMTree$DOMTree.prototype.setHtml = function $DOMTree$$module$Dom$DOMTree$DOMTree$$setHtml$($html$$) {
+};
+DOMTree$$module$Dom$DOMTree$DOMTree.prototype.getHtml = function $DOMTree$$module$Dom$DOMTree$DOMTree$$getHtml$($callbackFunction$$) {
+};
+DOMTree$$module$Dom$DOMTree$DOMTree.prototype.exportHtml = function $DOMTree$$module$Dom$DOMTree$DOMTree$$exportHtml$() {
+};
+DOMTree$$module$Dom$DOMTree$DOMTree.prototype.setText = function $DOMTree$$module$Dom$DOMTree$DOMTree$$setText$($text$$) {
+};
+DOMTree$$module$Dom$DOMTree$DOMTree.prototype.getText = function $DOMTree$$module$Dom$DOMTree$DOMTree$$getText$($callbackFunction$$) {
+};
+DOMTree$$module$Dom$DOMTree$DOMTree.prototype.exportText = function $DOMTree$$module$Dom$DOMTree$DOMTree$$exportText$() {
+};
+DOMTree$$module$Dom$DOMTree$DOMTree.prototype.find = function $DOMTree$$module$Dom$DOMTree$DOMTree$$find$($cssSelector$$) {
+};
+DOMTree$$module$Dom$DOMTree$DOMTree.prototype.filter = function $DOMTree$$module$Dom$DOMTree$DOMTree$$filter$($cssSelector$$) {
+};
+DOMTree$$module$Dom$DOMTree$DOMTree.prototype.exclude = function $DOMTree$$module$Dom$DOMTree$DOMTree$$exclude$($cssSelector$$) {
+};
+DOMTree$$module$Dom$DOMTree$DOMTree.prototype.and = function $DOMTree$$module$Dom$DOMTree$DOMTree$$and$($elements$$) {
+};
+module$Dom$DOMTree$DOMTree.DOMTree = DOMTree$$module$Dom$DOMTree$DOMTree;
+var module$Dom$DOMTree$TestDOMTree = {}, TestDOMTree$$module$Dom$DOMTree$TestDOMTree = function $TestDOMTree$$module$Dom$DOMTree$TestDOMTree$() {
+  TestObject$$module$TestObject.call(this, "Dom/DOMTree/DOMTree");
+  this.autoloadTests();
+  this.startTests();
+};
+$jscomp.inherits(TestDOMTree$$module$Dom$DOMTree$TestDOMTree, TestObject$$module$TestObject);
+TestDOMTree$$module$Dom$DOMTree$TestDOMTree.setLogger = TestObject$$module$TestObject.setLogger;
+TestDOMTree$$module$Dom$DOMTree$TestDOMTree.prototype.testAttachNode = function $TestDOMTree$$module$Dom$DOMTree$TestDOMTree$$testAttachNode$() {
+  var $parent$$ = document.createElement("div"), $child$$ = document.createElement("div");
+  module$Assert.Assert(DOMTree$$module$Dom$DOMTree$DOMTree.AttachChildNode($parent$$, $child$$));
+  module$Assert.Assert.Equal(1, $parent$$.children.length);
+  module$Assert.Assert.Equal($child$$, $parent$$.children[0]);
+};
+TestDOMTree$$module$Dom$DOMTree$TestDOMTree.prototype.testAttachNodeAtStart = function $TestDOMTree$$module$Dom$DOMTree$TestDOMTree$$testAttachNodeAtStart$() {
+  var $parent$$ = document.createElement("div"), $child1$$ = document.createElement("div"), $child2$$ = document.createElement("div");
+  module$Assert.Assert(DOMTree$$module$Dom$DOMTree$DOMTree.AttachChildNodeAtStart($parent$$, $child2$$), "Inserting Second Child");
+  module$Assert.Assert(DOMTree$$module$Dom$DOMTree$DOMTree.AttachChildNodeAtStart($parent$$, $child1$$), "Inserting First Child");
+  module$Assert.Assert.Equal(2, $parent$$.children.length);
+  module$Assert.Assert.Equal($child1$$, $parent$$.children[0]);
+  module$Assert.Assert.Equal($child2$$, $parent$$.children[1]);
+};
+TestDOMTree$$module$Dom$DOMTree$TestDOMTree.prototype.testRemoveNodeFromParent = function $TestDOMTree$$module$Dom$DOMTree$TestDOMTree$$testRemoveNodeFromParent$() {
+  var $parent$$ = document.createElement("div"), $child$$ = document.createElement("div");
+  $parent$$.appendChild($child$$);
+  module$Assert.Assert(DOMTree$$module$Dom$DOMTree$DOMTree.RemoveNodeFromParent($child$$));
+  module$Assert.Assert.Equal(0, $parent$$.children.length);
+};
+TestDOMTree$$module$Dom$DOMTree$TestDOMTree.prototype.testInsertNodeBefore = function $TestDOMTree$$module$Dom$DOMTree$TestDOMTree$$testInsertNodeBefore$() {
+  var $parent$$ = document.createElement("div"), $child$$ = document.createElement("div"), $newChild$$ = document.createElement("div");
+  $parent$$.appendChild($child$$);
+  module$Assert.Assert(DOMTree$$module$Dom$DOMTree$DOMTree.InsertNodeBefore($child$$, $newChild$$));
+  module$Assert.Assert.Equal($newChild$$, $parent$$.children[0]);
+  module$Assert.Assert.Equal($child$$, $parent$$.children[1]);
+};
+TestDOMTree$$module$Dom$DOMTree$TestDOMTree.prototype.testInsertNodeAfter = function $TestDOMTree$$module$Dom$DOMTree$TestDOMTree$$testInsertNodeAfter$() {
+  var $parent$$ = document.createElement("div"), $child$$ = document.createElement("div"), $newChild$$ = document.createElement("div");
+  $parent$$.appendChild(document.createElement("div"));
+  $parent$$.appendChild(document.createElement("div"));
+  $parent$$.appendChild($child$$);
+  $parent$$.appendChild(document.createElement("div"));
+  $parent$$.appendChild(document.createElement("div"));
+  module$Assert.Assert(DOMTree$$module$Dom$DOMTree$DOMTree.InsertNodeAfter($child$$, $newChild$$), "Insertion");
+  module$Assert.Assert.Equal($newChild$$, $parent$$.children[3], "Inserted to new position");
+  module$Assert.Assert.Equal($newChild$$, $child$$.nextElementSibling);
+  module$Assert.Assert(!DOMTree$$module$Dom$DOMTree$DOMTree.InsertNodeAfter($child$$, $newChild$$), "No motion");
+};
+TestDOMTree$$module$Dom$DOMTree$TestDOMTree.prototype.testGetParent = function $TestDOMTree$$module$Dom$DOMTree$TestDOMTree$$testGetParent$() {
+  var $parent$$ = document.createElement("div"), $child$$ = document.createElement("div");
+  $parent$$.appendChild($child$$);
+  module$Assert.Assert.Equal($parent$$, DOMTree$$module$Dom$DOMTree$DOMTree.GetParent($child$$));
+  module$Assert.Assert.IsNull(DOMTree$$module$Dom$DOMTree$DOMTree.GetParent($parent$$));
+};
+TestDOMTree$$module$Dom$DOMTree$TestDOMTree.prototype.testGetChildren = function $TestDOMTree$$module$Dom$DOMTree$TestDOMTree$$testGetChildren$() {
+  var $parent$$ = document.createElement("div"), $child$$ = document.createElement("div");
+  $parent$$.appendChild($child$$);
+  $parent$$.appendChild(document.createElement("div"));
+  $parent$$.appendChild(document.createElement("div"));
+  $parent$$.appendChild(document.createElement("div"));
+  $parent$$.appendChild(document.createElement("div"));
+  module$Assert.Assert.Equal(0, DOMTree$$module$Dom$DOMTree$DOMTree.GetChildren($child$$).length);
+  for (var $child$$ = DOMTree$$module$Dom$DOMTree$DOMTree.GetChildren($parent$$), $i$$ = 0, $li$$ = $parent$$.children.length;$i$$ < $li$$;++$i$$) {
+    module$Assert.Assert.Equal($parent$$.children[$i$$], $child$$[$i$$]);
+  }
+};
+module$Dom$DOMTree$TestDOMTree.TestDOMTree = TestDOMTree$$module$Dom$DOMTree$TestDOMTree;
 var module$Dom$DOMAttributes$DOMAttributesInterface = {}, DOMAttributesInterface$$module$Dom$DOMAttributes$DOMAttributesInterface = function $DOMAttributesInterface$$module$Dom$DOMAttributes$DOMAttributesInterface$() {
 };
 DOMAttributesInterface$$module$Dom$DOMAttributes$DOMAttributesInterface.prototype.getAttrs = function $DOMAttributesInterface$$module$Dom$DOMAttributes$DOMAttributesInterface$$getAttrs$($attributeObject$$, $callbackFunction$$) {
@@ -2985,26 +3074,6 @@ DOMClassesInterface$$module$Dom$DOMClasses$DOMClassesInterface.prototype.exportC
 module$Dom$DOMClasses$DOMClassesInterface.DOMClassesInterface = DOMClassesInterface$$module$Dom$DOMClasses$DOMClassesInterface;
 var module$Dom$DOMElement$DOMElementInterface = {}, DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$() {
 };
-DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.attach = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$$attach$($parent$$, $callbackFunction$$) {
-};
-DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.attachStart = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$$attachStart$($parent$$, $callbackFunction$$) {
-};
-DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.attachEnd = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$$attachEnd$($parent$$, $callbackFunction$$) {
-};
-DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.append = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$$append$($child$$) {
-};
-DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.appendBefore = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$$appendBefore$($child$$) {
-};
-DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.appendAfter = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$$appendAfter$($child$$) {
-};
-DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.prepend = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$$prepend$($child$$) {
-};
-DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.remove = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$$remove$() {
-};
-DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.parents = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$$parents$($callbackFunction$$) {
-};
-DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.children = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$$children$($callbackFunction$$, $daraArray$$) {
-};
 DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.setHtml = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$$setHtml$($html$$) {
 };
 DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.getHtml = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$$getHtml$($callbackFunction$$) {
@@ -3016,14 +3085,6 @@ DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.getText
 DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.exportText = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$$exportText$() {
 };
 DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.setText = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$$setText$($text$$) {
-};
-DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.find = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$$find$($cssSelector$$) {
-};
-DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.filter = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$$filter$($cssSelector$$) {
-};
-DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.exclude = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$$exclude$($cssSelector$$) {
-};
-DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.and = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$$and$($elements$$) {
 };
 DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.getProps = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$$getProps$($propertyObject$$, $callbackFunction$$) {
 };
@@ -3055,18 +3116,39 @@ DOMPosition$$module$Dom$DOMPosition$DOMPosition.GetPosition = function $DOMPosit
   $element$$ = $element$$.getBoundingClientRect();
   return {left:$element$$.left, right:$element$$.right, top:$element$$.top, bottom:$element$$.bottom};
 };
-DOMPosition$$module$Dom$DOMPosition$DOMPosition.GetOffsetPosition = function $DOMPosition$$module$Dom$DOMPosition$DOMPosition$GetOffsetPosition$($element$$20_parent$$) {
-  var $elementPosition$$ = DOMPosition$$module$Dom$DOMPosition$DOMPosition.GetPosition($element$$20_parent$$);
-  if ("fixed" === getComputedStyle($element$$20_parent$$).position) {
+DOMPosition$$module$Dom$DOMPosition$DOMPosition.GetOffsetPosition = function $DOMPosition$$module$Dom$DOMPosition$DOMPosition$GetOffsetPosition$($element$$23_parent$$) {
+  var $elementPosition$$ = DOMPosition$$module$Dom$DOMPosition$DOMPosition.GetPosition($element$$23_parent$$);
+  if ("fixed" === getComputedStyle($element$$23_parent$$).position) {
     return $elementPosition$$;
   }
-  for (;DOMElement$$module$Dom$DOMElement$DOMElement.IsElement($element$$20_parent$$.parentElement) && "static" === getComputedStyle($element$$20_parent$$.parentElement).position;) {
-    $element$$20_parent$$ = $element$$20_parent$$.parentElement;
+  for (;DOMElement$$module$Dom$DOMElement$DOMElement.IsElement($element$$23_parent$$.parentElement) && "static" === getComputedStyle($element$$23_parent$$.parentElement).position;) {
+    $element$$23_parent$$ = $element$$23_parent$$.parentElement;
   }
-  $element$$20_parent$$ = DOMPosition$$module$Dom$DOMPosition$DOMPosition.GetPosition($element$$20_parent$$);
-  return {left:$elementPosition$$.left - $element$$20_parent$$.left, right:$elementPosition$$.right - $element$$20_parent$$.right, top:$elementPosition$$.top - $element$$20_parent$$.top, bottom:$elementPosition$$.bottom - $element$$20_parent$$.bottom};
+  $element$$23_parent$$ = DOMPosition$$module$Dom$DOMPosition$DOMPosition.GetPosition($element$$23_parent$$);
+  return {left:$elementPosition$$.left - $element$$23_parent$$.left, right:$elementPosition$$.right - $element$$23_parent$$.right, top:$elementPosition$$.top - $element$$23_parent$$.top, bottom:$elementPosition$$.bottom - $element$$23_parent$$.bottom};
 };
 module$Dom$DOMPosition$DOMPosition.DOMPosition = DOMPosition$$module$Dom$DOMPosition$DOMPosition;
+var module$Dom$DOMTree$DOMTreeInterface = {}, DOMTreeInterface$$module$Dom$DOMTree$DOMTreeInterface = function $DOMTreeInterface$$module$Dom$DOMTree$DOMTreeInterface$() {
+};
+DOMTreeInterface$$module$Dom$DOMTree$DOMTreeInterface.prototype.attach = function $DOMTreeInterface$$module$Dom$DOMTree$DOMTreeInterface$$attach$($parent$$, $callbackFunction$$) {
+};
+DOMTreeInterface$$module$Dom$DOMTree$DOMTreeInterface.prototype.attachStart = function $DOMTreeInterface$$module$Dom$DOMTree$DOMTreeInterface$$attachStart$($parent$$, $callbackFunction$$) {
+};
+DOMTreeInterface$$module$Dom$DOMTree$DOMTreeInterface.prototype.append = function $DOMTreeInterface$$module$Dom$DOMTree$DOMTreeInterface$$append$($child$$) {
+};
+DOMTreeInterface$$module$Dom$DOMTree$DOMTreeInterface.prototype.appendBefore = function $DOMTreeInterface$$module$Dom$DOMTree$DOMTreeInterface$$appendBefore$($child$$) {
+};
+DOMTreeInterface$$module$Dom$DOMTree$DOMTreeInterface.prototype.appendAfter = function $DOMTreeInterface$$module$Dom$DOMTree$DOMTreeInterface$$appendAfter$($child$$) {
+};
+DOMTreeInterface$$module$Dom$DOMTree$DOMTreeInterface.prototype.prepend = function $DOMTreeInterface$$module$Dom$DOMTree$DOMTreeInterface$$prepend$($child$$) {
+};
+DOMTreeInterface$$module$Dom$DOMTree$DOMTreeInterface.prototype.remove = function $DOMTreeInterface$$module$Dom$DOMTree$DOMTreeInterface$$remove$() {
+};
+DOMTreeInterface$$module$Dom$DOMTree$DOMTreeInterface.prototype.parents = function $DOMTreeInterface$$module$Dom$DOMTree$DOMTreeInterface$$parents$($callbackFunction$$) {
+};
+DOMTreeInterface$$module$Dom$DOMTree$DOMTreeInterface.prototype.children = function $DOMTreeInterface$$module$Dom$DOMTree$DOMTreeInterface$$children$($callbackFunction$$, $daraArray$$) {
+};
+module$Dom$DOMTree$DOMTreeInterface.DOMTreeInterface = DOMTreeInterface$$module$Dom$DOMTree$DOMTreeInterface;
 var module$Dom$JSDom = {}, JSDom$$module$Dom$JSDom = function $JSDom$$module$Dom$JSDom$($element$$, $callbackFunction$$, $argumentArray$$) {
   $callbackFunction$$ = void 0 === $callbackFunction$$ ? null : $callbackFunction$$;
   $argumentArray$$ = void 0 === $argumentArray$$ ? [] : $argumentArray$$;
@@ -3218,13 +3300,36 @@ JSDom$$module$Dom$JSDom.prototype.off = function $JSDom$$module$Dom$JSDom$$off$(
 };
 JSDom$$module$Dom$JSDom.prototype.trigger = function $JSDom$$module$Dom$JSDom$$trigger$($eventString$$) {
 };
-JSDom$$module$Dom$JSDom.prototype.attach = function $JSDom$$module$Dom$JSDom$$attach$($parent$$, $callbackFunction$$) {
+JSDom$$module$Dom$JSDom.prototype.createDocumentFragment = function $JSDom$$module$Dom$JSDom$$createDocumentFragment$() {
+  return DOMTree$$module$Dom$DOMTree$DOMTree.CreateDocumentFragment(this._element);
 };
-JSDom$$module$Dom$JSDom.prototype.attachStart = function $JSDom$$module$Dom$JSDom$$attachStart$($parent$$, $callbackFunction$$) {
+JSDom$$module$Dom$JSDom.prototype.attach = function $JSDom$$module$Dom$JSDom$$attach$($parent$$) {
+  var $documentFragment$$ = this.createDocumentFragment();
+  $parent$$ = (new JSDom$$module$Dom$JSDom($parent$$))._element[0];
+  DOMTree$$module$Dom$DOMTree$DOMTree.AttachChildNode($parent$$, $documentFragment$$);
+  return this;
 };
-JSDom$$module$Dom$JSDom.prototype.attachEnd = function $JSDom$$module$Dom$JSDom$$attachEnd$($parent$$, $callbackFunction$$) {
+JSDom$$module$Dom$JSDom.prototype.attachStart = function $JSDom$$module$Dom$JSDom$$attachStart$($parent$$16_parentDom$$) {
+  var $documentFragment$$ = this.createDocumentFragment();
+  $parent$$16_parentDom$$ = (new JSDom$$module$Dom$JSDom($parent$$16_parentDom$$))._element[0];
+  DOMTree$$module$Dom$DOMTree$DOMTree.AttachChildNodeAtStart($parent$$16_parentDom$$, $documentFragment$$);
+  return this;
+};
+JSDom$$module$Dom$JSDom.prototype.attachBefore = function $JSDom$$module$Dom$JSDom$$attachBefore$($reference_referenceDom$$) {
+  $reference_referenceDom$$ = (new JSDom$$module$Dom$JSDom($reference_referenceDom$$))._element[0];
+  var $documentFragment$$ = this.createDocumentFragment();
+  DOMTree$$module$Dom$DOMTree$DOMTree.InsertNodeBefore($reference_referenceDom$$, $documentFragment$$);
+  return this;
+};
+JSDom$$module$Dom$JSDom.prototype.attachAfter = function $JSDom$$module$Dom$JSDom$$attachAfter$($reference$$1_referenceDom$$) {
+  $reference$$1_referenceDom$$ = (new JSDom$$module$Dom$JSDom($reference$$1_referenceDom$$))._element[0];
+  var $documentFragment$$ = this.createDocumentFragment();
+  DOMTree$$module$Dom$DOMTree$DOMTree.InsertNodeAfter($reference$$1_referenceDom$$, $documentFragment$$);
+  return this;
 };
 JSDom$$module$Dom$JSDom.prototype.append = function $JSDom$$module$Dom$JSDom$$append$($child$$) {
+  (new JSDom$$module$Dom$JSDom($child$$)).attach(this);
+  return this;
 };
 JSDom$$module$Dom$JSDom.prototype.appendBefore = function $JSDom$$module$Dom$JSDom$$appendBefore$($child$$) {
 };
@@ -3244,11 +3349,11 @@ JSDom$$module$Dom$JSDom.prototype.getHtml = function $JSDom$$module$Dom$JSDom$$g
 };
 JSDom$$module$Dom$JSDom.prototype.exportHtml = function $JSDom$$module$Dom$JSDom$$exportHtml$() {
 };
+JSDom$$module$Dom$JSDom.prototype.setText = function $JSDom$$module$Dom$JSDom$$setText$($text$$) {
+};
 JSDom$$module$Dom$JSDom.prototype.getText = function $JSDom$$module$Dom$JSDom$$getText$($callbackFunction$$) {
 };
 JSDom$$module$Dom$JSDom.prototype.exportText = function $JSDom$$module$Dom$JSDom$$exportText$() {
-};
-JSDom$$module$Dom$JSDom.prototype.setText = function $JSDom$$module$Dom$JSDom$$setText$($text$$) {
 };
 JSDom$$module$Dom$JSDom.prototype.find = function $JSDom$$module$Dom$JSDom$$find$($cssSelector$$) {
 };
@@ -3275,7 +3380,7 @@ JSDom$$module$Dom$JSDom.prototype.template = function $JSDom$$module$Dom$JSDom$$
 JSDom$$module$Dom$JSDom.prototype.setDraggable = function $JSDom$$module$Dom$JSDom$$setDraggable$($dragSelector$$) {
 };
 Object.defineProperties(JSDom$$module$Dom$JSDom.prototype, {count:{configurable:!0, enumerable:!0, get:function() {
-  return this._element.length;
+  return this._element ? this._element.length : 0;
 }}});
 Object.defineProperties(JSDom$$module$Dom$JSDom, {doc:{configurable:!0, enumerable:!0, get:function() {
   return new JSDom$$module$Dom$JSDom(document.documentElement);
@@ -3291,6 +3396,7 @@ var module$Dom$TestJSDom = {}, TestJSDom$$module$Dom$TestJSDom = function $TestJ
   new TestDOMCss$$module$Dom$DOMCss$TestDOMCss;
   new TestDOMElement$$module$Dom$DOMElement$TestDOMElement;
   new TestDOMPosition$$module$Dom$DOMPosition$TestDOMPosition;
+  new TestDOMTree$$module$Dom$DOMTree$TestDOMTree;
   new TestDOMAttributesInterface$$module$Dom$DOMAttributes$TestDOMAttributesInterface($jspyder$$);
   new TestDOMClassesInterface$$module$Dom$DOMClasses$TestDOMClassesInterface($jspyder$$);
   new TestDOMCssInterface$$module$Dom$DOMCss$TestDOMCssInterface($jspyder$$);

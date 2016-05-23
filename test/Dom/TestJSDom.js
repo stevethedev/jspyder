@@ -8,6 +8,7 @@ import {TestDOMClasses} from "Dom/DOMClasses/TestDOMClasses";
 import {TestDOMCss} from "Dom/DOMCss/TestDOMCss";
 import {TestDOMElement} from "Dom/DOMElement/TestDOMElement";
 import {TestDOMPosition} from "Dom/DOMPosition/TestDOMPosition";
+import {TestDOMTree} from "Dom/DOMTree/TestDOMTree";
 
 import {TestDOMAttributesInterface} from "Dom/DOMAttributes/TestDOMAttributesInterface";
 import {TestDOMClassesInterface} from "Dom/DOMClasses/TestDOMClassesInterface";
@@ -29,6 +30,7 @@ export class TestJSDom extends TestObject {
         new TestDOMCss();
         new TestDOMElement();
         new TestDOMPosition();
+        new TestDOMTree();
 
         new TestDOMAttributesInterface(jspyder);
         new TestDOMClassesInterface(jspyder);

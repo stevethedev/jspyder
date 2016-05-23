@@ -11,18 +11,19 @@ import {DOMCss} from "Dom/DOMCss/DOMCss";
 import {DOMClasses} from "Dom/DOMClasses/DOMClasses";
 import {DOMElement} from "Dom/DOMElement/DOMElement";
 import {DOMPosition} from "Dom/DOMPosition/DOMPosition";
+import {DOMTree} from "Dom/DOMTree/DOMTree";
 
 import {DOMAttributesInterface} from "Dom/DOMAttributes/DOMAttributesInterface";
 import {DOMClassesInterface} from "Dom/DOMClasses/DOMClassesInterface";
 import {DOMCssInterface} from "Dom/DOMCss/DOMCssInterface";
 import {DOMElementInterface} from "Dom/DOMElement/DOMElementInterface";
 import {DOMPositionInterface} from "Dom/DOMPosition/DOMPositionInterface";
+import {DOMTreeInterface} from "Dom/DOMTree/DOMTreeInterface";
 
 import {Looper} from "Algorithms/Looper/Looper";
 
 /**
  * @class JSDom
- *
  * @extends {JSObject}
  *
  * @implements {DOMAttributesInterface}
@@ -347,21 +348,81 @@ export class JSDom extends JSObject {
     off(eventString, handlerFunction) {}
     trigger(eventString) {}
 
-    // ===========================================================
+    // [DOMTreeInterface] ========================================
+    /**
+     * @return {Node} Document Fragment object with all of the wrapped nodes.
+     */
+    createDocumentFragment() {
+        return DOMTree.CreateDocumentFragment(this._element);
+    }
+
     /**
      * Attaches the elements from the JSDom element to the first 
-     * element identified in the parent object.
+     * element identified in the parent object, inside the tag.
      * 
-     * @param {JSDom|HTMLElement|Element|string} parent
+     * @param {JSDom|Node|string} parent
      *      The element which this JSDom should be attached to.
      * 
-     * @param {function()} [callbackFunction]
+     * @return this
      */
-    attach(parent, callbackFunction = undefined) {}
-    attachStart(parent, callbackFunction) {}
-    attachEnd(parent, callbackFunction) {}
+    attach(parent) {
+        var documentFragment = this.createDocumentFragment();
+        var parentDom = new JSDom(parent)._element[0];
+        DOMTree.AttachChildNode(parentDom, documentFragment);
+        return this;
+    }
+
+    /**
+     * Attaches the elements from the JSDom element to the end of the first 
+     * element identified in the parent object, inside the tag
+     * 
+     * @param {JSDom|Node|string} parent
+     *      The element which this JSDom should be attached to.
+     * 
+     * @return this
+     */
+    attachStart(parent) {
+        var documentFragment = this.createDocumentFragment();
+        var parentDom = new JSDom(parent)._element[0];
+        DOMTree.AttachChildNodeAtStart(parentDom, documentFragment);
+        return this;
+    }
     
-    append(child) {}
+    /**
+     * Attaches the elements from the JSDom element to the start of the first
+     * element identifeid in the parent object, outside the tag.
+     * 
+     * @param {JSDom|Node|string} reference
+     * @return this;
+     */
+    attachBefore(reference) {
+        var referenceDom = new JSDom(reference)._element[0];
+        var documentFragment = this.createDocumentFragment();
+        DOMTree.InsertNodeBefore(referenceDom, documentFragment);
+        return this;
+    }
+    
+    /**
+     * Attaches the elements from the JSDom element to the start of the first
+     * element identifeid in the parent object, outside the tag.
+     * 
+     * @param {JSDom|Node|string} reference
+     * @return this;
+     */
+    attachAfter(reference) {
+        var referenceDom = new JSDom(reference)._element[0];
+        var documentFragment = this.createDocumentFragment();
+        DOMTree.InsertNodeAfter(referenceDom, documentFragment);
+        return this;
+    }
+    /**
+     * @param {JSDom|Node|string} child
+     * @return this
+     */
+    append(child) {
+        new JSDom(child).attach(this);
+        return this;
+    }
     appendBefore(child) {}
     appendAfter(child) {}
     
@@ -371,6 +432,7 @@ export class JSDom extends JSObject {
     parents(callbackFunction) {}
     children(callbackFunction, daraArray) {}
     
+    // ==========================================================
     setHtml(html) {}
     getHtml(callbackFunction) {}
     exportHtml() {}

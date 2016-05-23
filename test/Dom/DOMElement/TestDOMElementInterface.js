@@ -10,46 +10,6 @@ export class TestDOMElementInterface extends TestObject {
         this.startTests();
     }
     
-    testAttach() {
-        Assert.Fail();
-    }
-    
-    testAttachStart() {
-        Assert.Fail();
-    }
-    
-    testAttachEnd() {
-        Assert.Fail();
-    }
-    
-    testAppend() {
-        Assert.Fail();
-    }
-    
-    testAppendBefore() {
-        Assert.Fail();
-    }
-    
-    testAppendAfter() {
-        Assert.Fail();
-    }
-    
-    testPrepend() {
-        Assert.Fail();
-    }
-    
-    testRemove() {
-        Assert.Fail();
-    }
-    
-    testParents() {
-        Assert.Fail();
-    }
-    
-    testChildren() {
-        Assert.Fail();
-    }
-    
     testSetHtml() {
         Assert.Fail();
     }

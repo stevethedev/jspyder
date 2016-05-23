@@ -5,6 +5,10 @@ function Assert(test, failMessage = `Assertion Failed!`) {
     return test;
 }
 
+Assert.IsNull = function(object, failMessage = `Assert.IsNull Failed: ${object}`) {
+    return Assert(object === null, failMessage);
+}
+
 Assert.NotNull = function(object, failMessage = `Assert.NotNull Failed: ${object}`) {
     return Assert(object !== null, failMessage);
 }
