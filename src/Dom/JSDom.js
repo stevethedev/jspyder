@@ -343,32 +343,48 @@ export class JSDom extends JSObject {
         return this;
     }
     // ===========================================================
-
     on(eventString, handlerFunction) {}
     off(eventString, handlerFunction) {}
     trigger(eventString) {}
 
-    attach(parent, callbackFunction) {}
+    // ===========================================================
+    /**
+     * Attaches the elements from the JSDom element to the first 
+     * element identified in the parent object.
+     * 
+     * @param {JSDom|HTMLElement|Element|string} parent
+     *      The element which this JSDom should be attached to.
+     * 
+     * @param {function()} [callbackFunction]
+     */
+    attach(parent, callbackFunction = undefined) {}
     attachStart(parent, callbackFunction) {}
     attachEnd(parent, callbackFunction) {}
+    
     append(child) {}
     appendBefore(child) {}
     appendAfter(child) {}
+    
     prepend(child) {}
     remove() {}
+    
     parents(callbackFunction) {}
     children(callbackFunction, daraArray) {}
+    
     setHtml(html) {}
     getHtml(callbackFunction) {}
     exportHtml() {}
+    
+    setText(text) {}
     getText(callbackFunction) {}
     exportText() {}
-    setText(text) {}
+    
     find(cssSelector) {}
     filter(cssSelector) {}
     exclude(cssSelector) {}
     and(elements) {}
 
+    // ===========================================================
     getProps(propertyObject, callbackFunction) {}
     exportProps(propertyObject) {}
     setProps(propertyObject) {}
