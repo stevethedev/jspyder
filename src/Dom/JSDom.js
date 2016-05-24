@@ -415,7 +415,11 @@ export class JSDom extends JSObject {
         DOMTree.InsertNodeAfter(referenceDom, documentFragment);
         return this;
     }
+
     /**
+     * Appends a child element to the end of this object, inside
+     * of the tag.
+     * 
      * @param {JSDom|Node|string} child
      * @return this
      */
@@ -423,14 +427,53 @@ export class JSDom extends JSObject {
         new JSDom(child).attach(this);
         return this;
     }
-    appendBefore(child) {}
-    appendAfter(child) {}
+
+    /**
+     * Appends a child element to the beginning of this object,
+     * inside the tag.
+     * 
+     * @param {JSDom|Node|string} child
+     * @return this
+     */
+    prepend(child) {
+        new JSDom(child).attachStart(this);
+        return this;
+    }
+
+    /**
+     * Appends a child element before the first tag
+     * 
+     * @param {JSDom|Node|string} insertNode
+     * @return this
+     */
+    appendBefore(insertNode) {
+        new JSDom(insertNode).attachBefore(this);
+        return this;
+    }
+
+    /**
+     * Appends a child after the first tag
+     * 
+     * @param {JSDom|Node|string} insertNode
+     * @return this
+     */
+    appendAfter(insertNode) {
+        new JSDom(insertNode).attachAfter(this);
+        return this;
+    }
     
-    prepend(child) {}
-    remove() {}
+    /**
+     * Removes the element from its parent
+     * 
+     * @return this
+     */
+    remove() {
+        this.each(DOMTree.RemoveNodeFromParent);
+        return this;
+    }
     
     parents(callbackFunction) {}
-    children(callbackFunction, daraArray) {}
+    children(callbackFunction, dataArray) {}
     
     // ==========================================================
     setHtml(html) {}

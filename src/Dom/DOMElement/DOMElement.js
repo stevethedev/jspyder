@@ -62,10 +62,11 @@ export class DOMElement {
      */
     static IsElement(element) {
         if (element) {
-            if (HTML_ELEMENT_EXISTS) {
-                return element instanceof window.HTMLElement;
-            }
-            else if (DOMElement.IsNode(element)) {
+            // if (HTML_ELEMENT_EXISTS) {
+            //     return element instanceof window.HTMLElement;
+            // }
+            // else
+            if (DOMElement.IsNode(element)) {
                 return element.nodeType === NODE_TYPE_ELEMENT_NODE;
             }
         }
@@ -79,10 +80,11 @@ export class DOMElement {
      */
     static IsNode(object) {
         if (object) {
-            if (HTML_NODE_EXISTS) {
-                return object instanceof window.Node;
-            }
-            else if ("object" === typeof object) {
+            // if (HTML_NODE_EXISTS) {
+            //     return object instanceof window.Node;
+            // }
+            // else 
+            if ("object" === typeof object) {
                 return NODE_TYPE_SWITCHER[object.nodeType];
             }
         }

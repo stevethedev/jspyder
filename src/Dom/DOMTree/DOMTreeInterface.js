@@ -1,15 +1,21 @@
 /** @interface */
 export class DOMTreeInterface {
-    attach(parent, callbackFunction) {}
-    attachStart(parent, callbackFunction) {}
+    createDocumentFragment() {}
+
+    attach(parent) {}
+    attachStart(parent) {}
     
+    attachBefore(reference) {}
+    attachAfter(reference) {}
+
     append(child) {}
-    appendBefore(child) {}
-    appendAfter(child) {}
-    
     prepend(child) {}
+
+    appendBefore(insertNode) {}
+    appendAfter(insertNode) {}
+    
     remove() {}
     
     parents(callbackFunction) {}
-    children(callbackFunction, daraArray) {}
+    children(callbackFunction, dataArray) {}
 }

@@ -11,7 +11,7 @@ export class DOMTree {
      * @return {boolean}
      */
     static AttachChildNode(parent, child) {
-        if(DOMElement.IsElement(parent) && DOMElement.IsNode(child)) {
+        if(DOMElement.IsNode(parent) && DOMElement.IsNode(child)) {
             parent.appendChild(child);
             return true;
         }
@@ -27,7 +27,7 @@ export class DOMTree {
      * @return {boolean}
      */
     static AttachChildNodeAtStart(parent, child) {
-        if(DOMElement.IsElement(parent) && DOMElement.IsNode(child)) {
+        if(DOMElement.IsNode(parent) && DOMElement.IsNode(child)) {
             parent.insertBefore(child, parent.firstChild);
             return true;
         }
@@ -42,7 +42,7 @@ export class DOMTree {
      * @return {boolean} true on success, false on failure or error
      */
     static RemoveNodeFromParent(element) {
-        if(DOMElement.IsElement(element) && element.parentNode) {
+        if(DOMElement.IsNode(element) && element.parentNode) {
             element.parentNode.removeChild(element);
             return true;
         }
@@ -58,7 +58,7 @@ export class DOMTree {
      * @return {boolean}
      */
     static InsertNodeBefore(beforeThisNode, insertThisNode) {
-        var validNodes = DOMElement.IsElement(beforeThisNode) && DOMElement.IsElement(insertThisNode);
+        var validNodes = DOMElement.IsNode(beforeThisNode) && DOMElement.IsNode(insertThisNode);
         if(validNodes && beforeThisNode.parentNode) {
             beforeThisNode.parentNode.insertBefore(insertThisNode, beforeThisNode);
             return true;
@@ -67,7 +67,7 @@ export class DOMTree {
     }
     
     static InsertNodeAfter(afterThisNode, insertThisNode) {
-        var validNodes = DOMElement.IsElement(afterThisNode) && DOMElement.IsElement(insertThisNode);
+        var validNodes = DOMElement.IsNode(afterThisNode) && DOMElement.IsNode(insertThisNode);
         if(validNodes && afterThisNode.parentNode && afterThisNode.nextSibling !== insertThisNode) {
             afterThisNode.parentNode.insertBefore(insertThisNode, afterThisNode.nextSibling);
             return true;
@@ -83,7 +83,7 @@ export class DOMTree {
      * @return {Node|null} element.parentNode
      */
     static GetParent(element) {
-        if(DOMElement.IsElement(element)) {
+        if(DOMElement.IsNode(element)) {
             return element.parentNode;
         }
         return null;
@@ -97,7 +97,7 @@ export class DOMTree {
      * @return {Array<Node>} element.children
      */
     static GetChildren(element) {
-        if(DOMElement.IsElement(element)) {
+        if(DOMElement.IsNode(element)) {
             return Arrays.Slice(element.children);
         }
         return [];
@@ -110,7 +110,8 @@ export class DOMTree {
 
         var documentFragment = document.createDocumentFragment();
         for(let i = 0, li = elementArray.length; i < li; ++i) {
-            DOMTree.AttachChildNode(documentFragment, elementArray[i]);
+            // DOMTree.AttachChildNode(documentFragment, elementArray[i]);
+            documentFragment.appendChild(elementArray[i]);
         }
         
         return documentFragment;

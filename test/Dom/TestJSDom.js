@@ -15,6 +15,7 @@ import {TestDOMClassesInterface} from "Dom/DOMClasses/TestDOMClassesInterface";
 import {TestDOMCssInterface} from "Dom/DOMCss/TestDOMCssInterface";
 import {TestDOMElementInterface} from "Dom/DOMElement/TestDOMElementInterface";
 import {TestDOMPositionInterface} from "Dom/DOMPosition/TestDOMPositionInterface";
+import {TestDOMTreeInterface} from "Dom/DOMTree/TestDOMTreeInterface";
 
 export class TestJSDom extends TestObject {
     constructor(jspyder) {
@@ -37,6 +38,7 @@ export class TestJSDom extends TestObject {
         new TestDOMCssInterface(jspyder);
         new TestDOMElementInterface(jspyder);
         new TestDOMPositionInterface(jspyder);
+        new TestDOMTreeInterface(jspyder);
     }
     
     testConstructor() {
