@@ -75,29 +75,29 @@ export class JSDom extends JSObject {
         Looper.ArrayEach(this._element, iteratorFunction, ...args);
         return this;
     }
-    
+
     /**
      * Retrieves the element at [index]; executes the callback
      * function against that element, if a callback was provided.
-     * 
+     *
      * Profile: O(1)
-     * 
+     *
      * @param {!number} index
      * @param {function()|undefined} [callbackFunction]
-     * 
+     *
      * @return {JSDom} Element at [index]
      */
     at(index, callbackFunction = undefined) {
         index = Numbers.ToUInt32(index);
         return new JSDom(this._element[index], callbackFunction);
     }
-    
+
     /**
      * Profile: O(1)
-     * 
+     *
      * @param {!number} index
      * @param {function({JSDom})|undefined} [callbackFunction]
-     * 
+     *
      * @return this
      */
     element(index, callbackFunction = undefined) {
@@ -110,12 +110,12 @@ export class JSDom extends JSObject {
         });
         return this;
     }
-    
+
     /**
      * Exports a DOM element.
-     * 
+     *
      * Profile: O(1)
-     * 
+     *
      * @param {!number} index
      * @return {HTMLElement}
      */
@@ -127,7 +127,7 @@ export class JSDom extends JSObject {
     // [DOMAttributesInterface] ==================================
     /**
      * Profile: O(m * n)
-     * 
+     *
      * @param {!Object} attributeObject
      * @param {function(Object)} callbackFunction
      * @return this
@@ -148,7 +148,7 @@ export class JSDom extends JSObject {
 
     /**
      * Profile: O(m * n)
-     * 
+     *
      * @param {!Object} attributeObject
      * @return this
      */
@@ -166,7 +166,7 @@ export class JSDom extends JSObject {
 
     /**
      * Profile: O(m)
-     * 
+     *
      * @param {!Object} attributeObject
      * @return {Object} attributeObject
      */
@@ -181,7 +181,7 @@ export class JSDom extends JSObject {
 
     /**
      * Profile: O(n)
-     * 
+     *
      * @param {string} attribute
      * @param {function(Object)} [callbackFunction]
      * @return this
@@ -196,7 +196,7 @@ export class JSDom extends JSObject {
 
     /**
      * Profile: O(m)
-     * 
+     *
      * @param {string} attribute
      * @param {?} value
      * @return this
@@ -210,7 +210,7 @@ export class JSDom extends JSObject {
 
     /**
      * Profile: O(1)
-     * 
+     *
      * @param {string} attribute
      * @return {string|null}
      */
@@ -228,10 +228,10 @@ export class JSDom extends JSObject {
 
     /**
      * Profile: O(n)
-     * 
+     *
      * @param {Object<string>} cssObject
      * @param {function(Object<string>)} [callbackFunction]
-     * 
+     *
      * @return this
      */
     getCss(cssObject = {}, callbackFunction = undefined) {
@@ -252,7 +252,7 @@ export class JSDom extends JSObject {
     // [DOMClassesInterface] =====================================
     /**
      * Profile: O(m*n)
-     * 
+     *
      * @param {Object<boolean>} classObject
      * @return this
      */
@@ -266,20 +266,20 @@ export class JSDom extends JSObject {
         });
         return this;
     }
-    
+
     /**
      * Profile: O(n)
-     * 
+     *
      * @param {Object<boolean>} classObject
      * @param {function(Object<boolean>)} [callbackFunction]
-     * 
+     *
      * @return this
      */
     getClasses(classObject, callbackFunction = undefined) {
         // Minimize the number of calculations required.
         const keys = Objects.GetProperties(classObject);
         const li = keys.length;
-        const USE_CALLBACK = Functions.IsFunction(callbackFunction); 
+        const USE_CALLBACK = Functions.IsFunction(callbackFunction);
 
         // Iterate all of my elements.
         this.each((element, index) => {
@@ -289,7 +289,7 @@ export class JSDom extends JSObject {
             for(let i = 0; i < li; ++i) {
                 elementClasses[keys[i]] = (classCache.indexOf(keys[i]) !== -1);
             }
-            
+
             if(USE_CALLBACK) {
                 new JSDom(element, callbackFunction, [elementClasses]);
             }
@@ -299,7 +299,7 @@ export class JSDom extends JSObject {
     }
     /**
      * Profile: O(n)
-     * 
+     *
      * @param {Object<boolean>} classObject
      * @return this
      */
@@ -357,12 +357,12 @@ export class JSDom extends JSObject {
     }
 
     /**
-     * Attaches the elements from the JSDom element to the first 
+     * Attaches the elements from the JSDom element to the first
      * element identified in the parent object, inside the tag.
-     * 
+     *
      * @param {JSDom|Node|string} parent
      *      The element which this JSDom should be attached to.
-     * 
+     *
      * @return this
      */
     attach(parent) {
@@ -373,12 +373,12 @@ export class JSDom extends JSObject {
     }
 
     /**
-     * Attaches the elements from the JSDom element to the end of the first 
+     * Attaches the elements from the JSDom element to the end of the first
      * element identified in the parent object, inside the tag
-     * 
+     *
      * @param {JSDom|Node|string} parent
      *      The element which this JSDom should be attached to.
-     * 
+     *
      * @return this
      */
     attachStart(parent) {
@@ -387,11 +387,11 @@ export class JSDom extends JSObject {
         DOMTree.AttachChildNodeAtStart(parentDom, documentFragment);
         return this;
     }
-    
+
     /**
      * Attaches the elements from the JSDom element to the start of the first
      * element identifeid in the parent object, outside the tag.
-     * 
+     *
      * @param {JSDom|Node|string} reference
      * @return this;
      */
@@ -401,11 +401,11 @@ export class JSDom extends JSObject {
         DOMTree.InsertNodeBefore(referenceDom, documentFragment);
         return this;
     }
-    
+
     /**
      * Attaches the elements from the JSDom element to the start of the first
      * element identifeid in the parent object, outside the tag.
-     * 
+     *
      * @param {JSDom|Node|string} reference
      * @return this;
      */
@@ -419,7 +419,7 @@ export class JSDom extends JSObject {
     /**
      * Appends a child element to the end of this object, inside
      * of the tag.
-     * 
+     *
      * @param {JSDom|Node|string} child
      * @return this
      */
@@ -431,7 +431,7 @@ export class JSDom extends JSObject {
     /**
      * Appends a child element to the beginning of this object,
      * inside the tag.
-     * 
+     *
      * @param {JSDom|Node|string} child
      * @return this
      */
@@ -442,7 +442,7 @@ export class JSDom extends JSObject {
 
     /**
      * Appends a child element before the first tag
-     * 
+     *
      * @param {JSDom|Node|string} insertNode
      * @return this
      */
@@ -453,7 +453,7 @@ export class JSDom extends JSObject {
 
     /**
      * Appends a child after the first tag
-     * 
+     *
      * @param {JSDom|Node|string} insertNode
      * @return this
      */
@@ -461,29 +461,74 @@ export class JSDom extends JSObject {
         new JSDom(insertNode).attachAfter(this);
         return this;
     }
-    
+
     /**
      * Removes the element from its parent
-     * 
+     *
      * @return this
      */
     remove() {
         this.each(DOMTree.RemoveNodeFromParent);
         return this;
     }
-    
+
     parents(callbackFunction) {}
     children(callbackFunction, dataArray) {}
-    
+
     // ==========================================================
-    setHtml(html) {}
-    getHtml(callbackFunction) {}
-    exportHtml() {}
-    
-    setText(text) {}
-    getText(callbackFunction) {}
-    exportText() {}
-    
+    /**
+     * Sets the HTML content of all of the child elements.
+     *
+     * @param {string} html
+     * @return this
+     */
+    setHtml(html) {
+        this.each((element) => { element.innerHTML = html; });
+        return this;
+    }
+
+    /**
+     * Gets the HTML content of all of the child elements, and
+     * executes callbackFunction for each returned value.
+     *
+     * @param {function({string})|undefined} [callbackFunction]
+     * @return this
+     */
+    getHtml(callbackFunction = undefined) {
+        this.each((element) => {
+            new JSDom(element, callbackFunction, [element.innerHTML]);
+        });
+        return this;
+    }
+
+    /**
+     * @return {string}
+     */
+    exportHtml() {
+        return this.exportElement(0).innerHTML;
+    }
+
+    /**
+     * Sets the Text Content of all child elements.
+     *
+     * @param {string} text
+     * @return this
+     */
+    setText(text) {
+        this.each((element) => { element.innerText = text; });
+        return this;
+    }
+    /** @return this */
+    getText(callbackFunction) {
+        this.each((element) => {
+            new JSDom(element, callbackFunction, [element.innerText]);
+        });
+        return this;
+    }
+    exportText() {
+        return this.exportElement(0).innerText;
+    }
+
     find(cssSelector) {}
     filter(cssSelector) {}
     exclude(cssSelector) {}

@@ -33,9 +33,9 @@ export class DOMElement {
     /**
      * Converts arbitrary data into a DOM node array that JSpyder
      * can use.
-     * 
+     *
      * Profile: O(n), Q(1)
-     * 
+     *
      * @return {Array}
      */
     static ToElement(source) {
@@ -83,7 +83,7 @@ export class DOMElement {
             // if (HTML_NODE_EXISTS) {
             //     return object instanceof window.Node;
             // }
-            // else 
+            // else
             if ("object" === typeof object) {
                 return NODE_TYPE_SWITCHER[object.nodeType];
             }
@@ -94,7 +94,7 @@ export class DOMElement {
     /**
      * Determines if the string provided can be used to create
      * a DOM node.
-     * 
+     *
      * @return {boolean}
      */
     static IsDomString(source) {
@@ -109,7 +109,7 @@ export class DOMElement {
 
     /**
      * Profile: O(n)
-     * 
+     *
      * @return {Array}
      */
     static ParseHtmlAsNodes(source) {
@@ -120,7 +120,7 @@ export class DOMElement {
 
     /**
      * Profile: O(n)
-     * 
+     *
      * @return {Array}
      */
     static QuerySelectorAll(selector, parent = window["document"]) {
@@ -135,7 +135,7 @@ export class DOMElement {
     /**
      * Attaches a registry to the defined element, if a registry
      * has been created; otherwise, exits early.
-     * 
+     *
      * Profile: O(1)
      */
     static AttachRegistry(element) {

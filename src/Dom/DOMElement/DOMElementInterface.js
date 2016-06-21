@@ -2,9 +2,11 @@
 export class DOMElementInterface {
     setHtml(html) {}
     getHtml(callbackFunction) {}
+    /** @return {string} */
     exportHtml() {}
 
     getText(callbackFunction) {}
+    /** @return {string} */
     exportText() {}
     setText(text) {}
 

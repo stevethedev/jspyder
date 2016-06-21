@@ -2840,7 +2840,9 @@ var module$Dom$DOMElement$TestDOMElementInterface = {}, TestDOMElementInterface$
 $jscomp.inherits(TestDOMElementInterface$$module$Dom$DOMElement$TestDOMElementInterface, TestObject$$module$TestObject);
 TestDOMElementInterface$$module$Dom$DOMElement$TestDOMElementInterface.setLogger = TestObject$$module$TestObject.setLogger;
 TestDOMElementInterface$$module$Dom$DOMElement$TestDOMElementInterface.prototype.testSetHtml = function $TestDOMElementInterface$$module$Dom$DOMElement$TestDOMElementInterface$$testSetHtml$() {
-  module$Assert.Assert.Fail();
+  var $div$$ = document.createElement("div");
+  this.jspyder.dom($div$$).setHtml("test html");
+  module$Assert.Assert.Equal("test html", $div$$.innerHTML);
 };
 TestDOMElementInterface$$module$Dom$DOMElement$TestDOMElementInterface.prototype.testGetHtml = function $TestDOMElementInterface$$module$Dom$DOMElement$TestDOMElementInterface$$testGetHtml$() {
   module$Assert.Assert.Fail();
@@ -3423,16 +3425,34 @@ JSDom$$module$Dom$JSDom.prototype.parents = function $JSDom$$module$Dom$JSDom$$p
 JSDom$$module$Dom$JSDom.prototype.children = function $JSDom$$module$Dom$JSDom$$children$($callbackFunction$$, $dataArray$$) {
 };
 JSDom$$module$Dom$JSDom.prototype.setHtml = function $JSDom$$module$Dom$JSDom$$setHtml$($html$$) {
+  this.each(function($element$$) {
+    $element$$.innerHTML = $html$$;
+  });
+  return this;
 };
 JSDom$$module$Dom$JSDom.prototype.getHtml = function $JSDom$$module$Dom$JSDom$$getHtml$($callbackFunction$$) {
+  this.each(function($element$$) {
+    new JSDom$$module$Dom$JSDom($element$$, $callbackFunction$$, [$element$$.innerHTML]);
+  });
+  return this;
 };
 JSDom$$module$Dom$JSDom.prototype.exportHtml = function $JSDom$$module$Dom$JSDom$$exportHtml$() {
+  return this.exportElement(0).innerHTML;
 };
 JSDom$$module$Dom$JSDom.prototype.setText = function $JSDom$$module$Dom$JSDom$$setText$($text$$) {
+  this.each(function($element$$) {
+    $element$$.innerText = $text$$;
+  });
+  return this;
 };
 JSDom$$module$Dom$JSDom.prototype.getText = function $JSDom$$module$Dom$JSDom$$getText$($callbackFunction$$) {
+  this.each(function($element$$) {
+    new JSDom$$module$Dom$JSDom($element$$, $callbackFunction$$, [$element$$.innerText]);
+  });
+  return this;
 };
 JSDom$$module$Dom$JSDom.prototype.exportText = function $JSDom$$module$Dom$JSDom$$exportText$() {
+  return this.exportElement(0).innerText;
 };
 JSDom$$module$Dom$JSDom.prototype.find = function $JSDom$$module$Dom$JSDom$$find$($cssSelector$$) {
 };
