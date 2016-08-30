@@ -1,6 +1,10 @@
 const OBJECT_PROTOTYPE = Object.prototype;
 
 export class Objects {
+    static CreateBlankObject() {
+        return Object.create(null);
+    }
+
     /**
      * Coerces any value to an Object value.
      * 
@@ -8,7 +12,7 @@ export class Objects {
      * @param {*} defaultValue
      * @return {?}
      */
-    static ToObject(value, defaultValue = {}) {
+    static ToObject(value, defaultValue = Objects.CreateBlankObject()) {
         if(value !== null && Objects.IsObject(value)) {
             return value;
         }
@@ -50,7 +54,7 @@ export class Objects {
                 }
                 else if(subObject) { // base is defined, and we're merging an object
                     if(!baseObject) { // not merging into an object, so create a copy
-                        baseProperty = {};
+                        baseProperty = Objects.CreateBlankObject();
                     }
                     base[property] = Objects.MergeObjects(baseProperty, subProperty);
                 }
@@ -67,7 +71,7 @@ export class Objects {
             return object;
         }
 
-        var cloned = {};
+        var cloned = Objects.CreateBlankObject();
         var properties = Object.getOwnPropertyNames(object);
         
         for(let i = 0, li = properties.length; i < li; ++i) {

@@ -11,14 +11,18 @@ import {DOMCss} from "Dom/DOMCss/DOMCss";
 import {DOMClasses} from "Dom/DOMClasses/DOMClasses";
 import {DOMElement} from "Dom/DOMElement/DOMElement";
 import {DOMPosition} from "Dom/DOMPosition/DOMPosition";
+import {DOMProperties} from "Dom/DOMProperties/DOMProperties";
 import {DOMTree} from "Dom/DOMTree/DOMTree";
+import {DOMValue} from "Dom/DOMValue/DOMValue";
 
 import {DOMAttributesInterface} from "Dom/DOMAttributes/DOMAttributesInterface";
 import {DOMClassesInterface} from "Dom/DOMClasses/DOMClassesInterface";
 import {DOMCssInterface} from "Dom/DOMCss/DOMCssInterface";
 import {DOMElementInterface} from "Dom/DOMElement/DOMElementInterface";
 import {DOMPositionInterface} from "Dom/DOMPosition/DOMPositionInterface";
+import {DOMPropertiesInterface} from "Dom/DOMProperties/DOMPropertiesInterface";
 import {DOMTreeInterface} from "Dom/DOMTree/DOMTreeInterface";
+import {DOMValueInterface} from "Dom/DOMValue/DOMValueInterface";
 
 import {Looper} from "Algorithms/Looper/Looper";
 
@@ -31,23 +35,32 @@ import {Looper} from "Algorithms/Looper/Looper";
  * @implements {DOMClassesInterface}
  * @implements {DOMCssInterface}
  * @implements {DOMPositionInterface}
+ * @implements {DOMPropertiesInterface}
+ * @implements {DOMValueInterface}
  *
  * @inheritDoc
  */
 export class JSDom extends JSObject {
-    /** Document Object */
-    static get doc() { return new JSDom(document.documentElement); }
-
     constructor(element, callbackFunction = null, argumentArray = []) {
-        if (!JSDom.inPrototypeChain(element)) {
-            element = DOMElement.ToElement(element);
+        var jsDom = this;
+        if (JSDom.inPrototypeChain(element)) {
+            jsDom = element;
+        }
+        else {
+            this._element = DOMElement.ToElement(element);
+            jsDom.extend("_element", this._element);
         }
 
-        this._element = element;
-        this.extend("_element", this._element);
-        this.each(DOMElement.AttachRegistry);
-        this.use(callbackFunction, argumentArray);
+        jsDom.each(DOMElement.AttachRegistry);
+        jsDom.use(callbackFunction, argumentArray);
+
+        if(jsDom !== this) {
+            return jsDom;
+        }
     }
+
+    /** Document Object */
+    static get doc() { return new JSDom(document.documentElement); }
 
     /** Returns the number of elements this object wraps */
     get count() { return this._element ? this._element.length : 0; }
@@ -168,13 +181,14 @@ export class JSDom extends JSObject {
      * Profile: O(m)
      *
      * @param {!Object} attributeObject
+     * @param {number} [index]
      * @return {Object} attributeObject
      */
-    exportAttrs(attributeObject) {
+    exportAttrs(attributeObject, index = 0) {
         var attributeKeys = Object.getOwnPropertyNames(attributeObject);
         for(let i = 0; i < attributeKeys.length; ++i) {
             let key = attributeKeys[i];
-            attributeObject[key] = this.exportAttr(key);
+            attributeObject[key] = this.exportAttr(key, index);
         }
         return attributeObject;
     }
@@ -197,13 +211,13 @@ export class JSDom extends JSObject {
     /**
      * Profile: O(m)
      *
-     * @param {string} attribute
+     * @param {string} attributeName
      * @param {?} value
      * @return this
      */
-    setAttr(attribute, value) {
+    setAttr(attributeName, value) {
         this.each((element) => {
-            DOMAttributes.SetAttribute(element, attribute, value);
+            DOMAttributes.SetAttribute(element, attributeName, value);
         });
         return this;
     }
@@ -211,16 +225,18 @@ export class JSDom extends JSObject {
     /**
      * Profile: O(1)
      *
-     * @param {string} attribute
+     * @param {string} attributeName
+     * @param {number} [index]
      * @return {string|null}
      */
-    exportAttr(attribute) {
-        return DOMAttributes.GetAttribute(this._element[0], attribute);
+    exportAttr(attributeName, index = 0) {
+        var element = this.exportElement(index);
+        return DOMAttributes.GetAttribute(element, attributeName);
     }
 
     // [DOMCssInterface] =========================================
     // O(n)
-    setCss(cssObject = {}, callbackFunction = undefined) {
+    setCss(cssObject = Objects.CreateBlankObject(), callbackFunction = undefined) {
         this.each(DOMCss.setCssOnLoop, cssObject);
         this.use(callbackFunction, [cssObject]);
         return this;
@@ -234,17 +250,26 @@ export class JSDom extends JSObject {
      *
      * @return this
      */
-    getCss(cssObject = {}, callbackFunction = undefined) {
+    getCss(cssObject = Objects.CreateBlankObject(), callbackFunction = undefined) {
         this.each(DOMCss.getCssFromLoop, this.constructor, cssObject, callbackFunction);
         return this;
     }
 
-    // O(1)
-    exportCss(cssObject = {}) {
-        this.at(0).getCss(cssObject);
+    /**
+     * Exports the CSS associated with this object
+     * Profile: O(1)
+     * 
+     * @param {Object} [cssObject]
+     * @param {number} [index]
+     */
+    exportCss(cssObject = Objects.CreateBlankObject(), index = 0) {
+        this.at(index).getCss(cssObject);
         return cssObject;
     }
 
+    /**
+     * Inlines the styles of each element
+     */
     inlineStyles() {
         this.each((element) => DOMCss.InlineStyles(element));
     }
@@ -297,29 +322,33 @@ export class JSDom extends JSObject {
 
         return this;
     }
+
     /**
      * Profile: O(n)
      *
      * @param {Object<boolean>} classObject
+     * @param {number} [index]
      * @return this
      */
-    exportClasses(classObject) {
-        this.at(0).getClasses(classObject);
+    exportClasses(classObject, index = 0) {
+        this.at(index).getClasses(classObject);
         return classObject;
     }
 
     // [DOMPositionInterface] ====================================
     /**
+     * @param {number} [index]
      * @return {Object}
      */
-    exportPosition() {
-        return DOMPosition.GetPosition(this._element[0]);
+    exportPosition(index = 0) {
+        return DOMPosition.GetPosition(this.exportElement(index));
     }
     /**
+     * @param {number} [index]
      * @return {Object}
      */
-    exportOffsetPosition() {
-        return DOMPosition.GetOffsetPosition(this._element[0]);
+    exportOffsetPosition(index = 0) {
+        return DOMPosition.GetOffsetPosition(this.exportElement(index));
     }
     /**
      * @param {function({Object})} [callbackFunction]
@@ -362,12 +391,14 @@ export class JSDom extends JSObject {
      *
      * @param {JSDom|Node|string} parent
      *      The element which this JSDom should be attached to.
+     * 
+     * @param {number} [index]
      *
      * @return this
      */
-    attach(parent) {
+    attach(parent, index = 0) {
         var documentFragment = this.createDocumentFragment();
-        var parentDom = new JSDom(parent)._element[0];
+        var parentDom = new JSDom(parent)._element[index];
         DOMTree.AttachChildNode(parentDom, documentFragment);
         return this;
     }
@@ -379,11 +410,13 @@ export class JSDom extends JSObject {
      * @param {JSDom|Node|string} parent
      *      The element which this JSDom should be attached to.
      *
+     * @param {number} [index]
+     * 
      * @return this
      */
-    attachStart(parent) {
+    attachStart(parent, index = 0) {
         var documentFragment = this.createDocumentFragment();
-        var parentDom = new JSDom(parent)._element[0];
+        var parentDom = new JSDom(parent)._element[index];
         DOMTree.AttachChildNodeAtStart(parentDom, documentFragment);
         return this;
     }
@@ -393,10 +426,11 @@ export class JSDom extends JSObject {
      * element identifeid in the parent object, outside the tag.
      *
      * @param {JSDom|Node|string} reference
+     * @param {number} index
      * @return this;
      */
-    attachBefore(reference) {
-        var referenceDom = new JSDom(reference)._element[0];
+    attachBefore(reference, index = 0) {
+        var referenceDom = new JSDom(reference)._element[index];
         var documentFragment = this.createDocumentFragment();
         DOMTree.InsertNodeBefore(referenceDom, documentFragment);
         return this;
@@ -407,10 +441,11 @@ export class JSDom extends JSObject {
      * element identifeid in the parent object, outside the tag.
      *
      * @param {JSDom|Node|string} reference
+     * @param {number} [index]
      * @return this;
      */
-    attachAfter(reference) {
-        var referenceDom = new JSDom(reference)._element[0];
+    attachAfter(reference, index = 0) {
+        var referenceDom = new JSDom(reference)._element[index];
         var documentFragment = this.createDocumentFragment();
         DOMTree.InsertNodeAfter(referenceDom, documentFragment);
         return this;
@@ -421,10 +456,11 @@ export class JSDom extends JSObject {
      * of the tag.
      *
      * @param {JSDom|Node|string} child
+     * @param {number} [index]
      * @return this
      */
-    append(child) {
-        new JSDom(child).attach(this);
+    append(child, index = 0) {
+        new JSDom(child).attach(this, index);
         return this;
     }
 
@@ -433,10 +469,11 @@ export class JSDom extends JSObject {
      * inside the tag.
      *
      * @param {JSDom|Node|string} child
+     * @param {number} [index]
      * @return this
      */
-    prepend(child) {
-        new JSDom(child).attachStart(this);
+    prepend(child, index = 0) {
+        new JSDom(child).attachStart(this, index);
         return this;
     }
 
@@ -444,10 +481,11 @@ export class JSDom extends JSObject {
      * Appends a child element before the first tag
      *
      * @param {JSDom|Node|string} insertNode
+     * @param {number} [index]
      * @return this
      */
-    appendBefore(insertNode) {
-        new JSDom(insertNode).attachBefore(this);
+    appendBefore(insertNode, index = 0) {
+        new JSDom(insertNode).attachBefore(this, index);
         return this;
     }
 
@@ -455,10 +493,11 @@ export class JSDom extends JSObject {
      * Appends a child after the first tag
      *
      * @param {JSDom|Node|string} insertNode
+     * @param {number} [index]
      * @return this
      */
-    appendAfter(insertNode) {
-        new JSDom(insertNode).attachAfter(this);
+    appendAfter(insertNode, index = 0) {
+        new JSDom(insertNode).attachAfter(this, index);
         return this;
     }
 
@@ -483,7 +522,7 @@ export class JSDom extends JSObject {
      * @return this
      */
     setHtml(html) {
-        this.each((element) => { element.innerHTML = html; });
+        this.each((element) => DOMProperties.SetProperty(element, "innerHTML", html));
         return this;
     }
 
@@ -496,16 +535,18 @@ export class JSDom extends JSObject {
      */
     getHtml(callbackFunction = undefined) {
         this.each((element) => {
-            new JSDom(element, callbackFunction, [element.innerHTML]);
+            var innerHTML = DOMProperties.GetProperty(element, "innerHTML");
+            new JSDom(element, callbackFunction, [innerHTML]);
         });
         return this;
     }
 
     /**
+     * @param {number} [index]
      * @return {string}
      */
-    exportHtml() {
-        return this.exportElement(0).innerHTML;
+    exportHtml(index = 0) {
+        return /** @type {string} */(DOMProperties.GetProperty(this.exportElement(index), "innerHTML"));
     }
 
     /**
@@ -515,33 +556,200 @@ export class JSDom extends JSObject {
      * @return this
      */
     setText(text) {
-        this.each((element) => { element.innerText = text; });
+        this.each((element) => DOMProperties.SetProperty(element, "innerText", text));
         return this;
     }
-    /** @return this */
+    /**
+     * Gets the Text Content of all child elements
+     *  
+     * @return this 
+     */
     getText(callbackFunction) {
         this.each((element) => {
-            new JSDom(element, callbackFunction, [element.innerText]);
+            var innerText = DOMProperties.GetProperty(element, "innerText");
+            new JSDom(element, callbackFunction, [innerText]);
         });
         return this;
     }
-    exportText() {
-        return this.exportElement(0).innerText;
+    /**
+     * Exports the Text Content of the first child element
+     * 
+     * @param {number} index
+     * @return this
+     */
+    exportText(index = 0) {
+        var element = this.exportElement(index);
+        return DOMProperties.GetProperty(element, "innerText");
     }
 
+    /**
+     * Searches for an object containing the DOM nodes which match the
+     * provided CSS selector.
+     * 
+     * !TODO
+     *
+     * @param {!string|Element} cssSelector
+     * @return this
+     */
     find(cssSelector) {}
+    /**
+     * Excludes any child nodes that do not match the provided CSS 
+     * selector
+     * 
+     * !TODO
+     *
+     * @param {!string|Element} cssSelector
+     * @return this
+     */
     filter(cssSelector) {}
+    /**
+     * Excludes any child nodes that match the provided CSS selector
+     * 
+     * !TODO
+     *
+     * @param {!string|Element} cssSelector
+     * @return this
+     */
     exclude(cssSelector) {}
-    and(elements) {}
+    /**
+     * Appends any nodes that match the provided CSS selector
+     * 
+     * !TODO
+     *
+     * @param {!string|Element} cssSelector
+     * @return this
+     */
+    and(cssSelector) {}
 
     // ===========================================================
-    getProps(propertyObject, callbackFunction) {}
-    exportProps(propertyObject) {}
-    setProps(propertyObject) {}
+    /**
+     * Retrieves the identified property from the child nodes and
+     * executes them in the callback function
+     * 
+     * @param {!string} propertyName
+     * @param {function(*)} callbackFunction
+     * @return this
+     */
+    getProp(propertyName, callbackFunction) {
+        this.each((element, index) => {
+            var property = DOMProperties.GetProperty(element, propertyName);
+            new JSDom(element, callbackFunction, [property]);
+        });
+        return this;
+    }
+    /**
+     * Exports the identified property from the first child node.
+     * 
+     * @param {!string} propertyName
+     * @param {number} [index]
+     * @return {*}
+     */
+    exportProp(propertyName, index = 0) {
+        var element = this.exportElement(index);
+        return DOMProperties.GetProperty(element, propertyName);
+    }
+    /**
+     * Sets the identified property on the child nodes to the specified
+     * value.
+     * 
+     * @param {!string} propertyName
+     * @param {*} value
+     * @return this
+     */
+    setProp(propertyName, value) {
+        this.each((element, index) => {
+            DOMProperties.SetProperty(element, propertyName, value);
+        });
+        return this;
+    }
+    /**
+     * Retrieves the identified properties from the child nodes and 
+     * executes them in the callback function
+     * 
+     * @param {!Object} propertyObject
+     * @param {function(!Object)} callbackFunction
+     * @return this
+     */
+    getProps(propertyObject, callbackFunction) {
+        var propertyKeys = Object.getOwnPropertyNames(propertyObject);
+        var li = propertyKeys.length;
+        this.each((element, index) => {
+            var properties = (index ? {} : propertyObject);
+            for(let i = 0; i < li; ++i) {
+                let key = propertyKeys[i];
+                properties[key] = DOMProperties.GetProperty(element, key);
+            }
+            new JSDom(element, callbackFunction, [propertyObject]);
+        });
+        return this;
+    }
+    /**
+     * Retrieves the identified properties from the first child node.
+     * 
+     * @param {!Object} propertyObject
+     * @param {number} [index]
+     * @return {!Object} propertyObject 
+     */
+    exportProps(propertyObject, index = 0) {
+        var propertyKeys = Object.getOwnPropertyNames(propertyObject);
+        var li = propertyKeys.length;
+        for(let i = 0; i < li; ++i) {
+            let key = propertyKeys[i];
+            propertyObject[key] = this.exportProp(key, index);
+        }
+        return propertyObject;
+    }
+    /**
+     * Sets properties on the child nodes to match the properties in
+     * the passed object.
+     * 
+     * @param {!Object} propertyObject
+     * @param {number} [index]
+     * @return this
+     */
+    setProps(propertyObject, index = 0) {
+        var element = this.exportElement(index);
+        DOMProperties.SetProperties(element, propertyObject);
+        return this;
+    }
 
-    setValue(value, callbackFunction) {}
-    getValue(callbackFunction) {}
-    exportValue() {}
+    // ===========================================================
+    /**
+     * Sets the value of the child nodes
+     * 
+     * @param {*} value
+     * @return this
+     */
+    setValue(value) {
+        this.each((element, index) => DOMValue.SetValue(element, value));
+        return this;
+    }
+    
+    /**
+     * Gets the value of the child nodes and passes it through the
+     * callback function.
+     * 
+     * @param {function(!Object)} callbackFunction
+     * @return this
+     */
+    getValue(callbackFunction) {
+        this.each((element, index) => {
+            var value = DOMValue.GetValue(element);
+            new JSDom(element, callbackFunction, [value]);
+        });
+        return this;
+    }
+
+    /**
+     * Gets the value of the first child node
+     * 
+     * @param {number} [index]
+     * @return {*}
+     */
+    exportValue(index = 0) {
+        var element = this.exportElement(index);
+        return DOMValue.GetValue(element);
+    }
 
     template(fields) {}
 

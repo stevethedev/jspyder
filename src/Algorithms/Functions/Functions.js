@@ -1,4 +1,5 @@
 import {Arrays} from "Algorithms/Arrays/Arrays";
+import {Objects} from "Algorithms/Objects/Objects";
 
 export class Functions {
     /**
@@ -66,7 +67,7 @@ export class Functions {
     }
     
     static Memoize(memoizeFunction) {
-        var memo = {};
+        var memo = Objects.CreateBlankObject();
 
         return function(...args) {
             if(memo.hasOwnProperty(args)) {

@@ -1644,14 +1644,14 @@ module$Dom$DOMElement$DOMElement.DOMElement = DOMElement$$module$Dom$DOMElement$
 var module$Dom$DOMAttributes$DOMAttributes = {}, DOMAttributes$$module$Dom$DOMAttributes$DOMAttributes = function $DOMAttributes$$module$Dom$DOMAttributes$DOMAttributes$() {
 };
 DOMAttributes$$module$Dom$DOMAttributes$DOMAttributes.GetAttributes = function $DOMAttributes$$module$Dom$DOMAttributes$DOMAttributes$GetAttributes$($element$$, $attributeObject$$) {
-  for (var $propertyName$$ in $attributeObject$$) {
-    $attributeObject$$[$propertyName$$] = DOMAttributes$$module$Dom$DOMAttributes$DOMAttributes.GetAttribute($element$$, $propertyName$$);
+  for (var $attributeName$$ in $attributeObject$$) {
+    $attributeObject$$[$attributeName$$] = DOMAttributes$$module$Dom$DOMAttributes$DOMAttributes.GetAttribute($element$$, $attributeName$$);
   }
   return $attributeObject$$;
 };
 DOMAttributes$$module$Dom$DOMAttributes$DOMAttributes.SetAttributes = function $DOMAttributes$$module$Dom$DOMAttributes$DOMAttributes$SetAttributes$($element$$, $attributeObject$$) {
-  for (var $propertyName$$ in $attributeObject$$) {
-    DOMAttributes$$module$Dom$DOMAttributes$DOMAttributes.SetAttribute($element$$, $propertyName$$, $attributeObject$$[$propertyName$$]);
+  for (var $attributeName$$ in $attributeObject$$) {
+    DOMAttributes$$module$Dom$DOMAttributes$DOMAttributes.SetAttribute($element$$, $attributeName$$, $attributeObject$$[$attributeName$$]);
   }
 };
 DOMAttributes$$module$Dom$DOMAttributes$DOMAttributes.GetAttribute = function $DOMAttributes$$module$Dom$DOMAttributes$DOMAttributes$GetAttribute$($element$$, $attribute$$) {
@@ -1771,17 +1771,13 @@ DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.exportT
 };
 DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.setText = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$$setText$($text$$) {
 };
-DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.getProps = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$$getProps$($propertyObject$$, $callbackFunction$$) {
+DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.find = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$$find$($cssSelector$$) {
 };
-DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.exportProps = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$$exportProps$($propertyObject$$) {
+DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.filter = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$$filter$($cssSelector$$) {
 };
-DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.setProps = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$$setProps$($propertyObject$$) {
+DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.exclude = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$$exclude$($cssSelector$$) {
 };
-DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.setValue = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$$setValue$($value$$, $callbackFunction$$) {
-};
-DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.getValue = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$$getValue$($callbackFunction$$) {
-};
-DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.exportValue = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$$exportValue$() {
+DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface.prototype.and = function $DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface$$and$($cssSelector$$) {
 };
 module$Dom$DOMElement$DOMElementInterface.DOMElementInterface = DOMElementInterface$$module$Dom$DOMElement$DOMElementInterface;
 var module$Dom$DOMPosition$DOMPosition = {}, DOMPosition$$module$Dom$DOMPosition$DOMPosition = function $DOMPosition$$module$Dom$DOMPosition$DOMPosition$() {
@@ -1813,6 +1809,53 @@ DOMPositionInterface$$module$Dom$DOMPosition$DOMPositionInterface.prototype.getP
 DOMPositionInterface$$module$Dom$DOMPosition$DOMPositionInterface.prototype.getOffsetPosition = function $DOMPositionInterface$$module$Dom$DOMPosition$DOMPositionInterface$$getOffsetPosition$($callbackFunction$$) {
 };
 module$Dom$DOMPosition$DOMPositionInterface.DOMPositionInterface = DOMPositionInterface$$module$Dom$DOMPosition$DOMPositionInterface;
+var module$Dom$DOMProperties$DOMProperties = {}, DOMAttributes$$module$Dom$DOMProperties$DOMProperties = function $DOMAttributes$$module$Dom$DOMProperties$DOMProperties$() {
+};
+DOMAttributes$$module$Dom$DOMProperties$DOMProperties.GetProperties = function $DOMAttributes$$module$Dom$DOMProperties$DOMProperties$GetProperties$($element$$, $propertyObject$$) {
+  if (DOMElement$$module$Dom$DOMElement$DOMElement.IsElement($element$$)) {
+    for (var $propertyName$$ in $propertyObject$$) {
+      $propertyObject$$[$propertyName$$] = $element$$[$propertyName$$];
+    }
+  }
+  return $propertyObject$$;
+};
+DOMAttributes$$module$Dom$DOMProperties$DOMProperties.SetProperties = function $DOMAttributes$$module$Dom$DOMProperties$DOMProperties$SetProperties$($element$$, $propertyObject$$) {
+  if (DOMElement$$module$Dom$DOMElement$DOMElement.IsElement($element$$)) {
+    for (var $propertyName$$ in $propertyObject$$) {
+      $element$$[$propertyName$$] = $propertyObject$$[$propertyName$$];
+    }
+  }
+};
+DOMAttributes$$module$Dom$DOMProperties$DOMProperties.GetProperty = function $DOMAttributes$$module$Dom$DOMProperties$DOMProperties$GetProperty$($element$$, $property$$) {
+  var $value$$;
+  DOMElement$$module$Dom$DOMElement$DOMElement.IsElement($element$$) && ($value$$ = $element$$[$property$$]);
+  return $value$$;
+};
+DOMAttributes$$module$Dom$DOMProperties$DOMProperties.SetProperty = function $DOMAttributes$$module$Dom$DOMProperties$DOMProperties$SetProperty$($element$$, $property$$, $value$$) {
+  DOMElement$$module$Dom$DOMElement$DOMElement.IsElement($element$$) && ($element$$[$property$$] = $value$$);
+};
+module$Dom$DOMProperties$DOMProperties.DOMAttributes = DOMAttributes$$module$Dom$DOMProperties$DOMProperties;
+var module$Dom$DOMProperties$DOMPropertiesInterface = {}, DOMPropertiesInterface$$module$Dom$DOMProperties$DOMPropertiesInterface = function $DOMPropertiesInterface$$module$Dom$DOMProperties$DOMPropertiesInterface$() {
+};
+DOMPropertiesInterface$$module$Dom$DOMProperties$DOMPropertiesInterface.prototype.getProps = function $DOMPropertiesInterface$$module$Dom$DOMProperties$DOMPropertiesInterface$$getProps$($propertyObject$$, $callbackFunction$$) {
+};
+DOMPropertiesInterface$$module$Dom$DOMProperties$DOMPropertiesInterface.prototype.setProps = function $DOMPropertiesInterface$$module$Dom$DOMProperties$DOMPropertiesInterface$$setProps$($propertyObject$$) {
+};
+DOMPropertiesInterface$$module$Dom$DOMProperties$DOMPropertiesInterface.prototype.exportProps = function $DOMPropertiesInterface$$module$Dom$DOMProperties$DOMPropertiesInterface$$exportProps$($propertyObject$$) {
+};
+DOMPropertiesInterface$$module$Dom$DOMProperties$DOMPropertiesInterface.prototype.getProp = function $DOMPropertiesInterface$$module$Dom$DOMProperties$DOMPropertiesInterface$$getProp$($property$$, $callbackFunction$$) {
+};
+DOMPropertiesInterface$$module$Dom$DOMProperties$DOMPropertiesInterface.prototype.setProp = function $DOMPropertiesInterface$$module$Dom$DOMProperties$DOMPropertiesInterface$$setProp$($property$$, $value$$) {
+};
+DOMPropertiesInterface$$module$Dom$DOMProperties$DOMPropertiesInterface.prototype.exportProp = function $DOMPropertiesInterface$$module$Dom$DOMProperties$DOMPropertiesInterface$$exportProp$($property$$) {
+};
+DOMPropertiesInterface$$module$Dom$DOMProperties$DOMPropertiesInterface.prototype.setValue = function $DOMPropertiesInterface$$module$Dom$DOMProperties$DOMPropertiesInterface$$setValue$($value$$, $callbackFunction$$) {
+};
+DOMPropertiesInterface$$module$Dom$DOMProperties$DOMPropertiesInterface.prototype.getValue = function $DOMPropertiesInterface$$module$Dom$DOMProperties$DOMPropertiesInterface$$getValue$($callbackFunction$$) {
+};
+DOMPropertiesInterface$$module$Dom$DOMProperties$DOMPropertiesInterface.prototype.exportValue = function $DOMPropertiesInterface$$module$Dom$DOMProperties$DOMPropertiesInterface$$exportValue$() {
+};
+module$Dom$DOMProperties$DOMPropertiesInterface.DOMPropertiesInterface = DOMPropertiesInterface$$module$Dom$DOMProperties$DOMPropertiesInterface;
 var module$Dom$DOMTree$DOMTree = {}, DOMTree$$module$Dom$DOMTree$DOMTree = function $DOMTree$$module$Dom$DOMTree$DOMTree$() {
 };
 DOMTree$$module$Dom$DOMTree$DOMTree.AttachChildNode = function $DOMTree$$module$Dom$DOMTree$DOMTree$AttachChildNode$($parent$$, $child$$) {
@@ -2129,13 +2172,45 @@ JSDom$$module$Dom$JSDom.prototype.filter = function $JSDom$$module$Dom$JSDom$$fi
 };
 JSDom$$module$Dom$JSDom.prototype.exclude = function $JSDom$$module$Dom$JSDom$$exclude$($cssSelector$$) {
 };
-JSDom$$module$Dom$JSDom.prototype.and = function $JSDom$$module$Dom$JSDom$$and$($elements$$) {
+JSDom$$module$Dom$JSDom.prototype.and = function $JSDom$$module$Dom$JSDom$$and$($cssSelector$$) {
+};
+JSDom$$module$Dom$JSDom.prototype.getProp = function $JSDom$$module$Dom$JSDom$$getProp$($propertyName$$, $callbackFunction$$) {
+  this.each(function($element$$, $index$$) {
+    var $property$$ = module$Dom$DOMProperties$DOMProperties.DOMProperties.GetProperty($element$$, $propertyName$$);
+    new JSDom$$module$Dom$JSDom($element$$, $callbackFunction$$, [$property$$]);
+  });
+  return this;
+};
+JSDom$$module$Dom$JSDom.prototype.exportProp = function $JSDom$$module$Dom$JSDom$$exportProp$($propertyName$$) {
+  return module$Dom$DOMProperties$DOMProperties.DOMProperties.GetProperty(this.exportElement(0), $propertyName$$);
+};
+JSDom$$module$Dom$JSDom.prototype.setProp = function $JSDom$$module$Dom$JSDom$$setProp$($propertyName$$, $value$$) {
+  this.each(function($element$$, $index$$) {
+    module$Dom$DOMProperties$DOMProperties.DOMProperties.SetProperty($element$$, $propertyName$$, $value$$);
+  });
+  return this;
 };
 JSDom$$module$Dom$JSDom.prototype.getProps = function $JSDom$$module$Dom$JSDom$$getProps$($propertyObject$$, $callbackFunction$$) {
+  var $propertyKeys$$ = Object.getOwnPropertyNames($propertyObject$$), $li$$ = $propertyKeys$$.length;
+  this.each(function($element$$, $index$$) {
+    for (var $properties$$ = $index$$ ? {} : $propertyObject$$, $i$$ = 0;$i$$ < $li$$;++$i$$) {
+      var $key$$ = $propertyKeys$$[$i$$];
+      $properties$$[$key$$] = module$Dom$DOMProperties$DOMProperties.DOMProperties.GetProperty($element$$, $key$$);
+    }
+    new JSDom$$module$Dom$JSDom($element$$, $callbackFunction$$, [$propertyObject$$]);
+  });
+  return this;
 };
 JSDom$$module$Dom$JSDom.prototype.exportProps = function $JSDom$$module$Dom$JSDom$$exportProps$($propertyObject$$) {
+  for (var $propertyKeys$$ = Object.getOwnPropertyNames($propertyObject$$), $li$$ = $propertyKeys$$.length, $i$$ = 0;$i$$ < $li$$;++$i$$) {
+    var $key$$ = $propertyKeys$$[$i$$];
+    $propertyObject$$[$key$$] = this.exportProp($key$$);
+  }
+  return $propertyObject$$;
 };
 JSDom$$module$Dom$JSDom.prototype.setProps = function $JSDom$$module$Dom$JSDom$$setProps$($propertyObject$$) {
+  module$Dom$DOMProperties$DOMProperties.DOMProperties.SetProperties(this.exportElement(0), $propertyObject$$);
+  return this;
 };
 JSDom$$module$Dom$JSDom.prototype.setValue = function $JSDom$$module$Dom$JSDom$$setValue$($value$$, $callbackFunction$$) {
 };

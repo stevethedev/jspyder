@@ -1,6 +1,7 @@
 import {JSObject} from "JSObject";
 
 import {Functions} from "Algorithms/Functions/Functions";
+import {Objects} from "Algorithms/Objects/Objects";
 
 import {HasInterface} from "Object/Interface";
 
@@ -12,7 +13,7 @@ import {RegistryInterface} from "Registry/RegistryInterface";
  * @implements HasInterface
  */
 export class JSRegistry extends JSObject {
-    constructor(cache = {}) {
+    constructor(cache = Objects.CreateBlankObject()) {
         this._cache = cache;
     }
 

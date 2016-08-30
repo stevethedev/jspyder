@@ -127,7 +127,7 @@ export class JSAlgorithms extends JSObject {
     magnitude(num, base = 10) {
         return Numbers.Magnitude(num, base);
     }
-    makeEnum(keys, attachTo = {}) {
+    makeEnum(keys, attachTo = Objects.CreateBlankObject()) {
         return Numbers.MakeEnumeratedObject(keys, attachTo);
     }
     max(...numbers) {
@@ -165,7 +165,7 @@ export class JSAlgorithms extends JSObject {
     mergeObj(base, ...subs) {
         return Objects.MergeObjects(base, ...subs);
     }
-    object(value, defaultValue = {}) {
+    object(value, defaultValue = Objects.CreateBlankObject()) {
         return Objects.ToObject(value, defaultValue);
     }
     property(object, ...levels) {

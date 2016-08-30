@@ -1,4 +1,4 @@
-var goog = {};
+var goog = Object.create(null);
 
 goog.global = window;
 
@@ -38,7 +38,7 @@ goog.exportPath_ = function(name, opt_object, opt_objectToExportTo) {
     } else if (cur[part]) {
       cur = cur[part];
     } else {
-      cur = cur[part] = {};
+      cur = cur[part] = Object.create(null);
     }
   }
 };

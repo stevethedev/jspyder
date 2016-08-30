@@ -51,7 +51,9 @@ export class TestDOMCss extends TestObject {
 
         DOMCss.InlineStyles(div);
         document.body.removeChild(style);
-
-        Assert.Equal("border-width: 1px; border-style: solid; border-color: rgb(0, 0, 0); border-image: none;", div.getAttribute("style"));
+        
+        Assert.Equal('1px', div.style.borderWidth);
+        Assert.Equal('solid', div.style.borderStyle);
+        Assert.Equal('rgb(0, 0, 0)', div.style.borderColor);
     }
 }

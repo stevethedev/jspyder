@@ -1,3 +1,5 @@
+import {Objects} from "Algorithms/Objects/Objects";
+
 const USE_INT8_ARRAY  = ("undefined" === typeof window.Int8Array);
 const USE_UINT8_ARRAY = ("undefined" === typeof window.Uint8Array);
 const USE_INT16_ARRAY  = ("undefined" === typeof window.Int16Array);
@@ -356,7 +358,7 @@ export class Numbers {
      * Takes an array of keys, and generates an enumerated object
      * with them.
      */
-    static MakeEnumeratedObject(keys, attachTo = {}) {
+    static MakeEnumeratedObject(keys, attachTo = Objects.CreateBlankObject()) {
         var value = 1;
         for(let i = 0, li = keys.length; i < li; ++i) {
             Object.defineProperty(attachTo, keys[i], { value: value });

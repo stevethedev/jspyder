@@ -9,8 +9,8 @@ export class DOMAttributes {
      * @return {Object}
      */
     static GetAttributes(element, attributeObject) {
-        for (let propertyName in attributeObject) {
-            attributeObject[propertyName] = DOMAttributes.GetAttribute(element, propertyName);
+        for (let attributeName in attributeObject) {
+            attributeObject[attributeName] = DOMAttributes.GetAttribute(element, attributeName);
         }
         return attributeObject;
     }
@@ -23,8 +23,8 @@ export class DOMAttributes {
      * @return {void}
      */
     static SetAttributes(element, attributeObject) {
-        for(let propertyName in attributeObject) {
-            DOMAttributes.SetAttribute(element, propertyName, attributeObject[propertyName]);
+        for(let attributeName in attributeObject) {
+            DOMAttributes.SetAttribute(element, attributeName, attributeObject[attributeName]);
         }
     }
 

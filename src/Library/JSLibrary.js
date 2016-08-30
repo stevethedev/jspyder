@@ -5,6 +5,7 @@ import {Functions} from "Algorithms/Functions/Functions";
 import {Looper} from "Algorithms/Looper/Looper";
 import {Arrays} from "Algorithms/Arrays/Arrays";
 import {HasInterface} from "Object/Interface";
+import {Objects} from "Algorithms/Objects/Objects";
 
 import {LibraryInterfaceDefs} from "Library/LibraryInterfaceDefs";
 
@@ -13,7 +14,7 @@ import {LibraryInterfaceDefs} from "Library/LibraryInterfaceDefs";
  * @implements HasInterface
  */
 export class JSLibrary extends JSObject {
-    constructor(context = {}) {
+    constructor(context = Objects.CreateBlankObject()) {
         var registry = new JSRegistry();
         
         this._registry = registry.GetInterface();

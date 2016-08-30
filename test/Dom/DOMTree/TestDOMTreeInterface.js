@@ -73,7 +73,7 @@ export class TestDOMTreeInterface extends TestObject {
         parent.appendChild(document.createElement("div"));
         
         this.jspyder.dom(parent).append(child);
-        
+
         Assert.Equal(child, parent.lastChild);
     }
     
@@ -110,7 +110,7 @@ export class TestDOMTreeInterface extends TestObject {
         
         parent.appendChild(child1);
         
-        this.jspyder.dom(child2).appendAfter(child2);
+        this.jspyder.dom(child2).appendAfter(child1);
         
         Assert.Equal(child2, parent.children[1]);
     }

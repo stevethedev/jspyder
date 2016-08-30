@@ -2,24 +2,49 @@
 export class DOMElementInterface {
     setHtml(html) {}
     getHtml(callbackFunction) {}
-    /** @return {string} */
-    exportHtml() {}
+
+    /** 
+     * @param {number} index
+     * @return {string} 
+     */
+    exportHtml(index) {}
 
     getText(callbackFunction) {}
-    /** @return {string} */
-    exportText() {}
+    /** 
+     * @param {number} index
+     * @return {string} 
+     */
+    exportText(index) {}
     setText(text) {}
 
-    // find(cssSelector) {}
-    // filter(cssSelector) {}
-    // exclude(cssSelector) {}
-    // and(elements) {}
-
-    getProps(propertyObject, callbackFunction) {}
-    exportProps(propertyObject) {}
-    setProps(propertyObject) {}
-
-    setValue(value, callbackFunction) {}
-    getValue(callbackFunction) {}
-    exportValue() {}
+    /**
+     * Searches for an object containing the DOM nodes which match the
+     * provided CSS selector.
+     *
+     * @param {string|Element} cssSelector
+     * @return this
+     */
+    find(cssSelector) {}
+    /**
+     * Excludes any child nodes that do not match the provided CSS 
+     * selector
+     *
+     * @param {string|Element} cssSelector
+     * @return this
+     */
+    filter(cssSelector) {}
+    /**
+     * Excludes any child nodes that match the provided CSS selector
+     *
+     * @param {string|Element} cssSelector
+     * @return this
+     */
+    exclude(cssSelector) {}
+    /**
+     * Appends any nodes that match the provided CSS selector
+     *
+     * @param {string|Element} cssSelector
+     * @return this
+     */
+    and(cssSelector) {}
 }

@@ -1,6 +1,7 @@
 import {Browser} from "Environment/Browser";
 import {BROWSER_IE, BROWSER_EDGE, BROWSER_FIREFOX} from "Environment/BrowserData";
 import {Numbers} from "Algorithms/Numbers/Numbers";
+import {Objects} from "Algorithms/Objects/Objects";
 
 const MAX_CHUNK_SIZE = 8192;
 const ARRAY_PROTOTYPE = window["Array"]["prototype"];
@@ -66,7 +67,7 @@ export class Arrays {
      * @return {function(Object,Object):(number|boolean)}
      */
     static GetBestSortArrayObjectFunction(ascending, fields) {
-        var __memo = {};
+        var __memo = Objects.CreateBlankObject();
         function memoized(ascending, fields) {
             if(__memo[ascending]) {
                 return __memo[ascending];
