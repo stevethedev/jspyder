@@ -33,4 +33,20 @@ Assert.Fail = function(failMessage = "Test Not Built") {
     return Assert(false, failMessage);
 }
 
+Assert.InArray = function(array, value, failMessage = `Assert.InArray Failed: Expected ${value} to be in array`) {
+    var found = false;
+    for(let i = 0, li = array.length; !found && i < li; ++i) {
+        found = array[i] === value;
+    }
+    return Assert(found, failMessage);
+}
+
+Assert.NotInArray = function(array, value, failMessage = `Assert.InArray Failed: Expected ${value} to be absent from array`) {
+    var found = false;
+    for(let i = 0, li = array.length; !found && i < li; ++i) {
+        found = array[i] === value;
+    }
+    return Assert(!found, failMessage);
+}
+
 export {Assert};

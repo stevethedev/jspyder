@@ -78,19 +78,78 @@ export class TestDOMElementInterface extends TestObject {
     }
 
     testFind() {
-        Assert.Fail();
+        const className = "test-class";
+
+        var div = document.createElement("div");
+        var find = document.createElement("div");
+        find.className = className;
+
+        div.appendChild(find);
+
+        find.toString = () => "[find div]";
+
+        var found = this.jspyder.dom(div).find(`.${className}`).exportElement(0);
+
+        Assert.Equal(find, found);
     }
 
     testFilter() {
-        Assert.Fail();
+        const filterClass = "filter-class";
+        const excludeClass = "exclude-class";
+
+        var div = document.createElement("div");
+        var filter = document.createElement("div");
+        var exclude = document.createElement("div");
+
+        filter.className = filterClass;
+        exclude.className = excludeClass;
+
+        div.appendChild(filter);
+        div.appendChild(exclude);
+
+        filter.toString = () => "[filter div]";
+        exclude.toString = () => "[exclude div]";
+
+        var filtered = this.jspyder.dom(div).filter(`.${filterClass}`).remove();
+
+        Assert.InArray(filtered._element, filter);
+        Assert.NotInArray(filtered._element, exclude);
     }
 
     testExclude() {
-        Assert.Fail();
+        const filterClass = "filter-class";
+        const excludeClass = "exclude-class";
+
+        var div = document.createElement("div");
+        var filter = document.createElement("div");
+        var exclude = document.createElement("div");
+
+        filter.className = filterClass;
+        exclude.className = excludeClass;
+
+        div.appendChild(filter);
+        div.appendChild(exclude);
+
+        filter.toString = () => "[filter div]";
+        exclude.toString = () => "[exclude div]";
+
+        var excluded = this.jspyder.dom(div).exclude(`.${excludeClass}`).remove();
+
+        Assert.NotInArray(excluded._element, filter);
+        Assert.InArray(excluded._element, exclude);
     }
 
     testAnd() {
-        Assert.Fail();
+        var div = document.createElement("div");
+        var and = document.createElement("div");
+
+        div.toString = () => "[div]";
+        and.toString = () => "[and]";
+
+        var jsDom = this.jspyder.dom(div).and(and);
+
+        Assert.InArray(jsDom._element, div);
+        Assert.InArray(jsDom._element, and);
     }
 
     testGetProps() {

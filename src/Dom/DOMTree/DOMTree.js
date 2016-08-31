@@ -50,7 +50,7 @@ export class DOMTree {
     }
 
     /**
-     * Inserts one node before another node before another node in the DOM tree
+     * Inserts one node before another node in the DOM tree
      * 
      * @param {Node} beforeThisNode  The reference node to be prepended
      * @param {Node} insertThisNode  The node to insert
@@ -66,11 +66,20 @@ export class DOMTree {
         return false;
     }
 
+    /**
+     * Inserts one node after another node in the DOM tree
+     * 
+     * @param {Node} afterThisNode The reference node to insert after
+     * @param {Node} insertThisNode The node to insert
+     * 
+     * @return {boolean} false if the node cannot be inserted, or if
+     * insertThisNode is equal to afterThisNode.
+     */
     static InsertNodeAfter(afterThisNode, insertThisNode) {
         var validNodes = DOMElement.IsNode(afterThisNode) && DOMElement.IsNode(insertThisNode);
         if (validNodes && afterThisNode.parentNode && afterThisNode.nextSibling !== insertThisNode) {
             if (afterThisNode.nextSibling) {
-                afterThisNode.parentNode.insertBefore(insertThisNode, afterThisNode.nextSibling);
+                afterThisNode.parentNode.insertBefore(insertThisNode, afterThisNode.nextSibling || null);
             }
             else {
                 afterThisNode.parentNode.appendChild(insertThisNode);
@@ -108,6 +117,11 @@ export class DOMTree {
         return [];
     }
 
+    /**
+     * Converts an array into a documentFragment object
+     * 
+     * @param {Array} elementArray
+     */
     static CreateDocumentFragment(elementArray) {
         if (!elementArray) {
             elementArray = [];
@@ -115,7 +129,6 @@ export class DOMTree {
 
         var documentFragment = document.createDocumentFragment();
         for (let i = 0, li = elementArray.length; i < li; ++i) {
-            // DOMTree.AttachChildNode(documentFragment, elementArray[i]);
             documentFragment.appendChild(elementArray[i]);
         }
 

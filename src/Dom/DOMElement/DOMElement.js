@@ -85,7 +85,7 @@ export class DOMElement {
             // }
             // else
             if ("object" === typeof object) {
-                return NODE_TYPE_SWITCHER[object.nodeType];
+                return NODE_TYPE_SWITCHER[object.nodeType] || false;
             }
         }
         return false;
@@ -141,6 +141,38 @@ export class DOMElement {
     static AttachRegistry(element) {
         if (!element["__jsRegistry"]) {
             element["__jsRegistry"] = new JSRegistry().GetInterface();
+        }
+    }
+
+    /**
+     * Checks whether the provided element matches the provided CSS
+     * selector
+     * 
+     * @param {HTMLElement|Element} element
+     * @param {!string} cssSelector
+     */
+    static MatchesSelector(element, cssSelector) {
+        if (Element.IsNode(element)) {
+            var fn = "";
+            if (element.matches) { fn = "matches"; }
+            else if (element.matchesSelector) { fn = "matchesSelector"; }
+            else if (element.msMatchesSelector) { fn = "msMatchesSelector"; }
+            else if (element.mozMatchesSelector) { fn = "mozMatchesSelector"; }
+            else if (element.webkitMatchesSelector) { fn = "webkitMatchesSelector"; }
+            else if (element.oMatchesSelector) { fn = "oMatchesSelector"; }
+            else {
+                // polyfill from MDN
+                js_dom.fn._matches = function (element, selector) {
+                    var matches = (element.document || element.ownerDocument).querySelectorAll(selector),
+                        i = matches.length;
+                    while (--i >= 0 && matches.item(i) !== element) { }
+                    return i > -1;
+                }
+            }
+
+            Element.MatchesSelector = function (element, selector) {
+                return fn && 
+            }
         }
     }
 }
