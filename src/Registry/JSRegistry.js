@@ -41,6 +41,13 @@ export class JSRegistry extends JSObject {
         return new JSRegistryInterface();
     }
     
+    /**
+     * Retrieves a value from the registry
+     * 
+     * @param {!string} key
+     * @param {function(*)} [callback]
+     * @return {*}
+     */
     Fetch(key, callback) {
         var value = {
             "key": key,
@@ -50,7 +57,14 @@ export class JSRegistry extends JSObject {
         Functions.Run(callback, value);
         return value["value"];
     }
-    
+
+    /**
+     * Stores a value in the registry
+     * 
+     * @param {!string} key
+     * @param {*} value
+     * @return {*}
+     */
     Stash(key, value) {
         this._cache[key] = value;
         return value;

@@ -2502,6 +2502,23 @@ DOMElement$$module$Dom$DOMElement$DOMElement.QuerySelectorAll = function $DOMEle
 DOMElement$$module$Dom$DOMElement$DOMElement.AttachRegistry = function $DOMElement$$module$Dom$DOMElement$DOMElement$AttachRegistry$($element$$) {
   $element$$.__jsRegistry || ($element$$.__jsRegistry = (new JSRegistry$$module$Registry$JSRegistry).GetInterface());
 };
+DOMElement$$module$Dom$DOMElement$DOMElement.MatchesSelector = function $DOMElement$$module$Dom$DOMElement$DOMElement$MatchesSelector$($element$$0$$, $cssSelector$$) {
+  if (DOMElement$$module$Dom$DOMElement$DOMElement.IsNode($element$$0$$)) {
+    var $matchFunction$$ = $element$$0$$.matches || $element$$0$$.matchesSelector || $element$$0$$.msMatchesSelector || $element$$0$$.mozMatchesSelector || $element$$0$$.webkitMatchesSelector || $element$$0$$.oMatchesSelector || function($cssSelector$$) {
+      $cssSelector$$ = (this.document || this.ownerDocument).querySelectorAll($cssSelector$$);
+      for (var $i$$ = $cssSelector$$.length;0 <= --$i$$;) {
+        if ($cssSelector$$[$i$$] === this) {
+          return !0;
+        }
+      }
+      return !1;
+    };
+    DOMElement$$module$Dom$DOMElement$DOMElement.MatchesSelector = function $DOMElement$$module$Dom$DOMElement$DOMElement$MatchesSelector$($element$$, $cssSelector$$) {
+      return $matchFunction$$.call($element$$, $cssSelector$$);
+    };
+    return this.MatchesSelector($element$$0$$, $cssSelector$$);
+  }
+};
 module$Dom$DOMElement$DOMElement.DOMElement = DOMElement$$module$Dom$DOMElement$DOMElement;
 var module$Dom$DOMAttributes$DOMAttributes = {}, DOMAttributes$$module$Dom$DOMAttributes$DOMAttributes = function $DOMAttributes$$module$Dom$DOMAttributes$DOMAttributes$() {
 };
@@ -2850,6 +2867,12 @@ TestDOMElement$$module$Dom$DOMElement$TestDOMElement.prototype.testAttachRegistr
   DOMElement$$module$Dom$DOMElement$DOMElement.AttachRegistry($nsNode$$);
   module$Assert.Assert($nsNode$$.__jsRegistry);
 };
+TestDOMElement$$module$Dom$DOMElement$TestDOMElement.prototype.testMatchesSelector = function $TestDOMElement$$module$Dom$DOMElement$TestDOMElement$$testMatchesSelector$() {
+  var $node$$ = document.createElement("div");
+  $node$$.className = "test-class";
+  module$Assert.Assert(DOMElement$$module$Dom$DOMElement$DOMElement.MatchesSelector($node$$, ".test-class"), "Expected element to match selector 1");
+  module$Assert.Assert(!DOMElement$$module$Dom$DOMElement$DOMElement.MatchesSelector($node$$, ".test-class-2"), "Expected element to fail selector 2");
+};
 module$Dom$DOMElement$TestDOMElement.TestDOMElement = TestDOMElement$$module$Dom$DOMElement$TestDOMElement;
 var module$Dom$DOMElement$TestDOMElementInterface = {}, TestDOMElementInterface$$module$Dom$DOMElement$TestDOMElementInterface = function $TestDOMElementInterface$$module$Dom$DOMElement$TestDOMElementInterface$($jspyder$$) {
   this.jspyder = $jspyder$$;
@@ -2892,60 +2915,6 @@ TestDOMElementInterface$$module$Dom$DOMElement$TestDOMElementInterface.prototype
   var $div$$ = document.createElement("div"), $$div$$ = this.jspyder.dom($div$$);
   $div$$.innerHTML = "&lt; test";
   module$Assert.Assert.Equal("< test", $$div$$.exportText());
-};
-TestDOMElementInterface$$module$Dom$DOMElement$TestDOMElementInterface.prototype.testFind = function $TestDOMElementInterface$$module$Dom$DOMElement$TestDOMElementInterface$$testFind$() {
-  var $div$$27_found$$ = document.createElement("div"), $find$$ = document.createElement("div");
-  $find$$.className = "test-class";
-  $div$$27_found$$.appendChild($find$$);
-  $find$$.toString = function $$find$$$toString$() {
-    return "[find div]";
-  };
-  $div$$27_found$$ = this.jspyder.dom($div$$27_found$$).find(".test-class").exportElement(0);
-  module$Assert.Assert.Equal($find$$, $div$$27_found$$);
-};
-TestDOMElementInterface$$module$Dom$DOMElement$TestDOMElementInterface.prototype.testFilter = function $TestDOMElementInterface$$module$Dom$DOMElement$TestDOMElementInterface$$testFilter$() {
-  var $div$$ = document.createElement("div"), $filter$$ = document.createElement("div"), $exclude$$ = document.createElement("div");
-  $filter$$.className = "filter-class";
-  $exclude$$.className = "exclude-class";
-  $div$$.appendChild($filter$$);
-  $div$$.appendChild($exclude$$);
-  $filter$$.toString = function $$filter$$$toString$() {
-    return "[filter div]";
-  };
-  $exclude$$.toString = function $$exclude$$$toString$() {
-    return "[exclude div]";
-  };
-  $div$$ = this.jspyder.dom($div$$).filter(".filter-class").remove();
-  module$Assert.Assert.InArray($div$$._element, $filter$$);
-  module$Assert.Assert.NotInArray($div$$._element, $exclude$$);
-};
-TestDOMElementInterface$$module$Dom$DOMElement$TestDOMElementInterface.prototype.testExclude = function $TestDOMElementInterface$$module$Dom$DOMElement$TestDOMElementInterface$$testExclude$() {
-  var $div$$ = document.createElement("div"), $filter$$ = document.createElement("div"), $exclude$$ = document.createElement("div");
-  $filter$$.className = "filter-class";
-  $exclude$$.className = "exclude-class";
-  $div$$.appendChild($filter$$);
-  $div$$.appendChild($exclude$$);
-  $filter$$.toString = function $$filter$$$toString$() {
-    return "[filter div]";
-  };
-  $exclude$$.toString = function $$exclude$$$toString$() {
-    return "[exclude div]";
-  };
-  $div$$ = this.jspyder.dom($div$$).exclude(".exclude-class").remove();
-  module$Assert.Assert.NotInArray($div$$._element, $filter$$);
-  module$Assert.Assert.InArray($div$$._element, $exclude$$);
-};
-TestDOMElementInterface$$module$Dom$DOMElement$TestDOMElementInterface.prototype.testAnd = function $TestDOMElementInterface$$module$Dom$DOMElement$TestDOMElementInterface$$testAnd$() {
-  var $div$$ = document.createElement("div"), $and$$ = document.createElement("div");
-  $div$$.toString = function $$div$$$toString$() {
-    return "[div]";
-  };
-  $and$$.toString = function $$and$$$toString$() {
-    return "[and]";
-  };
-  var $jsDom$$ = this.jspyder.dom($div$$).and($and$$);
-  module$Assert.Assert.InArray($jsDom$$._element, $div$$);
-  module$Assert.Assert.InArray($jsDom$$._element, $and$$);
 };
 TestDOMElementInterface$$module$Dom$DOMElement$TestDOMElementInterface.prototype.testGetProps = function $TestDOMElementInterface$$module$Dom$DOMElement$TestDOMElementInterface$$testGetProps$() {
   var $div$$ = document.createElement("div"), $props$$0$$ = {tagName:null};
@@ -3249,6 +3218,56 @@ TestDOMTreeInterface$$module$Dom$DOMTree$TestDOMTreeInterface.prototype.testChil
   $foundChild$$1_parent$$ = this.jspyder.dom($child$$).children().exportElement(0);
   module$Assert.Assert.Equal($child$$, $foundChild$$1_parent$$);
 };
+TestDOMTreeInterface$$module$Dom$DOMTree$TestDOMTreeInterface.prototype.testFind = function $TestDOMTreeInterface$$module$Dom$DOMTree$TestDOMTreeInterface$$testFind$() {
+  var $div$$30_found$$ = document.createElement("div"), $find$$ = document.createElement("div");
+  $find$$.className = "test-class";
+  $div$$30_found$$.appendChild($find$$);
+  $find$$.toString = function $$find$$$toString$() {
+    return "[find div]";
+  };
+  $div$$30_found$$ = this.jspyder.dom($div$$30_found$$).find(".test-class").exportElement(0);
+  module$Assert.Assert.Equal($find$$, $div$$30_found$$);
+};
+TestDOMTreeInterface$$module$Dom$DOMTree$TestDOMTreeInterface.prototype.testFilter = function $TestDOMTreeInterface$$module$Dom$DOMTree$TestDOMTreeInterface$$testFilter$() {
+  var $filter$$ = document.createElement("div"), $exclude$$ = document.createElement("div");
+  $filter$$.className = "filter-class";
+  $exclude$$.className = "exclude-class";
+  $filter$$.toString = function $$filter$$$toString$() {
+    return "[filter div]";
+  };
+  $exclude$$.toString = function $$exclude$$$toString$() {
+    return "[exclude div]";
+  };
+  var $filtered$$ = this.jspyder.dom([$filter$$, $exclude$$]).filter(".filter-class").remove();
+  module$Assert.Assert.InArray($filtered$$._element, $filter$$);
+  module$Assert.Assert.NotInArray($filtered$$._element, $exclude$$);
+};
+TestDOMTreeInterface$$module$Dom$DOMTree$TestDOMTreeInterface.prototype.testExclude = function $TestDOMTreeInterface$$module$Dom$DOMTree$TestDOMTreeInterface$$testExclude$() {
+  var $filter$$ = document.createElement("div"), $exclude$$ = document.createElement("div");
+  $filter$$.className = "filter-class";
+  $exclude$$.className = "exclude-class";
+  $filter$$.toString = function $$filter$$$toString$() {
+    return "[filter div]";
+  };
+  $exclude$$.toString = function $$exclude$$$toString$() {
+    return "[exclude div]";
+  };
+  var $excluded$$ = this.jspyder.dom([$filter$$, $exclude$$]).exclude(".exclude-class").remove();
+  module$Assert.Assert.InArray($excluded$$._element, $filter$$);
+  module$Assert.Assert.NotInArray($excluded$$._element, $exclude$$);
+};
+TestDOMTreeInterface$$module$Dom$DOMTree$TestDOMTreeInterface.prototype.testAnd = function $TestDOMTreeInterface$$module$Dom$DOMTree$TestDOMTreeInterface$$testAnd$() {
+  var $div$$ = document.createElement("div"), $and$$ = document.createElement("div");
+  $div$$.toString = function $$div$$$toString$() {
+    return "[div]";
+  };
+  $and$$.toString = function $$and$$$toString$() {
+    return "[and]";
+  };
+  var $jsDom$$ = this.jspyder.dom($div$$).and($and$$);
+  module$Assert.Assert.InArray($jsDom$$._element, $div$$);
+  module$Assert.Assert.InArray($jsDom$$._element, $and$$);
+};
 module$Dom$DOMTree$TestDOMTreeInterface.TestDOMTreeInterface = TestDOMTreeInterface$$module$Dom$DOMTree$TestDOMTreeInterface;
 var module$Dom$DOMProperties$DOMProperties = {}, DOMProperties$$module$Dom$DOMProperties$DOMProperties = function $DOMProperties$$module$Dom$DOMProperties$DOMProperties$() {
 };
@@ -3367,16 +3386,16 @@ DOMPosition$$module$Dom$DOMPosition$DOMPosition.GetPosition = function $DOMPosit
   $element$$ = $element$$.getBoundingClientRect();
   return {left:$element$$.left, right:$element$$.right, top:$element$$.top, bottom:$element$$.bottom};
 };
-DOMPosition$$module$Dom$DOMPosition$DOMPosition.GetOffsetPosition = function $DOMPosition$$module$Dom$DOMPosition$DOMPosition$GetOffsetPosition$($element$$29_parent$$) {
-  var $elementPosition$$ = DOMPosition$$module$Dom$DOMPosition$DOMPosition.GetPosition($element$$29_parent$$);
-  if ("fixed" === getComputedStyle($element$$29_parent$$).position) {
+DOMPosition$$module$Dom$DOMPosition$DOMPosition.GetOffsetPosition = function $DOMPosition$$module$Dom$DOMPosition$DOMPosition$GetOffsetPosition$($element$$31_parent$$) {
+  var $elementPosition$$ = DOMPosition$$module$Dom$DOMPosition$DOMPosition.GetPosition($element$$31_parent$$);
+  if ("fixed" === getComputedStyle($element$$31_parent$$).position) {
     return $elementPosition$$;
   }
-  for (;DOMElement$$module$Dom$DOMElement$DOMElement.IsElement($element$$29_parent$$.parentElement) && "static" === getComputedStyle($element$$29_parent$$.parentElement).position;) {
-    $element$$29_parent$$ = $element$$29_parent$$.parentElement;
+  for (;DOMElement$$module$Dom$DOMElement$DOMElement.IsElement($element$$31_parent$$.parentElement) && "static" === getComputedStyle($element$$31_parent$$.parentElement).position;) {
+    $element$$31_parent$$ = $element$$31_parent$$.parentElement;
   }
-  $element$$29_parent$$ = DOMPosition$$module$Dom$DOMPosition$DOMPosition.GetPosition($element$$29_parent$$);
-  return {left:$elementPosition$$.left - $element$$29_parent$$.left, right:$elementPosition$$.right - $element$$29_parent$$.right, top:$elementPosition$$.top - $element$$29_parent$$.top, bottom:$elementPosition$$.bottom - $element$$29_parent$$.bottom};
+  $element$$31_parent$$ = DOMPosition$$module$Dom$DOMPosition$DOMPosition.GetPosition($element$$31_parent$$);
+  return {left:$elementPosition$$.left - $element$$31_parent$$.left, right:$elementPosition$$.right - $element$$31_parent$$.right, top:$elementPosition$$.top - $element$$31_parent$$.top, bottom:$elementPosition$$.bottom - $element$$31_parent$$.bottom};
 };
 module$Dom$DOMPosition$DOMPosition.DOMPosition = DOMPosition$$module$Dom$DOMPosition$DOMPosition;
 var module$Dom$DOMProperties$DOMPropertiesInterface = {}, DOMPropertiesInterface$$module$Dom$DOMProperties$DOMPropertiesInterface = function $DOMPropertiesInterface$$module$Dom$DOMProperties$DOMPropertiesInterface$() {
@@ -3692,9 +3711,9 @@ JSDom$$module$Dom$JSDom.prototype.getText = function $JSDom$$module$Dom$JSDom$$g
   });
   return this;
 };
-JSDom$$module$Dom$JSDom.prototype.exportText = function $JSDom$$module$Dom$JSDom$$exportText$($element$$49_index$$) {
-  $element$$49_index$$ = this.exportElement(void 0 === $element$$49_index$$ ? 0 : $element$$49_index$$);
-  return DOMProperties$$module$Dom$DOMProperties$DOMProperties.GetProperty($element$$49_index$$, "innerText");
+JSDom$$module$Dom$JSDom.prototype.exportText = function $JSDom$$module$Dom$JSDom$$exportText$($element$$51_index$$) {
+  $element$$51_index$$ = this.exportElement(void 0 === $element$$51_index$$ ? 0 : $element$$51_index$$);
+  return DOMProperties$$module$Dom$DOMProperties$DOMProperties.GetProperty($element$$51_index$$, "innerText");
 };
 JSDom$$module$Dom$JSDom.prototype.find = function $JSDom$$module$Dom$JSDom$$find$($cssSelector$$) {
   var $found$$ = [];
@@ -3704,11 +3723,30 @@ JSDom$$module$Dom$JSDom.prototype.find = function $JSDom$$module$Dom$JSDom$$find
   });
   return new JSDom$$module$Dom$JSDom($found$$);
 };
+JSDom$$module$Dom$JSDom.findInternal = function $JSDom$$module$Dom$JSDom$findInternal$($children$$4_element$$, $index$$, $elements$$, $cssSelector$$, $found$$) {
+  $children$$4_element$$ = $children$$4_element$$.querySelectorAll($cssSelector$$);
+  Arrays$$module$Algorithms$Arrays$Arrays.WidePush($found$$, (new JSDom$$module$Dom$JSDom($children$$4_element$$))._element);
+};
 JSDom$$module$Dom$JSDom.prototype.filter = function $JSDom$$module$Dom$JSDom$$filter$($cssSelector$$) {
+  $cssSelector$$ && this.each(JSDom$$module$Dom$JSDom.filterInternal, $cssSelector$$);
+  return this;
+};
+JSDom$$module$Dom$JSDom.filterInternal = function $JSDom$$module$Dom$JSDom$filterInternal$($element$$, $index$$, $elements$$, $cssSelector$$) {
+  DOMElement$$module$Dom$DOMElement$DOMElement.MatchesSelector($element$$, $cssSelector$$) || this.drop();
 };
 JSDom$$module$Dom$JSDom.prototype.exclude = function $JSDom$$module$Dom$JSDom$$exclude$($cssSelector$$) {
+  $cssSelector$$ && this.each(JSDom$$module$Dom$JSDom.excludeInternal, $cssSelector$$);
+  return this;
+};
+JSDom$$module$Dom$JSDom.excludeInternal = function $JSDom$$module$Dom$JSDom$excludeInternal$($element$$, $index$$, $elements$$, $cssSelector$$) {
+  DOMElement$$module$Dom$DOMElement$DOMElement.MatchesSelector($element$$, $cssSelector$$) && this.drop();
 };
 JSDom$$module$Dom$JSDom.prototype.and = function $JSDom$$module$Dom$JSDom$$and$($cssSelector$$) {
+  var $keepElements$$ = Arrays$$module$Algorithms$Arrays$Arrays.Slice(this._element);
+  (new JSDom$$module$Dom$JSDom($cssSelector$$)).each(function($element$$, $index$$) {
+    -1 === $keepElements$$.indexOf($element$$) && $keepElements$$.push($element$$);
+  });
+  return new JSDom$$module$Dom$JSDom($keepElements$$);
 };
 JSDom$$module$Dom$JSDom.prototype.getProp = function $JSDom$$module$Dom$JSDom$$getProp$($propertyName$$, $callbackFunction$$) {
   this.each(function($element$$, $index$$) {
@@ -3764,9 +3802,9 @@ JSDom$$module$Dom$JSDom.prototype.getValue = function $JSDom$$module$Dom$JSDom$$
   });
   return this;
 };
-JSDom$$module$Dom$JSDom.prototype.exportValue = function $JSDom$$module$Dom$JSDom$$exportValue$($element$$58_index$$) {
-  $element$$58_index$$ = this.exportElement(void 0 === $element$$58_index$$ ? 0 : $element$$58_index$$);
-  return DOMValue$$module$Dom$DOMValue$DOMValue.GetValue($element$$58_index$$);
+JSDom$$module$Dom$JSDom.prototype.exportValue = function $JSDom$$module$Dom$JSDom$$exportValue$($element$$64_index$$) {
+  $element$$64_index$$ = this.exportElement(void 0 === $element$$64_index$$ ? 0 : $element$$64_index$$);
+  return DOMValue$$module$Dom$DOMValue$DOMValue.GetValue($element$$64_index$$);
 };
 JSDom$$module$Dom$JSDom.prototype.template = function $JSDom$$module$Dom$JSDom$$template$($fields$$) {
 };

@@ -88,4 +88,14 @@ export class TestDOMElement extends TestObject {
         DOMElement.AttachRegistry(nsNode);
         Assert(nsNode["__jsRegistry"]);
     }
+
+    testMatchesSelector() {
+        const className = "test-class";
+
+        var node = document.createElement("div");
+        node.className = className;
+
+        Assert(DOMElement.MatchesSelector(node, `.${className}`), "Expected element to match selector 1");
+        Assert(!DOMElement.MatchesSelector(node, `.${className}-2`), "Expected element to fail selector 2");
+    }
 }

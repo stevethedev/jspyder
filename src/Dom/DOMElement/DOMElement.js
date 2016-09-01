@@ -144,6 +144,21 @@ export class DOMElement {
         }
     }
 
+    static RegistryFetch(element, key) {
+        var value = {
+            "key": key,
+            "value": this._cache[key]
+        };
+        
+        Functions.Run(callback, value);
+        return value["value"];
+    }
+    
+    static RegistryStash(element, key, value) {
+        this._cache[key] = value;
+        return value;
+    }
+
     /**
      * Checks whether the provided element matches the provided CSS
      * selector
@@ -152,27 +167,34 @@ export class DOMElement {
      * @param {!string} cssSelector
      */
     static MatchesSelector(element, cssSelector) {
-        if (Element.IsNode(element)) {
-            var fn = "";
-            if (element.matches) { fn = "matches"; }
-            else if (element.matchesSelector) { fn = "matchesSelector"; }
-            else if (element.msMatchesSelector) { fn = "msMatchesSelector"; }
-            else if (element.mozMatchesSelector) { fn = "mozMatchesSelector"; }
-            else if (element.webkitMatchesSelector) { fn = "webkitMatchesSelector"; }
-            else if (element.oMatchesSelector) { fn = "oMatchesSelector"; }
-            else {
-                // polyfill from MDN
-                js_dom.fn._matches = function (element, selector) {
-                    var matches = (element.document || element.ownerDocument).querySelectorAll(selector),
+        if (DOMElement.IsNode(element)) {
+            var matchFunction =
+                element.matches ||
+                element.matchesSelector ||
+                element.msMatchesSelector ||
+                element.mozMatchesSelector ||
+                element.webkitMatchesSelector ||
+                element.oMatchesSelector ||
+                function (cssSelector) {
+                    var doc = this.document || this.ownerDocument,
+                        matches = doc.querySelectorAll(cssSelector),
                         i = matches.length;
-                    while (--i >= 0 && matches.item(i) !== element) { }
-                    return i > -1;
-                }
-            }
+                    while (--i >= 0) {
+                        if (matches[i] === this) {
+                            return true;
+                        }
+                    }
+                    return false;
+                };
 
-            Element.MatchesSelector = function (element, selector) {
-                return fn && 
-            }
+            DOMElement.MatchesSelector = (element, cssSelector) => 
+                matchFunction.call(element, cssSelector);
+            
+            return this.MatchesSelector(element, cssSelector);
         }
+    }
+
+    static SetDraggable(element) {
+        
     }
 }

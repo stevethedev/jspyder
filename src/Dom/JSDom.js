@@ -1,3 +1,29 @@
+/*
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2015 Steven Jimenez
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to
+ * deal in the Software without restriction, including without limitation the
+ * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+ * sell copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+ * IN THE SOFTWARE.
+ *
+ * @author Steven Jimenez
+ */
+
 import {JSObject} from "JSObject";
 
 import {JSRegistry} from "Registry/JSRegistry";
@@ -375,8 +401,17 @@ export class JSDom extends JSObject {
         return this;
     }
     // ===========================================================
+    /**
+     * TODO: Build function
+     */
     on(eventString, handlerFunction) { }
+    /**
+     * TODO: Build function
+     */
     off(eventString, handlerFunction) { }
+    /**
+     * TODO: Build function
+     */
     trigger(eventString) { }
 
     // [DOMTreeInterface] ========================================
@@ -657,43 +692,63 @@ export class JSDom extends JSObject {
 
         return new JSDom(found);
     }
+    static findInternal(element, index, elements, cssSelector, found) {
+        var children = element.querySelectorAll(cssSelector);
+        Arrays.WidePush(found, new JSDom(children)._element);
+    }
 
     /**
      * Excludes any child nodes that do not match the provided CSS 
      * selector
      *
      * @param {!string} cssSelector
-     * @return JSDom
+     * @return this
      */
     filter(cssSelector) {
-        var element = [];
-
         if(cssSelector) {
-            this.each((element, index) => {
-                // !TODO
-            })
+            this.each(JSDom.filterInternal, cssSelector);
         }
-
         return this;
     }
+    static filterInternal(element, index, elements, cssSelector) {
+        DOMElement.MatchesSelector(element, cssSelector) || this.drop();
+    }
+
     /**
      * Excludes any child nodes that match the provided CSS selector
-     * 
-     * !TODO
      *
-     * @param {!string|Element} cssSelector
-     * @return this
+     * @param {!string} cssSelector
+     * @return {JSDom}
      */
-    exclude(cssSelector) { }
+    exclude(cssSelector) {
+        if(cssSelector) {
+            this.each(JSDom.excludeInternal, cssSelector);
+        }
+        return this;
+    }
+
+    static excludeInternal(element, index, elements, cssSelector) {
+        DOMElement.MatchesSelector(element, cssSelector) && this.drop();
+    }
+
     /**
      * Appends any nodes that match the provided CSS selector
-     * 
-     * !TODO
      *
      * @param {!string|Element} cssSelector
      * @return this
      */
-    and(cssSelector) { }
+    and(cssSelector) {
+        var keepElements = Arrays.Slice(this._element);
+        var andDom = new JSDom(cssSelector);
+
+        andDom.each((element, index) => {
+            if(keepElements.indexOf(element) === -1) {
+                keepElements.push(element);
+            }
+        });
+
+        return new JSDom(keepElements);
+    }
 
     // ===========================================================
     /**
@@ -825,7 +880,13 @@ export class JSDom extends JSObject {
         return DOMValue.GetValue(element);
     }
 
+    /**
+     * TODO: Build function
+     */
     template(fields) { }
 
+    /**
+     * TODO: Build function
+     */
     setDraggable(dragSelector) { }
 }

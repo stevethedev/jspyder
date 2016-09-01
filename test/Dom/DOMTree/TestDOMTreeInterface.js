@@ -187,4 +187,72 @@ export class TestDOMTreeInterface extends TestObject {
 
         Assert.Equal(child, foundChild);
     }
+
+
+    testFind() {
+        const className = "test-class";
+
+        var div = document.createElement("div");
+        var find = document.createElement("div");
+        find.className = className;
+
+        div.appendChild(find);
+
+        find.toString = () => "[find div]";
+
+        var found = this.jspyder.dom(div).find(`.${className}`).exportElement(0);
+
+        Assert.Equal(find, found);
+    }
+
+    testFilter() {
+        const filterClass = "filter-class";
+        const excludeClass = "exclude-class";
+
+        var filter = document.createElement("div");
+        var exclude = document.createElement("div");
+
+        filter.className = filterClass;
+        exclude.className = excludeClass;
+
+        filter.toString = () => "[filter div]";
+        exclude.toString = () => "[exclude div]";
+
+        var filtered = this.jspyder.dom([filter, exclude]).filter(`.${filterClass}`).remove();
+
+        Assert.InArray(filtered._element, filter);
+        Assert.NotInArray(filtered._element, exclude);
+    }
+
+    testExclude() {
+        const filterClass = "filter-class";
+        const excludeClass = "exclude-class";
+
+        var filter = document.createElement("div");
+        var exclude = document.createElement("div");
+
+        filter.className = filterClass;
+        exclude.className = excludeClass;
+
+        filter.toString = () => "[filter div]";
+        exclude.toString = () => "[exclude div]";
+
+        var excluded = this.jspyder.dom([filter, exclude]).exclude(`.${excludeClass}`).remove();
+
+        Assert.InArray(excluded._element, filter);
+        Assert.NotInArray(excluded._element, exclude);
+    }
+
+    testAnd() {
+        var div = document.createElement("div");
+        var and = document.createElement("div");
+
+        div.toString = () => "[div]";
+        and.toString = () => "[and]";
+
+        var jsDom = this.jspyder.dom(div).and(and);
+
+        Assert.InArray(jsDom._element, div);
+        Assert.InArray(jsDom._element, and);
+    }
 }
