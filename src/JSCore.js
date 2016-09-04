@@ -16,6 +16,8 @@ const JS_LOGGER_INTERFACE = new JSLogger().GetInterface();
  */
 export class JSCore extends JSObject {
     constructor() {
+        super();
+        
         // Create the base JSpyder Registry
         this.extend("registry", new JSRegistry().GetInterface());
 

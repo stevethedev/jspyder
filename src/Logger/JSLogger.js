@@ -12,6 +12,7 @@ import {LoggerDefs} from "Logger/LoggerDefs";
  */
 export class JSLogger extends JSObject {
     constructor() {
+        super();
         /* intentionally left blank */
     }
     

@@ -14,11 +14,12 @@ import {RegistryInterface} from "Registry/RegistryInterface";
  */
 export class JSRegistry extends JSObject {
     constructor(cache = Objects.CreateBlankObject()) {
+        super();
         this._cache = cache;
     }
 
     /**
-     * @return {RegistryInterfaceDefs}
+     * @return {!RegistryInterface}
      */
     GetInterface() {
         var registry = this;
@@ -26,14 +27,30 @@ export class JSRegistry extends JSObject {
         /**
          * @implements RegistryInterface
          */
-        class JSRegistryInterface extends RegistryInterfaceDefs {
-            constructor() { /* Intentionally Blank */ }
+        class JSRegistryInterface {
+            constructor() { }
             
-            fetch(key, callback = null) {
+            /**
+             * Retrieves a value from the registry
+             *
+             * @override
+             *    
+             * @param {!string} key
+             * @param {function(*)} [callback]
+             * @return {*}
+             */
+            fetch(key, callback) {
                 return registry.Fetch(key, callback);
             }
-            
-            stash(key, value = null) {
+
+            /**
+             * Stores a value in the registry
+             * 
+             * @param {!string} key
+             * @param {*} value
+             * @return {*}
+             */            
+            stash(key, value) {
                 return registry.Stash(key, value);
             }
         }

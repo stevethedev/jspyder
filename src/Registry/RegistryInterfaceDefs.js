@@ -11,10 +11,20 @@ const ERROR_REGISTRY_INTERFACE = "Attempted to use abstract class RegistryInterf
  * Abstract RegistryInterface class, which lets 
  */
 export class RegistryInterfaceDefs extends JSObject {
-    fetch(key, callback = null) {
-        throw new JSError(ERROR_REGISTRY_INTERFACE);
-    }
-    stash(key, value = null) {
-        throw new JSError(ERROR_REGISTRY_INTERFACE);
-    }
+    /**
+     * Retrieves a value from the registry
+     *   
+     * @param {!string} key
+     * @param {function(*)} [callback]
+     * @return {*}
+     */
+    fetch(key, callback) { }
+
+    /**
+     * Stores a value in the registry
+     * 
+     * @param {!string} key
+     * @param {*} value
+     */ 
+    stash(key, value) { }
 }

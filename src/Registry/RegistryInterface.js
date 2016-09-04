@@ -4,13 +4,15 @@
 export class RegistryInterface {
     /**
      * @param {string} key
-     * @param {Function} [callback]
+     * @param {function(*)} [callback]
+     * @return {*}
      */
     fetch(key, callback) { }
     
     /**
      * @param {string} key
-     * @param {Object} [value]
+     * @param {*} value
+     * @return {*}
      */
     stash(key, value) { }
 }

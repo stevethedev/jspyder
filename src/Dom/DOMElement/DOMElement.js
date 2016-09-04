@@ -7,6 +7,8 @@ const REGEX_DOM_TAG = /^(\s|\n)*(\\\<|\<)/;
 const HTML_ELEMENT_EXISTS = "object" === typeof window["HTMLElement"];
 const HTML_NODE_EXISTS = "object" === typeof window["Node"];
 
+const REGISTRY_OBJECT = "__jsRegistry";
+
 const NODE_TYPE_ELEMENT_NODE = 1;
 const /** @deprecated */ NODE_TYPE_ATTRIBUTE_NODE = 2;
 const NODE_TYPE_TEXT_NODE = 3;
@@ -139,24 +141,29 @@ export class DOMElement {
      * Profile: O(1)
      */
     static AttachRegistry(element) {
-        if (!element["__jsRegistry"]) {
-            element["__jsRegistry"] = new JSRegistry().GetInterface();
+        if (!element[REGISTRY_OBJECT]) {
+            element[REGISTRY_OBJECT] = new JSRegistry().GetInterface();
         }
     }
 
-    static RegistryFetch(element, key) {
-        var value = {
-            "key": key,
-            "value": this._cache[key]
-        };
-        
-        Functions.Run(callback, value);
-        return value["value"];
+    /**
+     * @param {HTMLElement|Element} element
+     * @param {!string} key
+     * @param {function(*)} [callback]
+     * @return {*}
+     */
+    static RegistryFetch(element, key, callback) {
+        return element[REGISTRY_OBJECT].fetch(key, callback);
     }
     
+    /**
+     * @param {HTMLElement|Element} element
+     * @param {!string} key
+     * @param {*} value
+     * @return {*} value
+     */
     static RegistryStash(element, key, value) {
-        this._cache[key] = value;
-        return value;
+        return element[REGISTRY_OBJECT].stash(key, value);
     }
 
     /**

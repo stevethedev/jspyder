@@ -76,4 +76,6 @@ export class Functions {
             return memo[args] = memoizeFunction(...args);
         }
     }
+
+    static BlankFunction() { }
 }

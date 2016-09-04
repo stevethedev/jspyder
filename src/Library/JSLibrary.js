@@ -15,6 +15,8 @@ import {LibraryInterfaceDefs} from "Library/LibraryInterfaceDefs";
  */
 export class JSLibrary extends JSObject {
     constructor(context = Objects.CreateBlankObject()) {
+        super();
+        
         var registry = new JSRegistry();
         
         this._registry = registry.GetInterface();

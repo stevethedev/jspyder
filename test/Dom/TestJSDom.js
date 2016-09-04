@@ -7,6 +7,7 @@ import {TestDOMAttributes} from "Dom/DOMAttributes/TestDOMAttributes";
 import {TestDOMClasses} from "Dom/DOMClasses/TestDOMClasses";
 import {TestDOMCss} from "Dom/DOMCss/TestDOMCss";
 import {TestDOMElement} from "Dom/DOMElement/TestDOMElement";
+import {TestDOMEvent} from "Dom/DOMEvent/TestDOMEvent";
 import {TestDOMPosition} from "Dom/DOMPosition/TestDOMPosition";
 import {TestDOMTree} from "Dom/DOMTree/TestDOMTree";
 
@@ -14,6 +15,7 @@ import {TestDOMAttributesInterface} from "Dom/DOMAttributes/TestDOMAttributesInt
 import {TestDOMClassesInterface} from "Dom/DOMClasses/TestDOMClassesInterface";
 import {TestDOMCssInterface} from "Dom/DOMCss/TestDOMCssInterface";
 import {TestDOMElementInterface} from "Dom/DOMElement/TestDOMElementInterface";
+import {TestDOMEventInterface} from "Dom/DOMEvent/TestDOMEventInterface";
 import {TestDOMPositionInterface} from "Dom/DOMPosition/TestDOMPositionInterface";
 import {TestDOMTreeInterface} from "Dom/DOMTree/TestDOMTreeInterface";
 
@@ -30,6 +32,7 @@ export class TestJSDom extends TestObject {
         new TestDOMClasses();
         new TestDOMCss();
         new TestDOMElement();
+        new TestDOMEvent();
         new TestDOMPosition();
         new TestDOMTree();
 
@@ -37,6 +40,7 @@ export class TestJSDom extends TestObject {
         new TestDOMClassesInterface(jspyder);
         new TestDOMCssInterface(jspyder);
         new TestDOMElementInterface(jspyder);
+        new TestDOMEventInterface(jspyder);
         new TestDOMPositionInterface(jspyder);
         new TestDOMTreeInterface(jspyder);
     }

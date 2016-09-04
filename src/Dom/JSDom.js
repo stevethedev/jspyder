@@ -1,4 +1,4 @@
-/*
+/**
  * The MIT License (MIT)
  *
  * Copyright (c) 2015 Steven Jimenez
@@ -38,6 +38,7 @@ import {DOMAttributes} from "Dom/DOMAttributes/DOMAttributes";
 import {DOMCss} from "Dom/DOMCss/DOMCss";
 import {DOMClasses} from "Dom/DOMClasses/DOMClasses";
 import {DOMElement} from "Dom/DOMElement/DOMElement";
+import {DOMEvent} from "Dom/DOMEvent/DOMEvent";
 import {DOMPosition} from "Dom/DOMPosition/DOMPosition";
 import {DOMProperties} from "Dom/DOMProperties/DOMProperties";
 import {DOMTree} from "Dom/DOMTree/DOMTree";
@@ -47,6 +48,7 @@ import {DOMAttributesInterface} from "Dom/DOMAttributes/DOMAttributesInterface";
 import {DOMClassesInterface} from "Dom/DOMClasses/DOMClassesInterface";
 import {DOMCssInterface} from "Dom/DOMCss/DOMCssInterface";
 import {DOMElementInterface} from "Dom/DOMElement/DOMElementInterface";
+import {DOMEventInterface} from "Dom/DOMEvent/DOMEventInterface";
 import {DOMPositionInterface} from "Dom/DOMPosition/DOMPositionInterface";
 import {DOMPropertiesInterface} from "Dom/DOMProperties/DOMPropertiesInterface";
 import {DOMTreeInterface} from "Dom/DOMTree/DOMTreeInterface";
@@ -60,6 +62,7 @@ import {Looper} from "Algorithms/Looper/Looper";
  *
  * @implements {DOMAttributesInterface}
  * @implements {DOMElementInterface}
+ * @implements {DOMEventInterface}
  * @implements {DOMClassesInterface}
  * @implements {DOMCssInterface}
  * @implements {DOMPositionInterface}
@@ -70,6 +73,8 @@ import {Looper} from "Algorithms/Looper/Looper";
  */
 export class JSDom extends JSObject {
     constructor(element, callbackFunction = null, argumentArray = []) {
+        super();
+        
         var jsDom = this;
         if (JSDom.inPrototypeChain(element)) {
             jsDom = element;
@@ -402,17 +407,54 @@ export class JSDom extends JSObject {
     }
     // ===========================================================
     /**
-     * TODO: Build function
+     * @param {!string|Array<!string>} eventString
+     * @param {!function(Event)} handlerFunction
+     * @return this
      */
-    on(eventString, handlerFunction) { }
+    on(eventString, handlerFunction) {
+        if("string" === typeof eventString) {
+            eventString = eventString.split(/\s+/);
+        }
+
+        eventString = Arrays.ToArray(eventString, []);
+
+        DOMEvent.AddEventHandler(this._element, eventString, handlerFunction);
+        return this;
+    }
     /**
-     * TODO: Build function
+     * @param {!string|Array<!string>} eventString
+     * @param {...!function(Event)} [handlerFunction]
+     * @return this
      */
-    off(eventString, handlerFunction) { }
+    off(eventString, ...handlerFunction) {
+        if("string" === typeof eventString) {
+            eventString = eventString.split(/\s+/);
+        }
+
+        eventString = Arrays.ToArray(eventString, []);
+
+        DOMEvent.RemoveEventHandler(this._element, eventString, ...handlerFunction);
+        return this;
+    }
     /**
-     * TODO: Build function
+     * @param {!string|Array<!string>|Event} eventString
+     * @return this
      */
-    trigger(eventString) { }
+    trigger(eventString) {
+        if("string" === typeof eventString) {
+            eventString = eventString.split(/\s+/);
+        }
+
+        eventString = Arrays.ToArray(eventString, []);
+        var li = eventString.length;
+
+        this.each((element, index) => {
+            for(let i = 0; i < li; ++i) {
+                DOMEvent.TriggerEventHandler(element, eventString[i]);
+            }
+        });
+        return this;
+    }
 
     // [DOMTreeInterface] ========================================
     /**

@@ -11,6 +11,7 @@ export class LoopController extends JSObject {
      * @param {Object} source
      */
     constructor(source = []) {
+        super();
         this._break = false;
         this._index = 0;
         this._source = source;

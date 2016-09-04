@@ -7,6 +7,7 @@ import {JSObject} from "JSObject";
  */
 export class JSDate extends JSObject {
     constructor() {
+        super();
     }
     
     getQuarter(callbackFunction) {}
