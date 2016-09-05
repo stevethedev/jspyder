@@ -71,12 +71,12 @@ function generate_docs {
 
 function closure_compiler {
     echo " > Compiling JavaScript..."
-    java -jar ./closure-compiler/compiler.jar --language_out=ES5 --js ./js/jspyder.js --js ./js/js-**.js --js_output_file "$JSPYDER_OUT_DIR/js/jspyder.js"
+    java -jar ./closure-compiler/compiler.jar --language_out=ES5 --js ./src/*.js --js_module_root src --js_output_file "$JSPYDER_OUT_DIR/js/jspyder.js"
 }
 
 function closure_compiler_debug {
     echo " > Compiling Debug JavaScript..."
-    java -jar ./closure-compiler/compiler.jar --language_out=ES5 --formatting PRETTY_PRINT --debug true --js ./js/jspyder.js --js ./js/js-**.js --js_output_file "$JSPYDER_OUT_DIR/js/jspyder.debug.js"
+    java -jar ./closure-compiler/compiler.jar --language_out=ES5 --formatting PRETTY_PRINT --debug true --js ./src/*.js --js_module_root src --js_output_file "$JSPYDER_OUT_DIR/js/jspyder.debug.js"
 }
 
 

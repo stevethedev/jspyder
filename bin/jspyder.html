@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script type="text/javascript" src="jspyder.js"></script>
+    </head>
+    <body>
+        <pre id="jspyder-core"></pre>
+        <pre id="jspyder-init"></pre>
+<script type="text/javascript">
+function GenerateExports(name, object, found) {
+    found = found || [];
+    var text = name + " = " + GetType(object) + ";\n";
+    found.push(object);
+    var properties = Object.getOwnPropertyNames(object);
+    for(var i = 0, li = properties.length; i < li; ++i) {
+        var property = object[properties[i]];
+        if(found.indexOf(property) > -1) continue;
+        found.push(property);
+        if(Object.prototype.isPrototypeOf(property)) {
+            text += GenerateExports(name + "." + properties[i], property, found);
+        }
+        else {
+            text += name + "." + properties[i] + " = " + GetType(property) + ";\n";
+        }
+    }
+    return text;
+}
+
+function GetType(value) {
+    if(value === null) {
+        return "null";
+    }
+    if("function" === typeof value) {
+        return "function() {}";
+    }
+    if("object" === typeof value) {
+        return "{}";
+    }
+    return value;
+}
+
+document.querySelector("#jspyder-core").innerHTML = GenerateExports("JSpyder", window.JSpyder);
+document.querySelector("#jspyder-init").innerHTML = GenerateExports("jspyder", JSpyder.Bootstrap());
+</script>
+    </body>
+</html>

@@ -1,0 +1,32 @@
+@startuml DOMEvent/AddEventHandler.png
+
+title DOMEvent.addEventHandler(Element[] elementList, Event[] eventNameList, Function eventHandler)
+
+start
+    while (each element in elementList)
+        if (element has eventObject) is (no) then
+            :element.eventObject = {};
+        endif
+        while (each eventName in eventNameList)
+            if (eventObject has eventArray) is (no) then
+                :eventObject[eventName] = Function;
+                :element.addEventHandler(eventName, Function);
+            endif
+            :eventObject[eventName].push(eventHandler);
+        end while
+    end while
+stop
+@enduml
+
+@startuml DOMEvent/EventHandler.png
+title DOMEvent.EventHandler(event)
+
+start
+    :handlerResult = true;
+    while (each handler in handlerList && handlerResult !== false)
+        if(handler.enabled) is (yes) then
+            :handlerResult = handler.apply(this, arguments);
+        endif
+    end while
+stop
+@enduml
